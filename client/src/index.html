@@ -3,41 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. Medical Store Dashboard & POS</title>
+    <title>A.R. Health ERP - Ultimate Medical Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; color: #334155; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: #f8fafc; }
-        .top-navbar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .top-navbar h1 { font-size: 20px; font-weight: 700; color: #0f172a; }
+
+        /* Modern Dark Gradient Sidebar */
+        #sidebar-container { 
+            width: 280px; 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            color: #fff; 
+            flex-shrink: 0; 
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 15px;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+            font-weight: 500;
+            font-size: 14px;
+            gap: 14px;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Main Workspace */
+        .main-content { 
+            flex: 1; 
+            padding: 35px; 
+            overflow-y: auto; 
+            background: radial-gradient(circle at top right, #1e293b 0%, #0b0f19 70%); 
+        }
+
+        /* Top Navbar with Glassmorphism */
+        .top-navbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px);
+            padding: 18px 30px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 30px; 
+        }
+        
+        .top-navbar h1 { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        
+        .user-badge { 
+            font-size: 13px; font-weight: 600; 
+            background: rgba(59, 130, 246, 0.15); 
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px; 
+            border-radius: 8px; 
+        }
+
+        /* Dashboard Stats Grid */
+        .dashboard-cards { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 24px; 
+            margin-bottom: 35px; 
+        }
+        
+        .card { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(10px);
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .card:hover { 
+            transform: translateY(-4px); 
+            border-color: rgba(59, 130, 246, 0.4); 
+        }
+        
+        .card h3 { font-size: 13px; color: #94a3b8; margin-bottom: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card .value { font-size: 26px; font-weight: 700; color: #f8fafc; }
+
+        /* Content Area */
+        .workspace-panel { 
+            background: rgba(30, 41, 59, 0.4); 
+            border-radius: 16px; 
+            padding: 25px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            min-height: 400px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .logout-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
     <div class="app-layout">
-        <!-- Dynamic Sidebar Container -->
-        <div id="sidebar-container"></div>
-
-        <!-- Right Dashboard & POS Workspace -->
-        <div class="main-content">
-            <div class="top-navbar">
-                <h1>Point of Sale & Billing Counter</h1>
-                <div id="user-profile-badge" style="font-size: 13px; font-weight: 600; background: #e2e8f0; padding: 6px 12px; border-radius: 6px;">Active Counter</div>
+        <!-- Sidebar with All Options -->
+        <div id="sidebar-container">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">⚕️</div>
+                <div>
+                    <h3 style="font-size: 16px; color: #fff; font-weight: 700;">A.R. HEALTH ERP</h3>
+                    <span id="role-tag" style="font-size: 11px; color: #60a5fa; font-weight: 600;">Medical Suite</span>
+                </div>
             </div>
 
-            <div class="pos-container">
-                <!-- POS content/billing interface -->
+            <ul class="sidebar-menu">
+                <li><a href="index.html" class="active"><span style="font-size: 18px;">📊</span> Dashboard</a></li>
+                <li><a href="pos.html"><span style="font-size: 18px;">🛒</span> 1. Sale & POS Billing</a></li>
+                <li><a href="sales-returns.html"><span style="font-size: 18px;">🔄</span> Sales Returns</a></li>
+                <li><a href="purchases.html"><span style="font-size: 18px;">📦</span> 2. Purchase Management</a></li>
+                <li><a href="purchase-returns.html"><span style="font-size: 18px;">↩️</span> Purchase Returns</a></li>
+                <li><a href="collection.html"><span style="font-size: 18px;">💰</span> 3. Collection Master</a></li>
+                <li><a href="attendance.html"><span style="font-size: 18px;">👥</span> 4. Staff Attendance</a></li>
+                <li><a href="admin.html"><span style="font-size: 18px;">⚙️</span> 5. Admin & Staff Panel</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button id="system-logout-btn" class="logout-btn">Logout System</button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-content">
+            <div class="top-navbar">
+                <h1>Dashboard & Overview</h1>
+                <div id="user-profile-badge" class="user-badge">Active Counter</div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Today's Collection</h3>
+                    <div class="value" id="today-sales">₹0.00</div>
+                </div>
+                <div class="card">
+                    <h3>Total Inventory Items</h3>
+                    <div class="value" id="total-products">0</div>
+                </div>
+                <div class="card">
+                    <h3>Pending Billings</h3>
+                    <div class="value" id="pending-orders">0</div>
+                </div>
+                <div class="card">
+                    <h3>Active Staff</h3>
+                    <div class="value" id="active-staff">0</div>
+                </div>
+            </div>
+
+            <!-- Workspace Panel -->
+            <div class="workspace-panel">
+                <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Quick Workspace & Summary</h2>
+                <p style="color: #94a3b8; font-size: 14px;">A.R. Online Zone & Medical ERP system ready hai. Left menu se koi bhi option select karke kaam shuru karein.</p>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="sidebar.js"></script>
+    <!-- Script Handling -->
     <script>
-        const userRole = localStorage.getItem('role_name') || 'Staff';
-        renderSidebar(userRole);
+        // Role check & dynamic badge update
+        const userRole = localStorage.getItem('role_name') || localStorage.getItem('userRole') || 'Admin';
+        const badge = document.getElementById("user-profile-badge");
+        if (badge) badge.innerText = userRole;
+
+        const roleTag = document.getElementById("role-tag");
+        if (roleTag) roleTag.innerText = userRole + " Portal";
+
+        // Logout logic
+        const logoutBtn = document.getElementById("system-logout-btn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                localStorage.clear();
+                window.location.href = "index.html";
+            });
+        }
     </script>
     <script src="pos.js"></script>
 </body>
