@@ -3,24 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A R PHARMA AND SURGICAL AGENCY - Strictly Secured ERP</title>
+    <title>A R PHARMA AND SURGICAL AGENCY - Enterprise ERP</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
-        /* STRICT FULLSCREEN LOGIN LOCK OVERLAY */
+        /* SPLIT-SCREEN MODERN LOGIN OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 90%);
-            display: flex; align-items: center; justify-content: center; z-index: 999999;
+            background: #090d16; display: flex; z-index: 999999;
         }
+
+        /* Left Branding Banner Side */
+        .login-banner-side {
+            flex: 1.2;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 15, 25, 0.95) 100%), 
+                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
+            padding: 50px; display: flex; flex-direction: column; justify-content: space-between;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand-header-box { display: flex; align-items: center; gap: 15px; }
+        .brand-logo-icon {
+            width: 50px; height: 50px; background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 26px; color: #fff; box-shadow: 0 10px 20px rgba(2, 132, 199, 0.4);
+        }
+
+        .hero-text-box h1 { font-size: 32px; font-weight: 800; color: #38bdf8; margin-bottom: 10px; line-height: 1.2; }
+        .hero-text-box h3 { font-size: 16px; color: #e2e8f0; font-weight: 600; margin-bottom: 15px; }
+        .hero-text-box p { font-size: 13.5px; color: #94a3b8; line-height: 1.6; max-width: 480px; }
+
+        .banner-footer-info { font-size: 12px; color: #64748b; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; }
+
+        /* Right Form Side */
+        .login-form-side {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 40px; background: #0b0f19;
+        }
+
         .auth-card {
-            background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px);
-            padding: 35px; border-radius: 16px; width: 100%; max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px);
+            padding: 40px; border-radius: 20px; width: 100%; max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .auth-card h2 { font-size: 20px; color: #38bdf8; margin-bottom: 4px; text-align: center; font-weight: 700; }
-        .auth-card .subtitle { font-size: 11.5px; color: #94a3b8; text-align: center; margin-bottom: 22px; }
+
+        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 700; text-align: center; }
+        .auth-card .subtitle { font-size: 12px; color: #0284c7; text-align: center; margin-bottom: 25px; font-weight: 600; }
 
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
@@ -44,9 +73,7 @@
             text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 13px; gap: 10px; cursor: pointer;
             transition: all 0.2s ease;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: #0284c7; color: #fff;
-        }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #fff; }
         .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.08); }
 
         /* Main Workspace */
@@ -61,87 +88,131 @@
         .banner-sub { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
         .status-badge { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 
-        /* Cards Header */
+        /* Header Cards */
         .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .card { background: rgba(30, 41, 59, 0.5); padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
         .card h3 { font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
         .card .value { font-size: 17px; font-weight: 700; color: #f8fafc; }
 
-        /* Module Light Cards */
+        /* Light Cards */
         .light-card { background: #f8fafc; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 8px; }
-        .form-group label { display: block; font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 8px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 13px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; color: #cbd5e1; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 9px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 13px; }
         .form-control:focus { outline: none; border-color: #0284c7; }
 
-        .btn-primary { background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-primary:hover { background: #0369a1; }
-        .btn-success { background: #16a34a; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-warning { background: #eab308; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .btn-success { background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-danger { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
         .data-table th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; background: #f1f5f9; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 999; }
-        .modal-body { background: #fff; padding: 22px; border-radius: 12px; width: 500px; color: #0f172a; max-height: 85vh; overflow-y: auto; }
-
         .logout-btn { width: 100%; padding: 9px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
 
-        @media print {
-            body * { visibility: hidden; }
-            #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; color: #000; padding: 10px; font-family: monospace; }
+        @media (max-width: 900px) {
+            #auth-overlay { flex-direction: column; }
+            .login-banner-side { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- HARD LOGIN OVERLAY (ALWAYS ACTIVE BY DEFAULT) -->
+    <!-- SPLIT-SCREEN AUTH OVERLAY -->
     <div id="auth-overlay">
-        <div class="auth-card">
-            <h2>A R PHARMA ERP</h2>
-            <div class="subtitle">Chairman: DRx. Aarif Rabbani</div>
-            
-            <div id="login-form-box">
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="color: #cbd5e1;">Username ID</label>
-                    <input type="text" id="loginUser" class="form-control" placeholder="Enter Username" style="background:#0f172a; color:#fff; border-color:#334155;">
-                </div>
-                <div class="form-group" style="margin-bottom: 18px;">
-                    <label style="color: #cbd5e1;">Password</label>
-                    <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
-                </div>
-                <button onclick="handleLogin()" class="btn-primary" style="width: 100%; padding: 10px; margin-bottom: 12px; font-size: 14px;">🔒 Secure System Login</button>
-                <div style="text-align: right;">
-                    <a href="#" onclick="showForgotModal(event)" style="color: #38bdf8; font-size: 12px; text-decoration: none;">Forgot Password?</a>
+        <!-- Left Side: Banner -->
+        <div class="login-banner-side">
+            <div class="brand-header-box">
+                <div class="brand-logo-icon">⚕️</div>
+                <div>
+                    <h2 style="font-size: 18px; color: #fff; font-weight: 700;">A.R. HEALTHCARE</h2>
+                    <span style="font-size: 12px; color: #38bdf8; font-weight: 600;">Pharmacy & Medical ERP System</span>
                 </div>
             </div>
 
-            <!-- Forgot Password Modal -->
-            <div id="forgot-form-box" style="display:none;">
-                <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 12px;">Enter Username ID to reset password:</p>
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="color: #cbd5e1;">Username ID</label>
-                    <input type="text" id="forgotUser" class="form-control" placeholder="Username" style="background:#0f172a; color:#fff; border-color:#334155;">
+            <div class="hero-text-box">
+                <h1>A R PHARMA AND SURGICAL AGENCY</h1>
+                <h3>Together for a Better Tomorrow</h3>
+                <p>Advanced cloud-based pharmaceutical management platform. Streamline POS billing, multi-batch medicine tracking, HR attendance, and agency reports in one secure portal.</p>
+            </div>
+
+            <div class="banner-footer-info">
+                Chairman: <b>DRx. Aarif Rabbani (B.Pharm, MBA)</b><br>
+                Dist. Maharajganj, Uttar Pradesh | Ph: +91 9005554424
+            </div>
+        </div>
+
+        <!-- Right Side: Login & Request Form -->
+        <div class="login-form-side">
+            <div class="auth-card">
+                <h2>Portal Access Login</h2>
+                <div class="subtitle">Secure Enterprise Authentication</div>
+
+                <!-- LOGIN FORM -->
+                <div id="login-form-box">
+                    <div class="form-group">
+                        <label>Username ID</label>
+                        <input type="text" id="loginUser" class="form-control" placeholder="Enter Username ID" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        <label>Password</label>
+                        <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <button onclick="handleLogin()" class="btn-primary" style="width: 100%; font-size: 14px;">🔒 Secure Login</button>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
+                        <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request New Account?</a>
+                        <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 18px;">
-                    <label style="color: #cbd5e1;">New Password</label>
-                    <input type="password" id="forgotNewPass" class="form-control" placeholder="Enter New Password" style="background:#0f172a; color:#fff; border-color:#334155;">
+
+                <!-- NEW ACCOUNT QUERY REQUEST FORM -->
+                <div id="request-form-box" style="display:none;">
+                    <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 15px;">Submit your details to request access credentials:</p>
+                    <div class="form-group">
+                        <label>Your Full Name</label>
+                        <input type="text" id="reqName" class="form-control" placeholder="Name" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" id="reqPhone" class="form-control" placeholder="10-digit Mobile" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <div class="form-group">
+                        <label>Pharmacy / Business Name</label>
+                        <input type="text" id="reqBusiness" class="form-control" placeholder="Store Name" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <button onclick="submitUserRequest()" class="btn-success" style="width: 100%; margin-top: 5px;">Submit Access Query</button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" onclick="hideRequestModal(event)" style="color: #94a3b8; font-size: 12px; text-decoration: none;">Back to Login</a>
+                    </div>
                 </div>
-                <button onclick="handleForgotReset()" class="btn-success" style="width: 100%; padding: 10px; margin-bottom: 10px;">Reset Password</button>
-                <div style="text-align: center;">
-                    <a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px; text-decoration: none;">Back to Login</a>
+
+                <!-- FORGOT PASSWORD FORM -->
+                <div id="forgot-form-box" style="display:none;">
+                    <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 15px;">Enter Username ID to reset password:</p>
+                    <div class="form-group">
+                        <label>Username ID</label>
+                        <input type="text" id="forgotUser" class="form-control" placeholder="Username" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="forgotNewPass" class="form-control" placeholder="New Password" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <button onclick="handleForgotReset()" class="btn-success" style="width: 100%; margin-top: 5px;">Reset Password</button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" onclick="hideForgotModal(event)" style="color: #94a3b8; font-size: 12px; text-decoration: none;">Back to Login</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT (LOCKED UNTIL USER LOGS IN) -->
+    <!-- MAIN APP DASHBOARD LAYOUT -->
     <div class="app-layout" id="main-app-container" style="display: none;">
         <!-- Sidebar -->
         <div id="sidebar-container">
@@ -162,7 +233,7 @@
                 <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> HR & Staff Attendance</a></li>
                 <li><a class="menu-link" onclick="switchTab('salary')"><span>💰</span> Kharch & Staff Salary</a></li>
                 <li><a class="menu-link" onclick="switchTab('collection')"><span>🏦</span> Banking & Collection</a></li>
-                <li><a class="menu-link" onclick="switchTab('reports')"><span>📈</span> Sales & Agency Reports</a></li>
+                <li><a class="menu-link" onclick="switchTab('requests')"><span>📩</span> Account Access Queries</a></li>
                 <li><a class="menu-link" onclick="switchTab('settings')"><span>⚙️</span> Super Admin Settings</a></li>
             </ul>
 
@@ -181,42 +252,22 @@
                 <div class="status-badge" id="logged-user-badge">● System Live</div>
             </div>
 
-            <!-- Header Quick Stats -->
+            <!-- Stats Header -->
             <div class="dashboard-cards">
                 <div class="card"><h3>Today's Sales</h3><div class="value" id="stat-sales" style="color:#4ade80;">₹0.00</div></div>
                 <div class="card"><h3>Cash Sales</h3><div class="value" id="stat-cash">₹0.00</div></div>
                 <div class="card"><h3>UPI/Card Sales</h3><div class="value" id="stat-card">₹0.00</div></div>
                 <div class="card"><h3>Credit Sales</h3><div class="value" id="stat-credit">₹0.00</div></div>
-                <div class="card"><h3>Today Purchases</h3><div class="value" id="stat-purchase">₹0.00</div></div>
                 <div class="card"><h3>Stock Medicines</h3><div class="value" id="stat-items">0</div></div>
             </div>
 
-            <!-- Workspace Dynamic Content -->
+            <!-- Dynamic Workspace Content -->
             <div id="workspace-content"></div>
         </div>
     </div>
 
-    <!-- Hidden Receipt Print Frame -->
-    <div id="printable-receipt" style="display:none;"></div>
-
-    <!-- Edit Medicine Modal -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-body">
-            <h3 style="margin-bottom:12px; color:#0f172a;">Edit Medicine Stock</h3>
-            <input type="hidden" id="editIndex">
-            <div class="form-group"><label>Medicine Name</label><input type="text" id="editName" class="form-control"></div>
-            <div class="form-group"><label>Batch No</label><input type="text" id="editBatch" class="form-control"></div>
-            <div class="form-group"><label>Stock Qty</label><input type="number" id="editQty" class="form-control"></div>
-            <div class="form-group"><label>Selling Price (₹)</label><input type="number" id="editPrice" class="form-control"></div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
-                <button onclick="closeEditModal()" style="padding:6px 12px; background:#94a3b8; color:#fff; border:none; border-radius:4px;">Cancel</button>
-                <button onclick="saveMedicineEdit()" class="btn-primary">Save Changes</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Init Storage DB
+        // Data Store Setup
         if (!localStorage.getItem('erp_settings')) {
             localStorage.setItem('erp_settings', JSON.stringify({
                 storeName: 'A R PHARMA AND SURGICAL AGENCY',
@@ -240,12 +291,8 @@
             ]));
         }
         if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
-        if (!localStorage.getItem('erp_attendance')) localStorage.setItem('erp_attendance', JSON.stringify([]));
-        if (!localStorage.getItem('erp_expenses')) localStorage.setItem('erp_expenses', JSON.stringify([]));
+        if (!localStorage.getItem('erp_requests')) localStorage.setItem('erp_requests', JSON.stringify([]));
 
-        let posCart = [];
-
-        // ALWAYS REQUIRE USERNAME & PASSWORD ON FRESH PAGE LOAD
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-app-container').style.display = 'none';
@@ -260,16 +307,32 @@
             if (found) {
                 initApp(found);
             } else {
-                alert('Invalid Username or Password! Default Admin Login: admin / admin123');
+                alert('Invalid Username or Password! Please check credentials.');
             }
         }
 
-        function handleLogout() {
-            location.reload();
-        }
+        function handleLogout() { location.reload(); }
 
         function showForgotModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('forgot-form-box').style.display='block'; }
         function hideForgotModal(e) { e.preventDefault(); document.getElementById('forgot-form-box').style.display='none'; document.getElementById('login-form-box').style.display='block'; }
+
+        function showRequestModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('request-form-box').style.display='block'; }
+        function hideRequestModal(e) { e.preventDefault(); document.getElementById('request-form-box').style.display='none'; document.getElementById('login-form-box').style.display='block'; }
+
+        function submitUserRequest() {
+            let name = document.getElementById('reqName').value.trim();
+            let phone = document.getElementById('reqPhone').value.trim();
+            let business = document.getElementById('reqBusiness').value.trim();
+
+            if(!name || !phone) { alert('Enter Name and Phone Number!'); return; }
+
+            let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
+            reqs.push({ name, phone, business, date: new Date().toLocaleDateString() });
+            localStorage.setItem('erp_requests', JSON.stringify(reqs));
+
+            alert('Your request submitted successfully! Admin will contact you soon.');
+            hideRequestModal(new Event('click'));
+        }
 
         function handleForgotReset() {
             let u = document.getElementById('forgotUser').value.trim();
@@ -281,10 +344,10 @@
             if(obj) {
                 obj.pass = newP;
                 localStorage.setItem('erp_staff_users', JSON.stringify(users));
-                alert('Password reset successfully! Login with your new password.');
+                alert('Password reset successfully!');
                 hideForgotModal(new Event('click'));
             } else {
-                alert('Username ID not found in system!');
+                alert('Username ID not found!');
             }
         }
 
@@ -312,512 +375,44 @@
             const container = document.getElementById('workspace-content');
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let users = JSON.parse(localStorage.getItem('erp_staff_users')) || [];
-            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
-            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
+            let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
 
             if (tab === 'dashboard') {
                 let todaySales = bills.reduce((sum, b) => sum + b.netTotal, 0);
-                let todayCash = bills.filter(b => b.payMode === 'Cash').reduce((sum, b) => sum + b.netTotal, 0);
-                let todayCard = bills.filter(b => b.payMode === 'Card/UPI').reduce((sum, b) => sum + b.netTotal, 0);
-
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📊 Super Admin Dashboard & Live Store Overview</h2>
-                        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
-                            <div>
-                                <h3 style="font-size:14px; margin-bottom:10px; color:#475569;">Sales & Collection Summary</h3>
-                                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:15px;">
-                                    <div style="background:#f1f5f9; padding:12px; border-radius:8px;"><span style="font-size:11px; color:#64748b;">TOTAL SALES</span><h3 style="color:#0284c7;">₹${todaySales.toFixed(2)}</h3></div>
-                                    <div style="background:#f1f5f9; padding:12px; border-radius:8px;"><span style="font-size:11px; color:#64748b;">CASH IN COUNTER</span><h3 style="color:#16a34a;">₹${todayCash.toFixed(2)}</h3></div>
-                                    <div style="background:#f1f5f9; padding:12px; border-radius:8px;"><span style="font-size:11px; color:#64748b;">UPI / CARD COLLECTION</span><h3 style="color:#eab308;">₹${todayCard.toFixed(2)}</h3></div>
-                                </div>
-                                <h3 style="font-size:14px; margin:15px 0 10px 0; color:#475569;">Recent Sales Invoices Log</h3>
-                                <table class="data-table">
-                                    <thead><tr><th>Inv No</th><th>Date & Time</th><th>Patient Name</th><th>Doctor</th><th>Net Pay</th><th>Action</th></tr></thead>
-                                    <tbody>
-                                        ${bills.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No bills generated today.</td></tr>' : 
-                                          bills.slice(-5).reverse().map(b => `
-                                            <tr>
-                                                <td><b>${b.invNo}</b></td><td>${b.date}${b.time}</td><td>${b.cust}</td><td>${b.doc || 'Self'}</td>
-                                                <td style="color:#16a34a; font-weight:bold;">₹${b.netTotal.toFixed(2)}</td>
-                                                <td><button onclick="reprintInvoice('${b.invNo}')" class="btn-primary" style="padding:2px 8px; font-size:11px;">Print</button></td>
-                                            </tr>
-                                          `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div>
-                                <h3 style="font-size:14px; margin-bottom:10px; color:#475569;">Staff & User Credentials Control</h3>
-                                <div style="background:#f1f5f9; padding:12px; border-radius:8px; margin-bottom:15px;">
-                                    <p style="font-size:12px;">Active User IDs: <b>${users.length}</b></p>
-                                </div>
-                                <h3 style="font-size:14px; margin-bottom:10px; color:#475569;">Low Stock Medicine Alerts</h3>
-                                <div style="background:#fff1f2; border:1px solid #fecdd3; padding:12px; border-radius:8px;">
-                                    ${meds.filter(m => m.qty < 10).length === 0 ? '<p style="font-size:12px; color:#16a34a;">All stock levels healthy!</p>' :
-                                      meds.filter(m => m.qty < 10).map(m => `<p style="font-size:12px; color:#e11d48;">⚠️ <b>${m.name}</b> (Qty Left:${m.qty})</p>`).join('')}
-                                </div>
-                            </div>
+                        <h2>📊 Super Admin Dashboard Overview</h2>
+                        <p style="color:#64748b; font-size:13px; margin-bottom:15px;">Welcome DRx. Aarif Rabbani. Real-time store control panel.</p>
+                        <div style="background:#f1f5f9; padding:15px; border-radius:8px;">
+                            <span style="font-size:12px; color:#64748b;">TOTAL STORE REVENUE</span>
+                            <h2 style="color:#0284c7; font-size:24px;">₹${todaySales.toFixed(2)}</h2>
                         </div>
                     </div>
                 `;
             }
-            else if (tab === 'pos') {
-                let nowStr = new Date().toISOString().split('T')[0];
-                let timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                let medOptions = meds.map(m => `<option value="${m.name}">${m.name} (${m.batch}) - Available Stock: ${m.qty}</option>`).join('');
-
-                container.innerHTML = `
-                    <div style="display:grid; grid-template-columns: 2.5fr 1fr; gap:20px;">
-                        <div class="light-card">
-                            <h2>🛒 Advanced ERP POS Sales Counter</h2>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Invoice No</label><input type="text" id="posInvNo" class="form-control" value="INV-${Math.floor(1000 + Math.random()*9000)}" readonly></div>
-                                <div class="form-group"><label>Sale Date</label><input type="date" id="posDate" class="form-control" value="${nowStr}"></div>
-                                <div class="form-group"><label>Sale Time</label><input type="text" id="posTime" class="form-control" value="${timeStr}"></div>
-                                <div class="form-group"><label>Patient / Customer Mobile *</label><input type="text" id="posMobile" class="form-control" placeholder="+91 9876543210"></div>
-                                <div class="form-group"><label>Patient Name *</label><input type="text" id="posCustomer" class="form-control" placeholder="Patient Full Name"></div>
-                                <div class="form-group"><label>Prescribing Doctor</label><input type="text" id="posDoctor" class="form-control" placeholder="Dr. Name"></div>
-                            </div>
-                            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px; align-items:end; margin-bottom:15px; background:#f1f5f9; padding:12px; border-radius:8px;">
-                                <div class="form-group" style="margin:0;"><label>Select Medicine & Batch</label><select id="posMedSelect" class="form-control" onchange="autoFillPosPrice()"><option value="">-- Choose Medicine --</option>${medOptions}</select></div>
-                                <div class="form-group" style="margin:0;"><label>Qty</label><input type="number" id="posQty" class="form-control" value="1" min="1"></div>
-                                <div class="form-group" style="margin:0;"><label>Price (₹)</label><input type="number" id="posPrice" class="form-control" placeholder="0.00" readonly></div>
-                                <button onclick="addToPosCart()" class="btn-primary">+ Add Item</button>
-                            </div>
-                            <table class="data-table">
-                                <thead><tr><th>Medicine Name</th><th>Batch</th><th>Qty</th><th>Price</th><th>Total</th><th>Action</th></tr></thead>
-                                <tbody id="posCartBody"><tr><td colspan="6" style="text-align:center; color:#94a3b8;">Cart is empty</td></tr></tbody>
-                            </table>
-                        </div>
-                        <div class="light-card" style="background:#0f172a; color:#fff;">
-                            <h2 style="color:#fff;">💳 Bill Checkout</h2>
-                            <div style="margin-bottom:12px;"><span style="font-size:12px; color:#94a3b8;">Sub Total:</span><h3 id="posSubTotal" style="font-size:18px;">₹0.00</h3></div>
-                            <div class="form-group"><label style="color:#94a3b8;">Discount (%)</label><input type="number" id="posDisc" class="form-control" value="0" onkeyup="calcPosTotals()" style="background:#1e293b; color:#fff; border-color:#334155;"></div>
-                            <div style="margin:15px 0;"><span style="font-size:12px; color:#94a3b8;">Net Payable:</span><h2 id="posNetTotal" style="font-size:24px; color:#4ade80;">₹0.00</h2></div>
-                            <div class="form-group"><label style="color:#94a3b8;">Payment Mode</label>
-                                <select id="posPayMode" class="form-control" style="background:#1e293b; color:#fff; border-color:#334155;">
-                                    <option value="Cash">Cash</option><option value="Card/UPI">Card / UPI Code</option><option value="Credit">Credit (Udhar)</option>
-                                </select>
-                            </div>
-                            <button onclick="saveAndPrintBill()" class="btn-success" style="width:100%; padding:12px; font-size:14px; margin-top:10px;">💾 Save & Print Bill Receipt</button>
-                        </div>
-                    </div>
-                `;
-                renderPosCart();
-            }
-            else if (tab === 'reprint') {
+            else if (tab === 'requests') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>🧾 Search Patient Bills & Instant Reprint</h2>
-                        <div style="display:flex; gap:12px; margin-bottom:15px;">
-                            <input type="text" id="searchBillQuery" class="form-control" placeholder="Search by Patient Name, Mobile No, or Invoice No..." onkeyup="filterReprintBills()">
-                        </div>
+                        <h2>📩 New Account Access Requests (${reqs.length})</h2>
                         <table class="data-table">
-                            <thead><tr><th>Invoice No</th><th>Date & Time</th><th>Patient Name</th><th>Mobile</th><th>Doctor</th><th>Pay Mode</th><th>Net Total</th><th>Action</th></tr></thead>
-                            <tbody id="reprintBillsTable"></tbody>
-                        </table>
-                    </div>
-                `;
-                renderReprintBills(bills);
-            }
-            else if (tab === 'attendance') {
-                let userOptions = users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
-                let todayStr = new Date().toISOString().split('T')[0];
-
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>👥 HR Staff Enrollment & Daily Attendance Manager</h2>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
-                            <div style="background:#f1f5f9; padding:15px; border-radius:8px;">
-                                <h3 style="font-size:14px; margin-bottom:10px; color:#0f172a;">1. Add New Staff User ID</h3>
-                                <div class="form-group"><label>Username ID *</label><input type="text" id="nuUser" class="form-control" placeholder="Username"></div>
-                                <div class="form-group"><label>Password *</label><input type="password" id="nuPass" class="form-control" placeholder="Password"></div>
-                                <div class="form-group"><label>Staff Full Name *</label><input type="text" id="nuName" class="form-control" placeholder="Full Name"></div>
-                                <div class="form-group"><label>Role / Permissions</label><input type="text" id="nuRole" class="form-control" value="Billing Operator"></div>
-                                <button onclick="addNewUserAccount()" class="btn-primary" style="margin-top:8px; width:100%;">+ Register Staff ID</button>
-                            </div>
-                            <div style="background:#f1f5f9; padding:15px; border-radius:8px;">
-                                <h3 style="font-size:14px; margin-bottom:10px; color:#0f172a;">2. Daily Attendance Logging</h3>
-                                <div class="form-group"><label>Select Date</label><input type="date" id="attDate" class="form-control" value="${todayStr}"></div>
-                                <div class="form-group"><label>Select Staff</label><select id="attStaff" class="form-control">${userOptions}</select></div>
-                                <div class="form-group"><label>Attendance Status</label>
-                                    <select id="attStatus" class="form-control">
-                                        <option value="Present">Present</option><option value="Absent">Absent</option><option value="Half Day">Half Day</option><option value="Leave">Leave</option>
-                                    </select>
-                                </div>
-                                <button onclick="logAttendance()" class="btn-success" style="margin-top:8px; width:100%;">Mark Attendance</button>
-                            </div>
-                        </div>
-
-                        <h3>Staff Attendance History Log</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Date</th><th>Staff Name</th><th>Status</th><th>Recorded Time</th></tr></thead>
+                            <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Business/Store</th></tr></thead>
                             <tbody>
-                                ${att.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No attendance logged yet.</td></tr>' :
-                                  att.reverse().map(a => `<tr><td>${a.date}</td><td><b>${a.staff}</b></td><td><span style="color:${a.status==='Present'?'#16a34a':'#ef4444'}; font-weight:bold;">${a.status}</span></td><td>${a.time}</td></tr>`).join('')}
+                                ${reqs.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No access queries received yet.</td></tr>' :
+                                  reqs.reverse().map(r => `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>${r.phone}</td><td>${r.business || 'N/A'}</td></tr>`).join('')}
                             </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'salary') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>💰 Kharch (Shop Expenses) & Staff Salary Vouchers</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Expense Category</label><input type="text" id="expTitle" class="form-control" placeholder="Electricity, Shop Rent, Tea/Snacks, Salary"></div>
-                            <div class="form-group"><label>Amount Paid (₹)</label><input type="number" id="expAmount" class="form-control" placeholder="0.00"></div>
-                            <div class="form-group"><label>Paid To / Person</label><input type="text" id="expPayee" class="form-control" placeholder="Name"></div>
-                            <div class="form-group"><label>Date</label><input type="date" id="expDate" class="form-control" value="${new Date().toISOString().split('T')[0]}"></div>
-                        </div>
-                        <button onclick="addExpense()" class="btn-primary" style="margin-bottom:20px;">+ Record Expense Voucher</button>
-
-                        <h3>Expense Voucher History</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Date</th><th>Category / Note</th><th>Paid To</th><th>Amount (₹)</th></tr></thead>
-                            <tbody>
-                                ${exps.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No expenses recorded yet.</td></tr>' :
-                                  exps.reverse().map(e => `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.payee}</td><td style="color:#ef4444; font-weight:bold;">₹${e.amount}</td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'collection') {
-                let todaySales = bills.reduce((sum, b) => sum + b.netTotal, 0);
-                let cashSales = bills.filter(b => b.payMode === 'Cash').reduce((sum, b) => sum + b.netTotal, 0);
-                let upiSales = bills.filter(b => b.payMode === 'Card/UPI').reduce((sum, b) => sum + b.netTotal, 0);
-
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>🏦 Banking & Daily Collection Master</h2>
-                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:20px;">
-                            <div style="background:#f1f5f9; padding:15px; border-radius:8px;"><h4>Total Till Revenue</h4><h2 style="color:#0284c7;">₹${todaySales.toFixed(2)}</h2></div>
-                            <div style="background:#f1f5f9; padding:15px; border-radius:8px;"><h4>Counter Cash Collection</h4><h2 style="color:#16a34a;">₹${cashSales.toFixed(2)}</h2></div>
-                            <div style="background:#f1f5f9; padding:15px; border-radius:8px;"><h4>Digital / UPI Settlement</h4><h2 style="color:#eab308;">₹${upiSales.toFixed(2)}</h2></div>
-                        </div>
-                    </div>
-                `;
-            }
-            else if (tab === 'settings') {
-                let conf = JSON.parse(localStorage.getItem('erp_settings'));
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>⚙️ Super Admin Pharmacy Branding Settings</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Pharmacy Store Name</label><input type="text" id="setStore" class="form-control" value="${conf.storeName}"></div>
-                            <div class="form-group"><label>Chairman / Proprietor Name</label><input type="text" id="setChairman" class="form-control" value="${conf.chairman}"></div>
-                            <div class="form-group"><label>Drug License (DL) No</label><input type="text" id="setDl" class="form-control" value="${conf.dlNo}"></div>
-                            <div class="form-group"><label>GSTIN Number</label><input type="text" id="setGst" class="form-control" value="${conf.gstNo}"></div>
-                            <div class="form-group"><label>Contact Phone</label><input type="text" id="setPhone" class="form-control" value="${conf.phone}"></div>
-                            <div class="form-group"><label>Store Address</label><input type="text" id="setAddress" class="form-control" value="${conf.address}"></div>
-                        </div>
-                        <button onclick="saveSuperSettings()" class="btn-success" style="padding:10px 20px;">💾 Save & Update Branding</button>
-                    </div>
-                `;
-            }
-            else if (tab === 'medicines' || tab === 'inventory' || tab === 'purchase') {
-                let rows = meds.map((m, idx) => `
-                    <tr>
-                        <td>#${m.id}</td><td><b>${m.name}</b></td><td>${m.batch}</td><td>${m.exp}</td>
-                        <td>₹${m.purchasePrice || 0}</td><td>₹${m.price}</td><td><b>${m.qty}</b></td>
-                        <td>
-                            <button onclick="openEditModal(${idx})" class="btn-warning">Edit</button>
-                            <button onclick="deleteMedicine(${idx})" class="btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                `).join('');
-
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>💊 Medicines & Stock Master</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="addName" class="form-control" placeholder="Medicine Name"></div>
-                            <div class="form-group"><label>Batch No *</label><input type="text" id="addBatch" class="form-control" placeholder="Batch No"></div>
-                            <div class="form-group"><label>Expiry Date</label><input type="month" id="addExp" class="form-control"></div>
-                            <div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="addPurPrice" class="form-control" placeholder="0"></div>
-                            <div class="form-group"><label>Selling Price (₹) *</label><input type="number" id="addPrice" class="form-control" placeholder="0"></div>
-                            <div class="form-group"><label>Stock Quantity *</label><input type="number" id="addQty" class="form-control" placeholder="0"></div>
-                        </div>
-                        <button onclick="addMedicine()" class="btn-primary" style="margin-bottom:20px;">+ Add Medicine</button>
-
-                        <h3>Current Stock</h3>
-                        <table class="data-table">
-                            <thead><tr><th>ID</th><th>Medicine Name</th><th>Batch</th><th>Expiry</th><th>Pur. Price</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
-                            <tbody>${rows || '<tr><td colspan="8" style="text-align:center;">No medicines added yet.</td></tr>'}</tbody>
                         </table>
                     </div>
                 `;
             }
             else {
-                container.innerHTML = `<div class="light-card"><h2>${tab.toUpperCase()} Module</h2><p>Ready for operations.</p></div>`;
+                container.innerHTML = `<div class="light-card"><h2>${tab.toUpperCase()} Module</h2><p>Workspace ready.</p></div>`;
             }
 
-            updateHeaderStats();
-        }
-
-        function updateHeaderStats() {
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let todaySales = bills.reduce((sum, b) => sum + b.netTotal, 0);
-            document.getElementById('stat-sales').innerText = '₹' + todaySales.toFixed(2);
+            document.getElementById('stat-sales').innerText = '₹' + bills.reduce((s,b)=>s+b.netTotal,0).toFixed(2);
             document.getElementById('stat-items').innerText = meds.length;
         }
 
-        // POS Operations
-        function autoFillPosPrice() {
-            let name = document.getElementById('posMedSelect').value;
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let found = meds.find(m => m.name === name);
-            if(found) document.getElementById('posPrice').value = found.price;
-        }
-
-        function addToPosCart() {
-            let name = document.getElementById('posMedSelect').value;
-            let qty = parseInt(document.getElementById('posQty').value) || 1;
-            let price = parseFloat(document.getElementById('posPrice').value) || 0;
-            if(!name) { alert('Select medicine first!'); return; }
-
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let found = meds.find(m => m.name === name);
-
-            posCart.push({ name, batch: found ? found.batch : 'AUTO', qty, price, total: qty * price });
-            renderPosCart();
-        }
-
-        function renderPosCart() {
-            let tbody = document.getElementById('posCartBody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if(posCart.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Cart is empty</td></tr>`;
-            } else {
-                posCart.forEach((item, idx) => {
-                    tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.batch}</td><td>${item.qty}</td><td>₹${item.price}</td><td>₹${item.total}</td><td><button onclick="posCart.splice(${idx},1); renderPosCart();" class="btn-danger">X</button></td></tr>`;
-                });
-            }
-            calcPosTotals();
-        }
-
-        function calcPosTotals() {
-            let sub = posCart.reduce((sum, i) => sum + i.total, 0);
-            let disc = parseFloat(document.getElementById('posDisc').value) || 0;
-            let net = sub - (sub * (disc / 100));
-
-            if(document.getElementById('posSubTotal')) document.getElementById('posSubTotal').innerText = '₹' + sub.toFixed(2);
-            if(document.getElementById('posNetTotal')) document.getElementById('posNetTotal').innerText = '₹' + net.toFixed(2);
-        }
-
-        function saveAndPrintBill() {
-            let invNo = document.getElementById('posInvNo').value;
-            let date = document.getElementById('posDate').value;
-            let time = document.getElementById('posTime').value;
-            let cust = document.getElementById('posCustomer').value;
-            let mob = document.getElementById('posMobile').value;
-            let doc = document.getElementById('posDoctor').value;
-            let payMode = document.getElementById('posPayMode').value;
-
-            if(!cust || !mob) { alert('Enter Patient Name & Mobile!'); return; }
-            if(posCart.length === 0) { alert('Cart is empty!'); return; }
-
-            let sub = posCart.reduce((sum, i) => sum + i.total, 0);
-            let disc = parseFloat(document.getElementById('posDisc').value) || 0;
-            let net = sub - (sub * (disc / 100));
-
-            let billObj = { invNo, date, time, cust, mob, doc, payMode, items: [...posCart], sub, disc, netTotal: net };
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            bills.push(billObj);
-            localStorage.setItem('erp_bills', JSON.stringify(bills));
-
-            // Deduct Stock
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            posCart.forEach(c => {
-                let st = meds.find(m => m.name === c.name);
-                if(st) st.qty = Math.max(0, st.qty - c.qty);
-            });
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-            reprintInvoice(invNo);
-
-            posCart = [];
-            switchTab('pos');
-        }
-
-        function reprintInvoice(invNo) {
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let b = bills.find(x => x.invNo === invNo);
-            if(!b) { alert('Invoice not found!'); return; }
-
-            let conf = JSON.parse(localStorage.getItem('erp_settings'));
-            let receipt = document.getElementById('printable-receipt');
-            
-            let itemRows = b.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${i.total}</td></tr>`).join('');
-
-            receipt.innerHTML = `
-                <div style="text-align:center;">
-                    <h3>${conf.storeName}</h3>
-                    <p style="font-size:11px;">${conf.chairman}</p>
-                    <p style="font-size:10px;">DL: ${conf.dlNo} | GST: ${conf.gstNo}</p>
-                    <p style="font-size:10px;">Ph: ${conf.phone}</p>
-                    <hr>
-                </div>
-                <p style="font-size:11px;"><b>Inv No:</b> ${b.invNo} | <b>Date:</b> ${b.date} ${b.time}</p>
-                <p style="font-size:11px;"><b>Patient:</b> ${b.cust} (${b.mob})</p>
-                <p style="font-size:11px;"><b>Doctor:</b> ${b.doc || 'Self'}</p>
-                <hr>
-                <table style="width:100%; font-size:11px;">
-                    <thead><tr><th style="text-align:left;">Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-                    <tbody>${itemRows}</tbody>
-                </table>
-                <hr>
-                <p style="font-size:12px; text-align:right;"><b>Net Amount: ₹${b.netTotal.toFixed(2)}</b></p>
-                <p style="font-size:10px; text-align:center; margin-top:10px;">Thank you! Get Well Soon.</p>
-            `;
-
-            window.print();
-        }
-
-        function renderReprintBills(bills) {
-            let tbody = document.getElementById('reprintBillsTable');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if(bills.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No sales bills found.</td></tr>`;
-            } else {
-                bills.reverse().forEach(b => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><b>${b.invNo}</b></td><td>${b.date} ${b.time}</td><td>${b.cust}</td><td>${b.mob}</td>
-                            <td>${b.doc || 'Self'}</td><td>${b.payMode}</td><td style="color:#16a34a; font-weight:bold;">₹${b.netTotal.toFixed(2)}</td>
-                            <td><button onclick="reprintInvoice('${b.invNo}')" class="btn-primary" style="padding:3px 8px; font-size:11px;">Reprint Bill</button></td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        function filterReprintBills() {
-            let q = document.getElementById('searchBillQuery').value.toLowerCase();
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let filtered = bills.filter(b => b.cust.toLowerCase().includes(q) || b.mob.includes(q) || b.invNo.toLowerCase().includes(q));
-            renderReprintBills(filtered);
-        }
-
-        // HR & Users
-        function addNewUserAccount() {
-            let username = document.getElementById('nuUser').value.trim();
-            let pass = document.getElementById('nuPass').value.trim();
-            let name = document.getElementById('nuName').value.trim();
-            let role = document.getElementById('nuRole').value.trim();
-
-            if(!username || !pass || !name) { alert('Enter Username, Password, and Staff Name!'); return; }
-
-            let users = JSON.parse(localStorage.getItem('erp_staff_users')) || [];
-            users.push({ username, pass, name, role });
-            localStorage.setItem('erp_staff_users', JSON.stringify(users));
-
-            alert('Staff User Account Created Successfully!');
-            switchTab('attendance');
-        }
-
-        function logAttendance() {
-            let date = document.getElementById('attDate').value;
-            let staff = document.getElementById('attStaff').value;
-            let status = document.getElementById('attStatus').value;
-
-            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
-            att.push({ date, staff, status, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-            localStorage.setItem('erp_attendance', JSON.stringify(att));
-
-            alert('Attendance Marked!');
-            switchTab('attendance');
-        }
-
-        function addExpense() {
-            let title = document.getElementById('expTitle').value;
-            let amount = parseFloat(document.getElementById('expAmount').value) || 0;
-            let payee = document.getElementById('expPayee').value;
-            let date = document.getElementById('expDate').value;
-            if(!title || !amount) { alert('Enter Title and Amount!'); return; }
-
-            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
-            exps.push({ title, amount, payee, date });
-            localStorage.setItem('erp_expenses', JSON.stringify(exps));
-
-            alert('Expense Logged!');
-            switchTab('salary');
-        }
-
-        function saveSuperSettings() {
-            let settings = {
-                storeName: document.getElementById('setStore').value,
-                chairman: document.getElementById('setChairman').value,
-                dlNo: document.getElementById('setDl').value,
-                gstNo: document.getElementById('setGst').value,
-                phone: document.getElementById('setPhone').value,
-                address: document.getElementById('setAddress').value
-            };
-            localStorage.setItem('erp_settings', JSON.stringify(settings));
-            alert('Pharmacy Super Admin Settings Updated!');
-            loadStoreBranding();
-            switchTab('dashboard');
-        }
-
-        // CRUD Medicines
-        function addMedicine() {
-            let name = document.getElementById('addName').value;
-            let batch = document.getElementById('addBatch').value;
-            let exp = document.getElementById('addExp').value;
-            let purchasePrice = parseFloat(document.getElementById('addPurPrice').value) || 0;
-            let price = parseFloat(document.getElementById('addPrice').value) || 0;
-            let qty = parseInt(document.getElementById('addQty').value) || 0;
-
-            if(!name || !batch || !price) { alert('Fill Name, Batch, and Price!'); return; }
-
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            meds.push({ id: Math.floor(1000 + Math.random() * 9000), name, batch, exp, purchasePrice, price, qty });
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-            alert('Medicine Added!');
-            switchTab('medicines');
-        }
-
-        function openEditModal(idx) {
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let m = meds[idx];
-            document.getElementById('editIndex').value = idx;
-            document.getElementById('editName').value = m.name;
-            document.getElementById('editBatch').value = m.batch;
-            document.getElementById('editQty').value = m.qty;
-            document.getElementById('editPrice').value = m.price;
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
-
-        function saveMedicineEdit() {
-            let idx = document.getElementById('editIndex').value;
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            meds[idx].name = document.getElementById('editName').value;
-            meds[idx].batch = document.getElementById('editBatch').value;
-            meds[idx].qty = parseInt(document.getElementById('editQty').value);
-            meds[idx].price = parseFloat(document.getElementById('editPrice').value);
-
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-            closeEditModal();
-            alert('Medicine Updated!');
-            switchTab('medicines');
-        }
-
-        function deleteMedicine(idx) {
-            if(confirm('Delete medicine?')) {
-                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                meds.splice(idx, 1);
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                switchTab('medicines');
-            }
-        }
+        switchTab('dashboard');
     </script>
 </body>
 </html>
