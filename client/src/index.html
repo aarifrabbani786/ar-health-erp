@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.R. Health ERP - Ultimate Medical Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
@@ -64,6 +63,7 @@
             font-weight: 500;
             font-size: 14px;
             gap: 14px;
+            cursor: pointer;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
@@ -85,7 +85,6 @@
             background: radial-gradient(circle at top right, #1e293b 0%, #0b0f19 70%); 
         }
 
-        /* Top Navbar with Glassmorphism */
         .top-navbar { 
             display: flex; 
             justify-content: space-between; 
@@ -110,33 +109,25 @@
             border-radius: 8px; 
         }
 
-        /* Dashboard Stats Grid */
         .dashboard-cards { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 24px; 
-            margin-bottom: 35px; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px; 
         }
         
         .card { 
             background: rgba(30, 41, 59, 0.6); 
             backdrop-filter: blur(10px);
-            padding: 24px; 
+            padding: 20px; 
             border-radius: 16px; 
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); 
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease, border-color 0.3s ease;
         }
         
-        .card:hover { 
-            transform: translateY(-4px); 
-            border-color: rgba(59, 130, 246, 0.4); 
-        }
-        
-        .card h3 { font-size: 13px; color: #94a3b8; margin-bottom: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card .value { font-size: 26px; font-weight: 700; color: #f8fafc; }
+        .card h3 { font-size: 12px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; }
+        .card .value { font-size: 24px; font-weight: 700; color: #f8fafc; }
 
-        /* Content Area */
         .workspace-panel { 
             background: rgba(30, 41, 59, 0.4); 
             border-radius: 16px; 
@@ -144,6 +135,20 @@
             border: 1px solid rgba(255, 255, 255, 0.05); 
             min-height: 400px;
         }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; }
+        
+        .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-primary:hover { background: #2563eb; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; }
+        .data-table th { color: #94a3b8; font-weight: 600; }
+        
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
 
         .logout-btn {
             width: 100%;
@@ -154,36 +159,31 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.2s;
         }
-        .logout-btn:hover {
-            background: #ef4444;
-            color: #fff;
-        }
+        .logout-btn:hover { background: #ef4444; color: #fff; }
     </style>
 </head>
 <body>
 
     <div class="app-layout">
-        <!-- Sidebar with All Options -->
+        <!-- Sidebar -->
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="sidebar-logo">⚕️</div>
                 <div>
-                    <h3 style="font-size: 16px; color: #fff; font-weight: 700;">A.R. HEALTH ERP</h3>
-                    <span id="role-tag" style="font-size: 11px; color: #60a5fa; font-weight: 600;">Medical Suite</span>
+                    <h3 style="font-size: 15px; color: #fff; font-weight: 700;">A.R. HEALTH ERP</h3>
+                    <span id="role-tag" style="font-size: 11px; color: #60a5fa; font-weight: 600;">Admin Portal</span>
                 </div>
             </div>
 
             <ul class="sidebar-menu">
-                <li><a href="index.html" class="active"><span style="font-size: 18px;">📊</span> Dashboard</a></li>
-                <li><a href="pos.html"><span style="font-size: 18px;">🛒</span> 1. Sale & POS Billing</a></li>
-                <li><a href="sales-returns.html"><span style="font-size: 18px;">🔄</span> Sales Returns</a></li>
-                <li><a href="purchases.html"><span style="font-size: 18px;">📦</span> 2. Purchase Management</a></li>
-                <li><a href="purchase-returns.html"><span style="font-size: 18px;">↩️</span> Purchase Returns</a></li>
-                <li><a href="collection.html"><span style="font-size: 18px;">💰</span> 3. Collection Master</a></li>
-                <li><a href="attendance.html"><span style="font-size: 18px;">👥</span> 4. Staff Attendance</a></li>
-                <li><a href="admin.html"><span style="font-size: 18px;">⚙️</span> 5. Admin & Staff Panel</a></li>
+                <li><a class="menu-link active" onclick="switchTab('dashboard')"><span>📊</span> Dashboard Overview</a></li>
+                <li><a class="menu-link" onclick="switchTab('pos')"><span>🛒</span> 1. Sale & POS Billing</a></li>
+                <li><a class="menu-link" onclick="switchTab('returns')"><span>🔄</span> Sales / Purchase Returns</a></li>
+                <li><a class="menu-link" onclick="switchTab('inventory')"><span>📦</span> 2. Purchase Management</a></li>
+                <li><a class="menu-link" onclick="switchTab('collection')"><span>💰</span> 3. Collection Master</a></li>
+                <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> 4. Staff Attendance</a></li>
+                <li><a class="menu-link" onclick="switchTab('admin')"><span>⚙️</span> 5. Admin & Staff Panel</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -194,57 +194,177 @@
         <!-- Main Workspace -->
         <div class="main-content">
             <div class="top-navbar">
-                <h1>Dashboard & Overview</h1>
-                <div id="user-profile-badge" class="user-badge">Active Counter</div>
+                <h1 id="page-title">Dashboard Overview</h1>
+                <div id="user-profile-badge" class="user-badge">Admin</div>
             </div>
 
-            <!-- Stats Overview -->
+            <!-- Stats -->
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Today's Collection</h3>
-                    <div class="value" id="today-sales">₹0.00</div>
+                    <div class="value" id="stat-collection">₹0.00</div>
                 </div>
                 <div class="card">
-                    <h3>Total Inventory Items</h3>
-                    <div class="value" id="total-products">0</div>
+                    <h3>Total Items</h3>
+                    <div class="value" id="stat-items">0</div>
                 </div>
                 <div class="card">
-                    <h3>Pending Billings</h3>
-                    <div class="value" id="pending-orders">0</div>
+                    <h3>Pending Orders</h3>
+                    <div class="value" id="stat-orders">0</div>
                 </div>
                 <div class="card">
-                    <h3>Active Staff</h3>
-                    <div class="value" id="active-staff">0</div>
+                    <h3>Staff Present</h3>
+                    <div class="value" id="stat-staff">0</div>
                 </div>
             </div>
 
-            <!-- Workspace Panel -->
-            <div class="workspace-panel">
-                <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Quick Workspace & Summary</h2>
-                <p style="color: #94a3b8; font-size: 14px;">A.R. Online Zone & Medical ERP system ready hai. Left menu se koi bhi option select karke kaam shuru karein.</p>
+            <!-- Dynamic Workspace Panel -->
+            <div class="workspace-panel" id="workspace-content">
+                <!-- Content will load dynamically here -->
             </div>
         </div>
     </div>
 
-    <!-- Script Handling -->
     <script>
-        // Role check & dynamic badge update
-        const userRole = localStorage.getItem('role_name') || localStorage.getItem('userRole') || 'Admin';
-        const badge = document.getElementById("user-profile-badge");
-        if (badge) badge.innerText = userRole;
-
-        const roleTag = document.getElementById("role-tag");
-        if (roleTag) roleTag.innerText = userRole + " Portal";
-
-        // Logout logic
-        const logoutBtn = document.getElementById("system-logout-btn");
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", () => {
-                localStorage.clear();
-                window.location.href = "index.html";
-            });
+        // Initial LocalStorage Database setup
+        if (!localStorage.getItem('erp_items')) {
+            localStorage.setItem('erp_items', JSON.stringify([
+                { id: 101, name: 'Paracetamol 650mg', qty: 150, price: 30 },
+                { id: 102, name: 'Amoxicillin 500mg', qty: 80, price: 120 },
+                { id: 103, name: 'Cough Syrup 100ml', qty: 45, price: 95 }
+            ]));
         }
+
+        if (!localStorage.getItem('erp_attendance')) {
+            localStorage.setItem('erp_attendance', JSON.stringify([
+                { name: 'Aarif Rabbani', role: 'Admin', status: 'Present', time: '09:30 AM' }
+            ]));
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const container = document.getElementById('workspace-content');
+            const title = document.getElementById('page-title');
+            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
+
+            if (tab === 'dashboard') {
+                title.innerText = "Dashboard Overview";
+                container.innerHTML = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Quick Summary & Shortcuts</h2>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">A.R. Online Zone & Medical ERP system is fully online. Use the left navigation panel to seamlessly switch between Sale/POS, Purchase Management, Collections, Staff Attendance, and Admin controls without any page routing errors.</p>
+                `;
+            } 
+            else if (tab === 'inventory' || tab === 'pos') {
+                title.innerText = tab === 'pos' ? "Sale & POS Billing Manager" : "Purchase & Inventory Management";
+                
+                let html = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Add New Medical Item / Stock</h2>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                        <div class="form-group" style="margin:0;"><label>Item Name</label><input type="text" id="newItemName" class="form-control" placeholder="Medicine Name"></div>
+                        <div class="form-group" style="margin:0;"><label>Quantity</label><input type="number" id="newItemQty" class="form-control" placeholder="Qty"></div>
+                        <div class="form-group" style="margin:0;"><label>Price (₹)</label><input type="number" id="newItemPrice" class="form-control" placeholder="Price"></div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="addItem()" class="btn-primary" style="width:100%;">Add Item</button></div>
+                    </div>
+                    <h2 style="font-size: 18px; margin: 20px 0 10px 0; color: #e2e8f0;">Current Inventory List</h2>
+                    <table class="data-table">
+                        <thead><tr><th>ID</th><th>Item Name</th><th>Quantity</th><th>Price</th><th>Action</th></tr></thead>
+                        <tbody>
+                `;
+                
+                if (items.length === 0) {
+                    html += `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No items found in inventory.</td></tr>`;
+                } else {
+                    items.forEach((item, index) => {
+                        html += `<tr>
+                            <td>#${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.qty}</td>
+                            <td>₹${item.price}</td>
+                            <td><button onclick="deleteItem(${index})" class="btn-danger">Delete</button></td>
+                        </tr>`;
+                    });
+                }
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            }
+            else if (tab === 'collection') {
+                title.innerText = "Collection Master";
+                container.innerHTML = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Daily Revenue & Collection Records</h2>
+                    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Track counter sales, cash collections, and digital payment receipts.</p>
+                    <div class="card" style="max-width: 400px; background: rgba(15, 23, 42, 0.6);">
+                        <h3 style="color:#60a5fa;">Total Cash in Counter</h3>
+                        <div class="value" style="margin-top: 10px;">₹14,850.00</div>
+                    </div>
+                `;
+            }
+            else if (tab === 'attendance') {
+                title.innerText = "Staff Attendance Master";
+                let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
+                let attHtml = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Staff Attendance Log</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Staff Name</th><th>Role</th><th>Status</th><th>Check-in Time</th></tr></thead>
+                        <tbody>
+                `;
+                att.forEach(a => {
+                    attHtml += `<tr><td>${a.name}</td><td>${a.role}</td><td><span style="color:#4ade80;">${a.status}</span></td><td>${a.time}</td></tr>`;
+                });
+                attHtml += `</tbody></table>`;
+                container.innerHTML = attHtml;
+            }
+            else if (tab === 'admin') {
+                title.innerText = "Admin & Staff Control Panel";
+                container.innerHTML = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">System Management & Permissions</h2>
+                    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;">Manage role access, database backups, and store preferences for A.R. Online Zone.</p>
+                    <button onclick="localStorage.clear(); location.reload();" class="btn-danger" style="padding: 10px 20px; font-weight: 600;">Reset All Local Data</button>
+                `;
+            }
+            else {
+                title.innerText = "Returns Management";
+                container.innerHTML = `
+                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Sales & Purchase Returns</h2>
+                    <p style="color: #94a3b8; font-size: 14px;">Process item returns, expired medicine exchanges, and supplier refunds here.</p>
+                `;
+            }
+
+            document.getElementById('stat-items').innerText = items.length;
+        }
+
+        function addItem() {
+            let name = document.getElementById('newItemName').value;
+            let qty = document.getElementById('newItemQty').value;
+            let price = document.getElementById('newItemPrice').value;
+
+            if(!name || !qty || !price) {
+                alert('Please fill all item fields!');
+                return;
+            }
+
+            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
+            items.push({ id: Math.floor(1000 + Math.random() * 9000), name, qty, price });
+            localStorage.setItem('erp_items', JSON.stringify(items));
+            switchTab('inventory');
+        }
+
+        function deleteItem(index) {
+            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
+            items.splice(index, 1);
+            localStorage.setItem('erp_items', JSON.stringify(items));
+            switchTab('inventory');
+        }
+
+        // Initialize default view
+        switchTab('dashboard');
+
+        // Logout
+        document.getElementById("system-logout-btn").addEventListener("click", () => {
+            localStorage.clear();
+            window.location.reload();
+        });
     </script>
-    <script src="pos.js"></script>
 </body>
 </html>
