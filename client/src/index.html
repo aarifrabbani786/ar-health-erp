@@ -3,109 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A R PHARMA AND SURGICAL AGENCY - Enterprise ERP</title>
+    <title>ARHEALTHCARE - Digital Pharmacy ERP Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+        body { background: #070a12; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
-        /* SPLIT-SCREEN MODERN LOGIN OVERLAY */
-        #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #090d16; display: flex; z-index: 999999;
-        }
+        /* SPLIT LOGIN WITH SLIDE LOGBOOK FEATURE */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070a12; display: flex; z-index: 999999; }
 
-        /* Left Branding Banner Side */
         .login-banner-side {
-            flex: 1.2;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 15, 25, 0.95) 100%), 
+            flex: 1.3;
+            background: linear-gradient(135deg, rgba(7, 10, 18, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%), 
                         url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
-            padding: 50px; display: flex; flex-direction: column; justify-content: space-between;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(56, 189, 248, 0.15);
         }
 
-        .brand-header-box { display: flex; align-items: center; gap: 15px; }
-        .brand-logo-icon {
-            width: 50px; height: 50px; background: linear-gradient(135deg, #0284c7, #0369a1);
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 26px; color: #fff; box-shadow: 0 10px 20px rgba(2, 132, 199, 0.4);
+        .digital-logo { font-size: 32px; font-weight: 900; color: #38bdf8; letter-spacing: 2px; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+
+        /* Slide Logbook Feature Card */
+        .slide-logbook {
+            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px;
+            padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 30px;
         }
+        .slide-logbook h3 { color: #38bdf8; font-size: 18px; margin-bottom: 10px; font-weight: 700; }
+        .slide-logbook p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; }
 
-        .hero-text-box h1 { font-size: 32px; font-weight: 800; color: #38bdf8; margin-bottom: 10px; line-height: 1.2; }
-        .hero-text-box h3 { font-size: 16px; color: #e2e8f0; font-weight: 600; margin-bottom: 15px; }
-        .hero-text-box p { font-size: 13.5px; color: #94a3b8; line-height: 1.6; max-width: 480px; }
-
-        .banner-footer-info { font-size: 12px; color: #64748b; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; }
-
-        /* Right Form Side */
-        .login-form-side {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 40px; background: #0b0f19;
-        }
-
+        .login-form-side { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #070a12; }
         .auth-card {
-            background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px);
-            padding: 40px; border-radius: 20px; width: 100%; max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); padding: 40px; border-radius: 20px;
+            width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
-        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 700; text-align: center; }
-        .auth-card .subtitle { font-size: 12px; color: #0284c7; text-align: center; margin-bottom: 25px; font-weight: 600; }
+        .auth-card h2 { font-size: 24px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
+        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 25px; font-weight: 600; }
 
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
-        /* Sidebar Styling */
+        /* Medical Theme Sidebar */
         #sidebar-container { 
             width: 270px; background: #0f172a; color: #fff; flex-shrink: 0; 
-            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; min-height: 100vh;
+            border-right: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; min-height: 100vh;
         }
-        .sidebar-brand {
-            padding: 18px 16px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-        .sidebar-logo {
-            width: 40px; height: 40px; background: #0284c7; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; font-weight: bold;
-        }
+        .sidebar-brand { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
         .sidebar-menu li { margin-bottom: 4px; }
         .sidebar-menu a {
             display: flex; align-items: center; padding: 10px 12px; color: #94a3b8;
-            text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 13px; gap: 10px; cursor: pointer;
-            transition: all 0.2s ease;
+            text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 13px; gap: 10px; cursor: pointer; transition: all 0.2s ease;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #fff; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #fff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); }
         .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.08); }
 
-        /* Main Workspace */
-        .main-content { flex: 1; padding: 20px 25px; overflow-y: auto; background: #0b0f19; }
-        
+        .main-content { flex: 1; padding: 20px 25px; overflow-y: auto; background: #070a12; }
         .top-banner {
             background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
-            padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
         }
-        .banner-title { font-size: 16px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 10px; }
-        .banner-sub { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
-        .status-badge { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 
-        /* Header Cards */
         .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .card { background: rgba(30, 41, 59, 0.5); padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .card { background: rgba(15, 23, 42, 0.6); padding: 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.1); }
         .card h3 { font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
         .card .value { font-size: 17px; font-weight: 700; color: #f8fafc; }
 
-        /* Light Cards */
-        .light-card { background: #f8fafc; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .light-card { background: #f8fafc; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 11px; color: #cbd5e1; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+        .form-group label { display: block; font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
         .form-control { width: 100%; padding: 9px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 13px; }
-        .form-control:focus { outline: none; border-color: #0284c7; }
 
         .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-primary:hover { background: #0369a1; }
         .btn-success { background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-danger { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
 
@@ -113,259 +82,201 @@
         .data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
         .data-table th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; background: #f1f5f9; }
 
-        .logout-btn { width: 100%; padding: 9px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
-
-        @media (max-width: 900px) {
-            #auth-overlay { flex-direction: column; }
-            .login-banner-side { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-receipt, #printable-receipt * { visibility: visible; }
+            #printable-receipt { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; color: #000; padding: 10px; font-family: monospace; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SPLIT-SCREEN AUTH OVERLAY -->
+    <!-- AUTHENTICATION OVERLAY -->
     <div id="auth-overlay">
-        <!-- Left Side: Banner -->
         <div class="login-banner-side">
-            <div class="brand-header-box">
-                <div class="brand-logo-icon">⚕️</div>
-                <div>
-                    <h2 style="font-size: 18px; color: #fff; font-weight: 700;">A.R. HEALTHCARE</h2>
-                    <span style="font-size: 12px; color: #38bdf8; font-weight: 600;">Pharmacy & Medical ERP System</span>
-                </div>
+            <div class="digital-logo">ARHEALTHCARE</div>
+            
+            <div class="slide-logbook">
+                <h3 id="feature-title">⚡ Multi-Batch POS Billing</h3>
+                <p id="feature-desc">Fast thermal receipt printing, auto-stock updates, and instant serial invoice generation with 10-digit mobile verification.</p>
             </div>
 
-            <div class="hero-text-box">
-                <h1>A R PHARMA AND SURGICAL AGENCY</h1>
-                <h3>Together for a Better Tomorrow</h3>
-                <p>Advanced cloud-based pharmaceutical management platform. Streamline POS billing, multi-batch medicine tracking, HR attendance, and agency reports in one secure portal.</p>
-            </div>
-
-            <div class="banner-footer-info">
-                Chairman: <b>DRx. Aarif Rabbani (B.Pharm, MBA)</b><br>
-                Dist. Maharajganj, Uttar Pradesh | Ph: +91 9005554424
-            </div>
+            <div style="font-size: 12px; color: #64748b;">A R PHARMA ERP v3.0 | Secure Cloud Suite</div>
         </div>
 
-        <!-- Right Side: Login & Request Form -->
         <div class="login-form-side">
             <div class="auth-card">
-                <h2>Portal Access Login</h2>
-                <div class="subtitle">Secure Enterprise Authentication</div>
+                <h2>Portal Access</h2>
+                <div class="subtitle">Enter System User ID & Password</div>
 
-                <!-- LOGIN FORM -->
                 <div id="login-form-box">
                     <div class="form-group">
-                        <label>Username ID</label>
-                        <input type="text" id="loginUser" class="form-control" placeholder="Enter Username ID" style="background:#0f172a; color:#fff; border-color:#334155;">
+                        <label style="color:#cbd5e1;">Username ID</label>
+                        <input type="text" id="loginUser" class="form-control" placeholder="Enter Username" style="background:#0f172a; color:#fff; border-color:#334155;">
                     </div>
                     <div class="form-group" style="margin-bottom: 18px;">
-                        <label>Password</label>
+                        <label style="color:#cbd5e1;">Password</label>
                         <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
                     </div>
-                    <button onclick="handleLogin()" class="btn-primary" style="width: 100%; font-size: 14px;">🔒 Secure Login</button>
+                    <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
 
                     <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
-                        <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request New Account?</a>
+                        <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request Account?</a>
                         <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
                     </div>
                 </div>
 
-                <!-- NEW ACCOUNT QUERY REQUEST FORM -->
                 <div id="request-form-box" style="display:none;">
-                    <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 15px;">Submit your details to request access credentials:</p>
-                    <div class="form-group">
-                        <label>Your Full Name</label>
-                        <input type="text" id="reqName" class="form-control" placeholder="Name" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <div class="form-group">
-                        <label>Mobile Number</label>
-                        <input type="text" id="reqPhone" class="form-control" placeholder="10-digit Mobile" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <div class="form-group">
-                        <label>Pharmacy / Business Name</label>
-                        <input type="text" id="reqBusiness" class="form-control" placeholder="Store Name" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <button onclick="submitUserRequest()" class="btn-success" style="width: 100%; margin-top: 5px;">Submit Access Query</button>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <a href="#" onclick="hideRequestModal(event)" style="color: #94a3b8; font-size: 12px; text-decoration: none;">Back to Login</a>
-                    </div>
+                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Request Access Query:</p>
+                    <div class="form-group"><label style="color:#cbd5e1;">Full Name</label><input type="text" id="reqName" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">10-Digit Mobile</label><input type="text" id="reqPhone" class="form-control" maxlength="10" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <button onclick="submitRequest()" class="btn-success" style="width:100%; margin-top:5px;">Submit Query</button>
+                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideRequestModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
                 </div>
 
-                <!-- FORGOT PASSWORD FORM -->
                 <div id="forgot-form-box" style="display:none;">
-                    <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 15px;">Enter Username ID to reset password:</p>
-                    <div class="form-group">
-                        <label>Username ID</label>
-                        <input type="text" id="forgotUser" class="form-control" placeholder="Username" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <input type="password" id="forgotNewPass" class="form-control" placeholder="New Password" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <button onclick="handleForgotReset()" class="btn-success" style="width: 100%; margin-top: 5px;">Reset Password</button>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <a href="#" onclick="hideForgotModal(event)" style="color: #94a3b8; font-size: 12px; text-decoration: none;">Back to Login</a>
-                    </div>
+                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Reset Password:</p>
+                    <div class="form-group"><label style="color:#cbd5e1;">Username ID</label><input type="text" id="forgotUser" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">New Password</label><input type="password" id="forgotNewPass" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <button onclick="handleForgotReset()" class="btn-success" style="width:100%; margin-top:5px;">Update Password</button>
+                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP DASHBOARD LAYOUT -->
+    <!-- MAIN APP DASHBOARD -->
     <div class="app-layout" id="main-app-container" style="display: none;">
-        <!-- Sidebar -->
         <div id="sidebar-container">
             <div class="sidebar-brand">
-                <div class="sidebar-logo">⚕️</div>
-                <div>
-                    <h3 style="font-size: 13px; color: #fff; font-weight: 700;" id="app-store-name">A R PHARMA</h3>
-                    <span style="font-size: 10px; color: #38bdf8;" id="app-chairman-name">Chairman: DRx. Aarif Rabbani</span>
-                </div>
+                <div class="digital-logo" style="font-size:20px;">ARHEALTHCARE</div>
             </div>
 
             <ul class="sidebar-menu">
                 <li><a class="menu-link active" onclick="switchTab('dashboard')"><span>📊</span> Dashboard Overview</a></li>
                 <li><a class="menu-link" onclick="switchTab('pos')"><span>🛒</span> Sales / POS Counter</a></li>
+                <li><a class="menu-link" onclick="switchTab('returns')"><span>🔄</span> Sales Medicine Return</a></li>
                 <li><a class="menu-link" onclick="switchTab('reprint')"><span>🧾</span> Bill Search & Reprint</a></li>
-                <li><a class="menu-link" onclick="switchTab('purchase')"><span>📦</span> Purchase Entry</a></li>
-                <li><a class="menu-link" onclick="switchTab('medicines')"><span>💊</span> Medicines & Stock Master</a></li>
+                <li><a class="menu-link" onclick="switchTab('medicines')"><span>💊</span> Stock Master (CRUD)</a></li>
                 <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> HR & Staff Attendance</a></li>
-                <li><a class="menu-link" onclick="switchTab('salary')"><span>💰</span> Kharch & Staff Salary</a></li>
-                <li><a class="menu-link" onclick="switchTab('collection')"><span>🏦</span> Banking & Collection</a></li>
+                <li><a class="menu-link" onclick="switchTab('salary')"><span>💰</span> Kharch & Expense Voucher</a></li>
                 <li><a class="menu-link" onclick="switchTab('requests')"><span>📩</span> Account Access Queries</a></li>
                 <li><a class="menu-link" onclick="switchTab('settings')"><span>⚙️</span> Super Admin Settings</a></li>
             </ul>
 
             <div class="sidebar-footer">
-                <button onclick="handleLogout()" class="logout-btn">Logout System</button>
+                <button onclick="location.reload()" class="btn-danger" style="width:100%; padding:10px;">Logout System</button>
             </div>
         </div>
 
-        <!-- Main Workspace -->
         <div class="main-content">
             <div class="top-banner">
                 <div>
-                    <div class="banner-title"><span>⚕️</span> <span id="banner-store-title">A R PHARMA AND SURGICAL AGENCY</span> <span style="background:#0284c7; color:#fff; font-size:10px; padding:2px 8px; border-radius:10px;">SUPER ADMIN PORTAL</span></div>
-                    <div class="banner-sub" id="banner-sub-text">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA) | DL No: UP-2026-MED-98765 | Ph: +91 9005554424</div>
+                    <div style="font-size:16px; font-weight:800; color:#38bdf8;" id="banner-store-title">A R PHARMA AND SURGICAL AGENCY</div>
+                    <div style="font-size:11.5px; color:#94a3b8;" id="banner-sub-text">Chairman: DRx. Aarif Rabbani | DL No: UP-2026-MED-98765 | Ph: +91 9005554424</div>
                 </div>
-                <div class="status-badge" id="logged-user-badge">● System Live</div>
+                <div style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;" id="logged-user-badge">● Active</div>
             </div>
 
-            <!-- Stats Header -->
             <div class="dashboard-cards">
-                <div class="card"><h3>Today's Sales</h3><div class="value" id="stat-sales" style="color:#4ade80;">₹0.00</div></div>
-                <div class="card"><h3>Cash Sales</h3><div class="value" id="stat-cash">₹0.00</div></div>
-                <div class="card"><h3>UPI/Card Sales</h3><div class="value" id="stat-card">₹0.00</div></div>
-                <div class="card"><h3>Credit Sales</h3><div class="value" id="stat-credit">₹0.00</div></div>
-                <div class="card"><h3>Stock Medicines</h3><div class="value" id="stat-items">0</div></div>
+                <div class="card"><h3>Today Sales</h3><div class="value" id="stat-sales" style="color:#4ade80;">₹0.00</div></div>
+                <div class="card"><h3>Total Bills</h3><div class="value" id="stat-bills">0</div></div>
+                <div class="card"><h3>Stock Items</h3><div class="value" id="stat-items">0</div></div>
+                <div class="card"><h3>Total Returns</h3><div class="value" id="stat-returns">0</div></div>
             </div>
 
-            <!-- Dynamic Workspace Content -->
             <div id="workspace-content"></div>
         </div>
     </div>
 
+    <div id="printable-receipt" style="display:none;"></div>
+
     <script>
-        // Data Store Setup
+        // Feature Logbook Carousel
+        const features = [
+            { title: "⚡ Multi-Batch POS Billing", desc: "Fast thermal receipt printing, auto-stock updates, and instant serial invoice generation with 10-digit mobile verification." },
+            { title: "📦 Inventory & Stock Master", desc: "Full CRUD controls to Add, Edit, and Delete medicines with batch numbers, expiry tracking, and stock alerts." },
+            { title: "👥 Full HR & Staff Attendance", desc: "Enrolling staff user IDs, tracking daily attendance logs, and managing salary vouchers." }
+        ];
+        let featIdx = 0;
+        setInterval(() => {
+            featIdx = (featIdx + 1) % features.length;
+            if(document.getElementById('feature-title')) {
+                document.getElementById('feature-title').innerText = features[featIdx].title;
+                document.getElementById('feature-desc').innerText = features[featIdx].desc;
+            }
+        }, 3500);
+
+        // Data Storage
         if (!localStorage.getItem('erp_settings')) {
             localStorage.setItem('erp_settings', JSON.stringify({
                 storeName: 'A R PHARMA AND SURGICAL AGENCY',
-                chairman: 'DRx. Aarif Rabbani (B.Pharm, MBA)',
+                chairman: 'DRx. Aarif Rabbani',
                 dlNo: 'UP-2026-MED-98765',
                 gstNo: '09AAAAA0000A1Z5',
-                phone: '+91 9005554424',
-                address: 'Dist. Maharajganj, Uttar Pradesh'
+                phone: '9005554424'
             }));
         }
-        if (!localStorage.getItem('erp_staff_users')) {
-            localStorage.setItem('erp_staff_users', JSON.stringify([
-                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Chairman / Admin' },
-                { username: 'staff1', pass: '1234', name: 'Sales Staff 1', role: 'Cashier / Billing' }
+        if (!localStorage.getItem('erp_users')) {
+            localStorage.setItem('erp_users', JSON.stringify([
+                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' }
             ]));
         }
         if (!localStorage.getItem('erp_medicines')) {
             localStorage.setItem('erp_medicines', JSON.stringify([
-                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', purchasePrice: 20, price: 30, qty: 120 },
-                { id: 102, name: 'Amoxicillin 500mg', batch: 'BATCH-002', exp: '2026-10', purchasePrice: 80, price: 120, qty: 45 }
+                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', price: 30, qty: 120 }
             ]));
         }
         if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
+        if (!localStorage.getItem('erp_returns')) localStorage.setItem('erp_returns', JSON.stringify([]));
         if (!localStorage.getItem('erp_requests')) localStorage.setItem('erp_requests', JSON.stringify([]));
 
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById('auth-overlay').style.display = 'flex';
-            document.getElementById('main-app-container').style.display = 'none';
-        });
+        let posCart = [];
 
         function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
-            let users = JSON.parse(localStorage.getItem('erp_staff_users')) || [];
-
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let found = users.find(x => x.username === u && x.pass === p);
+
             if (found) {
-                initApp(found);
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('main-app-container').style.display = 'flex';
+                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name;
+                switchTab('dashboard');
             } else {
-                alert('Invalid Username or Password! Please check credentials.');
+                alert('Invalid Username or Password!');
             }
         }
 
-        function handleLogout() { location.reload(); }
-
+        function showRequestModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('request-form-box').style.display='block'; }
+        function hideRequestModal(e) { e.preventDefault(); document.getElementById('request-form-box').style.display='none'; document.getElementById('login-form-box').style.display='block'; }
         function showForgotModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('forgot-form-box').style.display='block'; }
         function hideForgotModal(e) { e.preventDefault(); document.getElementById('forgot-form-box').style.display='none'; document.getElementById('login-form-box').style.display='block'; }
 
-        function showRequestModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('request-form-box').style.display='block'; }
-        function hideRequestModal(e) { e.preventDefault(); document.getElementById('request-form-box').style.display='none'; document.getElementById('login-form-box').style.display='block'; }
-
-        function submitUserRequest() {
+        function submitRequest() {
             let name = document.getElementById('reqName').value.trim();
             let phone = document.getElementById('reqPhone').value.trim();
-            let business = document.getElementById('reqBusiness').value.trim();
-
-            if(!name || !phone) { alert('Enter Name and Phone Number!'); return; }
+            if(phone.length !== 10) { alert('Enter valid 10-digit mobile number!'); return; }
 
             let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
-            reqs.push({ name, phone, business, date: new Date().toLocaleDateString() });
+            reqs.push({ name, phone, date: new Date().toLocaleDateString() });
             localStorage.setItem('erp_requests', JSON.stringify(reqs));
-
-            alert('Your request submitted successfully! Admin will contact you soon.');
+            alert('Request submitted!');
             hideRequestModal(new Event('click'));
         }
 
         function handleForgotReset() {
             let u = document.getElementById('forgotUser').value.trim();
-            let newP = document.getElementById('forgotNewPass').value.trim();
-            if(!u || !newP) { alert('Enter Username and New Password!'); return; }
-
-            let users = JSON.parse(localStorage.getItem('erp_staff_users')) || [];
+            let p = document.getElementById('forgotNewPass').value.trim();
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let obj = users.find(x => x.username === u);
             if(obj) {
-                obj.pass = newP;
-                localStorage.setItem('erp_staff_users', JSON.stringify(users));
-                alert('Password reset successfully!');
+                obj.pass = p;
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('Password Reset!');
                 hideForgotModal(new Event('click'));
-            } else {
-                alert('Username ID not found!');
-            }
-        }
-
-        function initApp(user) {
-            document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('main-app-container').style.display = 'flex';
-            document.getElementById('logged-user-badge').innerText = '● Active: ' + user.name + ' (' + user.role + ')';
-            
-            loadStoreBranding();
-            switchTab('dashboard');
-        }
-
-        function loadStoreBranding() {
-            let conf = JSON.parse(localStorage.getItem('erp_settings'));
-            document.getElementById('app-store-name').innerText = conf.storeName.length > 15 ? conf.storeName.substring(0,15) + '..' : conf.storeName;
-            document.getElementById('app-chairman-name').innerText = 'Chairman: ' + conf.chairman.split(' ')[0] + ' ' + (conf.chairman.split(' ')[1] || '');
-            document.getElementById('banner-store-title').innerText = conf.storeName;
-            document.getElementById('banner-sub-text').innerText = `Chairman: ${conf.chairman} | DL No: ${conf.dlNo} | GST: ${conf.gstNo} | Ph: ${conf.phone}`;
+            } else { alert('Username not found!'); }
         }
 
         function switchTab(tab) {
@@ -375,44 +286,149 @@
             const container = document.getElementById('workspace-content');
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
+            let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
             let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
 
             if (tab === 'dashboard') {
-                let todaySales = bills.reduce((sum, b) => sum + b.netTotal, 0);
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📊 Super Admin Dashboard Overview</h2>
-                        <p style="color:#64748b; font-size:13px; margin-bottom:15px;">Welcome DRx. Aarif Rabbani. Real-time store control panel.</p>
-                        <div style="background:#f1f5f9; padding:15px; border-radius:8px;">
-                            <span style="font-size:12px; color:#64748b;">TOTAL STORE REVENUE</span>
-                            <h2 style="color:#0284c7; font-size:24px;">₹${todaySales.toFixed(2)}</h2>
+                        <h2>📊 Super Admin Portal Dashboard</h2>
+                        <h3 style="font-size:14px; margin-bottom:10px;">Recent Invoices</h3>
+                        <table class="data-table">
+                            <thead><tr><th>Serial Inv</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>
+                            <tbody>${bills.slice(-5).reverse().map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td style="color:#16a34a; font-weight:bold;">₹${b.netTotal}</td></tr>`).join('') || '<tr><td colspan="5">No bills yet</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            else if (tab === 'pos') {
+                let nextInv = 'INV-' + (1001 + bills.length);
+                let medOpts = meds.map(m => `<option value="${m.name}">${m.name} (${m.batch}) - Stock: ${m.qty}</option>`).join('');
+
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>🛒 Sales / POS Counter</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Invoice Serial No</label><input type="text" id="posInv" class="form-control" value="${nextInv}" readonly></div>
+                            <div class="form-group"><label>10-Digit Mobile Lock *</label><input type="text" id="posMob" class="form-control" maxlength="10" placeholder="10-digit mobile"></div>
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="posCust" class="form-control" placeholder="Patient Name"></div>
                         </div>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <select id="posMed" class="form-control" onchange="autoFillPrice()"><option value="">Select Medicine</option>${medOpts}</select>
+                            <input type="number" id="posQty" class="form-control" value="1" style="width:100px;">
+                            <input type="number" id="posPrice" class="form-control" placeholder="Price" readonly style="width:100px;">
+                            <button onclick="addToCart()" class="btn-primary">+ Add</button>
+                        </div>
+                        <table class="data-table">
+                            <thead><tr><th>Medicine</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+                            <tbody id="cartTable"><tr><td colspan="4">Cart empty</td></tr></tbody>
+                        </table>
+                        <div style="margin-top:15px; text-align:right;">
+                            <button onclick="checkoutBill()" class="btn-success">Save & Print Receipt</button>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (tab === 'returns') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>🔄 Medicine Return Entry</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Invoice No</label><input type="text" id="retInv" class="form-control"></div>
+                            <div class="form-group"><label>Medicine Name</label><input type="text" id="retMed" class="form-control"></div>
+                            <div class="form-group"><label>Return Qty</label><input type="number" id="retQty" class="form-control"></div>
+                        </div>
+                        <button onclick="processReturn()" class="btn-primary">Process Return</button>
+                    </div>
+                `;
+            }
+            else if (tab === 'reprint') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>🧾 Invoice Wise Search & Reprint</h2>
+                        <table class="data-table">
+                            <thead><tr><th>Invoice</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th><th>Action</th></tr></thead>
+                            <tbody>${bills.map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td>₹${b.netTotal}</td><td><button onclick="reprint('${b.invNo}')" class="btn-primary">Print</button></td></tr>`).join('')}</tbody>
+                        </table>
                     </div>
                 `;
             }
             else if (tab === 'requests') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📩 New Account Access Requests (${reqs.length})</h2>
+                        <h2>📩 Access Queries (${reqs.length})</h2>
                         <table class="data-table">
-                            <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Business/Store</th></tr></thead>
-                            <tbody>
-                                ${reqs.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No access queries received yet.</td></tr>' :
-                                  reqs.reverse().map(r => `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>${r.phone}</td><td>${r.business || 'N/A'}</td></tr>`).join('')}
-                            </tbody>
+                            <thead><tr><th>Date</th><th>Name</th><th>Mobile</th></tr></thead>
+                            <tbody>${reqs.map(r => `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.phone}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
                 `;
             }
-            else {
-                container.innerHTML = `<div class="light-card"><h2>${tab.toUpperCase()} Module</h2><p>Workspace ready.</p></div>`;
-            }
 
-            document.getElementById('stat-sales').innerText = '₹' + bills.reduce((s,b)=>s+b.netTotal,0).toFixed(2);
+            document.getElementById('stat-sales').innerText = '₹' + bills.reduce((s,b)=>s+b.netTotal,0);
+            document.getElementById('stat-bills').innerText = bills.length;
             document.getElementById('stat-items').innerText = meds.length;
+            document.getElementById('stat-returns').innerText = rets.length;
         }
 
-        switchTab('dashboard');
+        function autoFillPrice() {
+            let mName = document.getElementById('posMed').value;
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            let f = meds.find(x => x.name === mName);
+            if(f) document.getElementById('posPrice').value = f.price;
+        }
+
+        function addToCart() {
+            let name = document.getElementById('posMed').value;
+            let qty = parseInt(document.getElementById('posQty').value) || 1;
+            let price = parseFloat(document.getElementById('posPrice').value) || 0;
+            if(!name) return;
+
+            posCart.push({ name, qty, price, total: qty * price });
+            let tbody = document.getElementById('cartTable');
+            tbody.innerHTML = posCart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price}</td><td>₹${i.total}</td></tr>`).join('');
+        }
+
+        function checkoutBill() {
+            let invNo = document.getElementById('posInv').value;
+            let mob = document.getElementById('posMob').value.trim();
+            let cust = document.getElementById('posCust').value.trim();
+
+            if(mob.length !== 10) { alert('Mobile number MUST be exactly 10 digits!'); return; }
+            if(!cust || posCart.length === 0) { alert('Enter patient name & items!'); return; }
+
+            let netTotal = posCart.reduce((s,i) => s + i.total, 0);
+            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
+            bills.push({ invNo, mob, cust, items: [...posCart], netTotal, date: new Date().toLocaleDateString() });
+            localStorage.setItem('erp_bills', JSON.stringify(bills));
+
+            alert('Bill generated!');
+            posCart = [];
+            switchTab('pos');
+        }
+
+        function processReturn() {
+            let inv = document.getElementById('retInv').value;
+            let med = document.getElementById('retMed').value;
+            let qty = document.getElementById('retQty').value;
+            if(!inv || !med) return;
+
+            let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
+            rets.push({ inv, med, qty, date: new Date().toLocaleDateString() });
+            localStorage.setItem('erp_returns', JSON.stringify(rets));
+            alert('Return processed!');
+            switchTab('returns');
+        }
+
+        function reprint(invNo) {
+            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
+            let b = bills.find(x => x.invNo === invNo);
+            if(!b) return;
+
+            let rec = document.getElementById('printable-receipt');
+            rec.innerHTML = `<h3>ARHEALTHCARE</h3><p>Inv: ${b.invNo} | Patient: ${b.cust}</p><hr><p>Total: ₹${b.netTotal}</p>`;
+            window.print();
+        }
     </script>
 </body>
 </html>
