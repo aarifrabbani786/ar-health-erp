@@ -3,48 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARHEALTHCARE - Digital Pharmacy ERP Suite</title>
+    <title>ARHEALTHCARE - Best Pharmacy and Staff Management Software</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #070a12; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
-        /* SPLIT LOGIN WITH SLIDE LOGBOOK FEATURE */
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070a12; display: flex; z-index: 999999; }
-
-        .login-banner-side {
-            flex: 1.3;
-            background: linear-gradient(135deg, rgba(7, 10, 18, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%), 
-                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
-            padding: 50px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(56, 189, 248, 0.15);
+        /* FULLSCREEN CENTERED LOGIN OVERLAY */
+        #auth-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0%, rgba(7, 10, 18, 0.98) 100%),
+                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80') center/cover;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999999;
+            padding: 20px;
         }
 
-        .digital-logo { font-size: 32px; font-weight: 900; color: #38bdf8; letter-spacing: 2px; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+        /* COLORFUL BRANDING TITLE */
+        .colorful-logo {
+            font-size: 38px; font-weight: 900; letter-spacing: 2.5px;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-align: center; text-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); margin-bottom: 6px;
+        }
 
-        /* Slide Logbook Feature Card */
+        .tagline-text {
+            font-size: 13.5px; font-weight: 600; color: #38bdf8; text-align: center; margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 6px 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* CENTERED SLIDE LOGBOOK CAROUSEL */
         .slide-logbook {
-            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px;
-            padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 30px;
+            width: 100%; max-width: 480px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px; padding: 18px 22px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            margin-bottom: 22px; text-align: center; transition: all 0.3s ease;
         }
-        .slide-logbook h3 { color: #38bdf8; font-size: 18px; margin-bottom: 10px; font-weight: 700; }
-        .slide-logbook p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; }
+        .slide-logbook h3 { color: #38bdf8; font-size: 16px; margin-bottom: 6px; font-weight: 700; }
+        .slide-logbook p { color: #94a3b8; font-size: 12.5px; line-height: 1.5; }
 
-        .login-form-side { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #070a12; }
+        /* HIGHLIGHTED LOGIN CARD */
         .auth-card {
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); padding: 40px; border-radius: 20px;
-            width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); padding: 32px 35px; border-radius: 20px;
+            width: 100%; max-width: 440px; box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.35); outline: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .auth-card h2 { font-size: 24px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
-        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 25px; font-weight: 600; }
+        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
+        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 22px; font-weight: 600; }
 
+        /* DASHBOARD APP LAYOUT */
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
-        /* Medical Theme Sidebar */
         #sidebar-container { 
             width: 270px; background: #0f172a; color: #fff; flex-shrink: 0; 
             border-right: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; min-height: 100vh;
         }
-        .sidebar-brand { padding: 20px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand { padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
         .sidebar-menu li { margin-bottom: 4px; }
         .sidebar-menu a {
@@ -76,7 +89,7 @@
 
         .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-success { background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
@@ -93,54 +106,50 @@
 
     <!-- AUTHENTICATION OVERLAY -->
     <div id="auth-overlay">
-        <div class="login-banner-side">
-            <div class="digital-logo">ARHEALTHCARE</div>
-            
-            <div class="slide-logbook">
-                <h3 id="feature-title">⚡ Multi-Batch POS Billing</h3>
-                <p id="feature-desc">Fast thermal receipt printing, auto-stock updates, and instant serial invoice generation with 10-digit mobile verification.</p>
-            </div>
+        <div class="colorful-logo">ARHEALTHCARE</div>
+        <div class="tagline-text">Best Pharmacy and Staff Management Software - One of the best software for Pharmacy</div>
 
-            <div style="font-size: 12px; color: #64748b;">A R PHARMA ERP v3.0 | Secure Cloud Suite</div>
+        <!-- CENTER SLIDE LOGBOOK CAROUSEL -->
+        <div class="slide-logbook">
+            <h3 id="feature-title">⚡ Multi-Batch POS Billing Counter</h3>
+            <p id="feature-desc">Fast thermal receipt printing, auto-stock updates, and serial-wise invoice generation with 10-digit mobile verification.</p>
         </div>
 
-        <div class="login-form-side">
-            <div class="auth-card">
-                <h2>Portal Access</h2>
-                <div class="subtitle">Enter System User ID & Password</div>
+        <div class="auth-card">
+            <h2>Portal Access Login</h2>
+            <div class="subtitle">Enter System User ID & Password</div>
 
-                <div id="login-form-box">
-                    <div class="form-group">
-                        <label style="color:#cbd5e1;">Username ID</label>
-                        <input type="text" id="loginUser" class="form-control" placeholder="Enter Username" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 18px;">
-                        <label style="color:#cbd5e1;">Password</label>
-                        <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
-                    </div>
-                    <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
-
-                    <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
-                        <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request Account?</a>
-                        <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
-                    </div>
+            <div id="login-form-box">
+                <div class="form-group">
+                    <label style="color:#cbd5e1;">Username ID</label>
+                    <input type="text" id="loginUser" class="form-control" placeholder="Enter Username ID" style="background:#0f172a; color:#fff; border-color:#334155;">
                 </div>
-
-                <div id="request-form-box" style="display:none;">
-                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Request Access Query:</p>
-                    <div class="form-group"><label style="color:#cbd5e1;">Full Name</label><input type="text" id="reqName" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                    <div class="form-group"><label style="color:#cbd5e1;">10-Digit Mobile</label><input type="text" id="reqPhone" class="form-control" maxlength="10" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                    <button onclick="submitRequest()" class="btn-success" style="width:100%; margin-top:5px;">Submit Query</button>
-                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideRequestModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label style="color:#cbd5e1;">Password</label>
+                    <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
                 </div>
+                <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
 
-                <div id="forgot-form-box" style="display:none;">
-                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Reset Password:</p>
-                    <div class="form-group"><label style="color:#cbd5e1;">Username ID</label><input type="text" id="forgotUser" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                    <div class="form-group"><label style="color:#cbd5e1;">New Password</label><input type="password" id="forgotNewPass" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                    <button onclick="handleForgotReset()" class="btn-success" style="width:100%; margin-top:5px;">Update Password</button>
-                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
+                <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
+                    <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request Account?</a>
+                    <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
                 </div>
+            </div>
+
+            <div id="request-form-box" style="display:none;">
+                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Request Access Query:</p>
+                <div class="form-group"><label style="color:#cbd5e1;">Full Name</label><input type="text" id="reqName" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                <div class="form-group"><label style="color:#cbd5e1;">10-Digit Mobile</label><input type="text" id="reqPhone" class="form-control" maxlength="10" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                <button onclick="submitRequest()" class="btn-success" style="width:100%; margin-top:5px;">Submit Query</button>
+                <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideRequestModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
+            </div>
+
+            <div id="forgot-form-box" style="display:none;">
+                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Reset Password:</p>
+                <div class="form-group"><label style="color:#cbd5e1;">Username ID</label><input type="text" id="forgotUser" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                <div class="form-group"><label style="color:#cbd5e1;">New Password</label><input type="password" id="forgotNewPass" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                <button onclick="handleForgotReset()" class="btn-success" style="width:100%; margin-top:5px;">Update Password</button>
+                <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
             </div>
         </div>
     </div>
@@ -149,7 +158,7 @@
     <div class="app-layout" id="main-app-container" style="display: none;">
         <div id="sidebar-container">
             <div class="sidebar-brand">
-                <div class="digital-logo" style="font-size:20px;">ARHEALTHCARE</div>
+                <div class="colorful-logo" style="font-size:22px;">ARHEALTHCARE</div>
             </div>
 
             <ul class="sidebar-menu">
@@ -159,13 +168,13 @@
                 <li><a class="menu-link" onclick="switchTab('reprint')"><span>🧾</span> Bill Search & Reprint</a></li>
                 <li><a class="menu-link" onclick="switchTab('medicines')"><span>💊</span> Stock Master (CRUD)</a></li>
                 <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> HR & Staff Attendance</a></li>
-                <li><a class="menu-link" onclick="switchTab('salary')"><span>💰</span> Kharch & Expense Voucher</a></li>
+                <li><a class="menu-link" onclick="switchTab('salary')"><span>💰</span> Kharch & Expense Vouchers</a></li>
                 <li><a class="menu-link" onclick="switchTab('requests')"><span>📩</span> Account Access Queries</a></li>
-                <li><a class="menu-link" onclick="switchTab('settings')"><span>⚙️</span> Super Admin Settings</a></li>
+                <li><a class="menu-link" onclick="switchTab('superadmin')"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
 
             <div class="sidebar-footer">
-                <button onclick="location.reload()" class="btn-danger" style="width:100%; padding:10px;">Logout System</button>
+                <button onclick="location.reload()" class="btn-danger" style="width:100%;">Logout System</button>
             </div>
         </div>
 
@@ -192,11 +201,11 @@
     <div id="printable-receipt" style="display:none;"></div>
 
     <script>
-        // Feature Logbook Carousel
+        // Carousel Feature Highlights
         const features = [
-            { title: "⚡ Multi-Batch POS Billing", desc: "Fast thermal receipt printing, auto-stock updates, and instant serial invoice generation with 10-digit mobile verification." },
-            { title: "📦 Inventory & Stock Master", desc: "Full CRUD controls to Add, Edit, and Delete medicines with batch numbers, expiry tracking, and stock alerts." },
-            { title: "👥 Full HR & Staff Attendance", desc: "Enrolling staff user IDs, tracking daily attendance logs, and managing salary vouchers." }
+            { title: "⚡ Multi-Batch POS Billing Counter", desc: "Fast thermal receipt printing, auto-stock updates, and serial-wise invoice generation with 10-digit mobile verification." },
+            { title: "📦 Complete Inventory & Stock Master", desc: "Full CRUD controls to Add, Edit, and Delete medicines with batch numbers, expiry tracking, and low-stock alerts." },
+            { title: "👥 HR Staff & User ID Control", desc: "Create staff user accounts, update passwords, log daily attendance, and track monthly salary vouchers." }
         ];
         let featIdx = 0;
         setInterval(() => {
@@ -207,7 +216,7 @@
             }
         }, 3500);
 
-        // Data Storage
+        // Persistent Data Stores Initialization
         if (!localStorage.getItem('erp_settings')) {
             localStorage.setItem('erp_settings', JSON.stringify({
                 storeName: 'A R PHARMA AND SURGICAL AGENCY',
@@ -219,17 +228,21 @@
         }
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
-                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' }
+                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' },
+                { username: 'staff1', pass: '1234', name: 'Sales Staff 1', role: 'Billing Operator' }
             ]));
         }
         if (!localStorage.getItem('erp_medicines')) {
             localStorage.setItem('erp_medicines', JSON.stringify([
-                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', price: 30, qty: 120 }
+                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', price: 30, qty: 120 },
+                { id: 102, name: 'Amoxicillin 500mg', batch: 'BATCH-002', exp: '2026-10', price: 120, qty: 45 }
             ]));
         }
         if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
         if (!localStorage.getItem('erp_returns')) localStorage.setItem('erp_returns', JSON.stringify([]));
         if (!localStorage.getItem('erp_requests')) localStorage.setItem('erp_requests', JSON.stringify([]));
+        if (!localStorage.getItem('erp_attendance')) localStorage.setItem('erp_attendance', JSON.stringify([]));
+        if (!localStorage.getItem('erp_expenses')) localStorage.setItem('erp_expenses', JSON.stringify([]));
 
         let posCart = [];
 
@@ -242,11 +255,9 @@
             if (found) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'flex';
-                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name;
+                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + found.role + ')';
                 switchTab('dashboard');
-            } else {
-                alert('Invalid Username or Password!');
-            }
+            } else { alert('Invalid Username or Password!'); }
         }
 
         function showRequestModal(e) { e.preventDefault(); document.getElementById('login-form-box').style.display='none'; document.getElementById('request-form-box').style.display='block'; }
@@ -281,22 +292,25 @@
 
         function switchTab(tab) {
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
             const container = document.getElementById('workspace-content');
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
             let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
             let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
+            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
 
             if (tab === 'dashboard') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📊 Super Admin Portal Dashboard</h2>
-                        <h3 style="font-size:14px; margin-bottom:10px;">Recent Invoices</h3>
+                        <h2>📊 Super Admin Portal Dashboard Overview</h2>
+                        <h3 style="font-size:14px; margin-bottom:10px;">Recent Sales Invoices Log</h3>
                         <table class="data-table">
-                            <thead><tr><th>Serial Inv</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>
-                            <tbody>${bills.slice(-5).reverse().map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td style="color:#16a34a; font-weight:bold;">₹${b.netTotal}</td></tr>`).join('') || '<tr><td colspan="5">No bills yet</td></tr>'}</tbody>
+                            <thead><tr><th>Invoice No</th><th>Date</th><th>Patient Name</th><th>Mobile</th><th>Amount</th></tr></thead>
+                            <tbody>${bills.slice(-5).reverse().map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td style="color:#16a34a; font-weight:bold;">₹${b.netTotal}</td></tr>`).join('') || '<tr><td colspan="5">No bills generated yet</td></tr>'}</tbody>
                         </table>
                     </div>
                 `;
@@ -309,7 +323,7 @@
                     <div class="light-card">
                         <h2>🛒 Sales / POS Counter</h2>
                         <div class="form-grid">
-                            <div class="form-group"><label>Invoice Serial No</label><input type="text" id="posInv" class="form-control" value="${nextInv}" readonly></div>
+                            <div class="form-group"><label>Serial Invoice No</label><input type="text" id="posInv" class="form-control" value="${nextInv}" readonly></div>
                             <div class="form-group"><label>10-Digit Mobile Lock *</label><input type="text" id="posMob" class="form-control" maxlength="10" placeholder="10-digit mobile"></div>
                             <div class="form-group"><label>Patient Name *</label><input type="text" id="posCust" class="form-control" placeholder="Patient Name"></div>
                         </div>
@@ -317,11 +331,11 @@
                             <select id="posMed" class="form-control" onchange="autoFillPrice()"><option value="">Select Medicine</option>${medOpts}</select>
                             <input type="number" id="posQty" class="form-control" value="1" style="width:100px;">
                             <input type="number" id="posPrice" class="form-control" placeholder="Price" readonly style="width:100px;">
-                            <button onclick="addToCart()" class="btn-primary">+ Add</button>
+                            <button onclick="addToCart()" class="btn-primary">+ Add Item</button>
                         </div>
                         <table class="data-table">
                             <thead><tr><th>Medicine</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-                            <tbody id="cartTable"><tr><td colspan="4">Cart empty</td></tr></tbody>
+                            <tbody id="cartTable"><tr><td colspan="4">Cart is empty</td></tr></tbody>
                         </table>
                         <div style="margin-top:15px; text-align:right;">
                             <button onclick="checkoutBill()" class="btn-success">Save & Print Receipt</button>
@@ -332,13 +346,18 @@
             else if (tab === 'returns') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>🔄 Medicine Return Entry</h2>
+                        <h2>🔄 Sales Medicine Return Entry</h2>
                         <div class="form-grid">
                             <div class="form-group"><label>Invoice No</label><input type="text" id="retInv" class="form-control"></div>
                             <div class="form-group"><label>Medicine Name</label><input type="text" id="retMed" class="form-control"></div>
                             <div class="form-group"><label>Return Qty</label><input type="number" id="retQty" class="form-control"></div>
                         </div>
                         <button onclick="processReturn()" class="btn-primary">Process Return</button>
+                        <h3 style="margin-top:20px;">Return Logs</h3>
+                        <table class="data-table">
+                            <thead><tr><th>Date</th><th>Invoice</th><th>Medicine</th><th>Qty</th></tr></thead>
+                            <tbody>${rets.map(r => `<tr><td>${r.date}</td><td>${r.inv}</td><td>${r.med}</td><td>${r.qty}</td></tr>`).join('') || '<tr><td colspan="4">No returns recorded.</td></tr>'}</tbody>
+                        </table>
                     </div>
                 `;
             }
@@ -348,7 +367,57 @@
                         <h2>🧾 Invoice Wise Search & Reprint</h2>
                         <table class="data-table">
                             <thead><tr><th>Invoice</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th><th>Action</th></tr></thead>
-                            <tbody>${bills.map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td>₹${b.netTotal}</td><td><button onclick="reprint('${b.invNo}')" class="btn-primary">Print</button></td></tr>`).join('')}</tbody>
+                            <tbody>${bills.map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td>₹${b.netTotal}</td><td><button onclick="reprint('${b.invNo}')" class="btn-primary">Print</button></td></tr>`).join('') || '<tr><td colspan="6">No invoices found.</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            else if (tab === 'medicines') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>💊 Stock Master (CRUD)</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Medicine Name</label><input type="text" id="mName" class="form-control"></div>
+                            <div class="form-group"><label>Batch No</label><input type="text" id="mBatch" class="form-control"></div>
+                            <div class="form-group"><label>Price (₹)</label><input type="number" id="mPrice" class="form-control"></div>
+                            <div class="form-group"><label>Stock Qty</label><input type="number" id="mQty" class="form-control"></div>
+                        </div>
+                        <button onclick="addMedicine()" class="btn-primary">+ Add Medicine</button>
+                        <table class="data-table" style="margin-top:15px;">
+                            <thead><tr><th>ID</th><th>Medicine</th><th>Batch</th><th>Price</th><th>Qty</th><th>Action</th></tr></thead>
+                            <tbody>${meds.map((m,i) => `<tr><td>#${m.id}</td><td>${m.name}</td><td>${m.batch}</td><td>₹${m.price}</td><td>${m.qty}</td><td><button onclick="deleteMed(${i})" class="btn-danger">Delete</button></td></tr>`).join('')}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            else if (tab === 'attendance') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>👥 HR & Staff Attendance Master</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Staff Name</label><input type="text" id="attName" class="form-control"></div>
+                            <div class="form-group"><label>Status</label><select id="attStat" class="form-control"><option value="Present">Present</option><option value="Absent">Absent</option></select></div>
+                        </div>
+                        <button onclick="markAtt()" class="btn-primary">Mark Attendance</button>
+                        <table class="data-table" style="margin-top:15px;">
+                            <thead><tr><th>Date</th><th>Staff</th><th>Status</th></tr></thead>
+                            <tbody>${att.map(a => `<tr><td>${a.date}</td><td>${a.name}</td><td>${a.status}</td></tr>`).join('') || '<tr><td colspan="3">No logs found.</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            else if (tab === 'salary') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>💰 Kharch & Expense Vouchers</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Title</label><input type="text" id="exTitle" class="form-control"></div>
+                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmt" class="form-control"></div>
+                        </div>
+                        <button onclick="addExpense()" class="btn-primary">Record Expense</button>
+                        <table class="data-table" style="margin-top:15px;">
+                            <thead><tr><th>Date</th><th>Title</th><th>Amount</th></tr></thead>
+                            <tbody>${exps.map(e => `<tr><td>${e.date}</td><td>${e.title}</td><td>₹${e.amt}</td></tr>`).join('') || '<tr><td colspan="3">No expenses.</td></tr>'}</tbody>
                         </table>
                     </div>
                 `;
@@ -356,10 +425,30 @@
             else if (tab === 'requests') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📩 Access Queries (${reqs.length})</h2>
+                        <h2>📩 Account Access Queries (${reqs.length})</h2>
                         <table class="data-table">
                             <thead><tr><th>Date</th><th>Name</th><th>Mobile</th></tr></thead>
-                            <tbody>${reqs.map(r => `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.phone}</td></tr>`).join('')}</tbody>
+                            <tbody>${reqs.map(r => `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.phone}</td></tr>`).join('') || '<tr><td colspan="3">No queries received.</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            else if (tab === 'superadmin') {
+                container.innerHTML = `
+                    <div class="light-card">
+                        <h2>⚙️ Super Admin Control Panel (User IDs & Passwords)</h2>
+                        <div class="form-grid">
+                            <div class="form-group"><label>New Username ID</label><input type="text" id="nuUser" class="form-control"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="nuPass" class="form-control"></div>
+                            <div class="form-group"><label>Full Name</label><input type="text" id="nuName" class="form-control"></div>
+                            <div class="form-group"><label>Role</label><input type="text" id="nuRole" class="form-control" value="Billing Operator"></div>
+                        </div>
+                        <button onclick="createSuperUser()" class="btn-primary">+ Create User ID</button>
+
+                        <h3 style="margin-top:20px;">System Users List (Update Password Direct)</h3>
+                        <table class="data-table">
+                            <thead><tr><th>Username</th><th>Password</th><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+                            <tbody>${users.map((u,i) => `<tr><td><b>${u.username}</b></td><td>${u.pass}</td><td>${u.name}</td><td>${u.role}</td><td><button onclick="updateUserPass(${i})" class="btn-primary">Update Pass</button></td></tr>`).join('')}</tbody>
                         </table>
                     </div>
                 `;
@@ -371,6 +460,7 @@
             document.getElementById('stat-returns').innerText = rets.length;
         }
 
+        // Actions
         function autoFillPrice() {
             let mName = document.getElementById('posMed').value;
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
@@ -402,7 +492,7 @@
             bills.push({ invNo, mob, cust, items: [...posCart], netTotal, date: new Date().toLocaleDateString() });
             localStorage.setItem('erp_bills', JSON.stringify(bills));
 
-            alert('Bill generated!');
+            alert('Bill Saved Successfully!');
             posCart = [];
             switchTab('pos');
         }
@@ -416,8 +506,75 @@
             let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
             rets.push({ inv, med, qty, date: new Date().toLocaleDateString() });
             localStorage.setItem('erp_returns', JSON.stringify(rets));
-            alert('Return processed!');
+            alert('Return Processed!');
             switchTab('returns');
+        }
+
+        function addMedicine() {
+            let name = document.getElementById('mName').value;
+            let batch = document.getElementById('mBatch').value;
+            let price = parseFloat(document.getElementById('mPrice').value) || 0;
+            let qty = parseInt(document.getElementById('mQty').value) || 0;
+            if(!name) return;
+
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            meds.push({ id: Date.now(), name, batch, price, qty });
+            localStorage.setItem('erp_medicines', JSON.stringify(meds));
+            switchTab('medicines');
+        }
+
+        function deleteMed(i) {
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            meds.splice(i,1);
+            localStorage.setItem('erp_medicines', JSON.stringify(meds));
+            switchTab('medicines');
+        }
+
+        function markAtt() {
+            let name = document.getElementById('attName').value;
+            let status = document.getElementById('attStat').value;
+            if(!name) return;
+
+            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
+            att.push({ date: new Date().toLocaleDateString(), name, status });
+            localStorage.setItem('erp_attendance', JSON.stringify(att));
+            switchTab('attendance');
+        }
+
+        function addExpense() {
+            let title = document.getElementById('exTitle').value;
+            let amt = parseFloat(document.getElementById('exAmt').value) || 0;
+            if(!title) return;
+
+            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
+            exps.push({ date: new Date().toLocaleDateString(), title, amt });
+            localStorage.setItem('erp_expenses', JSON.stringify(exps));
+            switchTab('salary');
+        }
+
+        function createSuperUser() {
+            let username = document.getElementById('nuUser').value.trim();
+            let pass = document.getElementById('nuPass').value.trim();
+            let name = document.getElementById('nuName').value.trim();
+            let role = document.getElementById('nuRole').value.trim();
+            if(!username || !pass) return;
+
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            users.push({ username, pass, name, role });
+            localStorage.setItem('erp_users', JSON.stringify(users));
+            alert('User ID Created!');
+            switchTab('superadmin');
+        }
+
+        function updateUserPass(i) {
+            let newP = prompt('Enter New Password:');
+            if(newP) {
+                let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+                users[i].pass = newP;
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('Password Updated!');
+                switchTab('superadmin');
+            }
         }
 
         function reprint(invNo) {
