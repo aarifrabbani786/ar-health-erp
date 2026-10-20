@@ -3,155 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. Health ERP - Ultimate Medical POS & Dashboard</title>
+    <title>A.R. Health ERP - Ultimate Medical Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
-        /* Modern Dark Gradient Sidebar */
+        /* Sidebar */
         #sidebar-container { 
             width: 280px; 
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
-            color: #fff; 
-            flex-shrink: 0; 
+            color: #fff; flex-shrink: 0; 
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            display: flex; flex-direction: column; min-height: 100vh;
         }
 
         .sidebar-brand {
-            padding: 24px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            padding: 22px 20px; display: flex; align-items: center; gap: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .sidebar-logo {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
+            width: 42px; height: 42px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 15px;
-            margin: 0;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .sidebar-menu li { margin-bottom: 8px; }
+        .sidebar-menu { list-style: none; padding: 15px; margin: 0; flex: 1; overflow-y: auto; }
+        .sidebar-menu li { margin-bottom: 6px; }
 
         .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            color: #94a3b8;
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.25s ease;
-            font-weight: 500;
-            font-size: 14px;
-            gap: 14px;
-            cursor: pointer;
+            display: flex; align-items: center; padding: 11px 15px; color: #94a3b8;
+            text-decoration: none; border-radius: 10px; transition: all 0.25s ease;
+            font-weight: 500; font-size: 13.5px; gap: 12px; cursor: pointer;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.15); color: #60a5fa;
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 
         /* Main Workspace */
         .main-content { 
-            flex: 1; 
-            padding: 35px; 
-            overflow-y: auto; 
+            flex: 1; padding: 30px; overflow-y: auto; 
             background: radial-gradient(circle at top right, #1e293b 0%, #0b0f19 70%); 
         }
 
         .top-navbar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(12px);
-            padding: 18px 30px; 
-            border-radius: 16px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px);
+            padding: 16px 25px; border-radius: 16px; 
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 30px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px; 
         }
         
-        .top-navbar h1 { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        
-        .user-badge { 
-            font-size: 13px; font-weight: 600; 
-            background: rgba(59, 130, 246, 0.15); 
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 8px 16px; 
-            border-radius: 8px; 
-        }
+        .top-navbar h1 { font-size: 20px; font-weight: 700; color: #fff; }
+        .user-badge { font-size: 12.5px; font-weight: 600; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 8px; }
 
-        .dashboard-cards { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        
-        .card { 
-            background: rgba(30, 41, 59, 0.6); 
-            backdrop-filter: blur(10px);
-            padding: 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); 
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .card h3 { font-size: 12px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; }
-        .card .value { font-size: 24px; font-weight: 700; color: #f8fafc; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-bottom: 25px; }
+        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 18px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .card h3 { font-size: 11.5px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
+        .card .value { font-size: 22px; font-weight: 700; color: #f8fafc; }
 
-        .workspace-panel { 
-            background: rgba(30, 41, 59, 0.4); 
-            border-radius: 16px; 
-            padding: 25px; 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            min-height: 400px;
-        }
+        .workspace-panel { background: rgba(30, 41, 59, 0.4); border-radius: 16px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.05); min-height: 420px; }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12.5px; color: #94a3b8; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 9px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 13.5px; }
         
-        .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-primary { background: #3b82f6; color: white; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13.5px; }
         .btn-primary:hover { background: #2563eb; }
 
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .data-table th, .data-table td { padding: 11px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 13.5px; }
         .data-table th { color: #94a3b8; font-weight: 600; }
         
-        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
         .btn-danger:hover { background: #ef4444; color: #fff; }
 
-        .logout-btn {
-            width: 100%; padding: 12px;
-            background: rgba(239, 68, 68, 0.15); color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px;
-            cursor: pointer; font-weight: 600;
-        }
+        .logout-btn { width: 100%; padding: 11px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .logout-btn:hover { background: #ef4444; color: #fff; }
     </style>
 </head>
@@ -163,18 +98,19 @@
             <div class="sidebar-brand">
                 <div class="sidebar-logo">⚕️</div>
                 <div>
-                    <h3 style="font-size: 15px; color: #fff; font-weight: 700;">A.R. HEALTH ERP</h3>
-                    <span id="role-tag" style="font-size: 11px; color: #60a5fa; font-weight: 600;">Admin Portal</span>
+                    <h3 id="sidebar-store-name" style="font-size: 14.5px; color: #fff; font-weight: 700;">A.R. HEALTH ERP</h3>
+                    <span id="role-tag" style="font-size: 10.5px; color: #60a5fa; font-weight: 600;">Admin Portal</span>
                 </div>
             </div>
 
             <ul class="sidebar-menu">
                 <li><a class="menu-link active" onclick="switchTab('dashboard')"><span>📊</span> Dashboard Overview</a></li>
                 <li><a class="menu-link" onclick="switchTab('pos')"><span>🛒</span> 1. Sale & POS Billing</a></li>
-                <li><a class="menu-link" onclick="switchTab('inventory')"><span>📦</span> 2. Purchase Management</a></li>
-                <li><a class="menu-link" onclick="switchTab('collection')"><span>💰</span> 3. Collection Master</a></li>
+                <li><a class="menu-link" onclick="switchTab('returns')"><span>🔄</span> Sales / Purchase Returns</a></li>
+                <li><a class="menu-link" onclick="switchTab('inventory')"><span>📦</span> 2. Purchase / Inventory</a></li>
+                <li><a class="menu-link" onclick="switchTab('collection')"><span>💰</span> 3. Collection Master (Date Wise)</a></li>
                 <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> 4. Staff Attendance</a></li>
-                <li><a class="menu-link" onclick="switchTab('admin')"><span>⚙️</span> 5. Admin & Staff Panel</a></li>
+                <li><a class="menu-link" onclick="switchTab('admin')"><span>⚙️</span> 5. Admin & Store Settings</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -193,30 +129,29 @@
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Today's Collection</h3>
-                    <div class="value" id="stat-collection">₹14,850</div>
+                    <div class="value" id="stat-collection">₹0.00</div>
                 </div>
                 <div class="card">
-                    <h3>Total Items</h3>
+                    <h3>Total Inventory Items</h3>
                     <div class="value" id="stat-items">0</div>
                 </div>
                 <div class="card">
-                    <h3>Pending Orders</h3>
-                    <div class="value" id="stat-orders">0</div>
+                    <h3>Total Sales Bills</h3>
+                    <div class="value" id="stat-bills">0</div>
                 </div>
                 <div class="card">
-                    <h3>Staff Present</h3>
-                    <div class="value" id="stat-staff">1</div>
+                    <h3>Active Staff</h3>
+                    <div class="value" id="stat-staff">0</div>
                 </div>
             </div>
 
             <!-- Dynamic Workspace Panel -->
-            <div class="workspace-panel" id="workspace-content">
-                <!-- Content loads here -->
-            </div>
+            <div class="workspace-panel" id="workspace-content"></div>
         </div>
     </div>
 
     <script>
+        // Initialize Local Storage DB
         if (!localStorage.getItem('erp_items')) {
             localStorage.setItem('erp_items', JSON.stringify([
                 { id: 101, name: 'Paracetamol 650mg', qty: 150, price: 30 },
@@ -224,6 +159,26 @@
                 { id: 103, name: 'Cough Syrup 100ml', qty: 45, price: 95 }
             ]));
         }
+        if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
+        if (!localStorage.getItem('erp_returns')) localStorage.setItem('erp_returns', JSON.stringify([]));
+        if (!localStorage.getItem('erp_staff')) {
+            localStorage.setItem('erp_staff', JSON.stringify([
+                { username: 'staff1', pass: '1234', role: 'Billing Operator' }
+            ]));
+        }
+        if (!localStorage.getItem('erp_settings')) {
+            localStorage.setItem('erp_settings', JSON.stringify({
+                storeName: 'A.R. Medical Store',
+                gstNo: '09AAAAA0000A1Z5',
+                dlNo: 'UP-2026-MED-12345',
+                staffPermission: 'Billing & View Only'
+            }));
+        }
+
+        let settings = JSON.parse(localStorage.getItem('erp_settings'));
+        document.getElementById('sidebar-store-name').innerText = settings.storeName;
+
+        let cart = [];
 
         function switchTab(tab) {
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -232,72 +187,111 @@
             const container = document.getElementById('workspace-content');
             const title = document.getElementById('page-title');
             let items = JSON.parse(localStorage.getItem('erp_items')) || [];
+            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
 
             if (tab === 'dashboard') {
                 title.innerText = "Dashboard Overview";
                 container.innerHTML = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Quick Summary & Shortcuts</h2>
-                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">A.R. Online Zone & Medical ERP system is fully online. Click on <b>Sale & POS Billing</b> in the sidebar to create patient bills with Doctor Name, Mobile, and Medicine Search.</p>
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Welcome to ${settings.storeName}</h2>
+                    <p style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">GST No: <b>${settings.gstNo}</b> | Drug License: <b>${settings.dlNo}</b></p>
+                    <p style="color: #94a3b8; font-size: 13.5px; margin-top: 10px;">Use the sidebar to create POS bills with quantity selection, manage date-wise collections, track returns, and manage staff credentials.</p>
                 `;
             } 
             else if (tab === 'pos') {
                 title.innerText = "Sale & POS Billing Counter";
                 container.innerHTML = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">New Patient Billing & Prescription Details</h2>
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Patient & Prescription Details</h2>
                     <div class="form-grid">
-                        <div class="form-group"><label>Patient Name</label><input type="text" id="patientName" class="form-control" placeholder="Enter Patient Name"></div>
-                        <div class="form-group"><label>Mobile Number</label><input type="text" id="patientMobile" class="form-control" placeholder="10-digit mobile no"></div>
-                        <div class="form-group"><label>Doctor Name</label><input type="text" id="doctorName" class="form-control" placeholder="Prescribing Doctor"></div>
+                        <div class="form-group"><label>Patient Name</label><input type="text" id="patientName" class="form-control" placeholder="Patient Name"></div>
+                        <div class="form-group"><label>Mobile Number</label><input type="text" id="patientMobile" class="form-control" placeholder="Mobile Number"></div>
+                        <div class="form-group"><label>Doctor Name</label><input type="text" id="doctorName" class="form-control" placeholder="Doctor Name"></div>
                         <div class="form-group"><label>Payment Mode</label>
                             <select id="paymentMode" class="form-control">
                                 <option value="Cash">Cash</option>
                                 <option value="UPI / QR">UPI / QR Code</option>
-                                <option value="Card">Credit / Debit Card</option>
+                                <option value="Card">Card</option>
                                 <option value="Credit">Credit (Udhar)</option>
                             </select>
                         </div>
                     </div>
 
-                    <h2 style="font-size: 18px; margin: 20px 0 10px 0; color: #e2e8f0;">Medicine Search & Selection</h2>
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <input type="text" id="searchMedicine" class="form-control" placeholder="Search medicine by name..." onkeyup="filterMedicines()">
+                    <h2 style="font-size: 17px; margin: 18px 0 10px 0; color: #e2e8f0;">Select Medicines & Quantity</h2>
+                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                        <input type="text" id="searchMedicine" class="form-control" placeholder="Search medicine..." onkeyup="filterMedicines()">
                     </div>
 
-                    <div style="max-height: 180px; overflow-y: auto; background: rgba(15,23,42,0.4); border-radius: 8px; padding: 10px; margin-bottom: 20px;">
+                    <div style="max-height: 170px; overflow-y: auto; background: rgba(15,23,42,0.4); border-radius: 8px; padding: 10px; margin-bottom: 18px;">
                         <table class="data-table" style="margin-top:0;">
-                            <thead><tr><th>Medicine Name</th><th>Available Stock</th><th>Price (₹)</th><th>Action</th></tr></thead>
-                            <tbody id="medicine-search-results">
-                                <!-- Populated dynamically -->
-                            </tbody>
+                            <thead><tr><th>Medicine Name</th><th>Available Stock</th><th>Price (₹)</th><th>Qty to Add</th><th>Action</th></tr></thead>
+                            <tbody id="medicine-search-results"></tbody>
                         </table>
                     </div>
 
-                    <h2 style="font-size: 18px; margin: 15px 0 10px 0; color: #e2e8f0;">Current Bill Cart</h2>
+                    <h2 style="font-size: 17px; margin: 15px 0 10px 0; color: #e2e8f0;">Current Bill Cart</h2>
                     <table class="data-table">
                         <thead><tr><th>Medicine</th><th>Price</th><th>Qty</th><th>Total</th><th>Action</th></tr></thead>
                         <tbody id="cart-items-list">
-                            <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Cart is empty. Select medicines from above.</td></tr>
+                            <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Cart is empty. Add medicines above.</td></tr>
                         </tbody>
                     </table>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; background: rgba(15,23,42,0.8); padding: 15px 20px; border-radius: 10px;">
-                        <div style="font-size: 18px; font-weight: 700;">Grand Total: <span id="cart-grand-total" style="color: #4ade80;">₹0.00</span></div>
-                        <button onclick="completeSale()" class="btn-primary" style="padding: 12px 30px; font-size: 15px;">Complete Bill & Print</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; background: rgba(15,23,42,0.8); padding: 15px 20px; border-radius: 10px;">
+                        <div style="font-size: 17px; font-weight: 700;">Grand Total: <span id="cart-grand-total" style="color: #4ade80;">₹0.00</span></div>
+                        <button onclick="completeSale()" class="btn-primary" style="padding: 11px 25px;">Save & Print Bill</button>
                     </div>
                 `;
                 renderPOSMedicines(items);
             }
+            else if (tab === 'collection') {
+                title.innerText = "Collection Master & Reports (Date Wise)";
+                let todayStr = new Date().toISOString().split('T')[0];
+                container.innerHTML = `
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Select Date to View Collection & Patient Records</h2>
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <input type="date" id="reportDate" class="form-control" value="${todayStr}" style="max-width: 220px;" onchange="loadDateReport()">
+                        <button onclick="loadDateReport()" class="btn-primary">Filter Date</button>
+                    </div>
+                    <div class="dashboard-cards" style="margin-bottom: 20px;">
+                        <div class="card"><h3 id="rep-date-title">Selected Date Collection</h3><div class="value" id="rep-total" style="color:#4ade80;">₹0.00</div></div>
+                        <div class="card"><h3>Total Bills Generated</h3><div class="value" id="rep-bills-count">0</div></div>
+                    </div>
+                    <h2 style="font-size: 17px; margin: 15px 0 10px 0; color: #e2e8f0;">Patient Bills & Details for Selected Date</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Time</th><th>Patient Name</th><th>Mobile</th><th>Doctor</th><th>Payment</th><th>Total</th></tr></thead>
+                        <tbody id="report-bills-table"></tbody>
+                    </table>
+                `;
+                loadDateReport();
+            }
+            else if (tab === 'returns') {
+                title.innerText = "Sales & Purchase Returns";
+                container.innerHTML = `
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Process Item / Medicine Return</h2>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Bill ID or Patient Name</label><input type="text" id="retRef" class="form-control" placeholder="Bill ID / Patient"></div>
+                        <div class="form-group"><label>Medicine Name</label><input type="text" id="retMed" class="form-control" placeholder="Medicine"></div>
+                        <div class="form-group"><label>Return Qty</label><input type="number" id="retQty" class="form-control" placeholder="Qty"></div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="processReturn()" class="btn-primary" style="width:100%;">Process Return</button></div>
+                    </div>
+                    <h2 style="font-size: 17px; margin: 20px 0 10px 0; color: #e2e8f0;">Return History Log</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Ref / Patient</th><th>Medicine</th><th>Qty</th></tr></thead>
+                        <tbody id="returns-table-body"></tbody>
+                    </table>
+                `;
+                renderReturnsLog();
+            }
             else if (tab === 'inventory') {
                 title.innerText = "Purchase & Inventory Management";
                 let html = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Add New Stock / Medicine</h2>
-                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Add New Medicine Stock</h2>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                         <div class="form-group" style="margin:0;"><label>Medicine Name</label><input type="text" id="newItemName" class="form-control" placeholder="Name"></div>
                         <div class="form-group" style="margin:0;"><label>Quantity</label><input type="number" id="newItemQty" class="form-control" placeholder="Qty"></div>
                         <div class="form-group" style="margin:0;"><label>Price (₹)</label><input type="number" id="newItemPrice" class="form-control" placeholder="Price"></div>
                         <div style="display: flex; align-items: flex-end;"><button onclick="addItem()" class="btn-primary" style="width:100%;">Add Stock</button></div>
                     </div>
-                    <h2 style="font-size: 18px; margin: 20px 0 10px 0; color: #e2e8f0;">Stock Inventory</h2>
+                    <h2 style="font-size: 17px; margin: 15px 0 10px 0; color: #e2e8f0;">Current Stock Inventory</h2>
                     <table class="data-table">
                         <thead><tr><th>ID</th><th>Medicine Name</th><th>Available Qty</th><th>Price</th><th>Action</th></tr></thead>
                         <tbody>
@@ -308,39 +302,65 @@
                 html += `</tbody></table>`;
                 container.innerHTML = html;
             }
-            else if (tab === 'collection') {
-                title.innerText = "Collection Master";
-                container.innerHTML = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Collection Records</h2>
-                    <div class="card" style="max-width: 400px; background: rgba(15, 23, 42, 0.6);">
-                        <h3 style="color:#60a5fa;">Total Counter Cash</h3>
-                        <div class="value" style="margin-top: 10px;">₹14,850.00</div>
-                    </div>
-                `;
-            }
             else if (tab === 'attendance') {
                 title.innerText = "Staff Attendance Master";
                 container.innerHTML = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">Attendance Log</h2>
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Staff Attendance Log</h2>
                     <table class="data-table">
-                        <thead><tr><th>Staff Name</th><th>Role</th><th>Status</th><th>Time</th></tr></thead>
+                        <thead><tr><th>Staff Name</th><th>Role</th><th>Status</th><th>Check-in Time</th></tr></thead>
                         <tbody><tr><td>Aarif Rabbani</td><td>Admin</td><td><span style="color:#4ade80;">Present</span></td><td>09:30 AM</td></tr></tbody>
                     </table>
                 `;
             }
             else if (tab === 'admin') {
-                title.innerText = "Admin & Staff Control Panel";
+                let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
+                let staffHtml = '';
+                staffList.forEach((s, idx) => {
+                    staffHtml += `<tr><td>${s.username}</td><td>${s.pass}</td><td>${s.role}</td><td><button onclick="deleteStaff(${idx})" class="btn-danger">Remove</button></td></tr>`;
+                });
+
+                title.innerText = "Admin Panel & Store Settings";
                 container.innerHTML = `
-                    <h2 style="font-size: 18px; margin-bottom: 15px; color: #e2e8f0;">System Management</h2>
-                    <button onclick="localStorage.clear(); location.reload();" class="btn-danger" style="padding: 10px 20px; font-weight: 600;">Reset Local Storage</button>
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Store Information Settings</h2>
+                    <div class="form-grid" style="margin-bottom: 25px;">
+                        <div class="form-group"><label>Store Name</label><input type="text" id="setStoreName" class="form-control" value="${settings.storeName}"></div>
+                        <div class="form-group"><label>GST Number</label><input type="text" id="setGst" class="form-control" value="${settings.gstNo}"></div>
+                        <div class="form-group"><label>Drug License (DL) No</label><input type="text" id="setDl" class="form-control" value="${settings.dlNo}"></div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="saveStoreSettings()" class="btn-primary" style="width:100%;">Save Settings</button></div>
+                    </div>
+
+                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Create Staff User ID & Password</h2>
+                    <div class="form-grid" style="margin-bottom: 20px;">
+                        <div class="form-group"><label>Username</label><input type="text" id="newStaffUser" class="form-control" placeholder="Username"></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="newStaffPass" class="form-control" placeholder="Password"></div>
+                        <div class="form-group"><label>Staff Permission / Role</label>
+                            <select id="newStaffRole" class="form-control">
+                                <option value="Billing Operator">Billing Operator</option>
+                                <option value="Inventory Manager">Inventory Manager</option>
+                                <option value="View Only">View Only</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="createStaff()" class="btn-primary" style="width:100%;">Create Staff</button></div>
+                    </div>
+
+                    <h2 style="font-size: 17px; margin: 15px 0 10px 0; color: #e2e8f0;">Active Staff List</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Username</th><th>Password</th><th>Role / Permissions</th><th>Action</th></tr></thead>
+                        <tbody>${staffHtml}</tbody>
+                    </table>
                 `;
             }
 
             document.getElementById('stat-items').innerText = items.length;
+            document.getElementById('stat-bills').innerText = bills.length;
+            
+            // Calculate today's collection
+            let today = new Date().toISOString().split('T')[0];
+            let todayColl = bills.filter(b => b.date === today).reduce((sum, b) => sum + b.grandTotal, 0);
+            document.getElementById('stat-collection').innerText = '₹' + todayColl.toFixed(2);
         }
 
-        let cart = [];
-
+        // POS Logic with Qty
         function renderPOSMedicines(items, filter = '') {
             const tbody = document.getElementById('medicine-search-results');
             if(!tbody) return;
@@ -348,17 +368,18 @@
             
             let filtered = items.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No medicines found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No medicines found.</td></tr>`;
                 return;
             }
 
-            filtered.forEach((item) => {
+            filtered.forEach((item, idx) => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.name}</td>
                         <td>${item.qty} units</td>
                         <td>₹${item.price}</td>
-                        <td><button onclick="addToCart('${item.name}', ${item.price})" class="btn-primary" style="padding:4px 10px; font-size:12px;">Add</button></td>
+                        <td style="width: 100px;"><input type="number" id="qty_${idx}" class="form-control" value="1" min="1" max="${item.qty}" style="padding:5px;"></td>
+                        <td><button onclick="addToCart('${item.name}', ${item.price}, ${idx})" class="btn-primary" style="padding:4px 12px; font-size:12px;">Add</button></td>
                     </tr>
                 `;
             });
@@ -370,12 +391,15 @@
             renderPOSMedicines(items, query);
         }
 
-        function addToCart(name, price) {
+        function addToCart(name, price, idx) {
+            let qtyInput = document.getElementById(`qty_${idx}`);
+            let q = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+
             let existing = cart.find(c => c.name === name);
             if(existing) {
-                existing.qty += 1;
+                existing.qty += q;
             } else {
-                cart.push({ name, price, qty: 1 });
+                cart.push({ name, price, qty: q });
             }
             updateCartUI();
         }
@@ -417,31 +441,138 @@
         function completeSale() {
             let pName = document.getElementById('patientName').value;
             let pMob = document.getElementById('patientMobile').value;
-            let docName = document.getElementById('doctorName').value;
+            let docName = document.getElementById('doctorName').value || 'Self';
             let payMode = document.getElementById('paymentMode').value;
 
-            if(!pName || !pMob) {
-                alert('Please enter Patient Name and Mobile Number!');
-                return;
-            }
-            if(cart.length === 0) {
-                alert('Cart is empty! Add medicines first.');
+            if(!pName || !pMob) { alert('Please enter Patient Name and Mobile Number!'); return; }
+            if(cart.length === 0) { alert('Cart is empty!'); return; }
+
+            let grandTotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            let dateStr = new Date().toISOString().split('T')[0];
+            let timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
+            bills.push({
+                billId: 'BILL-' + Math.floor(1000 + Math.random() * 9000),
+                patientName: pName,
+                mobile: pMob,
+                doctor: docName,
+                paymentMode: payMode,
+                items: [...cart],
+                grandTotal,
+                date: dateStr,
+                time: timeStr
+            });
+            localStorage.setItem('erp_bills', JSON.stringify(bills));
+
+            // Deduct stock
+            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
+            cart.forEach(c => {
+                let st = items.find(i => i.name === c.name);
+                if(st) { st.qty = Math.max(0, st.qty - c.qty); }
+            });
+            localStorage.setItem('erp_items', JSON.stringify(items));
+
+            alert('Bill successfully generated & saved for ' + pName + '!');
+            cart = [];
+            switchTab('pos');
+        }
+
+        // Date-wise Collection Report
+        function loadDateReport() {
+            let selDate = document.getElementById('reportDate').value;
+            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
+            let filtered = bills.filter(b => b.date === selDate);
+
+            let total = filtered.reduce((sum, b) => sum + b.grandTotal, 0);
+            document.getElementById('rep-total').innerText = '₹' + total.toFixed(2);
+            document.getElementById('rep-bills-count').innerText = filtered.length;
+
+            let tbody = document.getElementById('report-bills-table');
+            tbody.innerHTML = '';
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No bills found for ${selDate}</td></tr>`;
                 return;
             }
 
-            alert('Bill generated successfully for ' + pName + ' via ' + payMode + '!');
-            cart = [];
-            updateCartUI();
-            document.getElementById('patientName').value = '';
-            document.getElementById('patientMobile').value = '';
-            document.getElementById('doctorName').value = '';
+            filtered.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${b.time}</td>
+                        <td><b>${b.patientName}</b></td>
+                        <td>${b.mobile}</td>
+                        <td>${b.doctor}</td>
+                        <td>${b.paymentMode}</td>
+                        <td style="color:#4ade80; font-weight:650;">₹${b.grandTotal}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Returns
+        function processReturn() {
+            let ref = document.getElementById('retRef').value;
+            let med = document.getElementById('retMed').value;
+            let qty = document.getElementById('retQty').value;
+
+            if(!ref || !med || !qty) { alert('Fill all return fields!'); return; }
+            let returns = JSON.parse(localStorage.getItem('erp_returns')) || [];
+            returns.push({ date: new Date().toISOString().split('T')[0], ref, med, qty });
+            localStorage.setItem('erp_returns', JSON.stringify(returns));
+            alert('Return processed successfully!');
+            switchTab('returns');
+        }
+
+        function renderReturnsLog() {
+            let returns = JSON.parse(localStorage.getItem('erp_returns')) || [];
+            let tbody = document.getElementById('returns-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            if(returns.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No returns recorded.</td></tr>`;
+                return;
+            }
+            returns.forEach(r => {
+                tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.ref}</td><td>${r.med}</td><td>${r.qty}</td></tr>`;
+            });
+        }
+
+        // Admin & Settings
+        function saveStoreSettings() {
+            let storeName = document.getElementById('setStoreName').value;
+            let gstNo = document.getElementById('setGst').value;
+            let dlNo = document.getElementById('setDl').value;
+
+            settings = { storeName, gstNo, dlNo, staffPermission: settings.staffPermission };
+            localStorage.setItem('erp_settings', JSON.stringify(settings));
+            document.getElementById('sidebar-store-name').innerText = storeName;
+            alert('Store settings saved successfully!');
+        }
+
+        function createStaff() {
+            let username = document.getElementById('newStaffUser').value;
+            let pass = document.getElementById('newStaffPass').value;
+            let role = document.getElementById('newStaffRole').value;
+
+            if(!username || !pass) { alert('Enter username and password!'); return; }
+            let staff = JSON.parse(localStorage.getItem('erp_staff')) || [];
+            staff.push({ username, pass, role });
+            localStorage.setItem('erp_staff', JSON.stringify(staff));
+            alert('Staff created successfully!');
+            switchTab('admin');
+        }
+
+        function deleteStaff(idx) {
+            let staff = JSON.parse(localStorage.getItem('erp_staff')) || [];
+            staff.splice(idx, 1);
+            localStorage.setItem('erp_staff', JSON.stringify(staff));
+            switchTab('admin');
         }
 
         function addItem() {
             let name = document.getElementById('newItemName').value;
             let qty = document.getElementById('newItemQty').value;
             let price = document.getElementById('newItemPrice').value;
-
             if(!name || !qty || !price) { alert('Fill all fields!'); return; }
             let items = JSON.parse(localStorage.getItem('erp_items')) || [];
             items.push({ id: Math.floor(1000 + Math.random() * 9000), name, qty, price });
@@ -456,7 +587,6 @@
             switchTab('inventory');
         }
 
-        // Default view
         switchTab('dashboard');
 
         document.getElementById("system-logout-btn").addEventListener("click", () => {
