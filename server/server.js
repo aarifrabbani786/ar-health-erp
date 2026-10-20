@@ -6,7 +6,8 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+// Serve static frontend files from client/src
+app.use(express.static(path.join(__dirname, '../client/src')));
 // Bulletproof Path Resolution using __dirname
 const db = require(path.join(__dirname, 'db'));
 
