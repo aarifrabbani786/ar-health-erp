@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const verifyTenant = require('../middleware/tenantAuthMiddleware');
+const { isAuthenticated, checkRole } = require('../middleware/authMiddleware');
 
 // Get Dashboard Summary & Analytics
 router.get('/summary', verifyTenant, async (req, res) => {
@@ -70,9 +71,7 @@ router.get('/summary', verifyTenant, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
-  const express = require('express');
-const router = express.Router();
-const { isAuthenticated, checkRole } = require('../middleware/authMiddleware');
+});
 
 // 👑 1. Super Admin Dashboard Analytics
 router.get('/super-admin', isAuthenticated, checkRole('Super Admin'), async (req, res) => {
