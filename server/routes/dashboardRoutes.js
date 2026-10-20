@@ -70,6 +70,35 @@ router.get('/summary', verifyTenant, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
+  const express = require('express');
+const router = express.Router();
+const { isAuthenticated, checkRole } = require('../middleware/authMiddleware');
+
+// 👑 1. Super Admin Dashboard Analytics
+router.get('/super-admin', isAuthenticated, checkRole('Super Admin'), async (req, res) => {
+    res.json({
+        role: 'Super Admin',
+        message: 'Welcome Super Admin! System-wide statistics and management access.',
+        modules: ['Stores Management', 'System Settings', 'Global Revenue', 'Admin Accounts']
+    });
+});
+
+// 🛡️ 2. Admin Dashboard (Store Owner)
+router.get('/admin', isAuthenticated, checkRole('Super Admin', 'Admin'), async (req, res) => {
+    res.json({
+        role: 'Admin',
+        message: 'Welcome Admin! Store control and operations.',
+        modules: ['Inventory Control', 'Sales Reports', 'Purchase Logs', 'Staff Management', 'Customer Ledger']
+    });
+});
+
+// 👤 3. Staff Dashboard (Limited Permissions)
+router.get('/staff', isAuthenticated, checkRole('Super Admin', 'Admin', 'Staff'), async (req, res) => {
+    res.json({
+        role: 'Staff',
+        message: 'Welcome Staff! Daily counter operations.',
+        modules: ['POS Billing', 'Sales Returns', 'Product Search']
+    });
 });
 
 module.exports = router;

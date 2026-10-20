@@ -1,21 +1,29 @@
-const jwt = require('jsonwebtoken');
-
-const verifySuperAdmin = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Access denied. No token provided!' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
-    req.admin = verified; // Save admin info in request
-    next();
-  } catch (err) {
-    res.status(403).json({ message: 'Invalid or expired token!' });
-  }
+// Check if user is logged in
+const isAuthenticated = (req, res, next) => {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    return res.status(401).json({ success: false, message: 'Please log in to continue' });
 };
 
-module.exports = verifySuperAdmin;
+// Check User Roles (Super Admin / Admin / Staff)
+const checkRole = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        const userRole = req.session.user.role_name;
+
+        if (allowedRoles.includes(userRole)) {
+            return next();
+        }
+
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Access Denied: Aapko is section ka access nahi hai' 
+        });
+    };
+};
+
+module.exports = { isAuthenticated, checkRole };
