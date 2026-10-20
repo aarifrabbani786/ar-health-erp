@@ -3,102 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. Health ERP - Professional Pharmacy Suite</title>
+    <title>A R Pharma and Surgical Agency - Dashboard</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
-        /* Login Screen Overlay */
+        /* Login Screen with Foundation Background */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 80%);
+            background: linear-gradient(rgba(11, 15, 25, 0.85), rgba(11, 15, 25, 0.92)), url('https://images.unsplash.com/photo-1587370560942-ad2a04eabb6f?auto=format&fit=crop&w=1920&q=80') center/cover;
             display: flex; align-items: center; justify-content: center; z-index: 9999;
         }
         .auth-card {
-            background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(16px);
-            padding: 40px; border-radius: 20px; width: 100%; max-width: 400px;
+            background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px);
+            padding: 35px; border-radius: 20px; width: 100%; max-width: 420px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
         }
-        .auth-card h2 { font-size: 24px; color: #fff; margin-bottom: 8px; text-align: center; }
-        .auth-card p { font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 25px; }
+        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 5px; text-align: center; }
+        .auth-card .subtitle { font-size: 12px; color: #60a5fa; text-align: center; margin-bottom: 20px; font-weight: 600; }
 
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
         /* Sidebar */
         #sidebar-container { 
-            width: 280px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            width: 270px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
             color: #fff; flex-shrink: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.4);
             border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; min-height: 100vh;
         }
         .sidebar-brand {
-            padding: 22px 20px; display: flex; align-items: center; gap: 14px;
+            padding: 20px; display: flex; align-items: center; gap: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         .sidebar-logo {
-            width: 42px; height: 42px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+            width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
-        .sidebar-menu { list-style: none; padding: 15px; margin: 0; flex: 1; overflow-y: auto; }
-        .sidebar-menu li { margin-bottom: 6px; }
+        .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
+        .sidebar-menu li { margin-bottom: 4px; }
         .sidebar-menu a {
-            display: flex; align-items: center; padding: 11px 15px; color: #94a3b8;
-            text-decoration: none; border-radius: 10px; transition: all 0.25s ease;
-            font-weight: 500; font-size: 13.5px; gap: 12px; cursor: pointer;
+            display: flex; align-items: center; padding: 10px 14px; color: #94a3b8;
+            text-decoration: none; border-radius: 8px; transition: all 0.25s ease;
+            font-weight: 500; font-size: 13px; gap: 12px; cursor: pointer;
         }
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background: rgba(59, 130, 246, 0.15); color: #60a5fa;
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
-        .sidebar-footer { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.08); }
 
         /* Main Workspace */
         .main-content { 
-            flex: 1; padding: 30px; overflow-y: auto; 
+            flex: 1; padding: 25px; overflow-y: auto; 
             background: radial-gradient(circle at top right, #1e293b 0%, #0b0f19 70%); 
         }
         .top-navbar { 
             display: flex; justify-content: space-between; align-items: center; 
             background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px);
-            padding: 16px 25px; border-radius: 16px; 
+            padding: 15px 25px; border-radius: 14px; 
             box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); 
-            border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px; 
+            border: 1px solid rgba(255,255,255,0.08); margin-bottom: 22px; 
         }
-        .top-navbar h1 { font-size: 19px; font-weight: 700; color: #fff; }
-        .store-sub { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
-        .user-badge { font-size: 12.5px; font-weight: 600; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 8px; }
+        .top-navbar h1 { font-size: 18px; font-weight: 700; color: #fff; }
+        .store-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        .user-badge { font-size: 12px; font-weight: 600; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 5px 12px; border-radius: 8px; }
 
-        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-bottom: 25px; }
-        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
-        .card h3 { font-size: 11.5px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
-        .card .value { font-size: 22px; font-weight: 700; color: #f8fafc; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 22px; }
+        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .card h3 { font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
+        .card .value { font-size: 20px; font-weight: 700; color: #f8fafc; }
 
-        .workspace-panel { background: rgba(30, 41, 59, 0.4); border-radius: 16px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); min-height: 420px; }
+        .workspace-panel { background: rgba(30, 41, 59, 0.4); border-radius: 14px; padding: 22px; border: 1px solid rgba(255,255,255,0.05); min-height: 380px; }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 14px; }
         .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 12.5px; color: #94a3b8; margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 9px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 13.5px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 9px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 13px; }
         
-        .btn-primary { background: #3b82f6; color: white; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13.5px; }
+        .btn-primary { background: #3b82f6; color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-primary:hover { background: #2563eb; }
 
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        .data-table th, .data-table td { padding: 11px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13.5px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .data-table th, .data-table td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; }
         .data-table th { color: #94a3b8; font-weight: 600; }
         
         .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
         .btn-danger:hover { background: #ef4444; color: #fff; }
 
-        .logout-btn { width: 100%; padding: 11px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .logout-btn { width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12.5px; }
         .logout-btn:hover { background: #ef4444; color: #fff; }
-
-        /* Printable Receipt Styling */
-        @media print {
-            body * { visibility: hidden; }
-            #printable-bill, #printable-bill * { visibility: visible; }
-            #printable-bill { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 20px; }
-        }
     </style>
 </head>
 <body>
@@ -106,39 +99,63 @@
     <!-- AUTHENTICATION LOGIN OVERLAY -->
     <div id="auth-overlay">
         <div class="auth-card">
-            <h2>Pharmacy Login</h2>
-            <p>Enter your credentials to access system</p>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="loginUser" class="form-control" placeholder="admin or staff">
+            <h2>A R Pharma & Surgical Agency</h2>
+            <div class="subtitle">Chairman: DRx. Aarif Rabbani</div>
+            
+            <div id="login-form-box">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUser" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
+                </div>
+                <button onclick="handleLogin()" class="btn-primary" style="width: 100%; padding: 10px; margin-bottom: 12px;">Secure System Login</button>
+                <div style="text-align: right;">
+                    <a href="#" onclick="showForgotModal(event)" style="color: #60a5fa; font-size: 12px; text-decoration: none;">Forgot Password?</a>
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label>Password</label>
-                <input type="password" id="loginPass" class="form-control" placeholder="Password">
+
+            <!-- Forgot Password Section (Hidden by default) -->
+            <div id="forgot-form-box" style="display:none;">
+                <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 12px;">Enter your registered username to reset password:</p>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="forgotUser" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>New Password</label>
+                    <input type="password" id="forgotNewPass" class="form-control" placeholder="Enter new password">
+                </div>
+                <button onclick="handleForgotReset()" class="btn-primary" style="width: 100%; padding: 10px; margin-bottom: 10px;">Reset Password</button>
+                <div style="text-align: center;">
+                    <a href="#" onclick="hideForgotModal(event)" style="color: #94a3b8; font-size: 12px; text-decoration: none;">Back to Login</a>
+                </div>
             </div>
-            <button onclick="handleLogin()" class="btn-primary" style="width: 100%; padding: 11px;">Login to ERP</button>
         </div>
     </div>
 
+    <!-- MAIN APP LAYOUT -->
     <div class="app-layout" id="main-app-container" style="display: none;">
         <!-- Sidebar -->
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="sidebar-logo">⚕️</div>
                 <div>
-                    <h3 id="sidebar-store-name" style="font-size: 14.5px; color: #fff; font-weight: 700;">Pharmacy ERP</h3>
-                    <span id="role-tag" style="font-size: 10.5px; color: #60a5fa; font-weight: 600;">Role</span>
+                    <h3 id="sidebar-store-name" style="font-size: 13.5px; color: #fff; font-weight: 700;">A R PHARMA</h3>
+                    <span id="role-tag" style="font-size: 10px; color: #60a5fa; font-weight: 600;">Chairman</span>
                 </div>
             </div>
 
             <ul class="sidebar-menu">
                 <li><a class="menu-link active" onclick="switchTab('dashboard')"><span>📊</span> Dashboard</a></li>
-                <li><a class="menu-link" onclick="switchTab('pos')"><span>🛒</span> 1. Sale & POS Billing</a></li>
-                <li><a class="menu-link" onclick="switchTab('purchase')"><span>📦</span> 2. Purchase & Suppliers</a></li>
-                <li><a class="menu-link" onclick="switchTab('returns')"><span>🔄</span> 3. Returns Master</a></li>
-                <li><a class="menu-link" onclick="switchTab('collection')"><span>💰</span> 4. Collection Master</a></li>
-                <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> 5. Staff Attendance</a></li>
-                <li><a class="menu-link" id="admin-menu-link" onclick="switchTab('admin')"><span>⚙️</span> 6. Admin Panel & Settings</a></li>
+                <li><a class="menu-link" onclick="switchTab('pos')"><span>🛒</span> Sales / POS</a></li>
+                <li><a class="menu-link" onclick="switchTab('purchase')"><span>📦</span> Purchase Entry</a></li>
+                <li><a class="menu-link" onclick="switchTab('medicines')"><span>💊</span> Medicines Stock</a></li>
+                <li><a class="menu-link" onclick="switchTab('collection')"><span>💰</span> Collection Master</a></li>
+                <li><a class="menu-link" onclick="switchTab('attendance')"><span>👥</span> Staff Attendance</a></li>
+                <li><a class="menu-link" id="admin-menu-link" onclick="switchTab('admin')"><span>⚙️</span> User Accounts & Settings</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -151,28 +168,28 @@
             <div class="top-navbar">
                 <div>
                     <h1 id="page-title">Dashboard Overview</h1>
-                    <div class="store-sub" id="header-store-details">GST No: - | DL No: -</div>
+                    <div class="store-sub" id="header-store-details">Chairman: DRx. Aarif Rabbani | Dist. Maharajganj, UP</div>
                 </div>
-                <div id="user-profile-badge" class="user-badge">User</div>
+                <div id="user-profile-badge" class="user-badge">Admin</div>
             </div>
 
             <!-- Stats -->
             <div class="dashboard-cards">
                 <div class="card">
-                    <h3>Today's Collection</h3>
-                    <div class="value" id="stat-collection">₹0.00</div>
+                    <h3>Today's Sales</h3>
+                    <div class="value" id="stat-collection" style="color:#4ade80;">₹255.00</div>
                 </div>
                 <div class="card">
                     <h3>Total Inventory Items</h3>
-                    <div class="value" id="stat-items">0</div>
+                    <div class="value" id="stat-items">1</div>
                 </div>
                 <div class="card">
-                    <h3>Total Sales Bills</h3>
-                    <div class="value" id="stat-bills">0</div>
+                    <h3>Total Purchase</h3>
+                    <div class="value">₹0.00</div>
                 </div>
                 <div class="card">
-                    <h3>Suppliers Registered</h3>
-                    <div class="value" id="stat-suppliers">0</div>
+                    <h3>Active Staff</h3>
+                    <div class="value" id="stat-staff">1</div>
                 </div>
             </div>
 
@@ -181,44 +198,27 @@
         </div>
     </div>
 
-    <!-- Hidden Printable Bill Template -->
-    <div id="printable-bill" style="display:none;"></div>
-
     <script>
-        // Default Database Initialization
+        // Default Database Setup
         if (!localStorage.getItem('erp_items')) {
             localStorage.setItem('erp_items', JSON.stringify([
-                { id: 101, name: 'Paracetamol 650mg', qty: 150, price: 30 },
-                { id: 102, name: 'Amoxicillin 500mg', qty: 80, price: 120 }
+                { id: 101, name: 'Paracetamol 650mg', qty: 150, price: 30 }
             ]));
         }
-        if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
-        if (!localStorage.getItem('erp_suppliers')) {
-            localStorage.setItem('erp_suppliers', JSON.stringify([
-                { name: 'Medica Pharma Distributors', phone: '9876543210', address: 'Gorakhpur UP' }
+        if (!localStorage.getItem('erp_bills')) {
+            localStorage.setItem('erp_bills', JSON.stringify([
+                { billId: 'BILL-1001', patientName: 'Aarif Rabbani', mobile: '9005554424', doctor: 'Dr. Self', paymentMode: 'Cash', grandTotal: 255, date: new Date().toISOString().split('T')[0], time: '10:30 AM' }
             ]));
         }
-        if (!localStorage.getItem('erp_purchases')) localStorage.setItem('erp_purchases', JSON.stringify([]));
-        if (!localStorage.getItem('erp_returns')) localStorage.setItem('erp_returns', JSON.stringify([]));
         if (!localStorage.getItem('erp_staff')) {
             localStorage.setItem('erp_staff', JSON.stringify([
-                { username: 'admin', pass: 'admin123', role: 'Admin' },
-                { username: 'staff', pass: '1234', role: 'Billing Operator' }
+                { username: 'admin', pass: 'admin123', role: 'Chairman / Admin' },
+                { username: 'staff1', pass: '1234', role: 'Cashier / Staff' }
             ]));
         }
-        if (!localStorage.getItem('erp_settings')) {
-            localStorage.setItem('erp_settings', JSON.stringify({
-                storeName: 'A.R. Medical & General Store',
-                gstNo: '09AAAAA0000A1Z5',
-                dlNo: 'UP-2026-MED-98765'
-            }));
-        }
 
-        // Check Session on Load
         let currentUser = JSON.parse(localStorage.getItem('current_user'));
-        if (currentUser) {
-            initApp(currentUser);
-        }
+        if (currentUser) { initApp(currentUser); }
 
         function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
@@ -230,7 +230,36 @@
                 localStorage.setItem('current_user', JSON.stringify(found));
                 initApp(found);
             } else {
-                alert('Invalid Username or Password! Try admin / admin123 or staff / 1234');
+                alert('Invalid Username or Password! Try admin / admin123');
+            }
+        }
+
+        function showForgotModal(e) {
+            e.preventDefault();
+            document.getElementById('login-form-box').style.display = 'none';
+            document.getElementById('forgot-form-box').style.display = 'block';
+        }
+
+        function hideForgotModal(e) {
+            e.preventDefault();
+            document.getElementById('forgot-form-box').style.display = 'none';
+            document.getElementById('login-form-box').style.display = 'block';
+        }
+
+        function handleForgotReset() {
+            let u = document.getElementById('forgotUser').value.trim();
+            let newP = document.getElementById('forgotNewPass').value.trim();
+            if(!u || !newP) { alert('Please enter username and new password!'); return; }
+
+            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
+            let userObj = staffList.find(s => s.username === u);
+            if(userObj) {
+                userObj.pass = newP;
+                localStorage.setItem('erp_staff', JSON.stringify(staffList));
+                alert('Password reset successfully! You can now login with new password.');
+                hideForgotModal(new Event('click'));
+            } else {
+                alert('Username not found in system!');
             }
         }
 
@@ -242,22 +271,10 @@
         function initApp(user) {
             document.getElementById('auth-overlay').style.display = 'none';
             document.getElementById('main-app-container').style.display = 'flex';
-
-            let settings = JSON.parse(localStorage.getItem('erp_settings'));
-            document.getElementById('sidebar-store-name').innerText = settings.storeName;
-            document.getElementById('header-store-details').innerText = `GST No: ${settings.gstNo} | DL No: ${settings.dlNo}`;
             document.getElementById('role-tag').innerText = user.role;
             document.getElementById('user-profile-badge').innerText = user.username + ' (' + user.role + ')';
-
-            if(user.role !== 'Admin') {
-                let adminLink = document.getElementById('admin-menu-link');
-                if(adminLink) adminLink.style.display = 'none';
-            }
-
             switchTab('dashboard');
         }
-
-        let cart = [];
 
         function switchTab(tab) {
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -265,173 +282,45 @@
 
             const container = document.getElementById('workspace-content');
             const title = document.getElementById('page-title');
-            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let suppliers = JSON.parse(localStorage.getItem('erp_suppliers')) || [];
-            let settings = JSON.parse(localStorage.getItem('erp_settings'));
+            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
 
             if (tab === 'dashboard') {
-                title.innerText = "Dashboard Overview";
+                title.innerText = "Dashboard & Overview";
                 container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Welcome to ${settings.storeName}</h2>
-                    <p style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">System is operating smoothly. Use the left menu for POS billing with instant print, supplier invoice entry, returns, and collection reports.</p>
-                `;
-            } 
-            else if (tab === 'pos') {
-                title.innerText = "Sale & POS Billing Counter";
-                container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Patient & Prescription Information</h2>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Patient Name</label><input type="text" id="patientName" class="form-control" placeholder="Patient Name"></div>
-                        <div class="form-group"><label>Mobile Number</label><input type="text" id="patientMobile" class="form-control" placeholder="Mobile Number"></div>
-                        <div class="form-group"><label>Doctor Name</label><input type="text" id="doctorName" class="form-control" placeholder="Doctor Name"></div>
-                        <div class="form-group"><label>Payment Mode</label>
-                            <select id="paymentMode" class="form-control">
-                                <option value="Cash">Cash</option>
-                                <option value="UPI / QR">UPI / QR Code</option>
-                                <option value="Card">Card</option>
-                                <option value="Credit">Credit (Udhar)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <h2 style="font-size: 17px; margin: 18px 0 10px 0; color: #e2e8f0;">Medicine Search & Qty Selection</h2>
-                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
-                        <input type="text" id="searchMedicine" class="form-control" placeholder="Search medicine..." onkeyup="filterMedicines()">
-                    </div>
-
-                    <div style="max-height: 170px; overflow-y: auto; background: rgba(15,23,42,0.4); border-radius: 8px; padding: 10px; margin-bottom: 18px;">
-                        <table class="data-table" style="margin-top:0;">
-                            <thead><tr><th>Medicine Name</th><th>Available Stock</th><th>Price (₹)</th><th>Qty to Add</th><th>Action</th></tr></thead>
-                            <tbody id="medicine-search-results"></tbody>
+                    <h2 style="font-size: 16px; margin-bottom: 12px; color: #e2e8f0;">A R Pharma and Surgical Agency - Live Overview</h2>
+                    <p style="color: #94a3b8; font-size: 13px; line-height: 1.5;">Chairman: DRx. Aarif Rabbani | Dist. Maharajganj, Uttar Pradesh.</p>
+                    <div style="margin-top: 20px; background: rgba(15,23,42,0.6); padding: 15px; border-radius: 10px;">
+                        <h3 style="font-size: 14px; color: #60a5fa; margin-bottom: 8px;">User-Wise Total Sales Report</h3>
+                        <table class="data-table">
+                            <thead><tr><th>User / Staff</th><th>Role</th><th>Total Sales</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td>DRx. Aarif Rabbani</td><td>Chairman / Admin</td><td style="color:#4ade80;">₹255.00</td><td><span style="color:#4ade80;">ACTIVE NOW</span></td></tr>
+                            </tbody>
                         </table>
                     </div>
-
-                    <h2 style="font-size: 17px; margin: 15px 0 10px 0; color: #e2e8f0;">Current Bill Cart</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Medicine</th><th>Price</th><th>Qty</th><th>Total</th><th>Action</th></tr></thead>
-                        <tbody id="cart-items-list">
-                            <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Cart is empty. Select medicines above.</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; background: rgba(15,23,42,0.8); padding: 15px 20px; border-radius: 10px;">
-                        <div style="font-size: 17px; font-weight: 700;">Grand Total: <span id="cart-grand-total" style="color: #4ade80;">₹0.00</span></div>
-                        <button onclick="completeSaleAndPrint()" class="btn-primary" style="padding: 11px 25px;">Save & Print Bill</button>
-                    </div>
                 `;
-                renderPOSMedicines(items);
-            }
-            else if (tab === 'purchase') {
-                title.innerText = "Purchase & Supplier Master";
-                let supOptions = suppliers.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-                
-                let supTableHtml = '';
-                suppliers.forEach((s, idx) => {
-                    supTableHtml += `<tr><td>${s.name}</td><td>${s.phone}</td><td>${s.address}</td><td><button onclick="deleteSupplier(${idx})" class="btn-danger">Remove</button></td></tr>`;
-                });
-
-                container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Add New Supplier</h2>
-                    <div class="form-grid" style="margin-bottom: 25px;">
-                        <div class="form-group"><label>Supplier Name</label><input type="text" id="supName" class="form-control" placeholder="Company / Dealer Name"></div>
-                        <div class="form-group"><label>Phone Number</label><input type="text" id="supPhone" class="form-control" placeholder="Mobile Number"></div>
-                        <div class="form-group"><label>Address</label><input type="text" id="supAddress" class="form-control" placeholder="City / Location"></div>
-                        <div style="display: flex; align-items: flex-end;"><button onclick="addSupplier()" class="btn-primary" style="width:100%;">Add Supplier</button></div>
-                    </div>
-
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Supplier Invoice / Purchase Entry (Stock In)</h2>
-                    <div class="form-grid" style="margin-bottom: 20px;">
-                        <div class="form-group"><label>Select Supplier</label><select id="invSupplier" class="form-control">${supOptions}</select></div>
-                        <div class="form-group"><label>Medicine Name</label><input type="text" id="invMedName" class="form-control" placeholder="Medicine Name"></div>
-                        <div class="form-group"><label>Quantity Purchased</label><input type="number" id="invQty" class="form-control" placeholder="Qty"></div>
-                        <div class="form-group"><label>Purchase Price per unit (₹)</label><input type="number" id="invPrice" class="form-control" placeholder="Price"></div>
-                        <div style="display: flex; align-items: flex-end;"><button onclick="savePurchaseInvoice()" class="btn-primary" style="width:100%;">Save Invoice & Update Stock</button></div>
-                    </div>
-
-                    <h2 style="font-size: 17px; margin: 20px 0 10px 0; color: #e2e8f0;">Registered Suppliers</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Supplier Name</th><th>Phone</th><th>Address</th><th>Action</th></tr></thead>
-                        <tbody>${supTableHtml}</tbody>
-                    </table>
-                `;
-            }
-            else if (tab === 'returns') {
-                title.innerText = "Sales & Purchase Returns Master";
-                container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Process Item Return</h2>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Bill ID or Ref</label><input type="text" id="retRef" class="form-control" placeholder="Bill ID"></div>
-                        <div class="form-group"><label>Medicine Name</label><input type="text" id="retMed" class="form-control" placeholder="Medicine Name"></div>
-                        <div class="form-group"><label>Return Qty</label><input type="number" id="retQty" class="form-control" placeholder="Qty"></div>
-                        <div style="display: flex; align-items: flex-end;"><button onclick="processReturn()" class="btn-primary" style="width:100%;">Process Return</button></div>
-                    </div>
-                    <h2 style="font-size: 17px; margin: 20px 0 10px 0; color: #e2e8f0;">Return History Log</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Date</th><th>Reference</th><th>Medicine</th><th>Qty Returned</th></tr></thead>
-                        <tbody id="returns-table-body"></tbody>
-                    </table>
-                `;
-                renderReturnsLog();
-            }
-            else if (tab === 'collection') {
-                title.innerText = "Collection Master (Date Wise)";
-                let todayStr = new Date().toISOString().split('T')[0];
-                container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Filter Collection by Date</h2>
-                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                        <input type="date" id="reportDate" class="form-control" value="${todayStr}" style="max-width: 220px;" onchange="loadDateReport()">
-                        <button onclick="loadDateReport()" class="btn-primary">Filter</button>
-                    </div>
-                    <div class="dashboard-cards" style="margin-bottom: 20px;">
-                        <div class="card"><h3>Selected Date Collection</h3><div class="value" id="rep-total" style="color:#4ade80;">₹0.00</div></div>
-                        <div class="card"><h3>Bills Count</h3><div class="value" id="rep-bills-count">0</div></div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Time</th><th>Patient Name</th><th>Mobile</th><th>Doctor</th><th>Payment Mode</th><th>Total</th></tr></thead>
-                        <tbody id="report-bills-table"></tbody>
-                    </table>
-                `;
-                loadDateReport();
-            }
-            else if (tab === 'attendance') {
-                title.innerText = "Staff Attendance";
-                container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Staff Attendance Log</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Staff Name</th><th>Role</th><th>Status</th><th>Time</th></tr></thead>
-                        <tbody><tr><td>${currentUser.username}</td><td>${currentUser.role}</td><td><span style="color:#4ade80;">Present</span></td><td>09:30 AM</td></tr></tbody>
-                    </table>
-                `;
-            }
+            } 
             else if (tab === 'admin') {
-                let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
                 let staffHtml = '';
                 staffList.forEach((s, idx) => {
                     staffHtml += `<tr><td>${s.username}</td><td>${s.pass}</td><td>${s.role}</td><td><button onclick="deleteStaff(${idx})" class="btn-danger">Remove</button></td></tr>`;
                 });
 
-                title.innerText = "Admin Panel & Store Settings";
+                title.innerText = "User Accounts & Password Change";
                 container.innerHTML = `
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Pharmacy Store Details</h2>
-                    <div class="form-grid" style="margin-bottom: 25px;">
-                        <div class="form-group"><label>Store Name</label><input type="text" id="setStoreName" class="form-control" value="${settings.storeName}"></div>
-                        <div class="form-group"><label>GST Number</label><input type="text" id="setGst" class="form-control" value="${settings.gstNo}"></div>
-                        <div class="form-group"><label>Drug License (DL) No</label><input type="text" id="setDl" class="form-control" value="${settings.dlNo}"></div>
-                        <div style="display: flex; align-items: flex-end;"><button onclick="saveStoreSettings()" class="btn-primary" style="width:100%;">Save Settings</button></div>
+                    <h2 style="font-size: 16px; margin-bottom: 12px; color: #e2e8f0;">Change Password for User IDs</h2>
+                    <div class="form-grid" style="margin-bottom: 22px;">
+                        <div class="form-group"><label>Select Username</label><select id="changeUserTarget" class="form-control">${staffList.map(s => `<option value="${s.username}">${s.username} (${s.role})</option>`).join('')}</select></div>
+                        <div class="form-group"><label>New Password</label><input type="password" id="changeUserNewPass" class="form-control" placeholder="New Password"></div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="changeUserPassword()" class="btn-primary" style="width:100%;">Update Password</button></div>
                     </div>
 
-                    <h2 style="font-size: 17px; margin-bottom: 12px; color: #e2e8f0;">Create Staff User & Password</h2>
+                    <h2 style="font-size: 16px; margin-bottom: 12px; color: #e2e8f0;">Create Staff / User Account</h2>
                     <div class="form-grid" style="margin-bottom: 20px;">
                         <div class="form-group"><label>Username</label><input type="text" id="newStaffUser" class="form-control" placeholder="Username"></div>
                         <div class="form-group"><label>Password</label><input type="password" id="newStaffPass" class="form-control" placeholder="Password"></div>
-                        <div class="form-group"><label>Role / Permissions</label>
-                            <select id="newStaffRole" class="form-control">
-                                <option value="Billing Operator">Billing Operator</option>
-                                <option value="Inventory Manager">Inventory Manager</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: flex-end;"><button onclick="createStaff()" class="btn-primary" style="width:100%;">Create Staff</button></div>
+                        <div class="form-group"><label>Role</label><input type="text" id="newStaffRole" class="form-control" value="Billing Operator"></div>
+                        <div style="display: flex; align-items: flex-end;"><button onclick="createStaff()" class="btn-primary" style="width:100%;">Create User</button></div>
                     </div>
 
                     <table class="data-table">
@@ -440,265 +329,37 @@
                     </table>
                 `;
             }
-
-            document.getElementById('stat-items').innerText = items.length;
-            document.getElementById('stat-bills').innerText = bills.length;
-            document.getElementById('stat-suppliers').innerText = suppliers.length;
-            
-            let today = new Date().toISOString().split('T')[0];
-            let todayColl = bills.filter(b => b.date === today).reduce((sum, b) => sum + b.grandTotal, 0);
-            document.getElementById('stat-collection').innerText = '₹' + todayColl.toFixed(2);
-        }
-
-        // POS & Print Logic
-        function renderPOSMedicines(items, filter = '') {
-            const tbody = document.getElementById('medicine-search-results');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            let filtered = items.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No medicines found.</td></tr>`;
-                return;
+            else {
+                title.innerText = tab.toUpperCase() + " Module";
+                container.innerHTML = `<h2 style="font-size: 16px; color: #e2e8f0;">${tab.toUpperCase()} workspace is ready.</h2>`;
             }
-
-            filtered.forEach((item, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.qty} units</td>
-                        <td>₹${item.price}</td>
-                        <td style="width: 100px;"><input type="number" id="qty_${idx}" class="form-control" value="1" min="1" max="${item.qty}" style="padding:5px;"></td>
-                        <td><button onclick="addToCart('${item.name}', ${item.price}, ${idx})" class="btn-primary" style="padding:4px 12px; font-size:12px;">Add</button></td>
-                    </tr>
-                `;
-            });
         }
 
-        function filterMedicines() {
-            let query = document.getElementById('searchMedicine').value;
-            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
-            renderPOSMedicines(items, query);
-        }
+        function changeUserPassword() {
+            let targetUser = document.getElementById('changeUserTarget').value;
+            let newPass = document.getElementById('changeUserNewPass').value;
+            if(!newPass) { alert('Please enter new password!'); return; }
 
-        function addToCart(name, price, idx) {
-            let qtyInput = document.getElementById(`qty_${idx}`);
-            let q = parseInt(qtyInput ? qtyInput.value : 1) || 1;
-
-            let existing = cart.find(c => c.name === name);
-            if(existing) { existing.qty += q; } else { cart.push({ name, price, qty: q }); }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const list = document.getElementById('cart-items-list');
-            if(!list) return;
-            list.innerHTML = '';
-            let grandTotal = 0;
-
-            if(cart.length === 0) {
-                list.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Cart is empty. Select medicines above.</td></tr>`;
-                document.getElementById('cart-grand-total').innerText = '₹0.00';
-                return;
+            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
+            let obj = staffList.find(s => s.username === targetUser);
+            if(obj) {
+                obj.pass = newPass;
+                localStorage.setItem('erp_staff', JSON.stringify(staffList));
+                alert('Password updated successfully for ' + targetUser + '!');
+                document.getElementById('changeUserNewPass').value = '';
             }
-
-            cart.forEach((item, index) => {
-                let total = item.price * item.qty;
-                grandTotal += total;
-                list.innerHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>₹${item.price}</td>
-                        <td>${item.qty}</td>
-                        <td>₹${total}</td>
-                        <td><button onclick="removeFromCart(${index})" class="btn-danger" style="padding:2px 8px;">X</button></td>
-                    </tr>
-                `;
-            });
-            document.getElementById('cart-grand-total').innerText = '₹' + grandTotal.toFixed(2);
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function completeSaleAndPrint() {
-            let pName = document.getElementById('patientName').value;
-            let pMob = document.getElementById('patientMobile').value;
-            let docName = document.getElementById('doctorName').value || 'Self';
-            let payMode = document.getElementById('paymentMode').value;
-
-            if(!pName || !pMob) { alert('Enter Patient Name and Mobile Number!'); return; }
-            if(cart.length === 0) { alert('Cart is empty!'); return; }
-
-            let grandTotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            let dateStr = new Date().toISOString().split('T')[0];
-            let timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            let settings = JSON.parse(localStorage.getItem('erp_settings'));
-
-            let bill = {
-                billId: 'BILL-' + Math.floor(1000 + Math.random() * 9000),
-                patientName: pName, mobile: pMob, doctor: docName, paymentMode: payMode,
-                items: [...cart], grandTotal, date: dateStr, time: timeStr
-            };
-
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            bills.push(bill);
-            localStorage.setItem('erp_bills', JSON.stringify(bills));
-
-            // Deduct stock
-            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
-            cart.forEach(c => {
-                let st = items.find(i => i.name === c.name);
-                if(st) { st.qty = Math.max(0, st.qty - c.qty); }
-            });
-            localStorage.setItem('erp_items', JSON.stringify(items));
-
-            // Prepare Print Layout
-            let printDiv = document.getElementById('printable-bill');
-            let rowsHtml = cart.map(i => `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${i.price * i.qty}</td></tr>`).join('');
-            
-            printDiv.innerHTML = `
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <h2>${settings.storeName}</h2>
-                    <p style="font-size:12px;">GST: ${settings.gstNo} | DL: ${settings.dlNo}</p>
-                    <hr style="margin: 10px 0;">
-                </div>
-                <p><b>Bill ID:</b> ${bill.billId} | <b>Date:</b> ${dateStr} ${timeStr}</p>
-                <p><b>Patient:</b> ${pName} (${pMob}) | <b>Doctor:</b> ${docName}</p>
-                <table style="width:100%; border-collapse: collapse; margin-top: 15px;">
-                    <thead><tr style="border-bottom: 1px solid #000;"><th style="text-align:left;">Item</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead>
-                    <tbody>${rowsHtml}</tbody>
-                </table>
-                <h3 style="text-align:right; margin-top:15px;">Grand Total: ₹${grandTotal.toFixed(2)}</h3>
-                <p style="text-align:center; margin-top:30px; font-size:12px;">Thank you for visiting! Get well soon.</p>
-            `;
-
-            window.print();
-
-            cart = [];
-            switchTab('pos');
-        }
-
-        // Supplier & Purchase
-        function addSupplier() {
-            let name = document.getElementById('supName').value;
-            let phone = document.getElementById('supPhone').value;
-            let address = document.getElementById('supAddress').value;
-            if(!name) { alert('Enter supplier name!'); return; }
-
-            let suppliers = JSON.parse(localStorage.getItem('erp_suppliers')) || [];
-            suppliers.push({ name, phone, address });
-            localStorage.setItem('erp_suppliers', JSON.stringify(suppliers));
-            alert('Supplier added successfully!');
-            switchTab('purchase');
-        }
-
-        function deleteSupplier(idx) {
-            let suppliers = JSON.parse(localStorage.getItem('erp_suppliers')) || [];
-            suppliers.splice(idx, 1);
-            localStorage.setItem('erp_suppliers', JSON.stringify(suppliers));
-            switchTab('purchase');
-        }
-
-        function savePurchaseInvoice() {
-            let sup = document.getElementById('invSupplier').value;
-            let medName = document.getElementById('invMedName').value;
-            let qty = parseInt(document.getElementById('invQty').value);
-            let price = parseFloat(document.getElementById('invPrice').value);
-
-            if(!sup || !medName || !qty || !price) { alert('Fill all invoice details!'); return; }
-
-            // Update Stock
-            let items = JSON.parse(localStorage.getItem('erp_items')) || [];
-            let existing = items.find(i => i.name.toLowerCase() === medName.toLowerCase());
-            if(existing) {
-                existing.qty += qty;
-                existing.price = price;
-            } else {
-                items.push({ id: Math.floor(1000 + Math.random() * 9000), name: medName, qty, price });
-            }
-            localStorage.setItem('erp_items', JSON.stringify(items));
-
-            alert('Purchase invoice saved and stock updated successfully!');
-            switchTab('purchase');
-        }
-
-        // Reports & Returns
-        function loadDateReport() {
-            let selDate = document.getElementById('reportDate').value;
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let filtered = bills.filter(b => b.date === selDate);
-
-            let total = filtered.reduce((sum, b) => sum + b.grandTotal, 0);
-            document.getElementById('rep-total').innerText = '₹' + total.toFixed(2);
-            document.getElementById('rep-bills-count').innerText = filtered.length;
-
-            let tbody = document.getElementById('report-bills-table');
-            tbody.innerHTML = '';
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No bills found for ${selDate}</td></tr>`;
-                return;
-            }
-
-            filtered.forEach(b => {
-                tbody.innerHTML += `
-                    <tr><td>${b.time}</td><td><b>${b.patientName}</b></td><td>${b.mobile}</td><td>${b.doctor}</td><td>${b.paymentMode}</td><td style="color:#4ade80; font-weight:650;">₹${b.grandTotal}</td></tr>
-                `;
-            });
-        }
-
-        function processReturn() {
-            let ref = document.getElementById('retRef').value;
-            let med = document.getElementById('retMed').value;
-            let qty = document.getElementById('retQty').value;
-            if(!ref || !med || !qty) { alert('Fill all return fields!'); return; }
-
-            let returns = JSON.parse(localStorage.getItem('erp_returns')) || [];
-            returns.push({ date: new Date().toISOString().split('T')[0], ref, med, qty });
-            localStorage.setItem('erp_returns', JSON.stringify(returns));
-            alert('Return logged successfully!');
-            switchTab('returns');
-        }
-
-        function renderReturnsLog() {
-            let returns = JSON.parse(localStorage.getItem('erp_returns')) || [];
-            let tbody = document.getElementById('returns-table-body');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if(returns.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No returns found.</td></tr>`;
-                return;
-            }
-            returns.forEach(r => {
-                tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.ref}</td><td>${r.med}</td><td>${r.qty}</td></tr>`;
-            });
-        }
-
-        // Admin Settings & Staff
-        function saveStoreSettings() {
-            let storeName = document.getElementById('setStoreName').value;
-            let gstNo = document.getElementById('setGst').value;
-            let dlNo = document.getElementById('setDl').value;
-
-            let settings = { storeName, gstNo, dlNo };
-            localStorage.setItem('erp_settings', JSON.stringify(settings));
-            document.getElementById('sidebar-store-name').innerText = storeName;
-            document.getElementById('header-store-details').innerText = `GST No: ${gstNo} | DL No: ${dlNo}`;
-            alert('Settings saved!');
         }
 
         function createStaff() {
             let username = document.getElementById('newStaffUser').value;
             let pass = document.getElementById('newStaffPass').value;
             let role = document.getElementById('newStaffRole').value;
-            if(!username || !pass) { alert('Fill username and password!'); return; }
+            if(!username || !pass) { alert('Enter username and password!'); return; }
 
             let staff = JSON.parse(localStorage.getItem('erp_staff')) || [];
             staff.push({ username, pass, role });
             localStorage.setItem('erp_staff', JSON.stringify(staff));
-            alert('Staff created!');
+            alert('New user account created successfully!');
             switchTab('admin');
         }
 
