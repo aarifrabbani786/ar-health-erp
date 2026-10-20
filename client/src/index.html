@@ -20,16 +20,15 @@
         <!-- Dynamic Sidebar Container -->
         <div id="sidebar-container"></div>
 
-        <!-- Right Dashboard / POS Workspace -->
+        <!-- Right Dashboard & POS Workspace -->
         <div class="main-content">
             <div class="top-navbar">
                 <h1>Point of Sale & Billing Counter</h1>
                 <div id="user-profile-badge" style="font-size: 13px; font-weight: 600; background: #e2e8f0; padding: 6px 12px; border-radius: 6px;">Active Counter</div>
             </div>
 
-            <!-- POS Content & Billing Section -->
             <div class="pos-container">
-                <!-- Aapka POS billing interface yahan render hoga -->
+                <!-- POS content/billing interface -->
             </div>
         </div>
     </div>
@@ -37,7 +36,6 @@
     <!-- Scripts -->
     <script src="sidebar.js"></script>
     <script>
-        // Load role and render UI
         const userRole = localStorage.getItem('role_name') || 'Staff';
         renderSidebar(userRole);
     </script>
