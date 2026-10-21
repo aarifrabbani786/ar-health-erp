@@ -83,7 +83,7 @@
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
+    <!-- LOGIN SCREEN OVERLAY -->
     <div id="auth-overlay">
         <div class="login-left-side">
             <div>
@@ -91,8 +91,8 @@
                 <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:5px;">Modular Pharmacy Management ERP</div>
             </div>
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 22px;">
-                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Independent Module Architecture</h3>
-                <p style="color: #cbd5e1; font-size: 13px;">Each section (POS, Stock, Returns, Admin) is cleanly separated for easy maintenance and secure cloud user sync.</p>
+                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Auto Session & Midnight Logout</h3>
+                <p style="color: #cbd5e1; font-size: 13px;">Session remains active across page refreshes and automatically logs out at 11:59 PM Midnight daily.</p>
             </div>
             <div style="font-size: 12px; color: #94a3b8;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
@@ -120,14 +120,14 @@
                 <div class="colorful-logo" style="font-size:20px;">A.R. HEALTHCARE</div>
             </div>
             <ul class="sidebar-menu">
-                <li><a class="menu-link active" onclick="loadModule('dashboard')"><span>📊</span> Dashboard Overview</a></li>
-                <li><a class="menu-link" onclick="loadModule('pos')"><span>🛒</span> POS Billing Counter</a></li>
-                <li><a class="menu-link" onclick="loadModule('returns')"><span>🔄</span> Sales Medicine Return</a></li>
-                <li><a class="menu-link" onclick="loadModule('medicines')"><span>💊</span> Stock Master (CRUD)</a></li>
-                <li><a class="menu-link" onclick="loadModule('superadmin')"><span>⚙️</span> Super Admin Control</a></li>
+                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard Overview</a></li>
+                <li><a class="menu-link" onclick="loadModule('pos')" id="nav-pos"><span>🛒</span> POS Billing Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Sales Medicine Return</a></li>
+                <li><a class="menu-link" onclick="loadModule('medicines')" id="nav-medicines"><span>💊</span> Stock Master (CRUD)</a></li>
+                <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
             <div style="padding:15px; border-top: 1px solid #e2e8f0;">
-                <button onclick="location.reload()" class="btn-danger" style="width:100%;">Logout System</button>
+                <button onclick="logoutUser()" class="btn-danger" style="width:100%;">Logout System</button>
             </div>
         </div>
 
@@ -155,10 +155,49 @@
     <script>
         let currentUser = null;
 
+        // Default Admin User Seeding
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
                 { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
             ]));
+        }
+
+        // --- PAGE INITIALIZATION & SESSION RESTORE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            checkMidnightAutoLogout();
+            setInterval(checkMidnightAutoLogout, 30000); // Har 30 sec me midnight check chalega
+
+            let savedSession = localStorage.getItem('erp_active_session');
+            if (savedSession) {
+                let user = JSON.parse(savedSession);
+                currentUser = user;
+                
+                // Active workspace show karein
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('main-app-container').style.display = 'flex';
+                document.getElementById('logged-user-badge').innerText = '● Active: ' + user.name + ' (' + (user.role || 'Staff') + ')';
+
+                applyRolePermissions(user);
+
+                // Refresh ke baad wahi purana module/table open karna
+                let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
+                loadModule(activeTab);
+            }
+        });
+
+        // --- MIDNIGHT 11:59 PM AUTO LOGOUT ENGINE ---
+        function checkMidnightAutoLogout() {
+            let now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+
+            // Agar raat ke 23:59 (11:59 PM) ho rahe hon
+            if (hours === 23 && minutes === 59) {
+                if (localStorage.getItem('erp_active_session')) {
+                    alert('⏰ Midnight 11:59 PM Reached! Security protocol initiating auto-logout.');
+                    logoutUser();
+                }
+            }
         }
 
         async function handleLogin() {
@@ -183,15 +222,25 @@
                 }
 
                 currentUser = found;
+                localStorage.setItem('erp_active_session', JSON.stringify(found));
+
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'flex';
                 document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + (found.role || 'Staff') + ')';
 
                 applyRolePermissions(found);
-                loadModule('dashboard');
+                
+                let startTab = localStorage.getItem('erp_active_module') || 'dashboard';
+                loadModule(startTab);
             } else {
                 alert('Invalid Username or Password!');
             }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('erp_active_session');
+            localStorage.removeItem('erp_active_module');
+            location.reload();
         }
 
         function applyRolePermissions(user) {
@@ -200,15 +249,19 @@
                 return;
             }
             let perms = user.permissions || { pos: true, returns: true, medicines: false, admin: false };
-            document.querySelector("a[onclick*='pos']").parentElement.style.display = perms.pos ? 'block' : 'none';
-            document.querySelector("a[onclick*='returns']").parentElement.style.display = perms.returns ? 'block' : 'none';
-            document.querySelector("a[onclick*='medicines']").parentElement.style.display = perms.medicines ? 'block' : 'none';
-            document.querySelector("a[onclick*='superadmin']").parentElement.style.display = perms.admin ? 'block' : 'none';
+            if(document.getElementById('nav-pos')) document.getElementById('nav-pos').parentElement.style.display = perms.pos ? 'block' : 'none';
+            if(document.getElementById('nav-returns')) document.getElementById('nav-returns').parentElement.style.display = perms.returns ? 'block' : 'none';
+            if(document.getElementById('nav-medicines')) document.getElementById('nav-medicines').parentElement.style.display = perms.medicines ? 'block' : 'none';
+            if(document.getElementById('nav-superadmin')) document.getElementById('nav-superadmin').parentElement.style.display = perms.admin ? 'block' : 'none';
         }
 
         function loadModule(moduleName) {
+            // Save active module state so refresh keeps the same page open
+            localStorage.setItem('erp_active_module', moduleName);
+
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+            let activeElem = document.getElementById('nav-' + moduleName);
+            if (activeElem) activeElem.classList.add('active');
 
             const workspace = document.getElementById('module-workspace');
             workspace.innerHTML = ""; 
