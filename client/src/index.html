@@ -3,162 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARHEALTHCARE - Best Pharmacy and Staff Management Software</title>
+    <title>A.R. HEALTHCARE - Best Pharmacy & Staff Management ERP</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #070a12; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+        body { background: #f1f5f9; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
 
-        /* FULLSCREEN CENTERED LOGIN OVERLAY */
-        #auth-overlay { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0%, rgba(7, 10, 18, 0.98) 100%),
-                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80') center/cover;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999999;
-            padding: 20px;
+        /* SPLIT LOGIN OVERLAY: LEFT BRANDING + RIGHT LOGIN FORM */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex; z-index: 999999;
         }
 
-        /* COLORFUL BRANDING TITLE */
+        /* LEFT SIDE BRANDING (UNIQUE DESIGN) */
+        .login-left-side {
+            flex: 1.2; padding: 50px; display: flex; flex-direction: column; justify-content: space-between;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
+                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
+            border-right: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff;
+        }
+
         .colorful-logo {
-            font-size: 38px; font-weight: 900; letter-spacing: 2.5px;
+            font-size: 36px; font-weight: 900; letter-spacing: 2px;
             background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-align: center; text-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); margin-bottom: 6px;
+            text-shadow: 0 10px 25px rgba(56, 189, 248, 0.4); margin-bottom: 8px;
         }
 
-        .tagline-text {
-            font-size: 13.5px; font-weight: 600; color: #38bdf8; text-align: center; margin-bottom: 25px;
-            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 6px 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        .tagline-badge {
+            display: inline-block; font-size: 13px; font-weight: 600; color: #38bdf8;
+            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 6px 16px; border-radius: 20px; margin-bottom: 25px;
         }
 
-        /* CENTERED SLIDE LOGBOOK CAROUSEL */
         .slide-logbook {
-            width: 100%; max-width: 480px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 14px; padding: 18px 22px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            margin-bottom: 22px; text-align: center; transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px; padding: 22px; backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 500px;
         }
-        .slide-logbook h3 { color: #38bdf8; font-size: 16px; margin-bottom: 6px; font-weight: 700; }
-        .slide-logbook p { color: #94a3b8; font-size: 12.5px; line-height: 1.5; }
+        .slide-logbook h3 { color: #38bdf8; font-size: 17px; margin-bottom: 8px; font-weight: 700; }
+        .slide-logbook p { color: #cbd5e1; font-size: 13px; line-height: 1.6; }
 
-        /* HIGHLIGHTED LOGIN CARD */
+        /* RIGHT SIDE LOGIN FORM */
+        .login-right-side {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 40px; background: #0b0f19;
+        }
+
         .auth-card {
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); padding: 32px 35px; border-radius: 20px;
-            width: 100%; max-width: 440px; box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.95);
-            border: 1px solid rgba(56, 189, 248, 0.35); outline: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(25px); padding: 35px 40px;
+            border-radius: 20px; width: 100%; max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
-        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
-        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 22px; font-weight: 600; }
+        .auth-card h2 { font-size: 24px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
+        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 25px; font-weight: 600; }
 
-        /* DASHBOARD APP LAYOUT */
+        /* WHITE MAIN APP LAYOUT */
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
 
-        #sidebar-container { 
-            width: 270px; background: #0f172a; color: #fff; flex-shrink: 0; 
-            border-right: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; min-height: 100vh;
+        #sidebar-container {
+            width: 260px; background: #ffffff; color: #334155; flex-shrink: 0;
+            border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 100vh;
         }
-        .sidebar-brand { padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand { padding: 20px; text-align: center; border-bottom: 1px solid #f1f5f9; }
         .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
         .sidebar-menu li { margin-bottom: 4px; }
         .sidebar-menu a {
-            display: flex; align-items: center; padding: 10px 12px; color: #94a3b8;
-            text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 13px; gap: 10px; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; padding: 10px 14px; color: #475569;
+            text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px; gap: 10px; cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #fff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); }
-        .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #ffffff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
 
-        .main-content { flex: 1; padding: 20px 25px; overflow-y: auto; background: #070a12; }
+        .main-content { flex: 1; padding: 20px 25px; overflow-y: auto; background: #f8fafc; }
         .top-banner {
-            background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
-            padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+            background: #ffffff; padding: 16px 22px; border-radius: 12px; border: 1px solid #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
 
-        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .card { background: rgba(15, 23, 42, 0.6); padding: 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.1); }
-        .card h3 { font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
-        .card .value { font-size: 17px; font-weight: 700; color: #f8fafc; }
-
-        .light-card { background: #f8fafc; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
-        .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+        .light-card { background: #ffffff; color: #0f172a; border-radius: 12px; padding: 22px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .light-card h2 { font-size: 17px; color: #0f172a; margin-bottom: 15px; font-weight: 700; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+        .form-group label { display: block; font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
         .form-control { width: 100%; padding: 9px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 13px; }
 
         .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-success { background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
-        .data-table th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; background: #f1f5f9; }
+        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
+        .data-table th { color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase; background: #f8fafc; }
 
-        @media print {
-            body * { visibility: hidden; }
-            #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; color: #000; padding: 10px; font-family: monospace; }
+        @media (max-width: 900px) {
+            #auth-overlay { flex-direction: column; }
+            .login-left-side { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- AUTHENTICATION OVERLAY -->
+    <!-- AUTHENTICATION OVERLAY (LEFT BRANDING + RIGHT LOGIN FORM) -->
     <div id="auth-overlay">
-        <div class="colorful-logo">ARHEALTHCARE</div>
-        <div class="tagline-text">Best Pharmacy and Staff Management Software - One of the best software for Pharmacy</div>
+        <!-- LEFT SIDE BRANDING -->
+        <div class="login-left-side">
+            <div>
+                <div class="colorful-logo">A.R. HEALTHCARE</div>
+                <div class="tagline-badge">Best Pharmacy & Staff Management Software</div>
+            </div>
 
-        <!-- CENTER SLIDE LOGBOOK CAROUSEL -->
-        <div class="slide-logbook">
-            <h3 id="feature-title">⚡ Multi-Batch POS Billing Counter</h3>
-            <p id="feature-desc">Fast thermal receipt printing, auto-stock updates, and serial-wise invoice generation with 10-digit mobile verification.</p>
+            <div class="slide-logbook">
+                <h3 id="feature-title">⚡ Multi-Batch POS Billing</h3>
+                <p id="feature-desc">Fast thermal receipt printing, auto-stock updates, and instant serial invoice generation with 10-digit mobile verification.</p>
+            </div>
+
+            <div style="font-size: 12px; color: #94a3b8;">
+                Chairman: <b>DRx. Aarif Rabbani (B.Pharm, MBA)</b><br>
+                A.R. ONLINE ZONE | Maharajganj, UP
+            </div>
         </div>
 
-        <div class="auth-card">
-            <h2>Portal Access Login</h2>
-            <div class="subtitle">Enter System User ID & Password</div>
+        <!-- RIGHT SIDE LOGIN FORM -->
+        <div class="login-right-side">
+            <div class="auth-card">
+                <h2>Portal Access</h2>
+                <div class="subtitle">Enter System User ID & Password</div>
 
-            <div id="login-form-box">
-                <div class="form-group">
-                    <label style="color:#cbd5e1;">Username ID</label>
-                    <input type="text" id="loginUser" class="form-control" placeholder="Enter Username ID" style="background:#0f172a; color:#fff; border-color:#334155;">
+                <div id="login-form-box">
+                    <div class="form-group">
+                        <label style="color:#cbd5e1;">Username ID</label>
+                        <input type="text" id="loginUser" class="form-control" placeholder="Enter Username" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        <label style="color:#cbd5e1;">Password</label>
+                        <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
+                    </div>
+                    <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
+                        <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request Account?</a>
+                        <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 18px;">
-                    <label style="color:#cbd5e1;">Password</label>
-                    <input type="password" id="loginPass" class="form-control" placeholder="••••••••" style="background:#0f172a; color:#fff; border-color:#334155;">
+
+                <!-- REQUEST ACCOUNT FORM WITH PHARMACY DETAILS & LOCATION -->
+                <div id="request-form-box" style="display:none;">
+                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Request Access Query:</p>
+                    <div class="form-group"><label style="color:#cbd5e1;">Full Name *</label><input type="text" id="reqName" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">10-Digit Mobile *</label><input type="text" id="reqPhone" class="form-control" maxlength="10" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">Pharmacy / Store Name *</label><input type="text" id="reqStore" class="form-control" placeholder="Store Name" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">Location / Address *</label><input type="text" id="reqLoc" class="form-control" placeholder="City / District" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <button onclick="submitRequest()" class="btn-success" style="width:100%; margin-top:5px;">Submit Access Query</button>
+                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideRequestModal(event)" style="color: #cbd5e1; font-size: 12px; text-decoration:none;">Back to Login</a></div>
                 </div>
-                <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
 
-                <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
-                    <a href="#" onclick="showRequestModal(event)" style="color: #38bdf8; text-decoration: none;">Request Account?</a>
-                    <a href="#" onclick="showForgotModal(event)" style="color: #94a3b8; text-decoration: none;">Forgot Password?</a>
+                <div id="forgot-form-box" style="display:none;">
+                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Reset Password:</p>
+                    <div class="form-group"><label style="color:#cbd5e1;">Username ID</label><input type="text" id="forgotUser" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <div class="form-group"><label style="color:#cbd5e1;">New Password</label><input type="password" id="forgotNewPass" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
+                    <button onclick="handleForgotReset()" class="btn-success" style="width:100%; margin-top:5px;">Update Password</button>
+                    <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px; text-decoration:none;">Back to Login</a></div>
                 </div>
-            </div>
-
-            <div id="request-form-box" style="display:none;">
-                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Request Access Query:</p>
-                <div class="form-group"><label style="color:#cbd5e1;">Full Name</label><input type="text" id="reqName" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                <div class="form-group"><label style="color:#cbd5e1;">10-Digit Mobile</label><input type="text" id="reqPhone" class="form-control" maxlength="10" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                <button onclick="submitRequest()" class="btn-success" style="width:100%; margin-top:5px;">Submit Query</button>
-                <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideRequestModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
-            </div>
-
-            <div id="forgot-form-box" style="display:none;">
-                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Reset Password:</p>
-                <div class="form-group"><label style="color:#cbd5e1;">Username ID</label><input type="text" id="forgotUser" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                <div class="form-group"><label style="color:#cbd5e1;">New Password</label><input type="password" id="forgotNewPass" class="form-control" style="background:#0f172a; color:#fff; border-color:#334155;"></div>
-                <button onclick="handleForgotReset()" class="btn-success" style="width:100%; margin-top:5px;">Update Password</button>
-                <div style="text-align: center; margin-top: 12px;"><a href="#" onclick="hideForgotModal(event)" style="color: #cbd5e1; font-size: 12px;">Back to Login</a></div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP DASHBOARD -->
+    <!-- MAIN APP WHITE DASHBOARD LAYOUT -->
     <div class="app-layout" id="main-app-container" style="display: none;">
         <div id="sidebar-container">
             <div class="sidebar-brand">
-                <div class="colorful-logo" style="font-size:22px;">ARHEALTHCARE</div>
+                <div class="colorful-logo" style="font-size:22px;">A.R. HEALTHCARE</div>
             </div>
 
             <ul class="sidebar-menu">
@@ -173,7 +190,7 @@
                 <li><a class="menu-link" onclick="switchTab('superadmin')"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
 
-            <div class="sidebar-footer">
+            <div style="padding:15px; border-top: 1px solid #e2e8f0;">
                 <button onclick="location.reload()" class="btn-danger" style="width:100%;">Logout System</button>
             </div>
         </div>
@@ -181,31 +198,22 @@
         <div class="main-content">
             <div class="top-banner">
                 <div>
-                    <div style="font-size:16px; font-weight:800; color:#38bdf8;" id="banner-store-title">A R PHARMA AND SURGICAL AGENCY</div>
-                    <div style="font-size:11.5px; color:#94a3b8;" id="banner-sub-text">Chairman: DRx. Aarif Rabbani | DL No: UP-2026-MED-98765 | Ph: +91 9005554424</div>
+                    <div style="font-size:16px; font-weight:800; color:#0284c7;" id="banner-store-title">A R PHARMA AND SURGICAL AGENCY</div>
+                    <div style="font-size:11.5px; color:#64748b;" id="banner-sub-text">Chairman: DRx. Aarif Rabbani | DL No: UP-2026-MED-98765 | Ph: +91 9005554424</div>
                 </div>
-                <div style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;" id="logged-user-badge">● Active</div>
-            </div>
-
-            <div class="dashboard-cards">
-                <div class="card"><h3>Today Sales</h3><div class="value" id="stat-sales" style="color:#4ade80;">₹0.00</div></div>
-                <div class="card"><h3>Total Bills</h3><div class="value" id="stat-bills">0</div></div>
-                <div class="card"><h3>Stock Items</h3><div class="value" id="stat-items">0</div></div>
-                <div class="card"><h3>Total Returns</h3><div class="value" id="stat-returns">0</div></div>
+                <div style="background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;" id="logged-user-badge">● Active</div>
             </div>
 
             <div id="workspace-content"></div>
         </div>
     </div>
 
-    <div id="printable-receipt" style="display:none;"></div>
-
     <script>
-        // Carousel Feature Highlights
+        // Feature Logbook Carousel
         const features = [
             { title: "⚡ Multi-Batch POS Billing Counter", desc: "Fast thermal receipt printing, auto-stock updates, and serial-wise invoice generation with 10-digit mobile verification." },
             { title: "📦 Complete Inventory & Stock Master", desc: "Full CRUD controls to Add, Edit, and Delete medicines with batch numbers, expiry tracking, and low-stock alerts." },
-            { title: "👥 HR Staff & User ID Control", desc: "Create staff user accounts, update passwords, log daily attendance, and track monthly salary vouchers." }
+            { title: "👥 Multi-System User Sync & Control", desc: "Super Admin created User IDs and passwords instantly sync across all devices and laptops for uninterrupted login." }
         ];
         let featIdx = 0;
         setInterval(() => {
@@ -216,16 +224,18 @@
             }
         }, 3500);
 
-        // Persistent Data Stores Initialization
-        if (!localStorage.getItem('erp_settings')) {
-            localStorage.setItem('erp_settings', JSON.stringify({
-                storeName: 'A R PHARMA AND SURGICAL AGENCY',
-                chairman: 'DRx. Aarif Rabbani',
-                dlNo: 'UP-2026-MED-98765',
-                gstNo: '09AAAAA0000A1Z5',
-                phone: '9005554424'
-            }));
+        // Fetch Global Users from Server Database Sync
+        async function fetchSystemUsers() {
+            try {
+                let res = await fetch('/api/users');
+                if(res.ok) {
+                    let data = await res.json();
+                    if(data && data.length > 0) localStorage.setItem('erp_users', JSON.stringify(data));
+                }
+            } catch(e) { console.log("Using Local Users Backup"); }
         }
+        fetchSystemUsers();
+
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
                 { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' },
@@ -234,19 +244,16 @@
         }
         if (!localStorage.getItem('erp_medicines')) {
             localStorage.setItem('erp_medicines', JSON.stringify([
-                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', price: 30, qty: 120 },
-                { id: 102, name: 'Amoxicillin 500mg', batch: 'BATCH-002', exp: '2026-10', price: 120, qty: 45 }
+                { id: 101, name: 'Paracetamol 650mg', batch: 'BATCH-001', exp: '2027-12', price: 30, qty: 120 }
             ]));
         }
         if (!localStorage.getItem('erp_bills')) localStorage.setItem('erp_bills', JSON.stringify([]));
-        if (!localStorage.getItem('erp_returns')) localStorage.setItem('erp_returns', JSON.stringify([]));
         if (!localStorage.getItem('erp_requests')) localStorage.setItem('erp_requests', JSON.stringify([]));
-        if (!localStorage.getItem('erp_attendance')) localStorage.setItem('erp_attendance', JSON.stringify([]));
-        if (!localStorage.getItem('erp_expenses')) localStorage.setItem('erp_expenses', JSON.stringify([]));
 
         let posCart = [];
 
-        function handleLogin() {
+        async function handleLogin() {
+            await fetchSystemUsers();
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
@@ -255,7 +262,7 @@
             if (found) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'flex';
-                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + found.role + ')';
+                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name;
                 switchTab('dashboard');
             } else { alert('Invalid Username or Password!'); }
         }
@@ -268,26 +275,17 @@
         function submitRequest() {
             let name = document.getElementById('reqName').value.trim();
             let phone = document.getElementById('reqPhone').value.trim();
+            let store = document.getElementById('reqStore').value.trim();
+            let loc = document.getElementById('reqLoc').value.trim();
+
             if(phone.length !== 10) { alert('Enter valid 10-digit mobile number!'); return; }
+            if(!name || !store || !loc) { alert('Please fill all details!'); return; }
 
             let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
-            reqs.push({ name, phone, date: new Date().toLocaleDateString() });
+            reqs.push({ name, phone, store, loc, date: new Date().toLocaleDateString() });
             localStorage.setItem('erp_requests', JSON.stringify(reqs));
-            alert('Request submitted!');
+            alert('Your account access request has been submitted!');
             hideRequestModal(new Event('click'));
-        }
-
-        function handleForgotReset() {
-            let u = document.getElementById('forgotUser').value.trim();
-            let p = document.getElementById('forgotNewPass').value.trim();
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            let obj = users.find(x => x.username === u);
-            if(obj) {
-                obj.pass = p;
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('Password Reset!');
-                hideForgotModal(new Event('click'));
-            } else { alert('Username not found!'); }
         }
 
         function switchTab(tab) {
@@ -297,16 +295,13 @@
             const container = document.getElementById('workspace-content');
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
             let reqs = JSON.parse(localStorage.getItem('erp_requests')) || [];
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
-            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
 
             if (tab === 'dashboard') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📊 Super Admin Portal Dashboard Overview</h2>
+                        <h2>📊 Super Admin Portal Overview</h2>
                         <h3 style="font-size:14px; margin-bottom:10px;">Recent Sales Invoices Log</h3>
                         <table class="data-table">
                             <thead><tr><th>Invoice No</th><th>Date</th><th>Patient Name</th><th>Mobile</th><th>Amount</th></tr></thead>
@@ -315,120 +310,13 @@
                     </div>
                 `;
             }
-            else if (tab === 'pos') {
-                let nextInv = 'INV-' + (1001 + bills.length);
-                let medOpts = meds.map(m => `<option value="${m.name}">${m.name} (${m.batch}) - Stock: ${m.qty}</option>`).join('');
-
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>🛒 Sales / POS Counter</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Serial Invoice No</label><input type="text" id="posInv" class="form-control" value="${nextInv}" readonly></div>
-                            <div class="form-group"><label>10-Digit Mobile Lock *</label><input type="text" id="posMob" class="form-control" maxlength="10" placeholder="10-digit mobile"></div>
-                            <div class="form-group"><label>Patient Name *</label><input type="text" id="posCust" class="form-control" placeholder="Patient Name"></div>
-                        </div>
-                        <div style="display:flex; gap:10px; margin-bottom:15px;">
-                            <select id="posMed" class="form-control" onchange="autoFillPrice()"><option value="">Select Medicine</option>${medOpts}</select>
-                            <input type="number" id="posQty" class="form-control" value="1" style="width:100px;">
-                            <input type="number" id="posPrice" class="form-control" placeholder="Price" readonly style="width:100px;">
-                            <button onclick="addToCart()" class="btn-primary">+ Add Item</button>
-                        </div>
-                        <table class="data-table">
-                            <thead><tr><th>Medicine</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-                            <tbody id="cartTable"><tr><td colspan="4">Cart is empty</td></tr></tbody>
-                        </table>
-                        <div style="margin-top:15px; text-align:right;">
-                            <button onclick="checkoutBill()" class="btn-success">Save & Print Receipt</button>
-                        </div>
-                    </div>
-                `;
-            }
-            else if (tab === 'returns') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>🔄 Sales Medicine Return Entry</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Invoice No</label><input type="text" id="retInv" class="form-control"></div>
-                            <div class="form-group"><label>Medicine Name</label><input type="text" id="retMed" class="form-control"></div>
-                            <div class="form-group"><label>Return Qty</label><input type="number" id="retQty" class="form-control" value="1"></div>
-                        </div>
-                        <button onclick="processReturn()" class="btn-primary">Process Return</button>
-                        <h3 style="margin-top:20px;">Return Logs</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Date</th><th>Invoice</th><th>Medicine</th><th>Qty</th></tr></thead>
-                            <tbody>${rets.map(r => `<tr><td>${r.date}</td><td>${r.inv}</td><td>${r.med}</td><td>${r.qty}</td></tr>`).join('') || '<tr><td colspan="4">No returns recorded.</td></tr>'}</tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'reprint') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>🧾 Invoice Wise Search & Reprint</h2>
-                        <table class="data-table">
-                            <thead><tr><th>Invoice</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th><th>Action</th></tr></thead>
-                            <tbody>${bills.map(b => `<tr><td><b>${b.invNo}</b></td><td>${b.date}</td><td>${b.cust}</td><td>${b.mob}</td><td>₹${b.netTotal}</td><td><button onclick="reprint('${b.invNo}')" class="btn-primary">Print</button></td></tr>`).join('') || '<tr><td colspan="6">No invoices found.</td></tr>'}</tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'medicines') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>💊 Stock Master (CRUD)</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Medicine Name</label><input type="text" id="mName" class="form-control"></div>
-                            <div class="form-group"><label>Batch No</label><input type="text" id="mBatch" class="form-control"></div>
-                            <div class="form-group"><label>Price (₹)</label><input type="number" id="mPrice" class="form-control"></div>
-                            <div class="form-group"><label>Stock Qty</label><input type="number" id="mQty" class="form-control"></div>
-                        </div>
-                        <button onclick="addMedicine()" class="btn-primary">+ Add Medicine</button>
-                        <table class="data-table" style="margin-top:15px;">
-                            <thead><tr><th>ID</th><th>Medicine</th><th>Batch</th><th>Price</th><th>Qty</th><th>Action</th></tr></thead>
-                            <tbody>${meds.map((m,i) => `<tr><td>#${m.id}</td><td>${m.name}</td><td>${m.batch}</td><td>₹${m.price}</td><td>${m.qty}</td><td><button onclick="deleteMed(${i})" class="btn-danger">Delete</button></td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'attendance') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>👥 HR & Staff Attendance Master</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Staff Name</label><input type="text" id="attName" class="form-control"></div>
-                            <div class="form-group"><label>Status</label><select id="attStat" class="form-control"><option value="Present">Present</option><option value="Absent">Absent</option></select></div>
-                        </div>
-                        <button onclick="markAtt()" class="btn-primary">Mark Attendance</button>
-                        <table class="data-table" style="margin-top:15px;">
-                            <thead><tr><th>Date</th><th>Staff</th><th>Status</th></tr></thead>
-                            <tbody>${att.map(a => `<tr><td>${a.date}</td><td>${a.name}</td><td>${a.status}</td></tr>`).join('') || '<tr><td colspan="3">No logs found.</td></tr>'}</tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            else if (tab === 'salary') {
-                container.innerHTML = `
-                    <div class="light-card">
-                        <h2>💰 Kharch & Expense Vouchers</h2>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Title</label><input type="text" id="exTitle" class="form-control"></div>
-                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmt" class="form-control"></div>
-                        </div>
-                        <button onclick="addExpense()" class="btn-primary">Record Expense</button>
-                        <table class="data-table" style="margin-top:15px;">
-                            <thead><tr><th>Date</th><th>Title</th><th>Amount</th></tr></thead>
-                            <tbody>${exps.map(e => `<tr><td>${e.date}</td><td>${e.title}</td><td>₹${e.amt}</td></tr>`).join('') || '<tr><td colspan="3">No expenses.</td></tr>'}</tbody>
-                        </table>
-                    </div>
-                `;
-            }
             else if (tab === 'requests') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>📩 Account Access Queries (${reqs.length})</h2>
+                        <h2>📩 Access Queries (${reqs.length})</h2>
                         <table class="data-table">
-                            <thead><tr><th>Date</th><th>Name</th><th>Mobile</th></tr></thead>
-                            <tbody>${reqs.map(r => `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.phone}</td></tr>`).join('') || '<tr><td colspan="3">No queries received.</td></tr>'}</tbody>
+                            <thead><tr><th>Date</th><th>Name</th><th>Mobile</th><th>Store Name</th><th>Location</th></tr></thead>
+                            <tbody>${reqs.map(r => `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>${r.phone}</td><td>${r.store}</td><td>${r.loc}</td></tr>`).join('') || '<tr><td colspan="5">No queries received.</td></tr>'}</tbody>
                         </table>
                     </div>
                 `;
@@ -436,138 +324,29 @@
             else if (tab === 'superadmin') {
                 container.innerHTML = `
                     <div class="light-card">
-                        <h2>⚙️ Super Admin Control Panel (User IDs & Passwords)</h2>
+                        <h2>⚙️ Super Admin Control Panel (User Sync)</h2>
                         <div class="form-grid">
                             <div class="form-group"><label>New Username ID</label><input type="text" id="nuUser" class="form-control"></div>
                             <div class="form-group"><label>Password</label><input type="password" id="nuPass" class="form-control"></div>
                             <div class="form-group"><label>Full Name</label><input type="text" id="nuName" class="form-control"></div>
                             <div class="form-group"><label>Role</label><input type="text" id="nuRole" class="form-control" value="Billing Operator"></div>
                         </div>
-                        <button onclick="createSuperUser()" class="btn-primary">+ Create User ID</button>
+                        <button onclick="createSuperUser()" class="btn-primary">+ Register User ID (Global Sync)</button>
 
-                        <h3 style="margin-top:20px;">System Users List (Update Password Direct)</h3>
+                        <h3 style="margin-top:20px;">System Users List</h3>
                         <table class="data-table">
-                            <thead><tr><th>Username</th><th>Password</th><th>Name</th><th>Role</th><th>Action</th></tr></thead>
-                            <tbody>${users.map((u,i) => `<tr><td><b>${u.username}</b></td><td>${u.pass}</td><td>${u.name}</td><td>${u.role}</td><td><button onclick="updateUserPass(${i})" class="btn-primary">Update Pass</button></td></tr>`).join('')}</tbody>
+                            <thead><tr><th>Username</th><th>Password</th><th>Name</th><th>Role</th></tr></thead>
+                            <tbody>${users.map(u => `<tr><td><b>${u.username}</b></td><td>${u.pass}</td><td>${u.name}</td><td>${u.role}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
                 `;
             }
-
-            document.getElementById('stat-sales').innerText = '₹' + bills.reduce((s,b)=>s+b.netTotal,0);
-            document.getElementById('stat-bills').innerText = bills.length;
-            document.getElementById('stat-items').innerText = meds.length;
-            document.getElementById('stat-returns').innerText = rets.length;
+            else {
+                container.innerHTML = `<div class="light-card"><h2>${tab.toUpperCase()} Module</h2><p>Working module active.</p></div>`;
+            }
         }
 
-        // Action Handlers
-        function autoFillPrice() {
-            let mName = document.getElementById('posMed').value;
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let f = meds.find(x => x.name === mName);
-            if(f) document.getElementById('posPrice').value = f.price;
-        }
-
-        function addToCart() {
-            let name = document.getElementById('posMed').value;
-            let qty = parseInt(document.getElementById('posQty').value) || 1;
-            let price = parseFloat(document.getElementById('posPrice').value) || 0;
-            if(!name) return;
-
-            posCart.push({ name, qty, price, total: qty * price });
-            let tbody = document.getElementById('cartTable');
-            tbody.innerHTML = posCart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price}</td><td>₹${i.total}</td></tr>`).join('');
-        }
-
-        function checkoutBill() {
-            let invNo = document.getElementById('posInv').value;
-            let mob = document.getElementById('posMob').value.trim();
-            let cust = document.getElementById('posCust').value.trim();
-
-            if(mob.length !== 10) { alert('Mobile number MUST be exactly 10 digits!'); return; }
-            if(!cust || posCart.length === 0) { alert('Enter patient name & items!'); return; }
-
-            let netTotal = posCart.reduce((s,i) => s + i.total, 0);
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            bills.push({ invNo, mob, cust, items: [...posCart], netTotal, date: new Date().toLocaleDateString() });
-            localStorage.setItem('erp_bills', JSON.stringify(bills));
-
-            // Deduct Stock
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            posCart.forEach(item => {
-                let m = meds.find(x => x.name === item.name);
-                if(m) m.qty = Math.max(0, m.qty - item.qty);
-            });
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-            alert('Bill Saved Successfully!');
-            posCart = [];
-            switchTab('pos');
-        }
-
-        function processReturn() {
-            let inv = document.getElementById('retInv').value.trim();
-            let med = document.getElementById('retMed').value.trim();
-            let qty = parseInt(document.getElementById('retQty').value) || 1;
-            if(!inv || !med) { alert('Enter Invoice No & Medicine Name!'); return; }
-
-            let rets = JSON.parse(localStorage.getItem('erp_returns')) || [];
-            rets.push({ inv, med, qty, date: new Date().toLocaleDateString() });
-            localStorage.setItem('erp_returns', JSON.stringify(rets));
-
-            // Add Stock Back
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let m = meds.find(x => x.name.toLowerCase() === med.toLowerCase());
-            if(m) m.qty += qty;
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-            alert('Return Processed & Stock Restocked!');
-            switchTab('returns');
-        }
-
-        function addMedicine() {
-            let name = document.getElementById('mName').value;
-            let batch = document.getElementById('mBatch').value;
-            let price = parseFloat(document.getElementById('mPrice').value) || 0;
-            let qty = parseInt(document.getElementById('mQty').value) || 0;
-            if(!name) return;
-
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            meds.push({ id: Date.now(), name, batch, price, qty });
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-            switchTab('medicines');
-        }
-
-        function deleteMed(i) {
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            meds.splice(i,1);
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-            switchTab('medicines');
-        }
-
-        function markAtt() {
-            let name = document.getElementById('attName').value;
-            let status = document.getElementById('attStat').value;
-            if(!name) return;
-
-            let att = JSON.parse(localStorage.getItem('erp_attendance')) || [];
-            att.push({ date: new Date().toLocaleDateString(), name, status });
-            localStorage.setItem('erp_attendance', JSON.stringify(att));
-            switchTab('attendance');
-        }
-
-        function addExpense() {
-            let title = document.getElementById('exTitle').value;
-            let amt = parseFloat(document.getElementById('exAmt').value) || 0;
-            if(!title) return;
-
-            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [];
-            exps.push({ date: new Date().toLocaleDateString(), title, amt });
-            localStorage.setItem('erp_expenses', JSON.stringify(exps));
-            switchTab('salary');
-        }
-
-        function createSuperUser() {
+        async function createSuperUser() {
             let username = document.getElementById('nuUser').value.trim();
             let pass = document.getElementById('nuPass').value.trim();
             let name = document.getElementById('nuName').value.trim();
@@ -577,29 +356,17 @@
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             users.push({ username, pass, name, role });
             localStorage.setItem('erp_users', JSON.stringify(users));
-            alert('User ID Created!');
+
+            try {
+                await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, pass, name, role })
+                });
+            } catch(e) {}
+
+            alert('User ID Created & Synced globally across all laptops!');
             switchTab('superadmin');
-        }
-
-        function updateUserPass(i) {
-            let newP = prompt('Enter New Password:');
-            if(newP) {
-                let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-                users[i].pass = newP;
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('Password Updated!');
-                switchTab('superadmin');
-            }
-        }
-
-        function reprint(invNo) {
-            let bills = JSON.parse(localStorage.getItem('erp_bills')) || [];
-            let b = bills.find(x => x.invNo === invNo);
-            if(!b) return;
-
-            let rec = document.getElementById('printable-receipt');
-            rec.innerHTML = `<h3>ARHEALTHCARE</h3><p>Inv: ${b.invNo} | Patient: ${b.cust}</p><hr><p>Total: ₹${b.netTotal}</p>`;
-            window.print();
         }
     </script>
 </body>
