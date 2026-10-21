@@ -6,71 +6,68 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-Memory/Server Users Sync Store (Default Seed Users)
+// In-Memory Cloud Users Store
 let systemUsers = [
-    { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' },
-    { username: 'staff1', pass: '1234', name: 'Sales Staff 1', role: 'Billing Operator' }
+    { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
 // Serve Static Frontend Files from client/src
 app.use(express.static(path.join(__dirname, 'client', 'src')));
 
-// API Endpoint: Get All Cloud Users
+// API Endpoints
 app.get('/api/users', (req, res) => {
-    try {
-        res.status(200).json(systemUsers);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch cloud users' });
-    }
+    res.status(200).json(systemUsers);
 });
 
-// API Endpoint: Register New Cloud User
 app.post('/api/users', (req, res) => {
     try {
-        const { username, pass, password, name, role } = req.body;
+        const { username, pass, password, name, role, permissions, status } = req.body;
         const userPassword = pass || password;
 
         if (!username || !userPassword) {
             return res.status(400).json({ error: 'Username and password required' });
         }
 
-        const existingUser = systemUsers.find(u => u.username === username);
-        if (existingUser) {
-            existingUser.pass = userPassword;
-            existingUser.name = name || existingUser.name;
-            existingUser.role = role || existingUser.role;
-        } else {
-            systemUsers.push({
-                username,
-                pass: userPassword,
-                name: name || username,
-                role: role || 'Billing Operator'
-            });
-        }
+        const idx = systemUsers.findIndex(u => u.username === username);
+        const userData = {
+            username,
+            pass: userPassword,
+            name: name || username,
+            role: role || 'Staff',
+            status: status || 'Active',
+            permissions: permissions || { sales: true, returns: true, medicines: false, admin: false }
+        };
+
+        if (idx >= 0) systemUsers[idx] = userData;
+        else systemUsers.push(userData);
 
         res.status(200).json({ success: true, users: systemUsers });
     } catch (err) {
-        res.status(500).json({ error: 'Server save error' });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
-// API Endpoint: Update User Password
+app.post('/api/users/update-status', (req, res) => {
+    const { username, status } = req.body;
+    const user = systemUsers.find(u => u.username === username);
+    if (user) {
+        user.status = status;
+        return res.status(200).json({ success: true });
+    }
+    res.status(404).json({ error: 'User not found' });
+});
+
 app.post('/api/users/update-password', (req, res) => {
-    try {
-        const { username, pass } = req.body;
-        const user = systemUsers.find(u => u.username === username);
-
-        if (user) {
-            user.pass = pass;
-            return res.status(200).json({ success: true, message: 'Password updated successfully' });
-        }
-        res.status(404).json({ error: 'User not found' });
-    } catch (err) {
-        res.status(500).json({ error: 'Update error' });
+    const { username, pass } = req.body;
+    const user = systemUsers.find(u => u.username === username);
+    if (user) {
+        user.pass = pass;
+        return res.status(200).json({ success: true });
     }
+    res.status(404).json({ error: 'User not found' });
 });
 
-// Wildcard Route to serve index.html for SPA
+// Wildcard SPA Fallback
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'src', 'index.html'));
 });
