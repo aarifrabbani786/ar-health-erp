@@ -117,7 +117,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard Overview</a></li>
-                <li><a class="menu-link" onclick="loadModule('pos')" id="nav-pos"><span>🛒</span> POS Billing Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales Counter Module</a></li>
                 <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Sales Medicine Return</a></li>
                 <li><a class="menu-link" onclick="loadModule('medicines')" id="nav-medicines"><span>💊</span> Stock Master (CRUD)</a></li>
                 <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
@@ -141,9 +141,9 @@
         </div>
     </div>
 
-    <!-- MODULE SCRIPTS -->
+    <!-- MODULE SCRIPTS (sales.js included) -->
     <script src="modules/dashboard.js"></script>
-    <script src="modules/pos.js"></script>
+    <script src="modules/sales.js"></script>
     <script src="modules/returns.js"></script>
     <script src="modules/medicines.js"></script>
     <script src="modules/superadmin.js"></script>
@@ -177,7 +177,6 @@
                 } catch(e) {}
             }
 
-            // Agar session nahi hai tabhi login screen dikhegi
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-app-container').style.display = 'none';
         });
@@ -230,8 +229,8 @@
                 document.querySelectorAll('.sidebar-menu li').forEach(el => el.style.display = 'block');
                 return;
             }
-            let perms = user.permissions || { pos: true, returns: true, medicines: false, admin: false };
-            if(document.getElementById('nav-pos')) document.getElementById('nav-pos').parentElement.style.display = perms.pos ? 'block' : 'none';
+            let perms = user.permissions || { sales: true, returns: true, medicines: false, admin: false };
+            if(document.getElementById('nav-sales')) document.getElementById('nav-sales').parentElement.style.display = perms.sales ? 'block' : 'none';
             if(document.getElementById('nav-returns')) document.getElementById('nav-returns').parentElement.style.display = perms.returns ? 'block' : 'none';
             if(document.getElementById('nav-medicines')) document.getElementById('nav-medicines').parentElement.style.display = perms.medicines ? 'block' : 'none';
             if(document.getElementById('nav-superadmin')) document.getElementById('nav-superadmin').parentElement.style.display = perms.admin ? 'block' : 'none';
@@ -248,7 +247,7 @@
             workspace.innerHTML = ""; 
 
             if (moduleName === 'dashboard' && typeof renderDashboard === 'function') renderDashboard(workspace);
-            else if (moduleName === 'pos' && typeof renderPOS === 'function') renderPOS(workspace);
+            else if (moduleName === 'sales' && typeof renderSales === 'function') renderSales(workspace);
             else if (moduleName === 'returns' && typeof renderReturns === 'function') renderReturns(workspace);
             else if (moduleName === 'medicines' && typeof renderMedicines === 'function') renderMedicines(workspace);
             else if (moduleName === 'superadmin' && typeof renderSuperAdmin === 'function') renderSuperAdmin(workspace);
