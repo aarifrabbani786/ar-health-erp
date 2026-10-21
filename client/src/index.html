@@ -65,34 +65,30 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .form-group { margin-bottom: 10px; }
         .form-group label { display: block; font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 10px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 13px; outline: none; transition: border 0.2s; }
+        .form-control { width: 100%; padding: 10px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 13px; outline: none; }
         .form-control:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
 
-        .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
-        .btn-primary:hover { background: #026d9f; }
+        .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn-success { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-success:hover { background: #15803d; }
         .btn-danger { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .btn-danger:hover { background: #dc2626; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
         .data-table th { color: #475569; font-weight: 700; font-size: 11.5px; text-transform: uppercase; background: #f8fafc; }
-        .data-table tr:hover { background: #f8fafc; }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN SCREEN OVERLAY -->
-    <div id="auth-overlay">
+    <!-- LOGIN OVERLAY -->
+    <div id="auth-overlay" style="display: none;">
         <div class="login-left-side">
             <div>
                 <div class="colorful-logo">A.R. HEALTHCARE</div>
                 <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:5px;">Modular Pharmacy Management ERP</div>
             </div>
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 22px;">
-                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Auto Session & Midnight Logout</h3>
-                <p style="color: #cbd5e1; font-size: 13px;">Session remains active across page refreshes and automatically logs out at 11:59 PM Midnight daily.</p>
+                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Secure Enterprise System</h3>
+                <p style="color: #cbd5e1; font-size: 13px;">Session persistence active. Auto logout at midnight 11:59 PM.</p>
             </div>
             <div style="font-size: 12px; color: #94a3b8;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
@@ -114,7 +110,7 @@
     </div>
 
     <!-- MAIN APP LAYOUT -->
-    <div class="app-layout" id="main-app-container" style="display: none;">
+    <div class="app-layout" id="main-app-container">
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="colorful-logo" style="font-size:20px;">A.R. HEALTHCARE</div>
@@ -155,46 +151,42 @@
     <script>
         let currentUser = null;
 
-        // Default Admin User Seeding
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
                 { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
             ]));
         }
 
-        // --- PAGE INITIALIZATION & SESSION RESTORE ---
         window.addEventListener('DOMContentLoaded', () => {
             checkMidnightAutoLogout();
-            setInterval(checkMidnightAutoLogout, 30000); // Har 30 sec me midnight check chalega
+            setInterval(checkMidnightAutoLogout, 30000);
 
             let savedSession = localStorage.getItem('erp_active_session');
             if (savedSession) {
-                let user = JSON.parse(savedSession);
-                currentUser = user;
-                
-                // Active workspace show karein
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('main-app-container').style.display = 'flex';
-                document.getElementById('logged-user-badge').innerText = '● Active: ' + user.name + ' (' + (user.role || 'Staff') + ')';
+                try {
+                    currentUser = JSON.parse(savedSession);
+                    document.getElementById('auth-overlay').style.display = 'none';
+                    document.getElementById('main-app-container').style.display = 'flex';
+                    document.getElementById('logged-user-badge').innerText = '● Active: ' + currentUser.name + ' (' + (currentUser.role || 'Staff') + ')';
 
-                applyRolePermissions(user);
+                    applyRolePermissions(currentUser);
 
-                // Refresh ke baad wahi purana module/table open karna
-                let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
-                loadModule(activeTab);
+                    let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
+                    loadModule(activeTab);
+                    return;
+                } catch(e) {}
             }
+
+            // Agar session nahi hai tabhi login screen dikhegi
+            document.getElementById('auth-overlay').style.display = 'flex';
+            document.getElementById('main-app-container').style.display = 'none';
         });
 
-        // --- MIDNIGHT 11:59 PM AUTO LOGOUT ENGINE ---
         function checkMidnightAutoLogout() {
             let now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-
-            // Agar raat ke 23:59 (11:59 PM) ho rahe hon
-            if (hours === 23 && minutes === 59) {
+            if (now.getHours() === 23 && now.getMinutes() === 59) {
                 if (localStorage.getItem('erp_active_session')) {
-                    alert('⏰ Midnight 11:59 PM Reached! Security protocol initiating auto-logout.');
+                    alert('⏰ Midnight 11:59 PM Reached! Auto-logout initiated.');
                     logoutUser();
                 }
             }
@@ -204,15 +196,7 @@
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
             
-            let users = [];
-            try {
-                let res = await fetch('/api/users');
-                if(res.ok) users = await res.json();
-                else users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            } catch(e) {
-                users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            }
-
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
@@ -229,9 +213,7 @@
                 document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + (found.role || 'Staff') + ')';
 
                 applyRolePermissions(found);
-                
-                let startTab = localStorage.getItem('erp_active_module') || 'dashboard';
-                loadModule(startTab);
+                loadModule('dashboard');
             } else {
                 alert('Invalid Username or Password!');
             }
@@ -256,7 +238,6 @@
         }
 
         function loadModule(moduleName) {
-            // Save active module state so refresh keeps the same page open
             localStorage.setItem('erp_active_module', moduleName);
 
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));

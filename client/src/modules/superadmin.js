@@ -1,7 +1,7 @@
 async function renderSuperAdmin(container) {
     container.innerHTML = `
         <div class="light-card">
-            <h2>⚙️ Super Admin Control Panel (User Access & Staff Permissions)</h2>
+            <h2>⚙️ Super Admin Control Panel (Staff Permissions & Access)</h2>
             <p style="font-size:12px; color:#64748b; margin-bottom:15px;">New User ID create karein, Module Permissions select karein, aur Active / Deactivate status control karein.</p>
             
             <div class="form-grid">
@@ -42,24 +42,9 @@ async function loadCloudUsers() {
     const tableBox = document.getElementById('users-table-box');
     if (!tableBox) return;
 
-    let users = [];
-    try {
-        let res = await fetch('/api/users');
-        if (res.ok) {
-            users = await res.json();
-            localStorage.setItem('erp_users', JSON.stringify(users));
-        } else {
-            users = JSON.parse(localStorage.getItem('erp_users')) || [];
-        }
-    } catch (err) {
-        users = JSON.parse(localStorage.getItem('erp_users')) || [];
-    }
-
-    if (!users || users.length === 0) {
-        users = JSON.parse(localStorage.getItem('erp_users')) || [
-            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
-        ];
-    }
+    let users = JSON.parse(localStorage.getItem('erp_users')) || [
+        { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
+    ];
 
     tableBox.innerHTML = `
         <table class="data-table">
@@ -100,7 +85,7 @@ async function loadCloudUsers() {
     `;
 }
 
-async function createNewSystemUser() {
+function createNewSystemUser() {
     let username = document.getElementById('nuUser').value.trim();
     let pass = document.getElementById('nuPass').value.trim();
     let name = document.getElementById('nuName').value.trim();
@@ -126,61 +111,33 @@ async function createNewSystemUser() {
     else users.push(newUser);
 
     localStorage.setItem('erp_users', JSON.stringify(users));
-
-    try {
-        await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newUser)
-        });
-        alert('User User ID successfully created and synced with Cloud Server!');
-    } catch (e) {
-        alert('User ID created locally!');
-    }
+    alert('User successfully created and permissions set!');
 
     document.getElementById('nuUser').value = '';
     document.getElementById('nuPass').value = '';
     document.getElementById('nuName').value = '';
-    await loadCloudUsers();
+    loadCloudUsers();
 }
 
-async function toggleUserStatus(username, newStatus) {
+function toggleUserStatus(username, newStatus) {
     let users = JSON.parse(localStorage.getItem('erp_users')) || [];
     let u = users.find(x => x.username === username);
     if (u) {
         u.status = newStatus;
         localStorage.setItem('erp_users', JSON.stringify(users));
-
-        try {
-            await fetch('/api/users/update-status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, status: newStatus })
-            });
-        } catch(e) {}
-
         alert(`User '${username}' account status changed to '${newStatus}'!`);
-        await loadCloudUsers();
+        loadCloudUsers();
     }
 }
 
-async function updateSystemUserPass(username) {
+function updateSystemUserPass(username) {
     let newP = prompt(`Enter New Password for ${username}:`);
     if (newP && newP.trim() !== '') {
         let users = JSON.parse(localStorage.getItem('erp_users')) || [];
         let u = users.find(x => x.username === username);
         if(u) u.pass = newP.trim();
         localStorage.setItem('erp_users', JSON.stringify(users));
-
-        try {
-            await fetch('/api/users/update-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, pass: newP.trim() })
-            });
-            alert('Password Updated!');
-        } catch (e) {}
-
-        await loadCloudUsers();
+        alert('Password Updated Successfully!');
+        loadCloudUsers();
     }
 }
