@@ -6,7 +6,7 @@
     <title>A.R. HEALTHCARE - Modular Enterprise ERP</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f1f5f9; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
+        body { background: #f8fafc; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
 
         /* SPLIT LOGIN OVERLAY */
         #auth-overlay {
@@ -53,23 +53,32 @@
         }
         .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #ffffff; }
 
-        .main-content { flex: 1; padding: 20px 25px; overflow-y: auto; background: #f8fafc; }
+        .main-content { flex: 1; padding: 25px; overflow-y: auto; background: #f8fafc; }
         .top-banner {
             background: #ffffff; padding: 16px 22px; border-radius: 12px; border: 1px solid #e2e8f0;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
-        .light-card { background: #ffffff; color: #0f172a; border-radius: 12px; padding: 22px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .light-card h2 { font-size: 17px; color: #0f172a; margin-bottom: 15px; font-weight: 700; }
+        .light-card { background: #ffffff; color: #0f172a; border-radius: 14px; padding: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .light-card h2 { font-size: 18px; color: #0f172a; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .form-group { margin-bottom: 10px; }
         .form-group label { display: block; font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 9px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 13px; }
-        .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-success { background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .form-control { width: 100%; padding: 10px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 13px; outline: none; transition: border 0.2s; }
+        .form-control:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+
+        .btn-primary { background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+        .btn-primary:hover { background: #026d9f; }
+        .btn-success { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-danger:hover { background: #dc2626; }
+
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12.5px; color: #334155; }
-        .data-table th { color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase; background: #f8fafc; }
+        .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
+        .data-table th { color: #475569; font-weight: 700; font-size: 11.5px; text-transform: uppercase; background: #f8fafc; }
+        .data-table tr:hover { background: #f8fafc; }
     </style>
 </head>
 <body>
@@ -83,7 +92,7 @@
             </div>
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 22px;">
                 <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Independent Module Architecture</h3>
-                <p style="color: #cbd5e1; font-size: 13px;">Each section (POS, Stock, Returns, Admin) is cleanly separated for easy maintenance and zero conflicts.</p>
+                <p style="color: #cbd5e1; font-size: 13px;">Each section (POS, Stock, Returns, Admin) is cleanly separated for easy maintenance and secure cloud user sync.</p>
             </div>
             <div style="font-size: 12px; color: #94a3b8;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
@@ -111,11 +120,11 @@
                 <div class="colorful-logo" style="font-size:20px;">A.R. HEALTHCARE</div>
             </div>
             <ul class="sidebar-menu">
-                <li><a class="menu-link active" onclick="loadModule('dashboard')"><span>📊</span> Dashboard Module</a></li>
-                <li><a class="menu-link" onclick="loadModule('pos')"><span>🛒</span> POS Billing Module</a></li>
-                <li><a class="menu-link" onclick="loadModule('returns')"><span>🔄</span> Sales Return Module</a></li>
-                <li><a class="menu-link" onclick="loadModule('medicines')"><span>💊</span> Stock Master Module</a></li>
-                <li><a class="menu-link" onclick="loadModule('superadmin')"><span>⚙️</span> Super Admin Module</a></li>
+                <li><a class="menu-link active" onclick="loadModule('dashboard')"><span>📊</span> Dashboard Overview</a></li>
+                <li><a class="menu-link" onclick="loadModule('pos')"><span>🛒</span> POS Billing Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('returns')"><span>🔄</span> Sales Medicine Return</a></li>
+                <li><a class="menu-link" onclick="loadModule('medicines')"><span>💊</span> Stock Master (CRUD)</a></li>
+                <li><a class="menu-link" onclick="loadModule('superadmin')"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
             <div style="padding:15px; border-top: 1px solid #e2e8f0;">
                 <button onclick="location.reload()" class="btn-danger" style="width:100%;">Logout System</button>
@@ -126,9 +135,9 @@
             <div class="top-banner">
                 <div>
                     <div style="font-size:16px; font-weight:800; color:#0284c7;">A R PHARMA AND SURGICAL AGENCY</div>
-                    <div style="font-size:11.5px; color:#64748b;">Chairman: DRx. Aarif Rabbani | Modular ERP v4.0</div>
+                    <div style="font-size:11.5px; color:#64748b;">Chairman: DRx. Aarif Rabbani | Modular Enterprise ERP</div>
                 </div>
-                <div style="background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;" id="logged-user-badge">● Active</div>
+                <div style="background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;" id="logged-user-badge">● Active</div>
             </div>
 
             <!-- DYNAMIC WORKSPACE -->
@@ -144,26 +153,57 @@
     <script src="modules/superadmin.js"></script>
 
     <script>
+        let currentUser = null;
+
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
-                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin' }
+                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
             ]));
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            
+            let users = [];
+            try {
+                let res = await fetch('/api/users');
+                if(res.ok) users = await res.json();
+                else users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            } catch(e) {
+                users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            }
+
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
+                if (found.status === 'Deactivated') {
+                    alert('Aapka User Account Deactivate / Blocked hai! Super Admin se contact karein.');
+                    return;
+                }
+
+                currentUser = found;
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'flex';
-                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name;
+                document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + (found.role || 'Staff') + ')';
+
+                applyRolePermissions(found);
                 loadModule('dashboard');
             } else {
                 alert('Invalid Username or Password!');
             }
+        }
+
+        function applyRolePermissions(user) {
+            if (user.role === 'Super Admin') {
+                document.querySelectorAll('.sidebar-menu li').forEach(el => el.style.display = 'block');
+                return;
+            }
+            let perms = user.permissions || { pos: true, returns: true, medicines: false, admin: false };
+            document.querySelector("a[onclick*='pos']").parentElement.style.display = perms.pos ? 'block' : 'none';
+            document.querySelector("a[onclick*='returns']").parentElement.style.display = perms.returns ? 'block' : 'none';
+            document.querySelector("a[onclick*='medicines']").parentElement.style.display = perms.medicines ? 'block' : 'none';
+            document.querySelector("a[onclick*='superadmin']").parentElement.style.display = perms.admin ? 'block' : 'none';
         }
 
         function loadModule(moduleName) {
