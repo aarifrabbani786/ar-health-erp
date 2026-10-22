@@ -244,14 +244,31 @@
             if (activeElem) activeElem.classList.add('active');
 
             const workspace = document.getElementById('module-workspace');
+            if (!workspace) return;
             workspace.innerHTML = ""; 
 
-            if (moduleName === 'sales' && typeof renderSales === 'function') renderSales(workspace);
-            else if (moduleName === 'dashboard' && typeof renderDashboard === 'function') renderDashboard(workspace);
-            else if (moduleName === 'returns' && typeof renderReturns === 'function') renderReturns(workspace);
-            else if (moduleName === 'medicines' && typeof renderMedicines === 'function') renderMedicines(workspace);
-            else if (moduleName === 'superadmin' && typeof renderSuperAdmin === 'function') renderSuperAdmin(workspace);
-            else workspace.innerHTML = `<div class="light-card"><h2>Sales Counter Workspace</h2><p>Module initialising...</p></div>`;
+            let attempts = 0;
+            function tryRender() {
+                if (moduleName === 'sales' && typeof window.renderSales === 'function') {
+                    window.renderSales(workspace);
+                } else if (moduleName === 'dashboard' && typeof window.renderDashboard === 'function') {
+                    window.renderDashboard(workspace);
+                } else if (moduleName === 'returns' && typeof window.renderReturns === 'function') {
+                    window.renderReturns(workspace);
+                } else if (moduleName === 'medicines' && typeof window.renderMedicines === 'function') {
+                    window.renderMedicines(workspace);
+                } else if (moduleName === 'superadmin' && typeof window.renderSuperAdmin === 'function') {
+                    window.renderSuperAdmin(workspace);
+                } else {
+                    if (attempts < 15) {
+                        attempts++;
+                        setTimeout(tryRender, 150);
+                    } else {
+                        workspace.innerHTML = `<div class="light-card"><h2>Workspace Error</h2><p>Module failed to load. Please hard refresh the page.</p></div>`;
+                    }
+                }
+            }
+            tryRender();
         }
     </script>
 </body>

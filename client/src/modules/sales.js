@@ -1,12 +1,30 @@
 window.renderSales = function(container) {
-    let salesStock = JSON.parse(localStorage.getItem('erp_medicines')) || [
-        { name: 'Tab Dolo 650 mg', batch: '123', hsn: '3004', expiry: '12/28', mrp: 2, stock: 95, gst: 12 }
-    ];
+    if (!container) return;
+
+    let salesStock = [];
+    try {
+        salesStock = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+    } catch(e) {
+        salesStock = [];
+    }
+
+    if (!salesStock || salesStock.length === 0) {
+        salesStock = [
+            { name: 'Tab Dolo 650 mg', batch: '123', hsn: '3004', expiry: '12/28', mrp: 2, stock: 95, gst: 12 }
+        ];
+        localStorage.setItem('erp_medicines', JSON.stringify(salesStock));
+    }
 
     let cart = [];
 
     // Auto Invoice Serial Counter (ar01, ar02...)
-    let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+    let invoices = [];
+    try {
+        invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+    } catch(e) {
+        invoices = [];
+    }
+
     let nextInvNum = invoices.length + 1;
     let invSerial = "ar" + String(nextInvNum).padStart(2, '0');
 
@@ -127,8 +145,15 @@ window.renderSales = function(container) {
         </div>
     `;
 
-    window.openQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'flex'; };
-    window.closeQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'none'; };
+    window.openQuickAddModal = function() {
+        let el = document.getElementById('quickStockModal');
+        if (el) el.style.display = 'flex';
+    };
+
+    window.closeQuickAddModal = function() {
+        let el = document.getElementById('quickStockModal');
+        if (el) el.style.display = 'none';
+    };
 
     window.saveQuickStock = function() {
         let name = document.getElementById('mName').value.trim();
@@ -151,11 +176,12 @@ window.renderSales = function(container) {
         let idx = document.getElementById('itemSelect').value;
         if(idx === "") return;
         let item = salesStock[idx];
-        document.getElementById('itemBatch').value = item.batch;
-        document.getElementById('itemHsn').value = item.hsn;
-        document.getElementById('itemExp').value = item.expiry;
+        if(!item) return;
+        document.getElementById('itemBatch').value = item.batch || '';
+        document.getElementById('itemHsn').value = item.hsn || '';
+        document.getElementById('itemExp').value = item.expiry || '';
         document.getElementById('itemGst').value = item.gst || 0;
-        document.getElementById('itemMrp').value = item.mrp;
+        document.getElementById('itemMrp').value = item.mrp || 0;
     };
 
     window.addItemToCart = function() {
@@ -239,7 +265,6 @@ window.renderSales = function(container) {
         let discAmt = discType === 'Flat' ? discVal : (gross * discVal) / 100;
         let netPayable = gross - discAmt;
 
-        // Save Invoice Data locally and sync for Return module
         let newInvoice = {
             invoiceNo: invNo,
             date: bDate,
@@ -255,7 +280,6 @@ window.renderSales = function(container) {
         invoices.unshift(newInvoice);
         localStorage.setItem('erp_invoices', JSON.stringify(invoices));
 
-        // Deduct Stock
         cart.forEach(cItem => {
             let stIdx = salesStock.findIndex(s => s.name === cItem.name && s.batch === cItem.batch);
             if(stIdx >= 0) {
@@ -264,7 +288,6 @@ window.renderSales = function(container) {
         });
         localStorage.setItem('erp_medicines', JSON.stringify(salesStock));
 
-        // Print Invoice Window without raw script tag inside string
         let printWindow = window.open('', '_blank');
         let printStyle = mode === 'thermal' ? 'width:300px; font-size:11px;' : 'width:100%; max-width:800px; font-size:13px;';
 
@@ -290,15 +313,16 @@ window.renderSales = function(container) {
             '<div style="text-align:center; margin-top:20px; font-size:10px;">*** Thank You - Get Well Soon ***</div>' +
             '</body></html>';
 
-        printWindow.document.write(printHtml);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(function() {
-            printWindow.print();
-            printWindow.close();
-        }, 250);
+        if (printWindow) {
+            printWindow.document.write(printHtml);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function() {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        }
 
-        // Reload Sales workspace for next transaction
         renderSales(container);
     };
 };
