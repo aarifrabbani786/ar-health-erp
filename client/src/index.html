@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #070b14; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
 
-        /* LUXURY LOGIN OVERLAY & PUBLIC PORTAL */
+        /* LUXURY LOGIN OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #030712 0%, #0f172a 100%);
@@ -20,8 +20,16 @@
                         url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
             border-right: 1px solid rgba(255, 255, 255, 0.08); color: #ffffff;
         }
+        .brand-header-logo {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .brand-icon {
+            width: 42px; height: 42px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 900; color: #fff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
         .colorful-logo {
-            font-size: 34px; font-weight: 900; letter-spacing: 1.5px;
+            font-size: 26px; font-weight: 900; letter-spacing: 1px;
             background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #34d399 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -40,7 +48,7 @@
             width: 260px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
             border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; height: 100vh;
         }
-        .sidebar-brand { padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-brand { padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
         .sidebar-menu li { margin-bottom: 5px; }
         .sidebar-menu a {
@@ -89,11 +97,13 @@
     <div id="auth-overlay" style="display: none;">
         <div class="login-left-side">
             <div>
-                <div class="colorful-logo">A.R. HEALTHCARE</div>
-                <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:5px;">Enterprise Multi-Role Medical & Cloud ERP</div>
+                <div class="brand-header-logo">
+                    <div class="brand-icon">AR</div>
+                    <div class="colorful-logo">A.R. HEALTHCARE</div>
+                </div>
+                <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:8px;">Enterprise Multi-Role Medical & Cloud ERP</div>
             </div>
             
-            <!-- PUBLIC VISITOR REQUEST FORM -->
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 18px; padding: 20px; margin-top:20px;">
                 <h3 style="color: #38bdf8; font-size: 14px; margin-bottom: 8px;">📩 Customer Inquiry / Medicine Request Portal</h3>
                 <p style="color: #cbd5e1; font-size: 11.5px; margin-bottom:12px;">Store visit request ya emergency medicine inquire karne ke liye form bharein:</p>
@@ -126,7 +136,10 @@
     <div class="app-layout" id="main-app-container">
         <div id="sidebar-container">
             <div class="sidebar-brand">
-                <div class="colorful-logo" style="font-size:19px;">A.R. HEALTHCARE</div>
+                <div class="brand-header-logo">
+                    <div class="brand-icon">AR</div>
+                    <div class="colorful-logo" style="font-size:18px;">A.R. HEALTHCARE</div>
+                </div>
             </div>
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard Analytics</a></li>
@@ -171,6 +184,25 @@
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
                 <button class="btn-danger" onclick="closeChangePassModal()">Cancel</button>
                 <button class="btn-primary" onclick="saveNewPassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT PERMISSIONS MODAL -->
+    <div id="editPermModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
+        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:22px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
+            <h3 style="margin-bottom:12px; color:#38bdf8;">⚙️ Edit User Permissions</h3>
+            <input type="hidden" id="editUserIdx">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px; font-size:12.5px;">
+                <label><input type="checkbox" id="epSales"> Sales Billing Module</label>
+                <label><input type="checkbox" id="epReturns"> Medicine Returns Module</label>
+                <label><input type="checkbox" id="epMed"> Stock Master (CRUD) Module</label>
+                <label><input type="checkbox" id="epHR"> HR & Attendance Module</label>
+                <label><input type="checkbox" id="epAdmin"> Admin Control Panel</label>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-danger" onclick="closeEditPermModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveUserPermissions()">Save Permissions</button>
             </div>
         </div>
     </div>
@@ -252,7 +284,7 @@
             let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
             requests.unshift({ name, phone, msg, date: new Date().toLocaleDateString('en-GB') });
             localStorage.setItem('erp_public_requests', JSON.stringify(requests));
-            alert('Aapka request safaltapurvak store ko bhej diya gaya hai!');
+            alert('Aapka request store ko bhej diya gaya hai!');
             document.getElementById('pubCustName').value = '';
             document.getElementById('pubCustPhone').value = '';
             document.getElementById('pubCustMsg').value = '';
@@ -383,7 +415,7 @@
             `;
         }
 
-        // --- 2. SALES COUNTER (SINGLE BATCH LOCK, ALTERNATIVES, MULTI PAYMENTS & ITEM DISCOUNTS) ---
+        // --- 2. SALES COUNTER (UPPERCASE SERIAL "AR01" & GST RESTORED) ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
@@ -394,14 +426,15 @@
 
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let nextInvNum = invoices.length + 1;
-            let invSerial = "ar" + String(nextInvNum).padStart(2, '0');
+            // STRICT UPPERCASE SERIAL NO (e.g. AR01)
+            let invSerial = "AR" + String(nextInvNum).padStart(2, '0');
 
             container.innerHTML = `
                 <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:14px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <h2 style="font-size:15px; margin:0;">🛒 Sales Billing Counter (A.R. HEALTHCARE)</h2>
                         <div style="display:flex; gap:8px;">
-                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:5px 10px; background:#818cf8;">🔍 Find Composition Substitute</button>
+                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:5px 10px; background:#818cf8;">🔍 Find Substitute</button>
                             <button class="btn-primary" onclick="openQuickAddModal()" style="font-size:11.5px; padding:5px 10px;">+ Quick Add Stock</button>
                         </div>
                     </div>
@@ -420,18 +453,18 @@
                                 <label style="font-size:9.5px; color:#94a3b8; font-weight:700;">SEARCH MEDICINE ITEM</label>
                                 <select id="itemSelect" class="form-control" onchange="autoFillItemDetails()">
                                     <option value="">-- Select Medicine --</option>
-                                    ${salesStock.map((m, idx) => '<option value="' + idx + '">' + m.name + ' | Batch: ' + m.batch + ' | Stock: ' + m.stock + '</option>').join('')}
+                                    ${salesStock.map((m, idx) => '<option value="' + idx + '">' + m.name + ' | Batch: ' + m.batch + ' | GST: ' + (m.gst || 0) + '% | Stock: ' + m.stock + '</option>').join('')}
                                 </select>
                             </div>
                             <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">BATCH</label><input type="text" id="itemBatch" class="form-control" readonly></div>
                             <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">MRP</label><input type="number" id="itemMrp" class="form-control" readonly></div>
                             <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">QTY</label><input type="number" id="itemQty" class="form-control" value="1" min="1"></div>
                             <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">DISC %</label><input type="number" id="itemDisc" class="form-control" value="0" min="0" max="100"></div>
+                            <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">GST %</label><input type="number" id="itemGst" class="form-control" readonly style="background:rgba(14,165,233,0.15); color:#38bdf8; font-weight:700;"></div>
                             <button class="btn-success" onclick="addItemToCart()" style="height:32px;">+ Add Item</button>
                         </div>
                     </div>
 
-                    <!-- CART TABLE CONTAINER -->
                     <div style="flex:1; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(11,15,25,0.5); margin-bottom:8px;">
                         <table class="data-table">
                             <thead>
@@ -441,7 +474,7 @@
                                     <th>MRP</th>
                                     <th>Qty</th>
                                     <th>Item Disc %</th>
-                                    <th>GST</th>
+                                    <th>GST %</th>
                                     <th>Total</th>
                                     <th>Action</th>
                                 </tr>
@@ -464,14 +497,13 @@
                             <select id="printMode" class="form-control" style="width:110px; background:#1e293b;"><option value="thermal">Thermal (3")</option><option value="a4">A4 Standard</option></select>
                         </div>
                         <div style="text-align:right;">
-                            <span style="font-size:11px; color:#94a3b8;" id="summaryText">Gross: ₹0.00</span>
+                            <span style="font-size:11px; color:#94a3b8;" id="summaryText">Gross: ₹0.00 | GST: ₹0.00</span>
                             <span style="font-size:16px; font-weight:900; color:#38bdf8; margin-left:10px;" id="netPayableText">Net: ₹0.00</span>
                             <button class="btn-success" onclick="processCloudBilling()" style="margin-left:10px; padding:6px 16px;">🖨️ Save & Print</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- COMPOSITION ALTERNATIVE SEARCH MODAL -->
                 <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999; justify-content:center; align-items:center;">
                     <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:20px; border-radius:16px; width:100%; max-width:550px; color:#fff;">
                         <h3 style="margin-bottom:10px; color:#38bdf8;">🔍 Find Composition Substitute Medicines</h3>
@@ -513,6 +545,7 @@
                 let item = salesStock[idx];
                 document.getElementById('itemBatch').value = item.batch;
                 document.getElementById('itemMrp').value = item.mrp;
+                document.getElementById('itemGst').value = item.gst || 0;
             };
 
             window.addItemToCart = function() {
@@ -522,19 +555,16 @@
                 let qty = parseInt(document.getElementById('itemQty').value) || 1;
                 let itemDisc = parseFloat(document.getElementById('itemDisc').value) || 0;
 
-                // SINGLE BATCH CART LOCK CHECK
                 let existingIdx = currentSalesCart.findIndex(c => c.name === item.name && c.batch === item.batch);
                 let currentCartQty = existingIdx >= 0 ? currentSalesCart[existingIdx].qty : 0;
                 let totalReqQty = currentCartQty + qty;
 
-                // NEGATIVE/OVER STOCK LOCK
                 if(totalReqQty > item.stock) {
                     alert('Stock Limit Exceeded! Available Stock: ' + item.stock + '. Negative Stock billing is locked.');
                     return;
                 }
 
                 if(existingIdx >= 0) {
-                    // Update existing item instead of duplicate row
                     currentSalesCart[existingIdx].qty = totalReqQty;
                     currentSalesCart[existingIdx].disc = itemDisc;
                     let base = item.mrp * totalReqQty;
@@ -542,7 +572,7 @@
                 } else {
                     let base = item.mrp * qty;
                     let tot = base - (base * itemDisc / 100);
-                    currentSalesCart.push({ ...item, qty, disc: itemDisc, total: tot });
+                    currentSalesCart.push({ ...item, qty, disc: itemDisc, gst: item.gst || 0, total: tot });
                 }
 
                 renderCartTable();
@@ -554,27 +584,32 @@
 
                 if(currentSalesCart.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No items in cart.</td></tr>';
-                    document.getElementById('summaryText').innerText = "Gross: ₹0.00";
+                    document.getElementById('summaryText').innerText = "Gross: ₹0.00 | GST: ₹0.00";
                     document.getElementById('netPayableText').innerText = "Net: ₹0.00";
                     return;
                 }
 
                 let gross = 0;
+                let totalGstAmt = 0;
+
                 tbody.innerHTML = currentSalesCart.map((c, i) => {
                     gross += c.total;
+                    let gstVal = (c.total * (c.gst || 0)) / 100;
+                    totalGstAmt += gstVal;
+
                     return '<tr>' +
                         '<td><b>' + c.name + '</b></td>' +
                         '<td>' + c.batch + '</td>' +
                         '<td>₹' + c.mrp.toFixed(2) + '</td>' +
                         '<td><input type="number" class="form-control" value="' + c.qty + '" min="1" style="width:60px; padding:2px;" oninput="updateCartQty(' + i + ', this.value)"></td>' +
                         '<td><input type="number" class="form-control" value="' + (c.disc || 0) + '" min="0" max="100" style="width:55px; padding:2px;" oninput="updateCartDisc(' + i + ', this.value)">%</td>' +
-                        '<td>' + (c.gst || 0) + '%</td>' +
+                        '<td><span style="color:#38bdf8; font-weight:700;">' + (c.gst || 0) + '%</span></td>' +
                         '<td>₹' + c.total.toFixed(2) + '</td>' +
                         '<td><button class="btn-danger" style="padding:2px 6px;" onclick="removeCartItem(' + i + ')">X</button></td>' +
                         '</tr>';
                 }).join('');
 
-                document.getElementById('summaryText').innerText = 'Total Items: ' + currentSalesCart.length;
+                document.getElementById('summaryText').innerText = 'Gross: ₹' + gross.toFixed(2) + ' | GST Amt: ₹' + totalGstAmt.toFixed(2);
                 document.getElementById('netPayableText').innerText = 'Net: ₹' + gross.toFixed(2);
             };
 
@@ -638,20 +673,19 @@
                 invoices.unshift(newInvoice);
                 localStorage.setItem('erp_invoices', JSON.stringify(invoices));
 
-                // Deduct stock
                 currentSalesCart.forEach(cItem => {
                     let stIdx = salesStock.findIndex(s => s.name === cItem.name && s.batch === cItem.batch);
                     if(stIdx >= 0) { salesStock[stIdx].stock = Math.max(0, salesStock[stIdx].stock - cItem.qty); }
                 });
                 localStorage.setItem('erp_medicines', JSON.stringify(salesStock));
 
-                alert('Bill Generated Successfully via ' + pMode + '!');
+                alert('Bill Generated Successfully (' + invNo + ') via ' + pMode + '!');
                 currentSalesCart = [];
                 renderSales(container);
             };
         };
 
-        // --- 3. SALES RETURN MODULE (WITH RETURN BILL PRINT OPTION) ---
+        // --- 3. SALES RETURNS ---
         window.renderReturns = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let selectedInvoice = null;
@@ -660,7 +694,7 @@
                 <div class="light-card">
                     <h2>🔄 Sales Medicine Return Module & Receipt Print</h2>
                     <div style="display:flex; gap:10px; max-width:450px; margin-bottom:15px;">
-                        <input type="text" id="searchInvNo" class="form-control" placeholder="Enter Invoice No (e.g. ar01) *">
+                        <input type="text" id="searchInvNo" class="form-control" placeholder="Enter Invoice No (e.g. AR01) *">
                         <button class="btn-primary" onclick="searchInvoiceForReturn()">🔍 Fetch</button>
                     </div>
 
@@ -668,7 +702,7 @@
                         <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;" id="invHeaderSummary"></div>
                         <table class="data-table">
                             <thead>
-                                <tr><th>Medicine Item</th><th>Batch</th><th>Sold Qty</th><th>MRP</th><th>Return Qty</th><th>Refund</th></tr>
+                                <tr><th>Medicine Item</th><th>Batch</th><th>Sold Qty</th><th>MRP</th><th>GST %</th><th>Return Qty</th><th>Refund</th></tr>
                             </thead>
                             <tbody id="returnItemsTableBody"></tbody>
                         </table>
@@ -680,8 +714,8 @@
             `;
 
             window.searchInvoiceForReturn = function() {
-                let invInput = document.getElementById('searchInvNo').value.trim().toLowerCase();
-                selectedInvoice = invoices.find(inv => inv.invoiceNo.toLowerCase() === invInput);
+                let invInput = document.getElementById('searchInvNo').value.trim().toUpperCase();
+                selectedInvoice = invoices.find(inv => inv.invoiceNo.toUpperCase() === invInput);
                 if(!selectedInvoice) { alert('Invoice not found!'); return; }
 
                 document.getElementById('invoiceDetailsArea').style.display = 'block';
@@ -694,6 +728,7 @@
                         '<td>' + item.batch + '</td>' +
                         '<td>' + item.qty + '</td>' +
                         '<td>₹' + item.mrp.toFixed(2) + '</td>' +
+                        '<td>' + (item.gst || 0) + '%</td>' +
                         '<td><input type="number" id="retQty_' + idx + '" class="form-control" value="0" min="0" max="' + item.qty + '" style="width:75px;"></td>' +
                         '<td id="refundAmt_' + idx + '">₹0.00</td>' +
                     '</tr>'
@@ -702,12 +737,12 @@
 
             window.processReturnSubmit = function() {
                 if(!selectedInvoice) return;
-                alert('Sales Return Saved Successfully & Return Bill Printed!');
+                alert('Sales Return Saved Successfully!');
                 renderReturns(container);
             };
         };
 
-        // --- 4. UDHAR SETTLEMENT MODULE ---
+        // --- 4. UDHAR SETTLEMENT ---
         window.renderUdhar = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
@@ -745,7 +780,7 @@
             };
         };
 
-        // --- 5. PUBLIC CUSTOMER REQUESTS VIEW ---
+        // --- 5. PUBLIC CUSTOMER REQUESTS ---
         window.renderPublicRequests = function(container) {
             let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
             container.innerHTML = `
@@ -767,7 +802,7 @@
             `;
         };
 
-        // --- 6. STOCK MASTER (CRUD WITH COMPOSITION) ---
+        // --- 6. STOCK MASTER (CRUD WITH GST RESTORED) ---
         window.renderMedicines = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             container.innerHTML = `
@@ -778,6 +813,7 @@
                         <div class="form-group"><label>Salt Composition</label><input type="text" id="sComp" class="form-control" placeholder="Paracetamol 650mg"></div>
                         <div class="form-group"><label>Batch</label><input type="text" id="sBatch" class="form-control"></div>
                         <div class="form-group"><label>Expiry</label><input type="text" id="sExp" class="form-control" placeholder="12/28"></div>
+                        <div class="form-group"><label>GST %</label><input type="number" id="sGst" class="form-control" value="12"></div>
                         <div class="form-group"><label>MRP (₹)</label><input type="number" id="sMrp" class="form-control"></div>
                         <div class="form-group"><label>Stock Qty</label><input type="number" id="sQty" class="form-control" value="100"></div>
                         <div class="form-group" style="display:flex; align-items:flex-end;">
@@ -786,12 +822,13 @@
                     </div>
 
                     <table class="data-table">
-                        <thead><tr><th>Name</th><th>Composition</th><th>Batch</th><th>MRP</th><th>Stock</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Name</th><th>Composition</th><th>Batch</th><th>GST %</th><th>MRP</th><th>Stock</th><th>Action</th></tr></thead>
                         <tbody>
                             ${meds.map((m, i) => '<tr>' +
                                 '<td><b>' + m.name + '</b></td>' +
                                 '<td>' + (m.composition || 'N/A') + '</td>' +
                                 '<td>' + m.batch + '</td>' +
+                                '<td><span style="color:#38bdf8;">' + (m.gst || 0) + '%</span></td>' +
                                 '<td>₹' + m.mrp + '</td>' +
                                 '<td>' + m.stock + '</td>' +
                                 '<td><button class="btn-danger" onclick="deleteStockItem(' + i + ')">Delete</button></td>' +
@@ -806,11 +843,12 @@
                 let composition = document.getElementById('sComp').value.trim();
                 let batch = document.getElementById('sBatch').value.trim();
                 let expiry = document.getElementById('sExp').value.trim();
+                let gst = parseFloat(document.getElementById('sGst').value) || 0;
                 let mrp = parseFloat(document.getElementById('sMrp').value) || 0;
                 let stock = parseInt(document.getElementById('sQty').value) || 0;
 
                 if(!name || !batch || !mrp) { alert('Fill required fields!'); return; }
-                meds.push({ name, composition, batch, expiry, mrp, stock });
+                meds.push({ name, composition, batch, expiry, gst, mrp, stock });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
                 renderMedicines(container);
             };
@@ -822,14 +860,249 @@
             };
         };
 
-        // --- 7. HR MANAGEMENT ---
+        // --- 7. HR MANAGEMENT & STAFF PERFORMANCE (RESTORED) ---
         window.renderHR = function(container) {
-            container.innerHTML = `<div class="light-card"><h2>👥 HR Directory & Staff Performance</h2><p>HR Module Loaded.</p></div>`;
+            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
+                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210' }
+            ];
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let attendance = JSON.parse(localStorage.getItem('erp_attendance')) || {};
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 HR Directory & Staff Performance Scoreboard</h2>
+                    
+                    <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:20px;">
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">+ Add New Staff Member</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="hrName" class="form-control" placeholder="Staff Name"></div>
+                            <div class="form-group"><label>Designation Role</label><input type="text" id="hrRole" class="form-control" placeholder="e.g. Pharmacist"></div>
+                            <div class="form-group"><label>Contact Phone</label><input type="text" id="hrPhone" class="form-control" placeholder="Phone Number"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;">
+                                <button class="btn-primary" onclick="addNewStaffMember()" style="width:100%;">+ Register Staff</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:20px;">
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">📅 Daily Attendance (${new Date().toLocaleDateString('en-GB')})</h3>
+                        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                            <select id="attUser" class="form-control" style="width:200px;">
+                                ${staffList.map(s => '<option value="' + s.name + '">' + s.name + ' (' + s.role + ')</option>').join('')}
+                            </select>
+                            <select id="attStatus" class="form-control" style="width:140px;">
+                                <option value="Present">Present</option>
+                                <option value="Half Day">Half Day</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Leave">On Leave</option>
+                            </select>
+                            <button class="btn-success" onclick="markAttendance()">Mark Status</button>
+                        </div>
+                    </div>
+
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">Staff Directory & Performance</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Staff Name</th>
+                                <th>Role</th>
+                                <th>Phone</th>
+                                <th>Total Invoices Billed</th>
+                                <th>Today's Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${staffList.map(s => {
+                                let uInvs = invs.filter(inv => inv.biller === s.name);
+                                let todayKey = new Date().toLocaleDateString('en-GB');
+                                let attVal = (attendance[todayKey] && attendance[todayKey][s.name]) ? attendance[todayKey][s.name] : 'Not Marked';
+
+                                return '<tr>' +
+                                    '<td><b>' + s.name + '</b></td>' +
+                                    '<td>' + s.role + '</td>' +
+                                    '<td>' + s.phone + '</td>' +
+                                    '<td>' + uInvs.length + ' Bills</td>' +
+                                    '<td><span style="color:#38bdf8; font-weight:700;">' + attVal + '</span></td>' +
+                                '</tr>';
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.addNewStaffMember = function() {
+                let name = document.getElementById('hrName').value.trim();
+                let role = document.getElementById('hrRole').value.trim();
+                let phone = document.getElementById('hrPhone').value.trim();
+
+                if(!name || !role) { alert('Full Name and Role required!'); return; }
+                staffList.push({ name, role, phone });
+                localStorage.setItem('erp_staff', JSON.stringify(staffList));
+                alert('Staff added successfully!');
+                renderHR(container);
+            };
+
+            window.markAttendance = function() {
+                let name = document.getElementById('attUser').value;
+                let st = document.getElementById('attStatus').value;
+                let todayKey = new Date().toLocaleDateString('en-GB');
+
+                if(!attendance[todayKey]) attendance[todayKey] = {};
+                attendance[todayKey][name] = st;
+
+                localStorage.setItem('erp_attendance', JSON.stringify(attendance));
+                alert('Attendance marked for ' + name + ' as ' + st);
+                renderHR(container);
+            };
         };
 
-        // --- 8. SUPER ADMIN ---
+        // --- 8. SUPER ADMIN CONTROL (RESTORED) ---
         window.renderSuperAdmin = function(container) {
-            container.innerHTML = `<div class="light-card"><h2>⚙️ Super Admin Controls</h2><p>Admin Controls Loaded.</p></div>`;
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>⚙️ Super Admin Control & User Permissions</h2>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:16px; border-radius:12px; margin-bottom:20px;">
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">Agency Branding Settings</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
+                            <div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
+                            <div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control" value="${s.dlNo || ''}"></div>
+                            <div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control" value="${s.gstin || ''}"></div>
+                        </div>
+                        <button class="btn-success" onclick="saveSystemSettings()">💾 Save Agency Settings</button>
+                    </div>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:16px; border-radius:12px; margin-bottom:20px;">
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">+ Create System User</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="uName" class="form-control"></div>
+                            <div class="form-group"><label>Username</label><input type="text" id="uUsername" class="form-control"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="uPass" class="form-control"></div>
+                            <div class="form-group">
+                                <label>Assigned Role</label>
+                                <select id="uRole" class="form-control">
+                                    <option value="Admin">Admin</option>
+                                    <option value="Inventory Manager">Inventory Manager</option>
+                                    <option value="Billing Manager">Billing Manager</option>
+                                    <option value="Billing Staff">Billing Staff</option>
+                                    <option value="Cashier">Cashier</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:15px; margin-bottom:12px; font-size:12px;">
+                            <label><input type="checkbox" id="pSales" checked> Sales Billing</label>
+                            <label><input type="checkbox" id="pReturns" checked> Returns</label>
+                            <label><input type="checkbox" id="pMed"> Stock Master</label>
+                            <label><input type="checkbox" id="pHR"> HR Access</label>
+                            <label><input type="checkbox" id="pAdmin"> Admin Settings</label>
+                        </div>
+                        <button class="btn-primary" onclick="createNewUser()">Create Account</button>
+                    </div>
+
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">User Activation & Permissions Control</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map((usr, i) => '<tr>' +
+                                '<td><b>' + usr.name + '</b></td>' +
+                                '<td>' + usr.username + '</td>' +
+                                '<td><span style="color:#38bdf8;">' + usr.role + '</span></td>' +
+                                '<td><span style="color:' + (usr.status === 'Deactivated' ? '#ef4444' : '#34d399') + ';">● ' + (usr.status || 'Active') + '</span></td>' +
+                                '<td>' + (usr.username !== 'admin' ? 
+                                    '<button class="btn-primary" style="padding:4px 8px; margin-right:5px;" onclick="openEditPermModal(' + i + ')">Edit Perms</button>' +
+                                    '<button class="btn-danger" style="padding:4px 8px;" onclick="toggleUserStatus(' + i + ')">' + (usr.status === 'Deactivated' ? 'Activate' : 'Deactivate') + '</button>' 
+                                    : 'Main Super Admin') + 
+                                '</td>' +
+                            '</tr>').join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.saveSystemSettings = function() {
+                let settings = {
+                    agencyName: document.getElementById('stAgency').value,
+                    chairman: document.getElementById('stChairman').value,
+                    dlNo: document.getElementById('stDl').value,
+                    gstin: document.getElementById('stGstin').value
+                };
+                localStorage.setItem('erp_settings', JSON.stringify(settings));
+                applyBrandingSettings();
+                alert('Settings saved!');
+            };
+
+            window.createNewUser = function() {
+                let name = document.getElementById('uName').value.trim();
+                let username = document.getElementById('uUsername').value.trim();
+                let pass = document.getElementById('uPass').value.trim();
+                let role = document.getElementById('uRole').value;
+
+                if(!name || !username || !pass) { alert('Fill all required fields!'); return; }
+
+                let permissions = {
+                    sales: document.getElementById('pSales').checked,
+                    returns: document.getElementById('pReturns').checked,
+                    medicines: document.getElementById('pMed').checked,
+                    hr: document.getElementById('pHR').checked,
+                    admin: document.getElementById('pAdmin').checked
+                };
+
+                users.push({ name, username, pass, role, status: 'Active', permissions });
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User created successfully!');
+                renderSuperAdmin(container);
+            };
+
+            window.openEditPermModal = function(i) {
+                document.getElementById('editUserIdx').value = i;
+                let u = users[i];
+                let p = u.permissions || {};
+                document.getElementById('epSales').checked = !!p.sales;
+                document.getElementById('epReturns').checked = !!p.returns;
+                document.getElementById('epMed').checked = !!p.medicines;
+                document.getElementById('epHR').checked = !!p.hr;
+                document.getElementById('epAdmin').checked = !!p.admin;
+                document.getElementById('editPermModal').style.display = 'flex';
+            };
+
+            window.closeEditPermModal = function() {
+                document.getElementById('editPermModal').style.display = 'none';
+            };
+
+            window.saveUserPermissions = function() {
+                let i = document.getElementById('editUserIdx').value;
+                if(i !== "") {
+                    users[i].permissions = {
+                        sales: document.getElementById('epSales').checked,
+                        returns: document.getElementById('epReturns').checked,
+                        medicines: document.getElementById('epMed').checked,
+                        hr: document.getElementById('epHR').checked,
+                        admin: document.getElementById('epAdmin').checked
+                    };
+                    localStorage.setItem('erp_users', JSON.stringify(users));
+                    alert('Permissions updated successfully!');
+                    closeEditPermModal();
+                    renderSuperAdmin(container);
+                }
+            };
+
+            window.toggleUserStatus = function(i) {
+                users[i].status = users[i].status === 'Deactivated' ? 'Active' : 'Deactivated';
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                renderSuperAdmin(container);
+            };
         };
     </script>
 </body>
