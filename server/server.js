@@ -6,14 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// System Users In-Memory Data
+// In-Memory Database Users
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Serve Static Frontend Files from client/src
-const clientPath = path.join(__dirname, 'client', 'src');
-app.use(express.static(clientPath));
+// Absolute Client Path Fix for Render
+const clientSrcPath = path.resolve(__dirname, 'client', 'src');
+app.use(express.static(clientSrcPath));
 
 // API Endpoints
 app.get('/api/users', (req, res) => {
@@ -68,12 +68,13 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Single Page Application Fallback (No Wildcard Regex Crash)
-app.use((req, res, next) => {
-    if (req.method === 'GET' && !req.path.startsWith('/api')) {
-        return res.sendFile(path.join(clientPath, 'index.html'));
-    }
-    next();
+// Explicit Catch-All Page Serving (Fixes Not Found)
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(clientSrcPath, 'index.html'));
+});
+
+app.use((req, res) => {
+    res.sendFile(path.resolve(clientSrcPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
