@@ -6,14 +6,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// In-Memory Database Users
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-app.use(express.static(path.join(__dirname, 'client', 'src')));
+// Serve Static Frontend Files cleanly
+const clientPath = path.join(__dirname, 'client', 'src');
+app.use(express.static(clientPath));
 
+// API Routes
 app.get('/api/users', (req, res) => {
-    res.status(200).json(systemUsers);
+    res.json(systemUsers);
 });
 
 app.post('/api/users', (req, res) => {
@@ -38,7 +42,7 @@ app.post('/api/users', (req, res) => {
         if (idx >= 0) systemUsers[idx] = userData;
         else systemUsers.push(userData);
 
-        res.status(200).json({ success: true, users: systemUsers });
+        res.json({ success: true, users: systemUsers });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
@@ -49,7 +53,7 @@ app.post('/api/users/update-status', (req, res) => {
     const user = systemUsers.find(u => u.username === username);
     if (user) {
         user.status = status;
-        return res.status(200).json({ success: true });
+        return res.json({ success: true });
     }
     res.status(404).json({ error: 'User not found' });
 });
@@ -59,13 +63,17 @@ app.post('/api/users/update-password', (req, res) => {
     const user = systemUsers.find(u => u.username === username);
     if (user) {
         user.pass = pass;
-        return res.status(200).json({ success: true });
+        return res.json({ success: true });
     }
     res.status(404).json({ error: 'User not found' });
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'src', 'index.html'));
+// Clean Fallback Index Route (Fixed PathError)
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        return res.sendFile(path.join(clientPath, 'index.html'));
+    }
+    next();
 });
 
 const PORT = process.env.PORT || 5000;
