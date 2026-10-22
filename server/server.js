@@ -6,16 +6,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-Memory Database Users
+// In-Memory Cloud Users
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Absolute Client Path Fix for Render
-const clientSrcPath = path.resolve(__dirname, 'client', 'src');
-app.use(express.static(clientSrcPath));
+// Absolute Path Setup for client/src
+const clientPath = path.join(__dirname, 'client', 'src');
 
-// API Endpoints
+// Serve Static Files Directly from client/src
+app.use(express.static(clientPath));
+
+// User Management API Routes
 app.get('/api/users', (req, res) => {
     res.json(systemUsers);
 });
@@ -68,13 +70,16 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Explicit Catch-All Page Serving (Fixes Not Found)
+// Single Page Application Index Catch-All Route
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve(clientSrcPath, 'index.html'));
+    res.sendFile(path.join(clientPath, 'index.html'));
 });
 
-app.use((req, res) => {
-    res.sendFile(path.resolve(clientSrcPath, 'index.html'));
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        return res.sendFile(path.join(clientPath, 'index.html'));
+    }
+    next();
 });
 
 const PORT = process.env.PORT || 5000;
