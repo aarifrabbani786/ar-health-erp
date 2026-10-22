@@ -6,15 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-Memory Cloud Users Store
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Serve Static Frontend Files from client/src
 app.use(express.static(path.join(__dirname, 'client', 'src')));
 
-// API Endpoints
 app.get('/api/users', (req, res) => {
     res.status(200).json(systemUsers);
 });
@@ -67,7 +64,6 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Wildcard SPA Fallback
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'src', 'index.html'));
 });
