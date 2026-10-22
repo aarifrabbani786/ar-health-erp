@@ -264,46 +264,39 @@ window.renderSales = function(container) {
         });
         localStorage.setItem('erp_medicines', JSON.stringify(salesStock));
 
-        // Print Invoice Window
+        // Print Invoice Window without raw script tag inside string
         let printWindow = window.open('', '_blank');
         let printStyle = mode === 'thermal' ? 'width:300px; font-size:11px;' : 'width:100%; max-width:800px; font-size:13px;';
 
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>Print Invoice - ${invNo}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding:15px; margin:0 auto; ${printStyle} }
-                    .header { text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px; }
-                    .title { font-size:16px; font-weight:bold; }
-                    table { width:100%; border-collapse:collapse; margin-top:10px; }
-                    th, td { border-bottom:1px solid #ddd; padding:5px; text-align:left; font-size:inherit; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="title">A R PHARMA AND SURGICAL AGENCY</div>
-                    <div>Chairman: DRx. Aarif Rabbani</div>
-                    <div>DL No: UP-2026-MED-98765 | GSTIN: 09AAAAA0000A1Z5</div>
-                    <div>Maharajganj, UP</div>
-                </div>
-                <div><b>Inv No:</b> ${invNo} | <b>Date:</b> ${bDate}</div>
-                <div><b>Patient:</b> ${name} | <b>Mobile:</b> ${mob}</div>
-                <table>
-                    <thead><tr><th>Item</th><th>Qty</th><th>MRP</th><th>GST</th><th>Total</th></tr></thead>
-                    <tbody>
-                        ${cart.map(c => `<tr><td>${c.name}</td><td>${c.qty}</td><td>₹${c.mrp}</td><td>${c.gst}\%</td><td>₹${c.total}</td></tr>`).join('')}
-                    </tbody>
-                </table>
-                <div style="margin-top:15px; text-align:right;">
-                    <b>Net Payable: ₹${netPayable.toFixed(2)}</b>
-                </div>
-                <div style="text-align:center; margin-top:20px; font-size:10px;">*** Thank You - Get Well Soon ***</div>
-                <script>window.onload = function() { window.print(); window.close(); }</script>
-            </body>
-            </html>
-        `);
+        let printHtml = '<html><head><title>Print Invoice - ' + invNo + '</title><style>' +
+            'body { font-family: Arial, sans-serif; padding:15px; margin:0 auto; ' + printStyle + ' }' +
+            '.header { text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px; }' +
+            '.title { font-size:16px; font-weight:bold; }' +
+            'table { width:100%; border-collapse:collapse; margin-top:10px; }' +
+            'th, td { border-bottom:1px solid #ddd; padding:5px; text-align:left; font-size:inherit; }' +
+            '</style></head><body>' +
+            '<div class="header">' +
+            '<div class="title">A R PHARMA AND SURGICAL AGENCY</div>' +
+            '<div>Chairman: DRx. Aarif Rabbani</div>' +
+            '<div>DL No: UP-2026-MED-98765 | GSTIN: 09AAAAA0000A1Z5</div>' +
+            '<div>Maharajganj, UP</div>' +
+            '</div>' +
+            '<div><b>Inv No:</b> ' + invNo + ' | <b>Date:</b> ' + bDate + '</div>' +
+            '<div><b>Patient:</b> ' + name + ' | <b>Mobile:</b> ' + mob + '</div>' +
+            '<table><thead><tr><th>Item</th><th>Qty</th><th>MRP</th><th>GST</th><th>Total</th></tr></thead><tbody>' +
+            cart.map(c => '<tr><td>' + c.name + '</td><td>' + c.qty + '</td><td>₹' + c.mrp + '</td><td>' + (c.gst||0) + '%</td><td>₹' + c.total + '</td></tr>').join('') +
+            '</tbody></table>' +
+            '<div style="margin-top:15px; text-align:right;"><b>Net Payable: ₹' + netPayable.toFixed(2) + '</b></div>' +
+            '<div style="text-align:center; margin-top:20px; font-size:10px;">*** Thank You - Get Well Soon ***</div>' +
+            '</body></html>';
+
+        printWindow.document.write(printHtml);
         printWindow.document.close();
+        printWindow.focus();
+        setTimeout(function() {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
 
         // Reload Sales workspace for next transaction
         renderSales(container);
