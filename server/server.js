@@ -12,13 +12,28 @@ let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Absolute Client Directory Resolution
-const clientPath = path.resolve(__dirname, 'client', 'src');
+// Multiple Possible Static Directories
+const possiblePaths = [
+    path.join(__dirname, 'client', 'src'),
+    path.join(__dirname, 'client'),
+    path.join(__dirname, 'src'),
+    __dirname
+];
 
-// Serve Static Assets (HTML, JS, CSS)
-app.use(express.static(clientPath));
+// Function to find the correct directory containing index.html
+function getStaticDir() {
+    for (let p of possiblePaths) {
+        if (fs.existsSync(path.join(p, 'index.html'))) {
+            return p;
+        }
+    }
+    return path.join(__dirname, 'client', 'src');
+}
 
-// User Management APIs
+const staticDir = getStaticDir();
+app.use(express.static(staticDir));
+
+// API Endpoints
 app.get('/api/users', (req, res) => {
     res.json(systemUsers);
 });
@@ -71,24 +86,15 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Guaranteed Fallback for Index.html
-app.get('/', (req, res) => {
-    const indexPath = path.join(clientPath, 'index.html');
+// Universal Dynamic Index Catch-All
+app.get('*', (req, res) => {
+    const activeDir = getStaticDir();
+    const indexPath = path.join(activeDir, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        res.status(404).send('index.html not found in client/src');
+        res.sendFile(path.join(__dirname, 'client', 'src', 'index.html'));
     }
-});
-
-app.use((req, res, next) => {
-    if (req.method === 'GET' && !req.path.startsWith('/api')) {
-        const indexPath = path.join(clientPath, 'index.html');
-        if (fs.existsSync(indexPath)) {
-            return res.sendFile(indexPath);
-        }
-    }
-    next();
 });
 
 const PORT = process.env.PORT || 5000;
