@@ -157,18 +157,20 @@
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Analytics Dashboard</a></li>
                 <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales Counter</a></li>
                 <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Medicine Returns</a></li>
+                <li><a class="menu-link" onclick="loadModule('patient_reports')" id="nav-patient_reports"><span>📑</span> Patient Sales & Returns</a></li>
                 <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>🔍</span> Stock Audit Master</a></li>
                 <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>📦</span> Vendor Purchases</a></li>
                 <li><a class="menu-link" onclick="loadModule('udhar')" id="nav-udhar"><span>💳</span> Udhar Settlement</a></li>
                 <li><a class="menu-link" onclick="loadModule('requests')" id="nav-requests"><span>📩</span> Customer CRM</a></li>
-                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👥</span> HR Management</a></li>
+                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👥</span> HR & Payroll</a></li>
                 <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
         </div>
 
         <div class="main-content">
             <div class="top-banner">
-                <div style="width: 140px;">
+                <div style="width: 140px; display:flex; align-items:center; gap:8px;">
+                    <img id="headerLogoImg" src="" style="height:32px; display:none; border-radius:6px;">
                     <span style="font-size:11px; background:rgba(56,189,248,0.15); color:#38bdf8; padding:4px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-weight:700;">A.R. ERP v2.6</span>
                 </div>
                 
@@ -206,6 +208,25 @@
         </div>
     </div>
 
+    <!-- EDIT PERMISSIONS MODAL -->
+    <div id="editPermModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
+        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:22px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
+            <h3 style="margin-bottom:12px; color:#38bdf8;">⚙️ Edit User Permissions & Details</h3>
+            <input type="hidden" id="editUserIdx">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px; font-size:12.5px;">
+                <label><input type="checkbox" id="epSales"> Sales Billing Module</label>
+                <label><input type="checkbox" id="epReturns"> Medicine Returns Module</label>
+                <label><input type="checkbox" id="epMed"> Stock Audit Module</label>
+                <label><input type="checkbox" id="epHR"> HR & Payroll Access</label>
+                <label><input type="checkbox" id="epAdmin"> Admin Settings Panel</label>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-danger" onclick="closeEditPermModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveUserPermissions()">Save Permissions</button>
+            </div>
+        </div>
+    </div>
+
     <!-- QUICK ADD STOCK MODAL -->
     <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999999; justify-content:center; align-items:center;">
         <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:25px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
@@ -236,7 +257,9 @@
                 agencyName: 'A R PHARMA AND SURGICAL AGENCY',
                 chairman: 'DRx. Aarif Rabbani (B.Pharm, MBA)',
                 dlNo: 'UP-2026-MED-98765',
-                gstin: '09AAAAA0000A1Z5'
+                gstin: '09AAAAA0000A1Z5',
+                address: 'Badahara Rani, Maharajganj, UP',
+                logoUrl: ''
             }));
         }
 
@@ -266,8 +289,15 @@
             if(s) {
                 let bName = document.getElementById('bannerAgencyName');
                 let bSub = document.getElementById('bannerAgencySub');
+                let imgLogo = document.getElementById('headerLogoImg');
+
                 if(bName) bName.innerText = s.agencyName;
-                if(bSub) bSub.innerText = 'Chairman: ' + s.chairman + ' | DL: ' + s.dlNo + ' | GSTIN: ' + s.gstin;
+                if(bSub) bSub.innerText = 'Chairman: ' + s.chairman + ' | DL: ' + s.dlNo + ' | GSTIN: ' + s.gstin + (s.address ? ' | Addr: ' + s.address : '');
+                
+                if(s.logoUrl && imgLogo) {
+                    imgLogo.src = s.logoUrl;
+                    imgLogo.style.display = 'inline-block';
+                }
             }
         }
 
@@ -347,6 +377,7 @@
             if(document.getElementById('nav-returns')) document.getElementById('nav-returns').parentElement.style.display = perms.returns ? 'block' : 'none';
             if(document.getElementById('nav-audit')) document.getElementById('nav-audit').parentElement.style.display = perms.medicines ? 'block' : 'none';
             if(document.getElementById('nav-purchase')) document.getElementById('nav-purchase').parentElement.style.display = perms.medicines ? 'block' : 'none';
+            if(document.getElementById('nav-patient_reports')) document.getElementById('nav-patient_reports').parentElement.style.display = (user.role === 'Admin' || user.role === 'Super Admin') ? 'block' : 'none';
             if(document.getElementById('nav-requests')) document.getElementById('nav-requests').parentElement.style.display = (user.role === 'Admin' || user.role === 'Super Admin') ? 'block' : 'none';
             if(document.getElementById('nav-hr')) document.getElementById('nav-hr').parentElement.style.display = perms.hr ? 'block' : 'none';
             if(document.getElementById('nav-superadmin')) document.getElementById('nav-superadmin').parentElement.style.display = perms.admin ? 'block' : 'none';
@@ -363,6 +394,7 @@
 
             if (m === 'sales') renderSales(workspace);
             else if (m === 'returns') renderReturns(workspace);
+            else if (m === 'patient_reports') renderPatientReports(workspace);
             else if (m === 'dashboard') renderDashboard(workspace);
             else if (m === 'audit') renderStockAudit(workspace);
             else if (m === 'purchase') renderPurchase(workspace);
@@ -417,7 +449,7 @@
             `;
         }
 
-        // --- 2. SALES COUNTER (WITH DOCTOR NAME & COMPOSITION SUBSTITUTE FIND) ---
+        // --- 2. SALES COUNTER ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
@@ -490,7 +522,6 @@
                     </div>
                 </div>
 
-                <!-- FIND SUBSTITUTE MODAL -->
                 <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center;">
                     <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:20px; border-radius:16px; width:100%; max-width:550px; color:#fff;">
                         <h3 style="margin-bottom:10px; color:#38bdf8;">🔍 Find Composition Substitute Medicines</h3>
@@ -591,13 +622,102 @@
 
                 invoices.unshift(newInv);
                 localStorage.setItem('erp_invoices', JSON.stringify(invoices));
+                
+                // Print Bill
+                printInvoiceDoc(newInv);
+
                 alert('Invoice ' + invNo + ' Saved and Printed!');
                 currentSalesCart = [];
                 renderSales(container);
             };
         };
 
-        // --- 3. MEDICINE RETURNS (WITH USER NAME & DATE-TIME) ---
+        function printInvoiceDoc(inv) {
+            let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
+            let printWin = window.open('', '_blank');
+            if(!printWin) return;
+
+            let html = `
+                <html>
+                <head>
+                    <title>Invoice ${inv.invoiceNo}</title>
+                    <style>
+                        body { font-family: Arial; padding:20px; color:#000; }
+                        .header { text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:10px; }
+                        table { width:100%; border-collapse:collapse; margin-top:10px; }
+                        th, td { border:1px solid #000; padding:6px; text-align:left; font-size:12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>${s.agencyName || 'A R PHARMA AND SURGICAL AGENCY'}</h2>
+                        <p>Chairman: ${s.chairman || ''} | DL: ${s.dlNo || ''} | GSTIN: ${s.gstin || ''}</p>
+                    </div>
+                    <div><b>Invoice Serial:</b> ${inv.invoiceNo} | <b>Date/Time:</b> ${inv.date}</div>
+                    <div><b>Patient:</b> ${inv.patientName} (${inv.mobile}) | <b>Doctor:</b> ${inv.doctor || 'N/A'}</div>
+                    <div><b>Biller User:</b> ${inv.biller} | <b>Payment Mode:</b> ${inv.paymentMode}</div>
+                    <table>
+                        <thead><tr><th>Item</th><th>Batch</th><th>Qty</th><th>MRP</th><th>Total</th></tr></thead>
+                        <tbody>
+                            ${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.batch}</td><td>${i.qty}</td><td>₹${i.mrp}</td><td>₹${(i.mrp * i.qty - (i.mrp * i.qty * (i.disc||0) / 100)).toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    <h3 style="text-align:right; margin-top:10px;">Net Amount: ₹${inv.netPayable.toFixed(2)}</h3>
+                </body>
+                </html>
+            `;
+            printWin.document.write(html);
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(() => { printWin.print(); printWin.close(); }, 250);
+        }
+
+        // --- 3. PATIENT SALES & RETURN REPORTS (WITH DUPLICATE PRINT) ---
+        window.renderPatientReports = function(container) {
+            let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📑 Patient Sales & Return Reports</h2>
+                    <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">Sales Invoices History & Duplicate Print</h3>
+                    <table class="data-table" style="margin-bottom:20px;">
+                        <thead><tr><th>Inv Serial</th><th>Date & Time</th><th>Patient Name</th><th>Mobile</th><th>Biller User</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${invoices.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No sales records found.</td></tr>' :
+                                invoices.map(i => `
+                                    <tr>
+                                        <td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.biller}</td>
+                                        <td style="color:#34d399; font-weight:700;">₹${i.netPayable.toFixed(2)}</td>
+                                        <td><button class="btn-primary" onclick="duplicatePrintInvoice('${i.invoiceNo}')">🖨️ Duplicate Print</button></td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h3 style="color:#ef4444; font-size:13px; margin-bottom:8px;">Returns Slips History</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Inv Serial</th><th>Return Date & Time</th><th>Patient Name</th><th>Returned By User</th><th>Refund Amount</th><th>Refund Mode</th></tr></thead>
+                        <tbody>
+                            ${returnsList.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No return records found.</td></tr>' :
+                                returnsList.map(r => `
+                                    <tr>
+                                        <td><b>${r.invNo}</b></td><td>${r.dateTime}</td><td>${r.patientName}</td><td>${r.returnedBy}</td>
+                                        <td style="color:#ef4444; font-weight:700;">₹${r.refundTotal.toFixed(2)}</td><td>${r.refundMode}</td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.duplicatePrintInvoice = function(invNo) {
+                let inv = invoices.find(x => x.invoiceNo === invNo);
+                if(inv) printInvoiceDoc(inv);
+            };
+        };
+
+        // --- 4. MEDICINE RETURNS ---
         window.renderReturns = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -676,7 +796,7 @@
             };
         };
 
-        // --- 4. STOCK AUDIT MASTER ---
+        // --- 5. STOCK AUDIT MASTER ---
         window.renderStockAudit = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let pendingAudits = JSON.parse(localStorage.getItem('erp_pending_audits')) || [];
@@ -748,7 +868,7 @@
             };
         };
 
-        // --- 5. VENDOR PURCHASES & VENDOR MASTER ---
+        // --- 6. VENDOR PURCHASES ---
         window.renderPurchase = function(container) {
             let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [];
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
@@ -773,7 +893,7 @@
                         <div class="form-grid">
                             <div class="form-group"><label>Select Vendor</label>
                                 <select id="pVendor" class="form-control">
-                                    ${vendors.map(v => `<option value="${v.name}">${v.name} (GST:${v.gst})</option>`).join('')}
+                                    ${vendors.map(v => `<option value="${v.name}">${v.name} (GST: ${v.gst})</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group"><label>Invoice No</label><input type="text" id="pInv" class="form-control"></div>
@@ -839,7 +959,7 @@
             };
         };
 
-        // --- 6. UDHAR SETTLEMENT ---
+        // --- 7. UDHAR SETTLEMENT ---
         window.renderUdhar = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
@@ -860,7 +980,7 @@
                                                 <option value="Cash">Cash</option><option value="UPI / QR">UPI / QR</option><option value="Card">Card</option>
                                             </select>
                                         </td>
-                                        <td><button class="btn-success" onclick="settleUdharBill('${u.invoiceNo}',${i})">Clear Payment</button></td>
+                                        <td><button class="btn-success" onclick="settleUdharBill('${u.invoiceNo}', ${i})">Clear Payment</button></td>
                                     </tr>
                                 `).join('')}
                         </tbody>
@@ -881,7 +1001,7 @@
             };
         };
 
-        // --- 7. CUSTOMER CRM ---
+        // --- 8. CUSTOMER CRM ---
         window.renderCustomerRequests = function(container) {
             let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
             container.innerHTML = `
@@ -913,46 +1033,47 @@
             };
         };
 
-        // --- 8. HR MANAGEMENT ---
+        // --- 9. HR & MONTHLY PAYROLL REPORT ---
         window.renderHR = function(container) {
             let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
-                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210' }
+                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210', hourlyRate: 200, baseSalary: 35000 }
             ];
-            let attendance = JSON.parse(localStorage.getItem('erp_attendance')) || {};
-            let todayKey = new Date().toLocaleDateString('en-GB');
+            let payrolls = JSON.parse(localStorage.getItem('erp_payrolls')) || {};
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>👥 Advanced Human Resources & Staff Management</h2>
+                    <h2>👥 HR Management & Monthly Payroll Calculation</h2>
+                    
                     <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register New Staff Member</h3>
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register Staff Member</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Full Name</label><input type="text" id="sName" class="form-control" placeholder="Staff Name"></div>
-                            <div class="form-group"><label>Role / Designation</label><input type="text" id="sRole" class="form-control" placeholder="e.g. Pharmacist"></div>
-                            <div class="form-group"><label>Phone Number</label><input type="text" id="sPhone" class="form-control" placeholder="10-digit Phone"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="registerStaff()" style="width:100%;">Register Staff</button></div>
+                            <div class="form-group"><label>Designation</label><input type="text" id="sRole" class="form-control" placeholder="Role"></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="sPhone" class="form-control" placeholder="Phone"></div>
+                            <div class="form-group"><label>Monthly Base Salary (₹)</label><input type="number" id="sSalary" class="form-control" value="15000"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="registerStaff()" style="width:100%;">Save Staff</button></div>
                         </div>
                     </div>
 
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Mark Daily Attendance (${todayKey})</h3>
-                        <div style="display:flex; gap:10px;">
-                            <select id="attStaff" class="form-control" style="width:200px;">
-                                ${staffList.map(s => `<option value="${s.name}">${s.name} (${s.role})</option>`).join('')}
-                            </select>
-                            <select id="attStatus" class="form-control" style="width:140px;">
-                                <option value="Present">Present</option><option value="Half Day">Half Day</option><option value="Absent">Absent</option><option value="Leave">On Leave</option>
-                            </select>
-                            <button class="btn-success" onclick="saveAttendance()">Mark Status</button>
-                        </div>
-                    </div>
-
+                    <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Monthly Salary & Duty Hours Payroll Report</h3>
                     <table class="data-table">
-                        <thead><tr><th>Staff Name</th><th>Role</th><th>Phone</th><th>Today's Attendance</th></tr></thead>
+                        <thead><tr><th>Staff Name</th><th>Monthly Salary</th><th>Duty Hours</th><th>Paid / Unpaid</th><th>Paid Amount</th><th>Update Status</th></tr></thead>
                         <tbody>
-                            ${staffList.map(s => {
-                                let attVal = (attendance[todayKey] && attendance[todayKey][s.name]) ? attendance[todayKey][s.name] : 'Not Marked';
-                                return `<tr><td><b>${s.name}</b></td><td>${s.role}</td><td>${s.phone}</td><td><b style="color:#38bdf8;">${attVal}</b></td></tr>`;
+                            ${staffList.map((s, idx) => {
+                                let p = payrolls[s.name] || { status: 'Unpaid', paidAmt: 0, hours: 208 };
+                                return `
+                                    <tr>
+                                        <td><b>${s.name}</b> (${s.role})</td>
+                                        <td>₹${s.baseSalary || 15000}</td>
+                                        <td><input type="number" id="pHours_${idx}" class="form-control" value="${p.hours}" style="width:70px;"> Hrs</td>
+                                        <td><b style="color:${p.status==='Paid'?'#34d399':'#ef4444'};">${p.status}</b></td>
+                                        <td><input type="number" id="pAmt_${idx}" class="form-control" value="${p.paidAmt}" style="width:90px;"></td>
+                                        <td>
+                                            <button class="btn-success" onclick="updatePayroll('${s.name}', ${idx}, 'Paid')">Mark Paid</button>
+                                            <button class="btn-danger" onclick="updatePayroll('${s.name}', ${idx}, 'Unpaid')">Unpaid</button>
+                                        </td>
+                                    </tr>
+                                `;
                             }).join('')}
                         </tbody>
                     </table>
@@ -963,38 +1084,148 @@
                 let name = document.getElementById('sName').value.trim();
                 let role = document.getElementById('sRole').value.trim();
                 let phone = document.getElementById('sPhone').value.trim();
+                let sal = parseFloat(document.getElementById('sSalary').value) || 15000;
                 if(!name || !role) { alert('Name and Role required!'); return; }
-                staffList.push({ name, role, phone });
+                staffList.push({ name, role, phone, baseSalary: sal });
                 localStorage.setItem('erp_staff', JSON.stringify(staffList));
-                alert('Staff registered successfully!');
+                alert('Staff registered!');
                 renderHR(container);
             };
 
-            window.saveAttendance = function() {
-                let name = document.getElementById('attStaff').value;
-                let status = document.getElementById('attStatus').value;
-                if(!attendance[todayKey]) attendance[todayKey] = {};
-                attendance[todayKey][name] = status;
-                localStorage.setItem('erp_attendance', JSON.stringify(attendance));
-                alert('Attendance marked!');
+            window.updatePayroll = function(name, idx, status) {
+                let hrs = parseInt(document.getElementById('pHours_' + idx).value) || 0;
+                let amt = parseFloat(document.getElementById('pAmt_' + idx).value) || 0;
+                payrolls[name] = { status, hours: hrs, paidAmt: amt };
+                localStorage.setItem('erp_payrolls', JSON.stringify(payrolls));
+                alert('Payroll updated for ' + name);
                 renderHR(container);
             };
         };
 
-        // --- 9. SUPER ADMIN CONTROL ---
+        // --- 10. SUPER ADMIN CONTROL ---
         window.renderSuperAdmin = function(container) {
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
+
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Super Admin Control Panel</h2>
+                    <h2>⚙️ Super Admin Control Panel & Pharmacy Branding</h2>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:14px; border-radius:12px; margin-bottom:15px;">
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">Pharmacy Store Branding & Details Form</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
+                            <div class="form-group"><label>Chairman Name</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
+                            <div class="form-group"><label>Drug License (DL)</label><input type="text" id="stDl" class="form-control" value="${s.dlNo || ''}"></div>
+                            <div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control" value="${s.gstin || ''}"></div>
+                            <div class="form-group"><label>Address</label><input type="text" id="stAddr" class="form-control" value="${s.address || ''}"></div>
+                            <div class="form-group"><label>Logo / Store Image URL</label><input type="text" id="stLogo" class="form-control" value="${s.logoUrl || ''}" placeholder="https://..."></div>
+                        </div>
+                        <button class="btn-success" onclick="saveSystemSettings()">💾 Save Store Settings</button>
+                    </div>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:14px; border-radius:12px; margin-bottom:15px;">
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">+ Create New System User</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="uName" class="form-control"></div>
+                            <div class="form-group"><label>Username</label><input type="text" id="uUsername" class="form-control"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="uPass" class="form-control"></div>
+                            <div class="form-group"><label>Role</label>
+                                <select id="uRole" class="form-control">
+                                    <option value="Admin">Admin</option>
+                                    <option value="Billing Staff">Billing Staff</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="createNewUser()">Create Account</button>
+                    </div>
+
+                    <h3 style="color:#fff; font-size:13px; margin-bottom:8px;">Registered Users & Permissions Control</h3>
                     <table class="data-table">
-                        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody>
-                            ${users.map(u => `<tr><td><b>${u.name}</b></td><td>${u.username}</td><td>${u.role}</td><td><b style="color:#34d399;">${u.status}</b></td></tr>`).join('')}
+                            ${users.map((usr, i) => `
+                                <tr>
+                                    <td><b>${usr.name}</b></td><td>${usr.username}</td><td><span style="color:#38bdf8;">${usr.role}</span></td>
+                                    <td><span style="color:${usr.status === 'Deactivated' ? '#ef4444' : '#34d399'};">● ${usr.status || 'Active'}</span></td>
+                                    <td>
+                                        ${usr.username !== 'admin' ? `
+                                            <button class="btn-primary" onclick="openEditPermModal(${i})">Edit Perms</button>
+                                            <button class="btn-danger" onclick="toggleUserStatus(${i})">${usr.status === 'Deactivated' ? 'Activate' : 'Deactivate'}</button>
+                                        ` : 'Super Admin'}
+                                    </td>
+                                </tr>
+                            `).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
+
+            window.saveSystemSettings = function() {
+                let settings = {
+                    agencyName: document.getElementById('stAgency').value,
+                    chairman: document.getElementById('stChairman').value,
+                    dlNo: document.getElementById('stDl').value,
+                    gstin: document.getElementById('stGstin').value,
+                    address: document.getElementById('stAddr').value,
+                    logoUrl: document.getElementById('stLogo').value
+                };
+                localStorage.setItem('erp_settings', JSON.stringify(settings));
+                applyBrandingSettings();
+                alert('Store settings & logo updated!');
+            };
+
+            window.createNewUser = function() {
+                let name = document.getElementById('uName').value.trim();
+                let username = document.getElementById('uUsername').value.trim();
+                let pass = document.getElementById('uPass').value.trim();
+                let role = document.getElementById('uRole').value;
+
+                if(!name || !username || !pass) { alert('Fill all required fields!'); return; }
+                users.push({ name, username, pass, role, status: 'Active', permissions: { sales: true, returns: true, medicines: true, hr: true, admin: false } });
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User created!');
+                renderSuperAdmin(container);
+            };
+
+            window.openEditPermModal = function(i) {
+                document.getElementById('editUserIdx').value = i;
+                let u = users[i];
+                let p = u.permissions || {};
+                document.getElementById('epSales').checked = !!p.sales;
+                document.getElementById('epReturns').checked = !!p.returns;
+                document.getElementById('epMed').checked = !!p.medicines;
+                document.getElementById('epHR').checked = !!p.hr;
+                document.getElementById('epAdmin').checked = !!p.admin;
+                document.getElementById('editPermModal').style.display = 'flex';
+            };
+
+            window.closeEditPermModal = function() {
+                document.getElementById('editPermModal').style.display = 'none';
+            };
+
+            window.saveUserPermissions = function() {
+                let i = document.getElementById('editUserIdx').value;
+                if(i !== "") {
+                    users[i].permissions = {
+                        sales: document.getElementById('epSales').checked,
+                        returns: document.getElementById('epReturns').checked,
+                        medicines: document.getElementById('epMed').checked,
+                        hr: document.getElementById('epHR').checked,
+                        admin: document.getElementById('epAdmin').checked
+                    };
+                    localStorage.setItem('erp_users', JSON.stringify(users));
+                    alert('Permissions updated successfully!');
+                    closeEditPermModal();
+                    renderSuperAdmin(container);
+                }
+            };
+
+            window.toggleUserStatus = function(i) {
+                users[i].status = users[i].status === 'Deactivated' ? 'Active' : 'Deactivated';
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                renderSuperAdmin(container);
+            };
         };
     </script>
 </body>
