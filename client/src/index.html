@@ -20,8 +20,6 @@
                         url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
             border-right: 1px solid rgba(255, 255, 255, 0.08); color: #ffffff;
         }
-
-        /* BRANDING LOGO BADGE WITH NEON BORDER */
         .brand-border-logo {
             display: inline-flex; align-items: center; gap: 12px; padding: 8px 16px;
             background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8;
@@ -65,14 +63,11 @@
 
         .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #060913; height: 100vh; display: flex; flex-direction: column; }
         
-        /* CENTERED PHARMACY BRANDING HEADER */
         .top-banner {
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px); padding: 12px 20px; border-radius: 14px; border: 1px solid rgba(56,189,248,0.2);
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); padding: 12px 20px; border-radius: 14px; border: 1px solid rgba(56,189,248,0.25);
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; z-index: 1000;
         }
-        .centered-agency-details {
-            text-align: center; flex: 1; margin: 0 20px;
-        }
+        .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
         .centered-agency-details h1 {
             font-size: 16px; font-weight: 900; letter-spacing: 0.5px;
             background: linear-gradient(135deg, #38bdf8 0%, #ffffff 100%);
@@ -81,8 +76,8 @@
         .centered-agency-details p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 500; }
 
         .light-card { 
-            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(20px); color: #f8fafc; border-radius: 16px; padding: 18px; margin-bottom: 14px; 
-            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); color: #f8fafc; border-radius: 16px; padding: 18px; margin-bottom: 14px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
         }
         .light-card h2 { font-size: 16px; color: #f8fafc; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
@@ -110,7 +105,7 @@
 </head>
 <body>
 
-    <!-- AUTH OVERLAY & PUBLIC REQUEST PORTAL -->
+    <!-- AUTH OVERLAY & PUBLIC PORTAL -->
     <div id="auth-overlay" style="display: none;">
         <div class="login-left-side">
             <div>
@@ -166,7 +161,7 @@
                 <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>📦</span> Vendor Purchases</a></li>
                 <li><a class="menu-link" onclick="loadModule('udhar')" id="nav-udhar"><span>💳</span> Udhar Settlement</a></li>
                 <li><a class="menu-link" onclick="loadModule('requests')" id="nav-requests"><span>📩</span> Customer CRM</a></li>
-                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👥</span> HR & Attendance</a></li>
+                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👥</span> HR Management</a></li>
                 <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
         </div>
@@ -177,7 +172,6 @@
                     <span style="font-size:11px; background:rgba(56,189,248,0.15); color:#38bdf8; padding:4px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-weight:700;">A.R. ERP v2.6</span>
                 </div>
                 
-                <!-- CENTERED PHARMACY BRANDING -->
                 <div class="centered-agency-details">
                     <h1 id="bannerAgencyName">A R PHARMA AND SURGICAL AGENCY</h1>
                     <p id="bannerAgencySub">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA) | DL: UP-2026-MED-98765 | GSTIN: 09AAAAA0000A1Z5</p>
@@ -212,6 +206,22 @@
         </div>
     </div>
 
+    <!-- QUICK ADD STOCK MODAL -->
+    <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999999; justify-content:center; align-items:center;">
+        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:25px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
+            <h3 style="margin-bottom:15px; color:#38bdf8;">+ Quick Add Medicine Stock</h3>
+            <div class="form-group"><label>Medicine Name</label><input type="text" id="qName" class="form-control" placeholder="e.g. Tab Calpol 650mg"></div>
+            <div class="form-group"><label>Batch Number</label><input type="text" id="qBatch" class="form-control" placeholder="Batch No"></div>
+            <div class="form-group"><label>Salt Composition / Substitute</label><input type="text" id="qComp" class="form-control" placeholder="Paracetamol 650mg"></div>
+            <div class="form-group"><label>MRP (₹)</label><input type="number" id="qMrp" class="form-control" placeholder="0.00"></div>
+            <div class="form-group"><label>Stock Qty</label><input type="number" id="qQty" class="form-control" value="50"></div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+                <button class="btn-danger" onclick="closeQuickAddModal()">Cancel</button>
+                <button class="btn-success" onclick="saveQuickStock()">Save Stock</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentUser = null;
 
@@ -232,7 +242,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             applyBrandingSettings();
-
             let savedSession = localStorage.getItem('erp_active_session');
             if (savedSession) {
                 try {
@@ -248,7 +257,6 @@
                     return;
                 } catch(e) {}
             }
-
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-app-container').style.display = 'none';
         });
@@ -275,6 +283,26 @@
 
         function closeChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
 
+        function openQuickAddModal() { document.getElementById('quickStockModal').style.display = 'flex'; }
+        function closeQuickAddModal() { document.getElementById('quickStockModal').style.display = 'none'; }
+
+        function saveQuickStock() {
+            let name = document.getElementById('qName').value.trim();
+            let batch = document.getElementById('qBatch').value.trim();
+            let composition = document.getElementById('qComp').value.trim();
+            let mrp = parseFloat(document.getElementById('qMrp').value) || 0;
+            let stock = parseInt(document.getElementById('qQty').value) || 0;
+
+            if(!name || !batch || !mrp) { alert('Sare required fields bharein!'); return; }
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            meds.push({ name, batch, composition, mrp, stock, gst: 12 });
+            localStorage.setItem('erp_medicines', JSON.stringify(meds));
+            alert('Stock successfully added!');
+            closeQuickAddModal();
+            let currentMod = localStorage.getItem('erp_active_module') || 'sales';
+            loadModule(currentMod);
+        }
+
         function submitPublicRequest() {
             let name = document.getElementById('pubCustName').value.trim();
             let phone = document.getElementById('pubCustPhone').value.trim();
@@ -297,9 +325,7 @@
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
-                if (found.status === 'Deactivated') {
-                    alert('User Account Deactivated!'); return;
-                }
+                if (found.status === 'Deactivated') { alert('User Account Deactivated!'); return; }
                 currentUser = found;
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
                 location.reload();
@@ -346,7 +372,7 @@
             else if (m === 'superadmin') renderSuperAdmin(workspace);
         }
 
-        // --- 1. UNIQUE ANALYTICS DASHBOARD ---
+        // --- 1. DASHBOARD ---
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -364,39 +390,39 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📊 Comprehensive Business Analytics Dashboard</h2>
+                    <h2>📊 Colorful Business Analytics Dashboard</h2>
                     <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
-                        <div style="background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.3); padding:16px; border-radius:12px;">
-                            <div style="font-size:11px; color:#94a3b8;">Total Billing Volume</div>
-                            <div style="font-size:22px; font-weight:800; color:#38bdf8; margin-top:4px;">₹${totalGrossSales.toFixed(2)}</div>
-                            <div style="font-size:10px; color:#64748b; margin-top:2px;">Count: ${invs.length} Bills</div>
+                        <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(14,165,233,0.15);">
+                            <div style="font-size:11.5px; color:#38bdf8; font-weight:700;">TOTAL GROSS SALES</div>
+                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Invoices Generated: ${invs.length}</div>
                         </div>
-                        <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:16px; border-radius:12px;">
-                            <div style="font-size:11px; color:#94a3b8;">Sales Returns Deducted</div>
-                            <div style="font-size:22px; font-weight:800; color:#ef4444; margin-top:4px;">- ₹${totalReturnAmt.toFixed(2)}</div>
-                            <div style="font-size:10px; color:#64748b; margin-top:2px;">Returns Count: ${returns.length}</div>
+                        <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(239,68,68,0.15);">
+                            <div style="font-size:11.5px; color:#ef4444; font-weight:700;">TOTAL RETURNS DEDUCTED</div>
+                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Return Slips: ${returns.length}</div>
                         </div>
-                        <div style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); padding:16px; border-radius:12px;">
-                            <div style="font-size:11px; color:#94a3b8;">Net Business Revenue</div>
-                            <div style="font-size:22px; font-weight:800; color:#34d399; margin-top:4px;">₹${netRevenue.toFixed(2)}</div>
-                            <div style="font-size:10px; color:#34d399; margin-top:2px;">Final Calculation Active</div>
+                        <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(34,197,94,0.15);">
+                            <div style="font-size:11.5px; color:#34d399; font-weight:700;">FINAL NET REVENUE</div>
+                            <div style="font-size:24px; font-weight:900; color:#34d399; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Sales minus Returns</div>
                         </div>
-                        <div style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); padding:16px; border-radius:12px;">
-                            <div style="font-size:11px; color:#94a3b8;">Today's Staff Presence</div>
-                            <div style="font-size:22px; font-weight:800; color:#c084fc; margin-top:4px;">${presentCount} On-Duty</div>
-                            <div style="font-size:10px; color:#ef4444; margin-top:2px;">${offCount} Off/Absent</div>
+                        <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(168,85,247,0.15);">
+                            <div style="font-size:11.5px; color:#c084fc; font-weight:700;">STAFF ATTENDANCE TODAY</div>
+                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">${presentCount} Active</div>
+                            <div style="font-size:10.5px; color:#ef4444; margin-top:3px;">${offCount} On Leave / Absent</div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- 2. SALES COUNTER (DETAILED MRP, DISC, BILL TIME & USER RECORD) ---
+        // --- 2. SALES COUNTER (WITH DOCTOR NAME & COMPOSITION SUBSTITUTE FIND) ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
             let salesStock = JSON.parse(localStorage.getItem('erp_medicines')) || [
-                { name: 'TAB CALPOL 650 MG', batch: '123', hsn: '3004', mrp: 2, stock: 60, gst: 12 }
+                { name: 'TAB CALPOL 650 MG', batch: '123', composition: 'Paracetamol 650mg', mrp: 2, stock: 60, gst: 12 }
             ];
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let invSerial = "AR" + String(invoices.length + 1).padStart(2, '0');
@@ -405,15 +431,19 @@
                 <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:14px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <h2 style="font-size:15px; margin:0;">🛒 Sales Counter Module</h2>
-                        <button class="btn-primary" onclick="openQuickAddModal()" style="font-size:11.5px; padding:5px 10px;">+ Quick Add Stock</button>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:5px 10px; background:#818cf8;">🔍 Find Substitute</button>
+                            <button class="btn-success" onclick="openQuickAddModal()" style="font-size:11.5px; padding:5px 10px;">+ Quick Add Stock</button>
+                        </div>
                     </div>
 
-                    <div class="form-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom:8px; gap:6px;">
+                    <div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:8px; gap:6px;">
                         <div class="form-group"><label>Inv Serial</label><input type="text" id="invoiceNo" class="form-control" value="${invSerial}" readonly style="color:#38bdf8; font-weight:700;"></div>
                         <div class="form-group"><label>Date & Time</label><input type="text" id="billDate" class="form-control" value="${new Date().toLocaleString('en-GB')}" readonly></div>
                         <div class="form-group"><label>Biller User</label><input type="text" class="form-control" value="${currentUser ? currentUser.name : 'Staff'}" readonly style="color:#34d399; font-weight:700;"></div>
                         <div class="form-group"><label>Patient Name *</label><input type="text" id="custName" class="form-control" placeholder="Patient Full Name"></div>
                         <div class="form-group"><label>10-Digit Mobile *</label><input type="text" id="custMobile" class="form-control" maxlength="10" placeholder="Mobile"></div>
+                        <div class="form-group"><label>Doctor Name</label><input type="text" id="docName" class="form-control" placeholder="Dr. Name"></div>
                     </div>
 
                     <div style="background:rgba(30,41,59,0.5); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); margin-bottom:8px;">
@@ -459,7 +489,33 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FIND SUBSTITUTE MODAL -->
+                <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center;">
+                    <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:20px; border-radius:16px; width:100%; max-width:550px; color:#fff;">
+                        <h3 style="margin-bottom:10px; color:#38bdf8;">🔍 Find Composition Substitute Medicines</h3>
+                        <div class="form-group"><input type="text" id="compQuery" class="form-control" placeholder="Enter salt e.g. Paracetamol" oninput="filterByComposition()"></div>
+                        <div style="max-height:220px; overflow-y:auto; margin-top:10px;">
+                            <table class="data-table">
+                                <thead><tr><th>Item</th><th>Composition</th><th>Batch</th><th>Stock</th><th>MRP</th></tr></thead>
+                                <tbody id="altTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div style="text-align:right; margin-top:12px;"><button class="btn-danger" onclick="closeAltSearchModal()">Close</button></div>
+                    </div>
+                </div>
             `;
+
+            window.openAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'flex'; filterByComposition(); };
+            window.closeAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'none'; };
+
+            window.filterByComposition = function() {
+                let q = (document.getElementById('compQuery') ? document.getElementById('compQuery').value : '').toLowerCase();
+                let tbody = document.getElementById('altTableBody');
+                if(!tbody) return;
+                let matches = salesStock.filter(s => (s.composition || '').toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q));
+                tbody.innerHTML = matches.map(m => `<tr><td><b>${m.name}</b></td><td>${m.composition || 'N/A'}</td><td>${m.batch}</td><td>${m.stock}</td><td>₹${m.mrp}</td></tr>`).join('');
+            };
 
             window.autoFillItemDetails = function() {
                 let idx = document.getElementById('itemSelect').value;
@@ -479,11 +535,8 @@
                 if(qty > item.stock) { alert('Stock Limit Exceeded!'); return; }
 
                 let existingIdx = currentSalesCart.findIndex(c => c.name === item.name && c.batch === item.batch);
-                if(existingIdx >= 0) {
-                    currentSalesCart[existingIdx].qty += qty;
-                } else {
-                    currentSalesCart.push({ ...item, qty, disc });
-                }
+                if(existingIdx >= 0) { currentSalesCart[existingIdx].qty += qty; }
+                else { currentSalesCart.push({ ...item, qty, disc }); }
                 renderCartTable();
             };
 
@@ -496,29 +549,17 @@
                     return;
                 }
 
-                let totalMrp = 0;
-                let totalDisc = 0;
-                let finalAmt = 0;
-
+                let totalMrp = 0, totalDisc = 0, finalAmt = 0;
                 tbody.innerHTML = currentSalesCart.map((c, i) => {
                     let lineMrp = c.mrp * c.qty;
                     let lineDisc = (lineMrp * (c.disc || 0)) / 100;
                     let lineFinal = lineMrp - lineDisc;
+                    totalMrp += lineMrp; totalDisc += lineDisc; finalAmt += lineFinal;
 
-                    totalMrp += lineMrp;
-                    totalDisc += lineDisc;
-                    finalAmt += lineFinal;
-
-                    return '<tr>' +
-                        '<td><b>' + c.name + '</b></td>' +
-                        '<td>' + c.batch + '</td>' +
-                        '<td>₹' + c.mrp.toFixed(2) + '</td>' +
-                        '<td>' + c.qty + '</td>' +
-                        '<td>' + c.disc + '%</td>' +
-                        '<td>' + (c.gst || 0) + '%</td>' +
-                        '<td>₹' + lineFinal.toFixed(2) + '</td>' +
-                        '<td><button class="btn-danger" onclick="currentSalesCart.splice(' + i + ',1); renderCartTable();">X</button></td>' +
-                    '</tr>';
+                    return `<tr>
+                        <td><b>${c.name}</b></td><td>${c.batch}</td><td>₹${c.mrp.toFixed(2)}</td><td>${c.qty}</td><td>${c.disc}%</td><td>${c.gst || 0}%</td><td>₹${lineFinal.toFixed(2)}</td>
+                        <td><button class="btn-danger" onclick="currentSalesCart.splice(${i},1); renderCartTable();">X</button></td>
+                    </tr>`;
                 }).join('');
 
                 document.getElementById('summaryText').innerText = 'Total MRP: ₹' + totalMrp.toFixed(2) + ' | Disc: ₹' + totalDisc.toFixed(2);
@@ -528,6 +569,7 @@
             window.processCloudBilling = function() {
                 let name = document.getElementById('custName').value.trim();
                 let mob = document.getElementById('custMobile').value.trim();
+                let doc = document.getElementById('docName').value.trim();
                 if(!name || mob.length !== 10) { alert('Valid Name and Mobile required!'); return; }
                 if(currentSalesCart.length === 0) { alert('Cart empty!'); return; }
 
@@ -540,6 +582,7 @@
                     date: bDate,
                     patientName: name,
                     mobile: mob,
+                    doctor: doc,
                     paymentMode: pMode,
                     items: [...currentSalesCart],
                     netPayable: currentSalesCart.reduce((a, b) => a + (b.mrp * b.qty - (b.mrp * b.qty * b.disc / 100)), 0),
@@ -548,14 +591,13 @@
 
                 invoices.unshift(newInv);
                 localStorage.setItem('erp_invoices', JSON.stringify(invoices));
-
                 alert('Invoice ' + invNo + ' Saved and Printed!');
                 currentSalesCart = [];
                 renderSales(container);
             };
         };
 
-        // --- 3. MEDICINE RETURNS (STRICT RETURN QTY LOCK & PAYMENT MODE RECORD) ---
+        // --- 3. MEDICINE RETURNS (WITH USER NAME & DATE-TIME) ---
         window.renderReturns = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -625,16 +667,16 @@
                     refundTotal: refundTotal,
                     refundMode: pMode,
                     returnedBy: currentUser ? currentUser.name : 'Staff',
-                    date: new Date().toLocaleDateString('en-GB')
+                    dateTime: new Date().toLocaleString('en-GB')
                 });
 
                 localStorage.setItem('erp_returns_list', JSON.stringify(returnsList));
-                alert('Return processed by ' + (currentUser ? currentUser.name : 'Staff') + '! Refund: ₹' + refundTotal + ' via ' + pMode);
+                alert('Return processed by ' + (currentUser ? currentUser.name : 'Staff') + ' at ' + new Date().toLocaleString('en-GB') + '! Refund: ₹' + refundTotal + ' via ' + pMode);
                 renderReturns(container);
             };
         };
 
-        // --- 4. STOCK AUDIT MASTER (EDIT, AUDIT & SUPER ADMIN APPROVAL) ---
+        // --- 4. STOCK AUDIT MASTER ---
         window.renderStockAudit = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let pendingAudits = JSON.parse(localStorage.getItem('erp_pending_audits')) || [];
@@ -642,13 +684,12 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🔍 Stock Audit Master Control</h2>
-                    
                     <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
                         <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">Audit Edit Request (Requires Admin Approval)</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Select Medicine</label>
                                 <select id="auditMedIdx" class="form-control">
-                                    ${meds.map((m, i) => '<option value="' + i + '">' + m.name + ' (Batch: ' + m.batch + ' | Curr Stock: ' + m.stock + ')</option>').join('')}
+                                    ${meds.map((m, i) => `<option value="${i}">${m.name} (Batch: ${m.batch} \vert{} Stock:${m.stock})</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group"><label>New Audited Stock Qty</label><input type="number" id="auditNewQty" class="form-control"></div>
@@ -660,19 +701,15 @@
                     </div>
 
                     ${(currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Admin')) ? `
-                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Pending Audit Approvals (Admin Control)</h3>
+                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Pending Audit Approvals</h3>
                         <table class="data-table" style="margin-bottom:20px;">
-                            <thead><tr><th>Item</th><th>Old Qty</th><th>Requested New Qty</th><th>Reason</th><th>Requested By</th><th>Approval Action</th></tr></thead>
+                            <thead><tr><th>Item</th><th>Old Qty</th><th>New Qty</th><th>Reason</th><th>By</th><th>Action</th></tr></thead>
                             <tbody>
-                                ${pendingAudits.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending audit requests.</td></tr>' :
+                                ${pendingAudits.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending requests.</td></tr>' :
                                     pendingAudits.map((p, idx) => `
                                         <tr>
-                                            <td><b>${p.medName}</b></td>
-                                            <td>${p.oldQty}</td>
-                                            <td><b style="color:#38bdf8;">${p.newQty}</b></td>
-                                            <td>${p.reason}</td>
-                                            <td>${p.by}</td>
-                                            <td><button class="btn-success" onclick="approveAuditRequest(${idx})">Approve & Update Stock</button></td>
+                                            <td><b>${p.medName}</b></td><td>${p.oldQty}</td><td><b style="color:#38bdf8;">${p.newQty}</b></td><td>${p.reason}</td><td>${p.by}</td>
+                                            <td><button class="btn-success" onclick="approveAuditRequest(${idx})">Approve</button></td>
                                         </tr>
                                     `).join('')}
                             </tbody>
@@ -683,15 +720,7 @@
                     <table class="data-table">
                         <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Audited Stock</th><th>Status</th></tr></thead>
                         <tbody>
-                            ${meds.map(m => `
-                                <tr>
-                                    <td><b>${m.name}</b></td>
-                                    <td>${m.batch}</td>
-                                    <td>₹${m.mrp}</td>
-                                    <td><b style="color:#34d399;">${m.stock}</b></td>
-                                    <td><span style="color:#38bdf8;">Verified</span></td>
-                                </tr>
-                            `).join('')}
+                            ${meds.map(m => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b style="color:#34d399;">${m.stock}</b></td><td><span style="color:#38bdf8;">Verified</span></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -701,19 +730,9 @@
                 let idx = document.getElementById('auditMedIdx').value;
                 let newQty = parseInt(document.getElementById('auditNewQty').value);
                 let reason = document.getElementById('auditReason').value.trim();
-
                 if(isNaN(newQty) || !reason) { alert('Fill all fields!'); return; }
-
                 let med = meds[idx];
-                pendingAudits.push({
-                    medIndex: idx,
-                    medName: med.name,
-                    oldQty: med.stock,
-                    newQty: newQty,
-                    reason: reason,
-                    by: currentUser ? currentUser.name : 'Staff'
-                });
-
+                pendingAudits.push({ medIndex: idx, medName: med.name, oldQty: med.stock, newQty: newQty, reason: reason, by: currentUser ? currentUser.name : 'Staff' });
                 localStorage.setItem('erp_pending_audits', JSON.stringify(pendingAudits));
                 alert('Audit request submitted for Admin approval!');
                 renderStockAudit(container);
@@ -721,72 +740,106 @@
 
             window.approveAuditRequest = function(idx) {
                 let req = pendingAudits[idx];
-                if(meds[req.medIndex]) {
-                    meds[req.medIndex].stock = req.newQty;
-                    localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                }
+                if(meds[req.medIndex]) { meds[req.medIndex].stock = req.newQty; localStorage.setItem('erp_medicines', JSON.stringify(meds)); }
                 pendingAudits.splice(idx, 1);
                 localStorage.setItem('erp_pending_audits', JSON.stringify(pendingAudits));
-                alert('Audit request approved and master stock updated!');
+                alert('Audit request approved and stock updated!');
                 renderStockAudit(container);
             };
         };
 
-        // --- 5. VENDOR PURCHASES & PURCHASE RETURN ---
+        // --- 5. VENDOR PURCHASES & VENDOR MASTER ---
         window.renderPurchase = function(container) {
+            let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [];
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📦 Vendor Purchases & Purchase Returns Entry</h2>
-                    <div class="form-grid" style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <div class="form-group"><label>Vendor Name</label><input type="text" id="vName" class="form-control"></div>
-                        <div class="form-group"><label>Vendor Invoice No</label><input type="text" id="vInv" class="form-control"></div>
-                        <div class="form-group"><label>Item Name</label><input type="text" id="vItem" class="form-control"></div>
-                        <div class="form-group"><label>Batch</label><input type="text" id="vBatch" class="form-control"></div>
-                        <div class="form-group"><label>Purchase Price (Cost)</label><input type="number" id="vCost" class="form-control"></div>
-                        <div class="form-group"><label>MRP (₹)</label><input type="number" id="vMrp" class="form-control"></div>
-                        <div class="form-group"><label>Purchase Qty</label><input type="number" id="vQty" class="form-control"></div>
-                        <div class="form-group" style="display:flex; align-items:flex-end;">
-                            <button class="btn-success" onclick="saveVendorPurchase()" style="width:100%;">+ Save Purchase Entry</button>
+                    <h2>📦 Vendor Master & Purchase Entries</h2>
+                    
+                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register New Vendor</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Vendor Name</label><input type="text" id="venName" class="form-control" placeholder="Supplier Name"></div>
+                            <div class="form-group"><label>GST No</label><input type="text" id="venGst" class="form-control" placeholder="GSTIN"></div>
+                            <div class="form-group"><label>Drug License (DL) No</label><input type="text" id="venDl" class="form-control" placeholder="DL No"></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="venPhone" class="form-control" placeholder="Phone"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveVendor()" style="width:100%;">Save Vendor</button></div>
                         </div>
                     </div>
 
+                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
+                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">+ New Purchase Entry</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Select Vendor</label>
+                                <select id="pVendor" class="form-control">
+                                    ${vendors.map(v => `<option value="${v.name}">${v.name} (GST:${v.gst})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Invoice No</label><input type="text" id="pInv" class="form-control"></div>
+                            <div class="form-group"><label>Purchase Date</label><input type="text" id="pDate" class="form-control" value="${new Date().toLocaleDateString('en-GB')}" readonly></div>
+                            <div class="form-group"><label>Item Name</label><input type="text" id="pItem" class="form-control"></div>
+                            <div class="form-group"><label>Batch</label><input type="text" id="pBatch" class="form-control"></div>
+                            <div class="form-group"><label>Cost Price</label><input type="number" id="pCost" class="form-control"></div>
+                            <div class="form-group"><label>MRP</label><input type="number" id="pMrp" class="form-control"></div>
+                            <div class="form-group"><label>Qty</label><input type="number" id="pQty" class="form-control"></div>
+                            <div class="form-group"><label>Payment Mode</label>
+                                <select id="pMode" class="form-control">
+                                    <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Credit Invoice">Credit Invoice (Udhar)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchase()" style="width:100%;">Save Purchase</button></div>
+                        </div>
+                    </div>
+
+                    <h3 style="color:#fff; font-size:13px; margin-bottom:8px;">Recent Purchase Invoices</h3>
                     <table class="data-table">
-                        <thead><tr><th>Vendor Name</th><th>Invoice No</th><th>Item</th><th>Batch</th><th>Cost Price</th><th>Qty</th></tr></thead>
+                        <thead><tr><th>Vendor</th><th>Inv No</th><th>Item</th><th>Batch</th><th>Cost</th><th>Qty</th><th>Mode</th></tr></thead>
                         <tbody>
-                            ${purchases.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No purchase entries found.</td></tr>' :
-                                purchases.map(p => `<tr><td><b>${p.vendor}</b></td><td>${p.inv}</td><td>${p.item}</td><td>${p.batch}</td><td>₹${p.cost}</td><td>${p.qty}</td></tr>`).join('')}
+                            ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchases found.</td></tr>' :
+                                purchases.map(p => `<tr><td><b>${p.vendor}</b></td><td>${p.inv}</td><td>${p.item}</td><td>${p.batch}</td><td>₹${p.cost}</td><td>${p.qty}</td><td>${p.mode}</td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
 
-            window.saveVendorPurchase = function() {
-                let vendor = document.getElementById('vName').value.trim();
-                let inv = document.getElementById('vInv').value.trim();
-                let item = document.getElementById('vItem').value.trim();
-                let batch = document.getElementById('vBatch').value.trim();
-                let cost = parseFloat(document.getElementById('vCost').value) || 0;
-                let mrp = parseFloat(document.getElementById('vMrp').value) || 0;
-                let qty = parseInt(document.getElementById('vQty').value) || 0;
+            window.saveVendor = function() {
+                let name = document.getElementById('venName').value.trim();
+                let gst = document.getElementById('venGst').value.trim();
+                let dl = document.getElementById('venDl').value.trim();
+                let phone = document.getElementById('venPhone').value.trim();
+                if(!name) { alert('Vendor Name required!'); return; }
+                vendors.push({ name, gst, dl, phone });
+                localStorage.setItem('erp_vendors', JSON.stringify(vendors));
+                alert('Vendor saved successfully!');
+                renderPurchase(container);
+            };
 
-                if(!vendor || !item || !qty) { alert('Fill required purchase fields!'); return; }
+            window.savePurchase = function() {
+                let vendor = document.getElementById('pVendor').value;
+                let inv = document.getElementById('pInv').value.trim();
+                let date = document.getElementById('pDate').value;
+                let item = document.getElementById('pItem').value.trim();
+                let batch = document.getElementById('pBatch').value.trim();
+                let cost = parseFloat(document.getElementById('pCost').value) || 0;
+                let mrp = parseFloat(document.getElementById('pMrp').value) || 0;
+                let qty = parseInt(document.getElementById('pQty').value) || 0;
+                let mode = document.getElementById('pMode').value;
 
-                purchases.unshift({ vendor, inv, item, batch, cost, mrp, qty });
+                if(!vendor || !inv || !item || !qty) { alert('Fill compulsory fields!'); return; }
+                purchases.unshift({ vendor, inv, date, item, batch, cost, mrp, qty, mode });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
 
-                // Also Add to Master Stock
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
                 meds.push({ name: item, batch: batch, mrp: mrp, stock: qty, gst: 12 });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
 
-                alert('Vendor Purchase recorded and added to Master Stock!');
+                alert('Purchase saved & stock updated!');
                 renderPurchase(container);
             };
         };
 
-        // --- 6. UDHAR SETTLEMENT WITH AMOUNT & MODE ---
+        // --- 6. UDHAR SETTLEMENT ---
         window.renderUdhar = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
@@ -800,15 +853,11 @@
                             ${udharInvs.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending udhar records.</td></tr>' :
                                 udharInvs.map((u, i) => `
                                     <tr>
-                                        <td><b>${u.invoiceNo}</b></td>
-                                        <td>${u.patientName}</td>
-                                        <td>${u.mobile}</td>
+                                        <td><b>${u.invoiceNo}</b></td><td>${u.patientName}</td><td>${u.mobile}</td>
                                         <td style="color:#ef4444; font-weight:700;">₹${u.netPayable.toFixed(2)}</td>
                                         <td>
                                             <select id="uPayMode_${i}" class="form-control" style="width:130px;">
-                                                <option value="Cash">Cash</option>
-                                                <option value="UPI / QR">UPI / QR</option>
-                                                <option value="Card">Card</option>
+                                                <option value="Cash">Cash</option><option value="UPI / QR">UPI / QR</option><option value="Card">Card</option>
                                             </select>
                                         </td>
                                         <td><button class="btn-success" onclick="settleUdharBill('${u.invoiceNo}',${i})">Clear Payment</button></td>
@@ -826,16 +875,15 @@
                     invoices[iIdx].udharSettled = true;
                     invoices[iIdx].settledMode = mode;
                     localStorage.setItem('erp_invoices', JSON.stringify(invoices));
-                    alert('Udhar payment settled via ' + mode + '!');
+                    alert('Udhar settled via ' + mode + '!');
                     renderUdhar(container);
                 }
             };
         };
 
-        // --- 7. CUSTOMER CRM & STORE REQUESTS ---
+        // --- 7. CUSTOMER CRM ---
         window.renderCustomerRequests = function(container) {
             let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
-
             container.innerHTML = `
                 <div class="light-card">
                     <h2>📩 Customer CRM & Public Requests Management</h2>
@@ -845,10 +893,7 @@
                             ${requests.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No requests received.</td></tr>' :
                                 requests.map((r, idx) => `
                                     <tr>
-                                        <td>${r.date}</td>
-                                        <td><b>${r.name}</b></td>
-                                        <td>${r.phone}</td>
-                                        <td>${r.msg}</td>
+                                        <td>${r.date}</td><td><b>${r.name}</b></td><td>${r.phone}</td><td>${r.msg}</td>
                                         <td><input type="text" id="reqReply_${idx}" class="form-control" value="${r.reply || ''}" placeholder="Staff reply notes"></td>
                                         <td><button class="btn-primary" onclick="updateCustomerReq(${idx})">Save Reply</button></td>
                                     </tr>
@@ -868,7 +913,7 @@
             };
         };
 
-        // --- 8. HR MODULE ---
+        // --- 8. HR MANAGEMENT ---
         window.renderHR = function(container) {
             let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
                 { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210' }
@@ -878,18 +923,25 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>👥 HR Directory & Staff Attendance</h2>
+                    <h2>👥 Advanced Human Resources & Staff Management</h2>
                     <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">Mark Daily Attendance (${todayKey})</h3>
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register New Staff Member</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="sName" class="form-control" placeholder="Staff Name"></div>
+                            <div class="form-group"><label>Role / Designation</label><input type="text" id="sRole" class="form-control" placeholder="e.g. Pharmacist"></div>
+                            <div class="form-group"><label>Phone Number</label><input type="text" id="sPhone" class="form-control" placeholder="10-digit Phone"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="registerStaff()" style="width:100%;">Register Staff</button></div>
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
+                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Mark Daily Attendance (${todayKey})</h3>
                         <div style="display:flex; gap:10px;">
                             <select id="attStaff" class="form-control" style="width:200px;">
                                 ${staffList.map(s => `<option value="${s.name}">${s.name} (${s.role})</option>`).join('')}
                             </select>
                             <select id="attStatus" class="form-control" style="width:140px;">
-                                <option value="Present">Present</option>
-                                <option value="Half Day">Half Day</option>
-                                <option value="Absent">Absent</option>
-                                <option value="Leave">On Leave</option>
+                                <option value="Present">Present</option><option value="Half Day">Half Day</option><option value="Absent">Absent</option><option value="Leave">On Leave</option>
                             </select>
                             <button class="btn-success" onclick="saveAttendance()">Mark Status</button>
                         </div>
@@ -906,6 +958,17 @@
                     </table>
                 </div>
             `;
+
+            window.registerStaff = function() {
+                let name = document.getElementById('sName').value.trim();
+                let role = document.getElementById('sRole').value.trim();
+                let phone = document.getElementById('sPhone').value.trim();
+                if(!name || !role) { alert('Name and Role required!'); return; }
+                staffList.push({ name, role, phone });
+                localStorage.setItem('erp_staff', JSON.stringify(staffList));
+                alert('Staff registered successfully!');
+                renderHR(container);
+            };
 
             window.saveAttendance = function() {
                 let name = document.getElementById('attStaff').value;
