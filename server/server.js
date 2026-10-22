@@ -6,13 +6,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// System Users In-Memory Data
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Absolute Path Fallback for Render
-app.use(express.static(path.join(__dirname, 'client', 'src')));
+// Serve Static Frontend Files from client/src
+const clientPath = path.join(__dirname, 'client', 'src');
+app.use(express.static(clientPath));
 
+// API Endpoints
 app.get('/api/users', (req, res) => {
     res.json(systemUsers);
 });
@@ -65,9 +68,12 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Direct HTML catch-all for SPA
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'src', 'index.html'));
+// Single Page Application Fallback (No Wildcard Regex Crash)
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        return res.sendFile(path.join(clientPath, 'index.html'));
+    }
+    next();
 });
 
 const PORT = process.env.PORT || 5000;
