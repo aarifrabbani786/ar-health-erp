@@ -111,7 +111,7 @@ window.renderSales = function(container) {
                 <div class="form-group"><label>Batch No</label><input type="text" id="mBatch" class="form-control"></div>
                 <div class="form-group"><label>HSN Code</label><input type="text" id="mHsn" class="form-control" value="3004"></div>
                 <div class="form-group"><label>Expiry (MM/YY)</label><input type="text" id="mExp" class="form-control" placeholder="12/28"></div>
-                <div class="form-group"><label>Purchase GST % (Set Specific Tax)</label><input type="number" id="mGst" class="form-control" value="12"></div>
+                <div class="form-group"><label>Purchase GST % (Specific Tax)</label><input type="number" id="mGst" class="form-control" value="12"></div>
                 <div class="form-group"><label>MRP Price (₹)</label><input type="number" id="mMrp" class="form-control"></div>
                 <div class="form-group"><label>Stock Quantity</label><input type="number" id="mQty" class="form-control" value="50"></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
@@ -165,6 +165,8 @@ window.renderSales = function(container) {
 
     window.renderCartTable = () => {
         let tbody = document.getElementById('cartTableBody');
+        if(!tbody) return;
+
         if(cart.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No items added to cart.</td></tr>`;
             document.getElementById('summaryText').innerText = "Gross Total: ₹0.00 | GST: ₹0.00";
@@ -208,7 +210,7 @@ window.renderSales = function(container) {
         renderCartTable();
     };
 
-    window.processCloudBilling = async () => {
+    window.processCloudBilling = function() {
         let mob = document.getElementById('custMobile').value.trim();
         let name = document.getElementById('custName').value.trim();
 
@@ -228,7 +230,7 @@ window.renderSales = function(container) {
             <head>
                 <title>Print Invoice - ${invNo}</title>
                 <style>
-                    body { font-family: Arial, sans-serif; padding:15px; margin:0; auto; ${printStyle} }
+                    body { font-family: Arial, sans-serif; padding:15px; margin:0 auto; ${printStyle} }
                     .header { text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px; }
                     .title { font-size:16px; font-weight:bold; }
                     table { width:100%; border-collapse:collapse; margin-top:10px; }
