@@ -53,7 +53,7 @@
         .main-content { flex: 1; padding: 20px; overflow-y: auto; background: #070b14; height: 100vh; display: flex; flex-direction: column; }
         .top-banner {
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); padding: 12px 22px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06);
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; position: relative;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; position: relative; z-index: 1000;
         }
         .light-card { 
             background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(20px); color: #f8fafc; border-radius: 16px; padding: 22px; margin-bottom: 18px; 
@@ -75,12 +75,12 @@
         .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12.5px; color: #cbd5e1; }
         .data-table th { color: #94a3b8; font-weight: 700; font-size: 11px; text-transform: uppercase; background: rgba(30, 41, 59, 0.4); position: sticky; top: 0; }
 
-        /* USER DROPDOWN POPUP */
+        /* FIXED USER DROPDOWN POPUP OVERLAY */
         .user-dropdown-menu {
-            position: absolute; right: 22px; top: 55px; background: #0f172a; border: 1px solid rgba(56,189,248,0.3);
-            border-radius: 12px; width: 220px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 99999; display: none; padding: 8px 0;
+            position: absolute; right: 0; top: 45px; background: #0f172a; border: 1px solid rgba(56,189,248,0.4);
+            border-radius: 12px; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.95); z-index: 9999999; display: none; padding: 8px 0;
         }
-        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #cbd5e1; text-decoration: none; font-size: 12.5px; font-weight: 600; }
+        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #cbd5e1; text-decoration: none; font-size: 12.5px; font-weight: 600; cursor: pointer; }
         .user-dropdown-menu a:hover { background: rgba(56,189,248,0.15); color: #38bdf8; }
     </style>
 </head>
@@ -156,7 +156,7 @@
     </div>
 
     <!-- CHANGE PASSWORD MODAL -->
-    <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+    <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
         <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:25px; border-radius:18px; width:100%; max-width:400px; color:#fff;">
             <h3 style="margin-bottom:15px; color:#38bdf8;">🔑 Change Account Password</h3>
             <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control"></div>
@@ -168,11 +168,29 @@
         </div>
     </div>
 
+    <!-- EDIT PERMISSIONS MODAL -->
+    <div id="editPermModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
+        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:25px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
+            <h3 style="margin-bottom:15px; color:#38bdf8;">⚙️ Edit User Permissions</h3>
+            <input type="hidden" id="editUserIdx">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px; font-size:13px;">
+                <label><input type="checkbox" id="epSales"> Sales Billing Module</label>
+                <label><input type="checkbox" id="epReturns"> Medicine Returns Module</label>
+                <label><input type="checkbox" id="epMed"> Stock Master (CRUD) Module</label>
+                <label><input type="checkbox" id="epHR"> HR & Attendance Module</label>
+                <label><input type="checkbox" id="epAdmin"> Admin Control Panel</label>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-danger" onclick="closeEditPermModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveUserPermissions()">Save Permissions</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SYSTEM MODULE JS CONTROLLER -->
     <script>
         let currentUser = null;
 
-        // Initialize Users, Settings & HR
         if (!localStorage.getItem('erp_users')) {
             localStorage.setItem('erp_users', JSON.stringify([
                 { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', permissions: { sales: true, returns: true, medicines: true, hr: true, admin: true } }
@@ -329,7 +347,7 @@
             }
         }
 
-        // --- 1. DASHBOARD ANALYTICS WITH SALES GRAPH ---
+        // --- 1. DASHBOARD ANALYTICS ---
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
@@ -360,7 +378,6 @@
                 </div>
             `;
 
-            // Simple Canvas Graph Renderer
             setTimeout(() => {
                 let canvas = document.getElementById('salesChart');
                 if(!canvas) return;
@@ -394,7 +411,7 @@
             }, 100);
         }
 
-        // --- 2. SINGLE-PAGE COMPACT SALES COUNTER (50+ Items Auto Inside-Scroll) ---
+        // --- 2. SALES COUNTER ---
         window.renderSales = function(container) {
             let salesStock = JSON.parse(localStorage.getItem('erp_medicines')) || [
                 { name: 'Tab Dolo 650 mg', batch: '123', hsn: '3004', expiry: '12/28', mrp: 2, stock: 95, gst: 12 }
@@ -435,7 +452,6 @@
                         </div>
                     </div>
 
-                    <!-- SINGLE PAGE COMPACT TABLE CONTAINER WITH SCROLL -->
                     <div style="flex:1; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px; background:rgba(11,15,25,0.5); margin-bottom:10px;">
                         <table class="data-table">
                             <thead>
@@ -606,7 +622,6 @@
                 invoices.unshift(newInvoice);
                 localStorage.setItem('erp_invoices', JSON.stringify(invoices));
 
-                // Deduct stock
                 cart.forEach(cItem => {
                     let stIdx = salesStock.findIndex(s => s.name === cItem.name && s.batch === cItem.batch);
                     if(stIdx >= 0) { salesStock[stIdx].stock = Math.max(0, salesStock[stIdx].stock - cItem.qty); }
@@ -624,6 +639,7 @@
                     'th, td { border-bottom:1px solid #ddd; padding:4px; text-align:left; font-size:inherit; }' +
                     '</style></head><body>' +
                     '<div class="header">' +
+                    (settings.logoUrl ? '<img src="' + settings.logoUrl + '" style="max-height:50px; margin-bottom:5px;"><br>' : '') +
                     '<h3>' + (settings.agencyName || 'A R PHARMA AND SURGICAL AGENCY') + '</h3>' +
                     '<div>Chairman: ' + (settings.chairman || 'DRx. Aarif Rabbani') + '</div>' +
                     '<div>DL: ' + (settings.dlNo || 'UP-2026-MED-98765') + ' | GSTIN: ' + (settings.gstin || '09AAAAA0000A1Z5') + '</div>' +
@@ -647,7 +663,7 @@
             };
         };
 
-        // --- 3. MEDICINE RETURN MODULE (Strict Max Return Qty Lock) ---
+        // --- 3. MEDICINE RETURNS ---
         window.renderReturns = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let selectedInvoice = null;
@@ -747,7 +763,7 @@
             };
         };
 
-        // --- 4. STOCK MASTER CRUD ---
+        // --- 4. STOCK MASTER ---
         window.renderMedicines = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             container.innerHTML = `
@@ -807,24 +823,39 @@
             };
         };
 
-        // --- 5. HR MANAGEMENT & STAFF PERFORMANCE ---
+        // --- 5. HR MODULE (Half-Day Attendance & New Staff Add Option) ---
         window.renderHR = function(container) {
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
+                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210' }
+            ];
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let attendance = JSON.parse(localStorage.getItem('erp_attendance')) || {};
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>👥 HR Management & Staff Performance Scoreboard</h2>
+                    <h2>👥 HR Management & Staff Directory</h2>
                     
                     <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:20px;">
-                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">📅 Mark Daily Staff Attendance (${new Date().toLocaleDateString('en-GB')})</h3>
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">+ Add New Staff Member</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="hrName" class="form-control" placeholder="Staff Name"></div>
+                            <div class="form-group"><label>Designation Role</label><input type="text" id="hrRole" class="form-control" placeholder="e.g. Pharmacist"></div>
+                            <div class="form-group"><label>Contact Phone</label><input type="text" id="hrPhone" class="form-control" placeholder="Phone Number"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;">
+                                <button class="btn-primary" onclick="addNewStaffMember()" style="width:100%;">+ Register Staff</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:20px;">
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">📅 Daily Attendance (${new Date().toLocaleDateString('en-GB')})</h3>
                         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                             <select id="attUser" class="form-control" style="width:200px;">
-                                ${users.map(u => '<option value="' + u.username + '">' + u.name + ' (' + u.role + ')</option>').join('')}
+                                ${staffList.map(s => '<option value="' + s.name + '">' + s.name + ' (' + s.role + ')</option>').join('')}
                             </select>
-                            <select id="attStatus" class="form-control" style="width:130px;">
+                            <select id="attStatus" class="form-control" style="width:140px;">
                                 <option value="Present">Present</option>
+                                <option value="Half Day">Half Day</option>
                                 <option value="Absent">Absent</option>
                                 <option value="Leave">On Leave</option>
                             </select>
@@ -832,29 +863,28 @@
                         </div>
                     </div>
 
-                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">🏆 Staff Performance & Billing Metrics</h3>
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">Staff Attendance & Performance Scoreboard</h3>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Staff Name</th>
-                                <th>Assigned Role</th>
+                                <th>Role</th>
+                                <th>Phone</th>
                                 <th>Total Invoices Billed</th>
-                                <th>Total Revenue Generated</th>
                                 <th>Today's Attendance</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${users.map(u => {
-                                let uInvs = invs.filter(inv => inv.biller === u.name);
-                                let uRevenue = uInvs.reduce((acc, curr) => acc + curr.netPayable, 0);
+                            ${staffList.map(s => {
+                                let uInvs = invs.filter(inv => inv.biller === s.name);
                                 let todayKey = new Date().toLocaleDateString('en-GB');
-                                let attVal = (attendance[todayKey] && attendance[todayKey][u.username]) ? attendance[todayKey][u.username] : 'Not Marked';
+                                let attVal = (attendance[todayKey] && attendance[todayKey][s.name]) ? attendance[todayKey][s.name] : 'Not Marked';
 
                                 return '<tr>' +
-                                    '<td><b>' + u.name + '</b></td>' +
-                                    '<td>' + u.role + '</td>' +
+                                    '<td><b>' + s.name + '</b></td>' +
+                                    '<td>' + s.role + '</td>' +
+                                    '<td>' + s.phone + '</td>' +
                                     '<td>' + uInvs.length + ' Bills</td>' +
-                                    '<td>₹' + uRevenue.toFixed(2) + '</td>' +
                                     '<td><span style="color:#38bdf8; font-weight:700;">' + attVal + '</span></td>' +
                                 '</tr>';
                             }).join('')}
@@ -863,45 +893,58 @@
                 </div>
             `;
 
+            window.addNewStaffMember = function() {
+                let name = document.getElementById('hrName').value.trim();
+                let role = document.getElementById('hrRole').value.trim();
+                let phone = document.getElementById('hrPhone').value.trim();
+
+                if(!name || !role) { alert('Full Name and Role required!'); return; }
+                staffList.push({ name, role, phone });
+                localStorage.setItem('erp_staff', JSON.stringify(staffList));
+                alert('Staff added successfully!');
+                renderHR(container);
+            };
+
             window.markAttendance = function() {
-                let u = document.getElementById('attUser').value;
+                let name = document.getElementById('attUser').value;
                 let st = document.getElementById('attStatus').value;
                 let todayKey = new Date().toLocaleDateString('en-GB');
 
                 if(!attendance[todayKey]) attendance[todayKey] = {};
-                attendance[todayKey][u] = st;
+                attendance[todayKey][name] = st;
 
                 localStorage.setItem('erp_attendance', JSON.stringify(attendance));
-                alert('Attendance marked for ' + u + ' as ' + st);
+                alert('Attendance marked for ' + name + ' as ' + st);
                 renderHR(container);
             };
         };
 
-        // --- 6. SUPER ADMIN CONTROL (Exclusive Activation & Role Permissions) ---
+        // --- 6. SUPER ADMIN CONTROL (User Permissions Edit & Activation) ---
         window.renderSuperAdmin = function(container) {
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Super Admin Control & User Activation</h2>
+                    <h2>⚙️ Super Admin Control & Permission Management</h2>
 
                     <div style="background:rgba(30,41,59,0.5); padding:16px; border-radius:12px; margin-bottom:20px;">
-                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">Agency Branding Settings</h3>
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">Agency Branding Settings & Logo Theme</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
                             <div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
                             <div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control" value="${s.dlNo || ''}"></div>
                             <div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control" value="${s.gstin || ''}"></div>
+                            <div class="form-group"><label>Logo URL (For Bills & Header)</label><input type="text" id="stLogo" class="form-control" value="${s.logoUrl || ''}" placeholder="https://... image link"></div>
                         </div>
-                        <button class="btn-success" onclick="saveSystemSettings()">💾 Save Agency Settings</button>
+                        <button class="btn-success" onclick="saveSystemSettings()">💾 Save Settings & Branding</button>
                     </div>
 
                     <div style="background:rgba(30,41,59,0.5); padding:16px; border-radius:12px; margin-bottom:20px;">
-                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">+ Create System User</h3>
+                        <h3 style="color:#38bdf8; font-size:14px; margin-bottom:10px;">+ Create System User ID</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Full Name</label><input type="text" id="uName" class="form-control"></div>
-                            <div class="form-group"><label>Username</label><input type="text" id="uUsername" class="form-control"></div>
+                            <div class="form-group"><label>Username ID</label><input type="text" id="uUsername" class="form-control"></div>
                             <div class="form-group"><label>Password</label><input type="password" id="uPass" class="form-control"></div>
                             <div class="form-group">
                                 <label>Assigned Role</label>
@@ -924,7 +967,7 @@
                         <button class="btn-primary" onclick="createNewUser()">Create Account</button>
                     </div>
 
-                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">User Activation & Deactivation (Super Admin Only)</h3>
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:10px;">Registered Users & Permissions Control</h3>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -932,7 +975,7 @@
                                 <th>Username</th>
                                 <th>Role</th>
                                 <th>Status</th>
-                                <th>Activation Control</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -941,7 +984,11 @@
                                 '<td>' + usr.username + '</td>' +
                                 '<td><span style="color:#38bdf8;">' + usr.role + '</span></td>' +
                                 '<td><span style="color:' + (usr.status === 'Deactivated' ? '#ef4444' : '#34d399') + ';">● ' + (usr.status || 'Active') + '</span></td>' +
-                                '<td>' + (usr.username !== 'admin' ? '<button class="btn-danger" onclick="toggleUserStatus(' + i + ')">' + (usr.status === 'Deactivated' ? 'Activate User' : 'Deactivate User') + '</button>' : 'Main Super Admin') + '</td>' +
+                                '<td>' + (usr.username !== 'admin' ? 
+                                    '<button class="btn-primary" style="padding:4px 8px; margin-right:5px;" onclick="openEditPermModal(' + i + ')">Edit Perms</button>' +
+                                    '<button class="btn-danger" style="padding:4px 8px;" onclick="toggleUserStatus(' + i + ')">' + (usr.status === 'Deactivated' ? 'Activate' : 'Deactivate') + '</button>' 
+                                    : 'Protected Super Admin') + 
+                                '</td>' +
                             '</tr>').join('')}
                         </tbody>
                     </table>
@@ -953,11 +1000,12 @@
                     agencyName: document.getElementById('stAgency').value,
                     chairman: document.getElementById('stChairman').value,
                     dlNo: document.getElementById('stDl').value,
-                    gstin: document.getElementById('stGstin').value
+                    gstin: document.getElementById('stGstin').value,
+                    logoUrl: document.getElementById('stLogo').value
                 };
                 localStorage.setItem('erp_settings', JSON.stringify(settings));
                 applyBrandingSettings();
-                alert('Agency settings saved!');
+                alert('Settings & Logo URL successfully updated!');
             };
 
             window.createNewUser = function() {
@@ -980,6 +1028,39 @@
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 alert('User created successfully!');
                 renderSuperAdmin(container);
+            };
+
+            window.openEditPermModal = function(i) {
+                document.getElementById('editUserIdx').value = i;
+                let u = users[i];
+                let p = u.permissions || {};
+                document.getElementById('epSales').checked = !!p.sales;
+                document.getElementById('epReturns').checked = !!p.returns;
+                document.getElementById('epMed').checked = !!p.medicines;
+                document.getElementById('epHR').checked = !!p.hr;
+                document.getElementById('epAdmin').checked = !!p.admin;
+                document.getElementById('editPermModal').style.display = 'flex';
+            };
+
+            window.closeEditPermModal = function() {
+                document.getElementById('editPermModal').style.display = 'none';
+            };
+
+            window.saveUserPermissions = function() {
+                let i = document.getElementById('editUserIdx').value;
+                if(i !== "") {
+                    users[i].permissions = {
+                        sales: document.getElementById('epSales').checked,
+                        returns: document.getElementById('epReturns').checked,
+                        medicines: document.getElementById('epMed').checked,
+                        hr: document.getElementById('epHR').checked,
+                        admin: document.getElementById('epAdmin').checked
+                    };
+                    localStorage.setItem('erp_users', JSON.stringify(users));
+                    alert('Permissions updated successfully!');
+                    closeEditPermModal();
+                    renderSuperAdmin(container);
+                }
             };
 
             window.toggleUserStatus = function(i) {
