@@ -8,6 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #f8fafc; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
 
+        /* SPLIT LOGIN OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -33,6 +34,7 @@
         .auth-card h2 { font-size: 24px; color: #fff; margin-bottom: 4px; font-weight: 800; text-align: center; }
         .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 25px; font-weight: 600; }
 
+        /* APP LAYOUT */
         .app-layout { display: flex; width: 100%; min-height: 100vh; }
         #sidebar-container {
             width: 260px; background: #ffffff; color: #334155; flex-shrink: 0;
@@ -73,6 +75,7 @@
 </head>
 <body>
 
+    <!-- LOGIN SCREEN OVERLAY -->
     <div id="auth-overlay" style="display: none;">
         <div class="login-left-side">
             <div>
@@ -80,8 +83,8 @@
                 <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:5px;">Modular Pharmacy Management ERP</div>
             </div>
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 22px;">
-                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Secure Enterprise System</h3>
-                <p style="color: #cbd5e1; font-size: 13px;">Session active across refreshes. Auto-logout at 11:59 PM.</p>
+                <h3 style="color: #38bdf8; font-size: 16px; margin-bottom: 6px;">⚡ Secure Enterprise Portal</h3>
+                <p style="color: #cbd5e1; font-size: 13px;">Auto session persistence enabled. System auto logs out at 11:59 PM.</p>
             </div>
             <div style="font-size: 12px; color: #94a3b8;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
@@ -102,6 +105,7 @@
         </div>
     </div>
 
+    <!-- MAIN APP LAYOUT -->
     <div class="app-layout" id="main-app-container">
         <div id="sidebar-container">
             <div class="sidebar-brand">
@@ -128,6 +132,7 @@
                 <div style="background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;" id="logged-user-badge">● Active</div>
             </div>
 
+            <!-- DYNAMIC WORKSPACE -->
             <div id="module-workspace"></div>
         </div>
     </div>
@@ -162,7 +167,7 @@
 
                     applyRolePermissions(currentUser);
 
-                    let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
+                    let activeTab = localStorage.getItem('erp_active_module') || 'sales';
                     loadModule(activeTab);
                     return;
                 } catch(e) {}
@@ -176,7 +181,7 @@
             let now = new Date();
             if (now.getHours() === 23 && now.getMinutes() === 59) {
                 if (localStorage.getItem('erp_active_session')) {
-                    alert('⏰ Midnight 11:59 PM Reached! Auto-logout initiated.');
+                    alert('⏰ Midnight 11:59 PM Reached! Security protocol auto-logout initiated.');
                     logoutUser();
                 }
             }
@@ -203,7 +208,7 @@
                 document.getElementById('logged-user-badge').innerText = '● Active: ' + found.name + ' (' + (found.role || 'Staff') + ')';
 
                 applyRolePermissions(found);
-                loadModule('dashboard');
+                loadModule('sales');
             } else {
                 alert('Invalid Username or Password!');
             }
@@ -237,12 +242,12 @@
             const workspace = document.getElementById('module-workspace');
             workspace.innerHTML = ""; 
 
-            if (moduleName === 'dashboard' && typeof renderDashboard === 'function') renderDashboard(workspace);
-            else if (moduleName === 'sales' && typeof renderSales === 'function') renderSales(workspace);
+            if (moduleName === 'sales' && typeof renderSales === 'function') renderSales(workspace);
+            else if (moduleName === 'dashboard' && typeof renderDashboard === 'function') renderDashboard(workspace);
             else if (moduleName === 'returns' && typeof renderReturns === 'function') renderReturns(workspace);
             else if (moduleName === 'medicines' && typeof renderMedicines === 'function') renderMedicines(workspace);
             else if (moduleName === 'superadmin' && typeof renderSuperAdmin === 'function') renderSuperAdmin(workspace);
-            else workspace.innerHTML = `<div class="light-card"><h2>Module Loading Error</h2><p>Could not load ${moduleName} module.</p></div>`;
+            else workspace.innerHTML = `<div class="light-card"><h2>Sales Counter Workspace</h2><p>Module initialising...</p></div>`;
         }
     </script>
 </body>
