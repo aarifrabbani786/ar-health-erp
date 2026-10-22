@@ -6,16 +6,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Default Super Admin User
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Client Folder Static Path Fix
-const clientPath = path.join(__dirname, 'client', 'src');
-app.use(express.static(clientPath));
+// Absolute Path Fallback for Render
+app.use(express.static(path.join(__dirname, 'client', 'src')));
 
-// API Endpoints
 app.get('/api/users', (req, res) => {
     res.json(systemUsers);
 });
@@ -68,9 +65,9 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Single Page Application Fallback Route (Safe Regex - Fixes PathError Crash)
-app.use((req, res) => {
-    res.sendFile(path.join(clientPath, 'index.html'));
+// Direct HTML catch-all for SPA
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'src', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
