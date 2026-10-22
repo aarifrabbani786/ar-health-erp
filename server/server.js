@@ -7,16 +7,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// System Users In-Memory Data
+// In-Memory User Store
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Determine Correct Client Directory
-const clientPath = path.join(__dirname, 'client', 'src');
+// Detect and Resolve Client Directory Safely
+const possibleClientPaths = [
+    path.join(__dirname, 'client', 'src'),
+    path.join(__dirname, 'client'),
+    path.join(__dirname, 'src'),
+    path.resolve(process.cwd(), 'client', 'src'),
+    __dirname
+];
 
-// Serve Static Frontend Assets (HTML, JS, CSS)
-app.use(express.static(clientPath));
+let resolvedClientPath = path.join(__dirname, 'client', 'src');
+
+for (let p of possibleClientPaths) {
+    if (fs.existsSync(path.join(p, 'index.html'))) {
+        resolvedClientPath = p;
+        break;
+    }
+}
+
+// Static Middleware
+app.use(express.static(resolvedClientPath));
 
 // API Endpoints
 app.get('/api/users', (req, res) => {
@@ -71,12 +86,21 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Safe Fallback Route (No Regex Wildcard Crash)
+// Primary Home Route
+app.get('/', (req, res) => {
+    const file = path.join(resolvedClientPath, 'index.html');
+    if (fs.existsSync(file)) {
+        return res.sendFile(file);
+    }
+    res.status(404).send('index.html file not found on server directory');
+});
+
+// Universal Safe Fallback Middleware (Fixes Cannot GET)
 app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
-        const indexPath = path.join(clientPath, 'index.html');
-        if (fs.existsSync(indexPath)) {
-            return res.sendFile(indexPath);
+        const file = path.join(resolvedClientPath, 'index.html');
+        if (fs.existsSync(file)) {
+            return res.sendFile(file);
         }
     }
     next();
@@ -84,5 +108,5 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`ARHEALTHCARE Enterprise Server running on port ${PORT}`);
+    console.log(`A.R. HEALTHCARE Enterprise Server running on port ${PORT}`);
 });
