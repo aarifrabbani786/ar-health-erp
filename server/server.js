@@ -7,31 +7,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-Memory Cloud Users Store
+// System Users In-Memory Data
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Multiple Possible Static Directories
-const possiblePaths = [
-    path.join(__dirname, 'client', 'src'),
-    path.join(__dirname, 'client'),
-    path.join(__dirname, 'src'),
-    __dirname
-];
+// Determine Correct Client Directory
+const clientPath = path.join(__dirname, 'client', 'src');
 
-// Function to find the correct directory containing index.html
-function getStaticDir() {
-    for (let p of possiblePaths) {
-        if (fs.existsSync(path.join(p, 'index.html'))) {
-            return p;
-        }
-    }
-    return path.join(__dirname, 'client', 'src');
-}
-
-const staticDir = getStaticDir();
-app.use(express.static(staticDir));
+// Serve Static Frontend Assets (HTML, JS, CSS)
+app.use(express.static(clientPath));
 
 // API Endpoints
 app.get('/api/users', (req, res) => {
@@ -86,15 +71,15 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Universal Dynamic Index Catch-All
-app.get('*', (req, res) => {
-    const activeDir = getStaticDir();
-    const indexPath = path.join(activeDir, 'index.html');
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
-    } else {
-        res.sendFile(path.join(__dirname, 'client', 'src', 'index.html'));
+// Safe Fallback Route (No Regex Wildcard Crash)
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        const indexPath = path.join(clientPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+            return res.sendFile(indexPath);
+        }
     }
+    next();
 });
 
 const PORT = process.env.PORT || 5000;
