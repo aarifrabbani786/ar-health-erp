@@ -1,23 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// In-Memory Cloud Users
+// In-Memory Cloud Users Store
 let systemUsers = [
     { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
 ];
 
-// Absolute Path Setup for client/src
-const clientPath = path.join(__dirname, 'client', 'src');
+// Absolute Client Directory Resolution
+const clientPath = path.resolve(__dirname, 'client', 'src');
 
-// Serve Static Files Directly from client/src
+// Serve Static Assets (HTML, JS, CSS)
 app.use(express.static(clientPath));
 
-// User Management API Routes
+// User Management APIs
 app.get('/api/users', (req, res) => {
     res.json(systemUsers);
 });
@@ -70,14 +71,22 @@ app.post('/api/users/update-password', (req, res) => {
     res.status(404).json({ error: 'User not found' });
 });
 
-// Single Page Application Index Catch-All Route
+// Guaranteed Fallback for Index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(clientPath, 'index.html'));
+    const indexPath = path.join(clientPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).send('index.html not found in client/src');
+    }
 });
 
 app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
-        return res.sendFile(path.join(clientPath, 'index.html'));
+        const indexPath = path.join(clientPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+            return res.sendFile(indexPath);
+        }
     }
     next();
 });
