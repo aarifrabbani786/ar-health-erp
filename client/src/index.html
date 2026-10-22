@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #070b14; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
 
-        /* LUXURY SPLIT LOGIN OVERLAY */
+        /* LUXURY LOGIN OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #030712 0%, #0f172a 100%);
@@ -141,7 +141,7 @@
         </div>
     </div>
 
-    <!-- EMBEDDED SALES & RETURN MODULES (Guaranteed zero-load error) -->
+    <!-- SYSTEM MODULE JS CONTROLLER -->
     <script>
         let currentUser = null;
 
@@ -246,13 +246,11 @@
             } else if (moduleName === 'returns') {
                 renderReturns(workspace);
             } else if (moduleName === 'dashboard') {
-                workspace.innerHTML = `<div class="light-card"><h2>📊 Dashboard Overview</h2><p>Welcome to A.R. HEALTHCARE Enterprise System.</p></div>`;
+                workspace.innerHTML = `<div class="light-card"><h2>📊 Dashboard Overview</h2><p>Welcome to A.R. HEALTHCARE Enterprise Suite.</p></div>`;
             } else if (moduleName === 'medicines') {
-                workspace.innerHTML = `<div class="light-card"><h2>💊 Stock Master (CRUD)</h2><p>Manage inventory stock and specific purchase GST percentages here.</p></div>`;
+                workspace.innerHTML = `<div class="light-card"><h2>💊 Stock Master (CRUD)</h2><p>Manage medicine inventory & specific GST details.</p></div>`;
             } else if (moduleName === 'superadmin') {
-                workspace.innerHTML = `<div class="light-card"><h2>⚙️ Super Admin Control</h2><p>Manage users, permissions, and cloud enterprise settings.</p></div>`;
-            } else {
-                workspace.innerHTML = `<div class="light-card"><h2>Workspace</h2><p>Module loaded successfully.</p></div>`;
+                workspace.innerHTML = `<div class="light-card"><h2>⚙️ Super Admin Control</h2><p>Manage users and permissions.</p></div>`;
             }
         }
 
@@ -364,7 +362,6 @@
                     </div>
                 </div>
 
-                <!-- QUICK ADD STOCK MODAL -->
                 <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
                     <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:25px; border-radius:18px; width:100%; max-width:450px; color:#fff;">
                         <h3 style="margin-bottom:15px; color:#38bdf8;">+ Quick Add New Medicine Stock</h3>
@@ -647,7 +644,7 @@
                     if(retQty > 0) {
                         totalRefund += retQty * item.mrp;
                         let stIdx = stockList.findIndex(s => s.name === item.name && s.batch === item.batch);
-                        if(stIdx >= 0) { stIdx >= 0 && (stockList[stIdx].stock += retQty); }
+                        if(stIdx >= 0) { stockList[stIdx].stock += retQty; }
                     }
                 });
 
