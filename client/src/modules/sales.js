@@ -5,6 +5,11 @@ window.renderSales = function(container) {
 
     let cart = [];
 
+    // Auto Invoice Serial Counter (ar01, ar02...)
+    let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+    let nextInvNum = invoices.length + 1;
+    let invSerial = "ar" + String(nextInvNum).padStart(2, '0');
+
     container.innerHTML = `
         <div class="light-card">
             <h2>🛒 Sales Billing Counter (A.R. HEALTHCARE)</h2>
@@ -15,11 +20,11 @@ window.renderSales = function(container) {
             <div class="form-grid">
                 <div class="form-group">
                     <label>Invoice Serial No</label>
-                    <input type="text" id="invoiceNo" class="form-control" value="ar03" readonly style="background:#f1f5f9;">
+                    <input type="text" id="invoiceNo" class="form-control" value="${invSerial}" readonly style="background:rgba(30,41,59,0.8); color:#38bdf8; font-weight:700;">
                 </div>
                 <div class="form-group">
                     <label>Billing Date</label>
-                    <input type="text" id="billDate" class="form-control" value="${new Date().toLocaleDateString('en-GB')}" readonly style="background:#f1f5f9;">
+                    <input type="text" id="billDate" class="form-control" value="${new Date().toLocaleDateString('en-GB')}" readonly style="background:rgba(30,41,59,0.8);">
                 </div>
                 <div class="form-group">
                     <label>10-Digit Mobile No *</label>
@@ -35,18 +40,18 @@ window.renderSales = function(container) {
                 </div>
             </div>
 
-            <div style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                <label style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Search Medicine Item</label>
-                <select id="itemSelect" class="form-control" onchange="autoFillItemDetails()" style="margin-top:5px;">
+            <div style="background:rgba(30,41,59,0.5); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); margin-bottom:18px;">
+                <label style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase;">Search Medicine Item</label>
+                <select id="itemSelect" class="form-control" onchange="autoFillItemDetails()" style="margin-top:6px;">
                     <option value="">-- Select Medicine Item --</option>
                     ${salesStock.map((m, idx) => `<option value="${idx}">${m.name} \vert{} Batch:${m.batch} | GST: ${m.gst \vert{}\vert{} 0}\% \vert{} Stock:${m.stock}</option>`).join('')}
                 </select>
 
-                <div class="form-grid" style="margin-top:10px;">
+                <div class="form-grid" style="margin-top:12px;">
                     <div class="form-group"><label>Batch</label><input type="text" id="itemBatch" class="form-control" readonly></div>
                     <div class="form-group"><label>HSN</label><input type="text" id="itemHsn" class="form-control" readonly></div>
                     <div class="form-group"><label>Expiry</label><input type="text" id="itemExp" class="form-control" readonly></div>
-                    <div class="form-group"><label>GST %</label><input type="text" id="itemGst" class="form-control" readonly style="background:#e0f2fe; font-weight:700;"></div>
+                    <div class="form-group"><label>GST %</label><input type="text" id="itemGst" class="form-control" readonly style="background:rgba(14,165,233,0.15); color:#38bdf8; font-weight:700;"></div>
                     <div class="form-group"><label>MRP (₹)</label><input type="number" id="itemMrp" class="form-control" readonly></div>
                     <div class="form-group"><label>Qty</label><input type="number" id="itemQty" class="form-control" value="1" min="1"></div>
                     <div class="form-group" style="display:flex; align-items:flex-end;">
@@ -73,7 +78,7 @@ window.renderSales = function(container) {
                 </tbody>
             </table>
 
-            <div style="background:#0f172a; color:#fff; padding:20px; border-radius:12px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+            <div style="background:#0b0f19; color:#fff; padding:20px; border-radius:14px; margin-top:22px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border:1px solid rgba(56,189,248,0.2);">
                 <div style="display:flex; gap:15px; align-items:center;">
                     <div>
                         <label style="font-size:11px; color:#94a3b8; display:block;">DISCOUNT TYPE</label>
@@ -104,14 +109,14 @@ window.renderSales = function(container) {
         </div>
 
         <!-- QUICK ADD STOCK MODAL -->
-        <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:99999; justify-content:center; align-items:center;">
-            <div style="background:#fff; padding:25px; border-radius:16px; width:100%; max-width:450px;">
-                <h3 style="margin-bottom:15px; color:#0f172a;">+ Quick Add New Medicine Stock</h3>
+        <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+            <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:25px; border-radius:18px; width:100%; max-width:450px; color:#fff;">
+                <h3 style="margin-bottom:15px; color:#38bdf8;">+ Quick Add New Medicine Stock</h3>
                 <div class="form-group"><label>Medicine Name</label><input type="text" id="mName" class="form-control"></div>
                 <div class="form-group"><label>Batch No</label><input type="text" id="mBatch" class="form-control"></div>
                 <div class="form-group"><label>HSN Code</label><input type="text" id="mHsn" class="form-control" value="3004"></div>
                 <div class="form-group"><label>Expiry (MM/YY)</label><input type="text" id="mExp" class="form-control" placeholder="12/28"></div>
-                <div class="form-group"><label>Purchase GST % (Specific Tax)</label><input type="number" id="mGst" class="form-control" value="12"></div>
+                <div class="form-group"><label>Purchase GST %</label><input type="number" id="mGst" class="form-control" value="12"></div>
                 <div class="form-group"><label>MRP Price (₹)</label><input type="number" id="mMrp" class="form-control"></div>
                 <div class="form-group"><label>Stock Quantity</label><input type="number" id="mQty" class="form-control" value="50"></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
@@ -122,10 +127,10 @@ window.renderSales = function(container) {
         </div>
     `;
 
-    window.openQuickAddModal = () => document.getElementById('quickStockModal').style.display = 'flex';
-    window.closeQuickAddModal = () => document.getElementById('quickStockModal').style.display = 'none';
+    window.openQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'flex'; };
+    window.closeQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'none'; };
 
-    window.saveQuickStock = () => {
+    window.saveQuickStock = function() {
         let name = document.getElementById('mName').value.trim();
         let batch = document.getElementById('mBatch').value.trim();
         let hsn = document.getElementById('mHsn').value.trim();
@@ -142,7 +147,7 @@ window.renderSales = function(container) {
         renderSales(container);
     };
 
-    window.autoFillItemDetails = () => {
+    window.autoFillItemDetails = function() {
         let idx = document.getElementById('itemSelect').value;
         if(idx === "") return;
         let item = salesStock[idx];
@@ -153,17 +158,22 @@ window.renderSales = function(container) {
         document.getElementById('itemMrp').value = item.mrp;
     };
 
-    window.addItemToCart = () => {
+    window.addItemToCart = function() {
         let idx = document.getElementById('itemSelect').value;
         if(idx === "") { alert('Select item first!'); return; }
         let item = salesStock[idx];
         let qty = parseInt(document.getElementById('itemQty').value) || 1;
 
+        if(qty > item.stock) {
+            alert('Insufficient stock available!');
+            return;
+        }
+
         cart.push({ ...item, qty, total: item.mrp * qty });
         renderCartTable();
     };
 
-    window.renderCartTable = () => {
+    window.renderCartTable = function() {
         let tbody = document.getElementById('cartTableBody');
         if(!tbody) return;
 
@@ -189,7 +199,7 @@ window.renderSales = function(container) {
                     <td>${c.expiry}</td>
                     <td>₹${c.mrp.toFixed(2)}</td>
                     <td>${c.qty}</td>
-                    <td><span style="background:#e0f2fe; color:#0284c7; padding:2px 6px; border-radius:4px; font-weight:700;">${c.gst || 0}%</span></td>
+                    <td><span style="background:rgba(56,189,248,0.2); color:#38bdf8; padding:2px 8px; border-radius:4px; font-weight:700;">${c.gst || 0}%</span></td>
                     <td>₹${c.total.toFixed(2)}</td>
                     <td><button class="btn-danger" onclick="removeCartItem(${i})">Remove</button></td>
                 </tr>
@@ -205,7 +215,7 @@ window.renderSales = function(container) {
         document.getElementById('netPayableText').innerText = `Net Payable: ₹${net.toFixed(2)}`;
     };
 
-    window.removeCartItem = (i) => {
+    window.removeCartItem = function(i) {
         cart.splice(i, 1);
         renderCartTable();
     };
@@ -213,6 +223,7 @@ window.renderSales = function(container) {
     window.processCloudBilling = function() {
         let mob = document.getElementById('custMobile').value.trim();
         let name = document.getElementById('custName').value.trim();
+        let doc = document.getElementById('docName').value.trim();
 
         if(mob.length !== 10 || isNaN(mob)) { alert('Valid 10-digit Mobile Number mandatory!'); return; }
         if(!name) { alert('Patient Name is required!'); return; }
@@ -222,6 +233,38 @@ window.renderSales = function(container) {
         let invNo = document.getElementById('invoiceNo').value;
         let bDate = document.getElementById('billDate').value;
 
+        let gross = cart.reduce((sum, item) => sum + item.total, 0);
+        let discType = document.getElementById('discType').value;
+        let discVal = parseFloat(document.getElementById('discValue').value) || 0;
+        let discAmt = discType === 'Flat' ? discVal : (gross * discVal) / 100;
+        let netPayable = gross - discAmt;
+
+        // Save Invoice Data locally and sync for Return module
+        let newInvoice = {
+            invoiceNo: invNo,
+            date: bDate,
+            mobile: mob,
+            patientName: name,
+            doctorName: doc,
+            items: cart,
+            grossTotal: gross,
+            discount: discAmt,
+            netPayable: netPayable
+        };
+
+        invoices.unshift(newInvoice);
+        localStorage.setItem('erp_invoices', JSON.stringify(invoices));
+
+        // Deduct Stock
+        cart.forEach(cItem => {
+            let stIdx = salesStock.findIndex(s => s.name === cItem.name && s.batch === cItem.batch);
+            if(stIdx >= 0) {
+                salesStock[stIdx].stock = Math.max(0, salesStock[stIdx].stock - cItem.qty);
+            }
+        });
+        localStorage.setItem('erp_medicines', JSON.stringify(salesStock));
+
+        // Print Invoice Window
         let printWindow = window.open('', '_blank');
         let printStyle = mode === 'thermal' ? 'width:300px; font-size:11px;' : 'width:100%; max-width:800px; font-size:13px;';
 
@@ -253,7 +296,7 @@ window.renderSales = function(container) {
                     </tbody>
                 </table>
                 <div style="margin-top:15px; text-align:right;">
-                    <b>${document.getElementById('netPayableText').innerText}</b>
+                    <b>Net Payable: ₹${netPayable.toFixed(2)}</b>
                 </div>
                 <div style="text-align:center; margin-top:20px; font-size:10px;">*** Thank You - Get Well Soon ***</div>
                 <script>window.onload = function() { window.print(); window.close(); }</script>
@@ -261,5 +304,8 @@ window.renderSales = function(container) {
             </html>
         `);
         printWindow.document.close();
+
+        // Reload Sales workspace for next transaction
+        renderSales(container);
     };
 };
