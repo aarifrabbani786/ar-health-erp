@@ -155,14 +155,16 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Analytics Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('ved_ai')" id="nav-ved_ai"><span>🤖</span> Ved AI Assistant</a></li>
+                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales Counter & POS</a></li>
                 <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Medicine Returns</a></li>
                 <li><a class="menu-link" onclick="loadModule('patient_reports')" id="nav-patient_reports"><span>📑</span> Patient Sales & Returns</a></li>
                 <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>🔍</span> Stock Audit Master</a></li>
                 <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>📦</span> Vendor Purchases</a></li>
+                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Parties & Ledger</a></li>
                 <li><a class="menu-link" onclick="loadModule('udhar')" id="nav-udhar"><span>💳</span> Udhar Settlement</a></li>
                 <li><a class="menu-link" onclick="loadModule('requests')" id="nav-requests"><span>📩</span> Customer CRM</a></li>
-                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👥</span> HR & Payroll</a></li>
+                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👤</span> HR & Payroll</a></li>
                 <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
             </ul>
         </div>
@@ -393,11 +395,13 @@
             workspace.innerHTML = ""; 
 
             if (m === 'sales') renderSales(workspace);
+            else if (m === 'ved_ai') renderVedAI(workspace);
             else if (m === 'returns') renderReturns(workspace);
             else if (m === 'patient_reports') renderPatientReports(workspace);
             else if (m === 'dashboard') renderDashboard(workspace);
             else if (m === 'audit') renderStockAudit(workspace);
             else if (m === 'purchase') renderPurchase(workspace);
+            else if (m === 'parties') renderParties(workspace);
             else if (m === 'udhar') renderUdhar(workspace);
             else if (m === 'requests') renderCustomerRequests(workspace);
             else if (m === 'hr') renderHR(workspace);
@@ -408,7 +412,6 @@
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
-            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [];
             let attendance = JSON.parse(localStorage.getItem('erp_attendance')) || {};
             let todayKey = new Date().toLocaleDateString('en-GB');
 
@@ -422,34 +425,71 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📊 Colorful Business Analytics Dashboard</h2>
+                    <h2>📊 Business Analytics Dashboard</h2>
                     <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
-                        <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(14,165,233,0.15);">
+                        <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4); padding:18px; border-radius:14px;">
                             <div style="font-size:11.5px; color:#38bdf8; font-weight:700;">TOTAL GROSS SALES</div>
                             <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Invoices Generated: ${invs.length}</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Invoices: ${invs.length}</div>
                         </div>
-                        <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(239,68,68,0.15);">
-                            <div style="font-size:11.5px; color:#ef4444; font-weight:700;">TOTAL RETURNS DEDUCTED</div>
+                        <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#ef4444; font-weight:700;">RETURNS DEDUCTED</div>
                             <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Return Slips: ${returns.length}</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Returns Count: ${returns.length}</div>
                         </div>
-                        <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(34,197,94,0.15);">
-                            <div style="font-size:11.5px; color:#34d399; font-weight:700;">FINAL NET REVENUE</div>
+                        <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#34d399; font-weight:700;">NET REVENUE</div>
                             <div style="font-size:24px; font-weight:900; color:#34d399; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Sales minus Returns</div>
+                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Final Calculation</div>
                         </div>
-                        <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.4); padding:18px; border-radius:14px; box-shadow:0 8px 20px rgba(168,85,247,0.15);">
-                            <div style="font-size:11.5px; color:#c084fc; font-weight:700;">STAFF ATTENDANCE TODAY</div>
+                        <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.4); padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#c084fc; font-weight:700;">STAFF ATTENDANCE</div>
                             <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">${presentCount} Active</div>
-                            <div style="font-size:10.5px; color:#ef4444; margin-top:3px;">${offCount} On Leave / Absent</div>
+                            <div style="font-size:10.5px; color:#ef4444; margin-top:3px;">${offCount} Off</div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- 2. SALES COUNTER ---
+        // --- 2. VED AI ASSISTANT ---
+        function renderVedAI(container) {
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🤖 Ved AI Smart Pharmacy Assistant</h2>
+                    <p style="font-size:12px; color:#94a3b8; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>
+                    <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">
+                        <div style="color:#38bdf8; font-weight:600;">🤖 Ved AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Ask e.g. 'Aaj ki total sale kitni hai?'">
+                        <button class="btn-primary" onclick="askVedAI()">Send Query</button>
+                    </div>
+                </div>
+            `;
+
+            window.askVedAI = function() {
+                let q = document.getElementById('aiInput').value.trim().toLowerCase();
+                let chat = document.getElementById('aiChatArea');
+                if(!q) return;
+
+                let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
+                let lowStockCount = meds.filter(m => m.stock < 10).length;
+
+                let ans = "I am processing your query...";
+                if(q.includes('sale') || q.includes('billing')) ans = `Aaj ki Total Billing Volume ₹${totalSales.toFixed(2)} hai (${invs.length} Invoices).`;
+                else if(q.includes('stock') || q.includes('low')) ans = `Store me abhi ${lowStockCount} medicines low stock alert level (<10) me hain.`;
+                else ans = `Response: Store status clear hai. Total Invoices: ${invs.length}, Total Medicines Managed: ${meds.length}.`;
+
+                chat.innerHTML += `<div style="margin-top:10px; color:#fff;"><b>You:</b> ${q}</div>`;
+                chat.innerHTML += `<div style="margin-top:4px; color:#38bdf8;"><b>Ved AI:</b> ${ans}</div>`;
+                document.getElementById('aiInput').value = "";
+            };
+        }
+
+        // --- 3. SALES COUNTER ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
@@ -623,9 +663,7 @@
                 invoices.unshift(newInv);
                 localStorage.setItem('erp_invoices', JSON.stringify(invoices));
                 
-                // Print Bill
                 printInvoiceDoc(newInv);
-
                 alert('Invoice ' + invNo + ' Saved and Printed!');
                 currentSalesCart = [];
                 renderSales(container);
@@ -672,7 +710,7 @@
             setTimeout(() => { printWin.print(); printWin.close(); }, 250);
         }
 
-        // --- 3. PATIENT SALES & RETURN REPORTS (WITH DUPLICATE PRINT) ---
+        // --- 4. PATIENT REPORTS & DUPLICATE PRINT ---
         window.renderPatientReports = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -717,7 +755,52 @@
             };
         };
 
-        // --- 4. MEDICINE RETURNS ---
+        // --- 5. PARTIES & LEDGER ---
+        window.renderParties = function(container) {
+            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
+                { name: 'A R PHARMA & SURGICAL AGENCY', type: 'Vendor', phone: '9005554424', balance: 0 }
+            ];
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 Parties & Customers / Vendors Ledger</h2>
+                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
+                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Add New Party / Customer</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Party Name</label><input type="text" id="ptyName" class="form-control"></div>
+                            <div class="form-group"><label>Type</label>
+                                <select id="ptyType" class="form-control">
+                                    <option value="Customer">Customer / Patient</option>
+                                    <option value="Vendor">Vendor / Supplier</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="ptyPhone" class="form-control"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveParty()" style="width:100%;">Save Party</button></div>
+                        </div>
+                    </div>
+
+                    <table class="data-table">
+                        <thead><tr><th>Party Name</th><th>Type</th><th>Phone</th><th>Outstanding Balance</th></tr></thead>
+                        <tbody>
+                            ${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td><td>${p.phone}</td><td style="color:#34d399; font-weight:700;">₹${p.balance.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.saveParty = function() {
+                let name = document.getElementById('ptyName').value.trim();
+                let type = document.getElementById('ptyType').value;
+                let phone = document.getElementById('ptyPhone').value.trim();
+                if(!name) { alert('Party Name required!'); return; }
+                parties.push({ name, type, phone, balance: 0 });
+                localStorage.setItem('erp_parties', JSON.stringify(parties));
+                alert('Party saved!');
+                renderParties(container);
+            };
+        };
+
+        // --- 6. MEDICINE RETURNS ---
         window.renderReturns = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -796,7 +879,7 @@
             };
         };
 
-        // --- 5. STOCK AUDIT MASTER ---
+        // --- 7. STOCK AUDIT MASTER ---
         window.renderStockAudit = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let pendingAudits = JSON.parse(localStorage.getItem('erp_pending_audits')) || [];
@@ -809,7 +892,7 @@
                         <div class="form-grid">
                             <div class="form-group"><label>Select Medicine</label>
                                 <select id="auditMedIdx" class="form-control">
-                                    ${meds.map((m, i) => `<option value="${i}">${m.name} (Batch: ${m.batch} \vert{} Stock:${m.stock})</option>`).join('')}
+                                    ${meds.map((m, i) => `<option value="${i}">${m.name} (Batch: ${m.batch} | Stock: ${m.stock})</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group"><label>New Audited Stock Qty</label><input type="number" id="auditNewQty" class="form-control"></div>
@@ -868,7 +951,7 @@
             };
         };
 
-        // --- 6. VENDOR PURCHASES ---
+        // --- 8. VENDOR PURCHASES ---
         window.renderPurchase = function(container) {
             let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [];
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
@@ -959,7 +1042,7 @@
             };
         };
 
-        // --- 7. UDHAR SETTLEMENT ---
+        // --- 9. UDHAR SETTLEMENT ---
         window.renderUdhar = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
@@ -1001,7 +1084,7 @@
             };
         };
 
-        // --- 8. CUSTOMER CRM ---
+        // --- 10. CUSTOMER CRM ---
         window.renderCustomerRequests = function(container) {
             let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
             container.innerHTML = `
@@ -1033,7 +1116,7 @@
             };
         };
 
-        // --- 9. HR & MONTHLY PAYROLL REPORT ---
+        // --- 11. HR & MONTHLY PAYROLL REPORT ---
         window.renderHR = function(container) {
             let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
                 { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210', hourlyRate: 200, baseSalary: 35000 }
@@ -1102,7 +1185,7 @@
             };
         };
 
-        // --- 10. SUPER ADMIN CONTROL ---
+        // --- 12. SUPER ADMIN CONTROL ---
         window.renderSuperAdmin = function(container) {
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
