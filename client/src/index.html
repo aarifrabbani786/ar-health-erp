@@ -3,144 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Enterprise Management Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Premium Healthcare Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background: #060913; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
+        body { background: #f1f5f9; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
 
-        /* AUTH OVERLAY & PUBLIC PORTAL */
+        /* PREMIUM AUTH LOGIN OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at top right, #0f172a 0%, #030712 100%);
-            display: flex; z-index: 999999; overflow-y: auto;
+            background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
         }
-        .login-left-side {
-            flex: 1.2; padding: 40px; display: flex; flex-direction: column; justify-content: space-between;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(3, 7, 18, 0.8) 100%),
-                        url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80') center/cover;
-            border-right: 1px solid rgba(255, 255, 255, 0.08); color: #ffffff;
-        }
-        .brand-border-logo {
-            display: inline-flex; align-items: center; gap: 12px; padding: 8px 16px;
-            background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8;
-            border-radius: 16px; box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
-        }
-        .brand-icon {
-            width: 38px; height: 38px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-        }
-        .brand-text {
-            font-size: 20px; font-weight: 900; letter-spacing: 1px;
-            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #34d399 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
-        .login-right-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; background: #0b0f19; }
         .auth-card {
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(30px); padding: 30px;
-            border-radius: 20px; width: 100%; max-width: 420px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9); border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #ffffff; padding: 40px; border-radius: 24px; width: 100%; max-width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid rgba(226, 232, 240, 0.8);
         }
-        .auth-card h2 { font-size: 20px; color: #fff; margin-bottom: 6px; font-weight: 800; text-align: center; }
-        .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 24px; font-weight: 600; }
+        .auth-card h2 { font-size: 24px; color: #0f172a; margin-bottom: 6px; font-weight: 900; text-align: center; }
+        .auth-card .subtitle { font-size: 13px; color: #0284c7; text-align: center; margin-bottom: 28px; font-weight: 700; }
+        .input-icon-wrap { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
+        .input-icon-wrap input { width: 100%; padding: 12px 16px; padding-right: 45px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 13.5px; color: #0f172a; outline: none; transition: all 0.2s; }
+        .input-icon-wrap input:focus { border-color: #0284c7; background: #fff; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12); }
+        .eye-toggle-btn { position: absolute; right: 14px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
 
         /* APP LAYOUT */
-        .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; }
+        .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f8fafc; }
         #sidebar-container {
-            width: 270px; background: #0b0f19; color: #cbd5e1; flex-shrink: 0;
-            border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; height: 100vh;
+            width: 275px; background: #ffffff; color: #334155; flex-shrink: 0;
+            border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100vh;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.03);
         }
-        .sidebar-brand { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; }
+        .sidebar-brand { padding: 18px 14px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .brand-border-logo {
+            display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px;
+            background: #f0fdf4; border: 2px solid #22c55e; border-radius: 14px; box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+        }
+        .brand-icon { width: 32px; height: 32px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
+        .brand-text { font-size: 14px; font-weight: 900; color: #16a34a; letter-spacing: 0.5px; }
+
         .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
-        .sidebar-menu li { margin-bottom: 5px; }
+        .sidebar-menu li { margin-bottom: 4px; }
         .sidebar-menu a {
-            display: flex; align-items: center; padding: 10px 14px; color: #94a3b8;
-            text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 12.5px; gap: 10px; cursor: pointer;
+            display: flex; align-items: center; padding: 10px 14px; color: #475569;
+            text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12.5px; gap: 10px; cursor: pointer;
             transition: all 0.2s ease;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #ffffff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
 
-        .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #060913; height: 100vh; display: flex; flex-direction: column; }
+        .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #f8fafc; height: 100vh; display: flex; flex-direction: column; }
         
         .top-banner {
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); padding: 12px 20px; border-radius: 14px; border: 1px solid rgba(56,189,248,0.25);
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; z-index: 1000;
+            background: #ffffff; padding: 12px 20px; border-radius: 14px; border: 1px solid #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            position: relative; z-index: 1000;
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 {
-            font-size: 16px; font-weight: 900; letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #38bdf8 0%, #ffffff 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .centered-agency-details p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 500; }
+        .centered-agency-details h1 { font-size: 16px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px; }
+        .centered-agency-details p { font-size: 11px; color: #64748b; margin-top: 2px; font-weight: 600; }
 
         .light-card { 
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); color: #f8fafc; border-radius: 16px; padding: 18px; margin-bottom: 14px; 
-            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
+            background: #ffffff; color: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
+            border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); 
         }
-        .light-card h2 { font-size: 16px; color: #f8fafc; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
         .form-group { margin-bottom: 6px; }
-        .form-group label { display: block; font-size: 10px; color: #94a3b8; font-weight: 700; margin-bottom: 3px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 8px 11px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 12px; outline: none; }
-        .form-control:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+        .form-group label { display: block; font-size: 10px; color: #475569; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 8px 11px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; }
+        .form-control:focus { border-color: #0284c7; background: #fff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
         
-        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
-        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .btn-primary { background: #0284c7; color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25); }
+        .btn-success { background: #16a34a; color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-        .data-table th, .data-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: #cbd5e1; }
-        .data-table th { color: #94a3b8; font-weight: 700; font-size: 10.5px; text-transform: uppercase; background: rgba(30, 41, 59, 0.4); position: sticky; top: 0; }
+        .data-table th, .data-table td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #334155; }
+        .data-table th { color: #475569; font-weight: 800; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; position: sticky; top: 0; }
 
         .user-dropdown-menu {
-            position: absolute; right: 0; top: 45px; background: #0f172a; border: 1px solid rgba(56,189,248,0.4);
-            border-radius: 12px; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.95); z-index: 9999999; display: none; padding: 8px 0;
+            position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #cbd5e1;
+            border-radius: 12px; width: 220px; box-shadow: 0 20px 30px rgba(0,0,0,0.1); z-index: 9999999; display: none; padding: 8px 0;
         }
-        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #cbd5e1; text-decoration: none; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .user-dropdown-menu a:hover { background: rgba(56,189,248,0.15); color: #38bdf8; }
+        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .user-dropdown-menu a:hover { background: #f0f9ff; color: #0284c7; }
     </style>
 </head>
 <body>
 
-    <!-- AUTH OVERLAY & PUBLIC PORTAL -->
+    <!-- PREMIUM LOGIN OVERLAY -->
     <div id="auth-overlay" style="display: none;">
-        <div class="login-left-side">
-            <div>
-                <div class="brand-border-logo">
-                    <div class="brand-icon">AR</div>
-                    <div class="brand-text">A.R. ERP BILLING SOFTWARE</div>
-                </div>
-                <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:12px;">Enterprise Pharmacy & Medical Management Suite</div>
-            </div>
+        <div class="auth-card">
+            <h2>A.R. ERP BILLING SOFTWARE</h2>
+            <div class="subtitle">Secure System Authentication Portal</div>
             
-            <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 18px; padding: 20px; margin-top:20px;">
-                <h3 style="color: #38bdf8; font-size: 14px; margin-bottom: 8px;">📩 Public Store Visit & Order Portal</h3>
-                <p style="color: #cbd5e1; font-size: 11.5px; margin-bottom:12px;">Emergency medicine inquiry ya store visit timing request yahan bhejin:</p>
-                <div class="form-group"><input type="text" id="pubCustName" class="form-control" placeholder="Your Full Name"></div>
-                <div class="form-group"><input type="text" id="pubCustPhone" class="form-control" placeholder="Contact Mobile No"></div>
-                <div class="form-group"><textarea id="pubCustMsg" class="form-control" rows="2" placeholder="Required Medicine / Store Inquiry Details"></textarea></div>
-                <button class="btn-success" onclick="submitPublicRequest()" style="width:100%; font-size:12px;">Submit Request to Store</button>
+            <div class="form-group">
+                <label>Username ID</label>
+                <div class="input-icon-wrap">
+                    <input type="text" id="loginUser" placeholder="Enter username">
+                </div>
             </div>
 
-            <div style="font-size: 12px; color: #94a3b8; margin-top:20px;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
-        </div>
-        <div class="login-right-side">
-            <div class="auth-card">
-                <h2>A.R. ERP Access</h2>
-                <div class="subtitle">Authenticate System User Credentials</div>
-                <div class="form-group">
-                    <label>Username ID</label>
-                    <input type="text" id="loginUser" class="form-control" placeholder="Enter Username">
+            <div class="form-group" style="margin-bottom: 22px;">
+                <label>Password</label>
+                <div class="input-icon-wrap">
+                    <input type="password" id="loginPass" placeholder="••••••••">
+                    <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
                 </div>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label>Password</label>
-                    <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
-                </div>
-                <button onclick="handleLogin()" class="btn-primary" style="width: 100%;">🔒 Secure System Login</button>
             </div>
+
+            <button onclick="handleLogin()" class="btn-primary" style="width: 100%; padding: 12px; font-size: 13.5px;">🔒 Secure Login</button>
+            <div style="text-align: center; font-size: 11.5px; color: #64748b; margin-top: 18px;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
     </div>
 
@@ -150,7 +122,7 @@
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
                     <div class="brand-icon">AR</div>
-                    <div class="brand-text" style="font-size:15px;">A.R. ERP BILLING SOFTWARE</div>
+                    <div class="brand-text">A.R. ERP BILLING</div>
                 </div>
             </div>
             <ul class="sidebar-menu">
@@ -173,7 +145,7 @@
             <div class="top-banner">
                 <div style="width: 160px; display:flex; align-items:center; gap:8px;">
                     <img id="headerLogoImg" src="" style="height:32px; display:none; border-radius:6px;">
-                    <span style="font-size:11px; background:rgba(56,189,248,0.15); color:#38bdf8; padding:4px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-weight:700;">A.R. ERP v2.6</span>
+                    <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:4px 10px; border-radius:20px; font-weight:800;">A.R. ERP v2.6</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -182,10 +154,10 @@
                 </div>
 
                 <div style="position:relative; width: 180px; text-align: right;">
-                    <div style="background: rgba(34, 197, 94, 0.15); color: #34d399; border: 1px solid rgba(34, 197, 94, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()">● Active: User ▼</div>
+                    <div style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()">● Active: User ▼</div>
                     
                     <div class="user-dropdown-menu" id="userMenuDropdown">
-                        <div style="padding:10px 16px; border-bottom:1px solid rgba(255,255,255,0.08); font-size:11px; color:#94a3b8;" id="dropdownUserRole">Role: Staff</div>
+                        <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; font-size:11px; color:#64748b;" id="dropdownUserRole">Role: Staff</div>
                         <a onclick="openChangePassModal()">🔑 Change Password</a>
                         <a onclick="logoutUser()" style="color:#ef4444;">🚪 Logout System</a>
                     </div>
@@ -198,49 +170,14 @@
     </div>
 
     <!-- SYSTEM MODALS -->
-    <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
-        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:25px; border-radius:18px; width:100%; max-width:400px; color:#fff;">
-            <h3 style="margin-bottom:15px; color:#38bdf8;">🔑 Change Account Password</h3>
+    <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
+        <div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">🔑 Change Account Password</h3>
             <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control"></div>
             <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control"></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
                 <button class="btn-danger" onclick="closeChangePassModal()">Cancel</button>
                 <button class="btn-primary" onclick="saveNewPassword()">Update Password</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- EDIT PERMISSIONS MODAL -->
-    <div id="editPermModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center;">
-        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.3); padding:22px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
-            <h3 style="margin-bottom:12px; color:#38bdf8;">⚙️ Edit User Permissions & Details</h3>
-            <input type="hidden" id="editUserIdx">
-            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px; font-size:12.5px;">
-                <label><input type="checkbox" id="epSales"> Sales Billing Module</label>
-                <label><input type="checkbox" id="epReturns"> Medicine Returns Module</label>
-                <label><input type="checkbox" id="epMed"> Stock Audit Module</label>
-                <label><input type="checkbox" id="epHR"> HR & Payroll Access</label>
-                <label><input type="checkbox" id="epAdmin"> Admin Settings Panel</label>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button class="btn-danger" onclick="closeEditPermModal()">Cancel</button>
-                <button class="btn-primary" onclick="saveUserPermissions()">Save Permissions</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- QUICK ADD STOCK MODAL -->
-    <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999999; justify-content:center; align-items:center;">
-        <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:25px; border-radius:18px; width:100%; max-width:420px; color:#fff;">
-            <h3 style="margin-bottom:15px; color:#38bdf8;">+ Quick Add Medicine Stock</h3>
-            <div class="form-group"><label>Medicine Name</label><input type="text" id="qName" class="form-control" placeholder="e.g. Tab Calpol 650mg"></div>
-            <div class="form-group"><label>Batch Number</label><input type="text" id="qBatch" class="form-control" placeholder="Batch No"></div>
-            <div class="form-group"><label>Salt Composition / Substitute</label><input type="text" id="qComp" class="form-control" placeholder="Paracetamol 650mg"></div>
-            <div class="form-group"><label>MRP (₹)</label><input type="number" id="qMrp" class="form-control" placeholder="0.00"></div>
-            <div class="form-group"><label>Stock Qty</label><input type="number" id="qQty" class="form-control" value="50"></div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-                <button class="btn-danger" onclick="closeQuickAddModal()">Cancel</button>
-                <button class="btn-success" onclick="saveQuickStock()">Save Stock</button>
             </div>
         </div>
     </div>
@@ -303,6 +240,15 @@
             }
         }
 
+        function togglePasswordVisibility() {
+            let passInput = document.getElementById('loginPass');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+            } else {
+                passInput.type = 'password';
+            }
+        }
+
         function toggleUserDropdown() {
             let el = document.getElementById('userMenuDropdown');
             el.style.display = el.style.display === 'block' ? 'none' : 'block';
@@ -315,41 +261,6 @@
 
         function closeChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
 
-        function openQuickAddModal() { document.getElementById('quickStockModal').style.display = 'flex'; }
-        function closeQuickAddModal() { document.getElementById('quickStockModal').style.display = 'none'; }
-
-        function saveQuickStock() {
-            let name = document.getElementById('qName').value.trim();
-            let batch = document.getElementById('qBatch').value.trim();
-            let composition = document.getElementById('qComp').value.trim();
-            let mrp = parseFloat(document.getElementById('qMrp').value) || 0;
-            let stock = parseInt(document.getElementById('qQty').value) || 0;
-
-            if(!name || !batch || !mrp) { alert('Sare required fields bharein!'); return; }
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            meds.push({ name, batch, composition, mrp, stock, gst: 12 });
-            localStorage.setItem('erp_medicines', JSON.stringify(meds));
-            alert('Stock successfully added!');
-            closeQuickAddModal();
-            let currentMod = localStorage.getItem('erp_active_module') || 'sales';
-            loadModule(currentMod);
-        }
-
-        function submitPublicRequest() {
-            let name = document.getElementById('pubCustName').value.trim();
-            let phone = document.getElementById('pubCustPhone').value.trim();
-            let msg = document.getElementById('pubCustMsg').value.trim();
-
-            if(!name || !phone || !msg) { alert('Sare fields bharna compulsory hai!'); return; }
-            let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
-            requests.unshift({ name, phone, msg, date: new Date().toLocaleDateString('en-GB'), status: 'Pending', reply: '' });
-            localStorage.setItem('erp_public_requests', JSON.stringify(requests));
-            alert('Aapka request store ko bhej diya gaya hai!');
-            document.getElementById('pubCustName').value = '';
-            document.getElementById('pubCustPhone').value = '';
-            document.getElementById('pubCustMsg').value = '';
-        }
-
         async function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
@@ -361,7 +272,11 @@
                 currentUser = found;
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
                 location.reload();
-            } else { alert('Invalid Login Credentials!'); }
+            } else { 
+                alert('Invalid Login Credentials!'); 
+                document.getElementById('loginPass.value = ""'); // Auto clear password on error
+                document.getElementById('loginPass').value = '';
+            }
         }
 
         function logoutUser() {
@@ -419,33 +334,29 @@
             let totalReturnAmt = returns.reduce((a, b) => a + (b.refundTotal || 0), 0);
             let netRevenue = totalGrossSales - totalReturnAmt;
 
-            let todayAtt = attendance[todayKey] || {};
-            let presentCount = Object.values(todayAtt).filter(v => v === 'Present' || v === 'Half Day').length;
-            let offCount = Object.values(todayAtt).filter(v => v === 'Absent' || v === 'Leave').length;
-
             container.innerHTML = `
                 <div class="light-card">
                     <h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>
                     <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
-                        <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4); padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#38bdf8; font-weight:700;">TOTAL GROSS SALES</div>
-                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Invoices: ${invs.length}</div>
+                        <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#0284c7; font-weight:800;">TOTAL GROSS SALES</div>
+                            <div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ${invs.length}</div>
                         </div>
-                        <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#ef4444; font-weight:700;">RETURNS DEDUCTED</div>
-                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Returns Count: ${returns.length}</div>
+                        <div style="background:#fef2f2; border:1px solid #fecaca; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#ef4444; font-weight:800;">RETURNS DEDUCTED</div>
+                            <div style="font-size:24px; font-weight:900; color:#ef4444; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ${returns.length}</div>
                         </div>
-                        <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#34d399; font-weight:700;">NET REVENUE</div>
-                            <div style="font-size:24px; font-weight:900; color:#34d399; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; margin-top:3px;">Final Calculation</div>
+                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>
+                            <div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
+                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Final Calculation</div>
                         </div>
-                        <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.4); padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#c084fc; font-weight:700;">STAFF ATTENDANCE</div>
-                            <div style="font-size:24px; font-weight:900; color:#fff; margin-top:6px;">${presentCount} Active</div>
-                            <div style="font-size:10.5px; color:#ef4444; margin-top:3px;">${offCount} Off</div>
+                        <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE STAFF</div>
+                            <div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>
+                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>
                         </div>
                     </div>
                 </div>
@@ -457,9 +368,9 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🤖 AR AI Smart Pharmacy Assistant</h2>
-                    <p style="font-size:12px; color:#94a3b8; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>
-                    <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">
-                        <div style="color:#38bdf8; font-weight:600;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">
+                        <div style="color:#0284c7; font-weight:700;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="aiInput" class="form-control" placeholder="Ask e.g. 'Aaj ki total sale kitni hai?'">
@@ -483,13 +394,13 @@
                 else if(q.includes('stock') || q.includes('low')) ans = `Store me abhi ${lowStockCount} medicines low stock alert level (<10) me hain.`;
                 else ans = `Response: Store status clear hai. Total Invoices: ${invs.length}, Total Medicines Managed: ${meds.length}.`;
 
-                chat.innerHTML += `<div style="margin-top:10px; color:#fff;"><b>You:</b> ${q}</div>`;
-                chat.innerHTML += `<div style="margin-top:4px; color:#38bdf8;"><b>AR AI:</b> ${ans}</div>`;
+                chat.innerHTML += `<div style="margin-top:10px; color:#0f172a;"><b>You:</b> ${q}</div>`;
+                chat.innerHTML += `<div style="margin-top:4px; color:#0284c7;"><b>AR AI:</b> ${ans}</div>`;
                 document.getElementById('aiInput').value = "";
             };
         }
 
-        // --- 3. AR BILL SALES COUNTER ---
+        // --- 3. SALES & POS ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
@@ -500,42 +411,42 @@
             let invSerial = "AR" + String(invoices.length + 1).padStart(2, '0');
 
             container.innerHTML = `
-                <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <h2 style="font-size:15px; margin:0;">🛒 AR Bill Sales & POS Module</h2>
                         <div style="display:flex; gap:8px;">
-                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:5px 10px; background:#818cf8;">🔍 Find Substitute</button>
-                            <button class="btn-success" onclick="openQuickAddModal()" style="font-size:11.5px; padding:5px 10px;">+ Quick Add Stock</button>
+                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:6px 12px; background:#4f46e5;">🔍 Find Substitute</button>
+                            <button class="btn-success" onclick="openQuickAddModal()" style="font-size:11.5px; padding:6px 12px;">+ Quick Add Stock</button>
                         </div>
                     </div>
 
-                    <div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:8px; gap:6px;">
-                        <div class="form-group"><label>Inv Serial</label><input type="text" id="invoiceNo" class="form-control" value="${invSerial}" readonly style="color:#38bdf8; font-weight:700;"></div>
+                    <div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:10px; gap:8px;">
+                        <div class="form-group"><label>Inv Serial</label><input type="text" id="invoiceNo" class="form-control" value="${invSerial}" readonly style="color:#0284c7; font-weight:800;"></div>
                         <div class="form-group"><label>Date & Time</label><input type="text" id="billDate" class="form-control" value="${new Date().toLocaleString('en-GB')}" readonly></div>
-                        <div class="form-group"><label>Biller User</label><input type="text" class="form-control" value="${currentUser ? currentUser.name : 'Staff'}" readonly style="color:#34d399; font-weight:700;"></div>
-                        <div class="form-group"><label>Patient Name *</label><input type="text" id="custName" class="form-control" placeholder="Patient Full Name"></div>
-                        <div class="form-group"><label>10-Digit Mobile *</label><input type="text" id="custMobile" class="form-control" maxlength="10" placeholder="Mobile"></div>
+                        <div class="form-group"><label>Biller User</label><input type="text" class="form-control" value="${currentUser ? currentUser.name : 'Staff'}" readonly style="color:#16a34a; font-weight:800;"></div>
+                        <div class="form-group"><label>Patient Name *</label><input type="text" id="custName" class="form-control" placeholder="Patient Name"></div>
+                        <div class="form-group"><label>Mobile *</label><input type="text" id="custMobile" class="form-control" maxlength="10" placeholder="10-digit"></div>
                         <div class="form-group"><label>Doctor Name</label><input type="text" id="docName" class="form-control" placeholder="Dr. Name"></div>
                     </div>
 
-                    <div style="background:rgba(30,41,59,0.5); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); margin-bottom:8px;">
+                    <div style="background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px;">
                         <div style="display:flex; gap:8px; align-items:flex-end;">
                             <div style="flex:2.5;">
-                                <label style="font-size:9.5px; color:#94a3b8; font-weight:700;">SEARCH MEDICINE</label>
+                                <label style="font-size:9.5px; color:#475569; font-weight:800;">SEARCH MEDICINE</label>
                                 <select id="itemSelect" class="form-control" onchange="autoFillItemDetails()">
                                     <option value="">-- Select Item --</option>
                                     ${salesStock.map((m, idx) => '<option value="' + idx + '">' + m.name + ' | Batch: ' + m.batch + ' | Stock: ' + m.stock + '</option>').join('')}
                                 </select>
                             </div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">BATCH</label><input type="text" id="itemBatch" class="form-control" readonly></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">MRP</label><input type="number" id="itemMrp" class="form-control" readonly></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">QTY</label><input type="number" id="itemQty" class="form-control" value="1" min="1"></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#94a3b8;">DISC %</label><input type="number" id="itemDisc" class="form-control" value="0" min="0" max="100"></div>
-                            <button class="btn-success" onclick="addItemToCart()" style="height:32px;">+ Add</button>
+                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">BATCH</label><input type="text" id="itemBatch" class="form-control" readonly></div>
+                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">MRP</label><input type="number" id="itemMrp" class="form-control" readonly></div>
+                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">QTY</label><input type="number" id="itemQty" class="form-control" value="1" min="1"></div>
+                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">DISC %</label><input type="number" id="itemDisc" class="form-control" value="0" min="0" max="100"></div>
+                            <button class="btn-success" onclick="addItemToCart()" style="height:34px;">+ Add</button>
                         </div>
                     </div>
 
-                    <div style="flex:1; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(11,15,25,0.5); margin-bottom:8px;">
+                    <div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px; background:#ffffff; margin-bottom:10px;">
                         <table class="data-table">
                             <thead>
                                 <tr><th>Item Name</th><th>Batch</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>GST</th><th>Total</th><th>Action</th></tr>
@@ -544,9 +455,9 @@
                         </table>
                     </div>
 
-                    <div style="background:#0b0f19; color:#fff; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(56,189,248,0.2);">
+                    <div style="background:#ffffff; color:#0f172a; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #e2e8f0;">
                         <div style="display:flex; gap:8px;">
-                            <select id="payMode" class="form-control" style="width:130px; background:#1e293b;">
+                            <select id="payMode" class="form-control" style="width:140px;">
                                 <option value="Cash">Cash Payment</option>
                                 <option value="QR Payment">UPI / QR Code</option>
                                 <option value="Card">Debit Card</option>
@@ -555,16 +466,16 @@
                             </select>
                         </div>
                         <div style="text-align:right;">
-                            <span style="font-size:11px; color:#94a3b8;" id="summaryText">Total MRP: ₹0.00 | Disc: ₹0.00</span>
-                            <span style="font-size:16px; font-weight:900; color:#38bdf8; margin-left:10px;" id="netPayableText">Final: ₹0.00</span>
-                            <button class="btn-success" onclick="processCloudBilling()" style="margin-left:10px; padding:6px 16px;">🖨️ Save & Print Invoice</button>
+                            <span style="font-size:11.5px; color:#64748b;" id="summaryText">Total MRP: ₹0.00 | Disc: ₹0.00</span>
+                            <span style="font-size:16px; font-weight:900; color:#0284c7; margin-left:12px;" id="netPayableText">Final: ₹0.00</span>
+                            <button class="btn-success" onclick="processCloudBilling()" style="margin-left:12px; padding:7px 18px;">🖨️ Save & Print Invoice</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center;">
-                    <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); padding:20px; border-radius:16px; width:100%; max-width:550px; color:#fff;">
-                        <h3 style="margin-bottom:10px; color:#38bdf8;">🔍 Find Composition Substitute Medicines</h3>
+                <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
+                    <div style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:16px; width:100%; max-width:550px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom:10px; color:#0f172a; font-weight:800;">🔍 Find Composition Substitute Medicines</h3>
                         <div class="form-group"><input type="text" id="compQuery" class="form-control" placeholder="Enter salt e.g. Paracetamol" oninput="filterByComposition()"></div>
                         <div style="max-height:220px; overflow-y:auto; margin-top:10px;">
                             <table class="data-table">
@@ -575,10 +486,43 @@
                         <div style="text-align:right; margin-top:12px;"><button class="btn-danger" onclick="closeAltSearchModal()">Close</button></div>
                     </div>
                 </div>
+
+                <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999999; justify-content:center; align-items:center;">
+                    <div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:420px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">+ Quick Add Medicine Stock</h3>
+                        <div class="form-group"><label>Medicine Name</label><input type="text" id="qName" class="form-control" placeholder="e.g. Tab Calpol 650mg"></div>
+                        <div class="form-group"><label>Batch Number</label><input type="text" id="qBatch" class="form-control" placeholder="Batch No"></div>
+                        <div class="form-group"><label>Salt Composition</label><input type="text" id="qComp" class="form-control" placeholder="Paracetamol 650mg"></div>
+                        <div class="form-group"><label>MRP (₹)</label><input type="number" id="qMrp" class="form-control" placeholder="0.00"></div>
+                        <div class="form-group"><label>Stock Qty</label><input type="number" id="qQty" class="form-control" value="50"></div>
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+                            <button class="btn-danger" onclick="closeQuickAddModal()">Cancel</button>
+                            <button class="btn-success" onclick="saveQuickStock()">Save Stock</button>
+                        </div>
+                    </div>
+                </div>
             `;
 
             window.openAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'flex'; filterByComposition(); };
             window.closeAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'none'; };
+            window.openQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'flex'; };
+            window.closeQuickAddModal = function() { document.getElementById('quickStockModal').style.display = 'none'; };
+
+            window.saveQuickStock = function() {
+                let name = document.getElementById('qName').value.trim();
+                let batch = document.getElementById('qBatch').value.trim();
+                let composition = document.getElementById('qComp').value.trim();
+                let mrp = parseFloat(document.getElementById('qMrp').value) || 0;
+                let stock = parseInt(document.getElementById('qQty').value) || 0;
+
+                if(!name || !batch || !mrp) { alert('Sare required fields bharein!'); return; }
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                meds.push({ name, batch, composition, mrp, stock, gst: 12 });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                alert('Stock successfully added!');
+                closeQuickAddModal();
+                loadModule('sales');
+            };
 
             window.filterByComposition = function() {
                 let q = (document.getElementById('compQuery') ? document.getElementById('compQuery').value : '').toLowerCase();
@@ -641,7 +585,7 @@
                 let name = document.getElementById('custName').value.trim();
                 let mob = document.getElementById('custMobile').value.trim();
                 let doc = document.getElementById('docName').value.trim();
-                if(!name || mob.length !== 10) { alert('Valid Name and Mobile required!'); return; }
+                if(!name || mob.length !== 10) { alert('Valid Name and 10-digit Mobile required!'); return; }
                 if(currentSalesCart.length === 0) { alert('Cart empty!'); return; }
 
                 let invNo = document.getElementById('invoiceNo').value;
@@ -710,7 +654,7 @@
             setTimeout(() => { printWin.print(); printWin.close(); }, 250);
         }
 
-        // --- 4. PATIENT REPORTS & DUPLICATE PRINT ---
+        // --- 4. PATIENT REPORTS ---
         window.renderPatientReports = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -718,7 +662,7 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>📑 Patient Sales & Return Reports</h2>
-                    <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">Sales Invoices History & Duplicate Print</h3>
+                    <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">Sales Invoices History & Duplicate Print</h3>
                     <table class="data-table" style="margin-bottom:20px;">
                         <thead><tr><th>Inv Serial</th><th>Date & Time</th><th>Patient Name</th><th>Mobile</th><th>Biller User</th><th>Amount</th><th>Action</th></tr></thead>
                         <tbody>
@@ -726,7 +670,7 @@
                                 invoices.map(i => `
                                     <tr>
                                         <td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.biller}</td>
-                                        <td style="color:#34d399; font-weight:700;">₹${i.netPayable.toFixed(2)}</td>
+                                        <td style="color:#16a34a; font-weight:800;">₹${i.netPayable.toFixed(2)}</td>
                                         <td><button class="btn-primary" onclick="duplicatePrintInvoice('${i.invoiceNo}')">🖨️ Duplicate Print</button></td>
                                     </tr>
                                 `).join('')}
@@ -741,7 +685,7 @@
                                 returnsList.map(r => `
                                     <tr>
                                         <td><b>${r.invNo}</b></td><td>${r.dateTime}</td><td>${r.patientName}</td><td>${r.returnedBy}</td>
-                                        <td style="color:#ef4444; font-weight:700;">₹${r.refundTotal.toFixed(2)}</td><td>${r.refundMode}</td>
+                                        <td style="color:#ef4444; font-weight:800;">₹${r.refundTotal.toFixed(2)}</td><td>${r.refundMode}</td>
                                     </tr>
                                 `).join('')}
                         </tbody>
@@ -764,8 +708,8 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>👥 Parties & Customers / Vendors Ledger</h2>
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Add New Party / Customer</h3>
+                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Add New Party / Customer</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Party Name</label><input type="text" id="ptyName" class="form-control"></div>
                             <div class="form-group"><label>Type</label>
@@ -782,7 +726,7 @@
                     <table class="data-table">
                         <thead><tr><th>Party Name</th><th>Type</th><th>Phone</th><th>Outstanding Balance</th></tr></thead>
                         <tbody>
-                            ${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td><td>${p.phone}</td><td style="color:#34d399; font-weight:700;">₹${p.balance.toFixed(2)}</td></tr>`).join('')}
+                            ${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td><td>${p.phone}</td><td style="color:#16a34a; font-weight:800;">₹${p.balance.toFixed(2)}</td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -815,7 +759,7 @@
                     </div>
 
                     <div id="returnArea" style="display:none;">
-                        <div id="invSummary" style="background:rgba(30,41,59,0.5); padding:10px; border-radius:8px; margin-bottom:12px;"></div>
+                        <div id="invSummary" style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; margin-bottom:12px;"></div>
                         <table class="data-table">
                             <thead><tr><th>Item</th><th>Batch</th><th>Sold Qty</th><th>MRP</th><th>Return Qty (Strict Limit)</th></tr></thead>
                             <tbody id="returnTable"></tbody>
@@ -874,7 +818,7 @@
                 });
 
                 localStorage.setItem('erp_returns_list', JSON.stringify(returnsList));
-                alert('Return processed by ' + (currentUser ? currentUser.name : 'Staff') + ' at ' + new Date().toLocaleString('en-GB') + '! Refund: ₹' + refundTotal + ' via ' + pMode);
+                alert('Return processed successfully! Refund: ₹' + refundTotal + ' via ' + pMode);
                 renderReturns(container);
             };
         };
@@ -887,8 +831,8 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🔍 Stock Audit Master Control</h2>
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">Audit Edit Request (Requires Admin Approval)</h3>
+                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">Audit Edit Request (Requires Admin Approval)</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Select Medicine</label>
                                 <select id="auditMedIdx" class="form-control">
@@ -904,14 +848,14 @@
                     </div>
 
                     ${(currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Admin')) ? `
-                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Pending Audit Approvals</h3>
+                        <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">Pending Audit Approvals</h3>
                         <table class="data-table" style="margin-bottom:20px;">
                             <thead><tr><th>Item</th><th>Old Qty</th><th>New Qty</th><th>Reason</th><th>By</th><th>Action</th></tr></thead>
                             <tbody>
                                 ${pendingAudits.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending requests.</td></tr>' :
                                     pendingAudits.map((p, idx) => `
                                         <tr>
-                                            <td><b>${p.medName}</b></td><td>${p.oldQty}</td><td><b style="color:#38bdf8;">${p.newQty}</b></td><td>${p.reason}</td><td>${p.by}</td>
+                                            <td><b>${p.medName}</b></td><td>${p.oldQty}</td><td><b style="color:#0284c7;">${p.newQty}</b></td><td>${p.reason}</td><td>${p.by}</td>
                                             <td><button class="btn-success" onclick="approveAuditRequest(${idx})">Approve</button></td>
                                         </tr>
                                     `).join('')}
@@ -919,11 +863,11 @@
                         </table>
                     ` : ''}
 
-                    <h3 style="color:#fff; font-size:13px; margin-bottom:8px;">Live Audited Master Stock List</h3>
+                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Live Audited Master Stock List</h3>
                     <table class="data-table">
                         <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Audited Stock</th><th>Status</th></tr></thead>
                         <tbody>
-                            ${meds.map(m => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b style="color:#34d399;">${m.stock}</b></td><td><span style="color:#38bdf8;">Verified</span></td></tr>`).join('')}
+                            ${meds.map(m => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b style="color:#16a34a;">${m.stock}</b></td><td><span style="color:#0284c7;">Verified</span></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -960,19 +904,19 @@
                 <div class="light-card">
                     <h2>📦 Vendor Master & Purchase Entries</h2>
                     
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register New Vendor</h3>
+                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Register New Vendor</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Vendor Name</label><input type="text" id="venName" class="form-control" placeholder="Supplier Name"></div>
-                            <div class="form-group"><label>GST No</label><input type="text" id="venGst" class="form-control" placeholder="GSTIN"></div>
-                            <div class="form-group"><label>Drug License (DL) No</label><input type="text" id="venDl" class="form-control" placeholder="DL No"></div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="venPhone" class="form-control" placeholder="Phone"></div>
+                            <div class="form-group"><label>Vendor Name</label><input type="text" id="venName" class="form-control"></div>
+                            <div class="form-group"><label>GST No</label><input type="text" id="venGst" class="form-control"></div>
+                            <div class="form-group"><label>Drug License (DL)</label><input type="text" id="venDl" class="form-control"></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="venPhone" class="form-control"></div>
                             <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveVendor()" style="width:100%;">Save Vendor</button></div>
                         </div>
                     </div>
 
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">+ New Purchase Entry</h3>
+                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">+ New Purchase Entry</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Select Vendor</label>
                                 <select id="pVendor" class="form-control">
@@ -995,7 +939,7 @@
                         </div>
                     </div>
 
-                    <h3 style="color:#fff; font-size:13px; margin-bottom:8px;">Recent Purchase Invoices</h3>
+                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Purchase Invoices</h3>
                     <table class="data-table">
                         <thead><tr><th>Vendor</th><th>Inv No</th><th>Item</th><th>Batch</th><th>Cost</th><th>Qty</th><th>Mode</th></tr></thead>
                         <tbody>
@@ -1057,7 +1001,7 @@
                                 udharInvs.map((u, i) => `
                                     <tr>
                                         <td><b>${u.invoiceNo}</b></td><td>${u.patientName}</td><td>${u.mobile}</td>
-                                        <td style="color:#ef4444; font-weight:700;">₹${u.netPayable.toFixed(2)}</td>
+                                        <td style="color:#ef4444; font-weight:800;">₹${u.netPayable.toFixed(2)}</td>
                                         <td>
                                             <select id="uPayMode_${i}" class="form-control" style="width:130px;">
                                                 <option value="Cash">Cash</option><option value="UPI / QR">UPI / QR</option><option value="Card">Card</option>
@@ -1116,10 +1060,10 @@
             };
         };
 
-        // --- 11. HR & MONTHLY PAYROLL REPORT ---
+        // --- 11. HR & MONTHLY PAYROLL ---
         window.renderHR = function(container) {
             let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
-                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210', hourlyRate: 200, baseSalary: 35000 }
+                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210', baseSalary: 35000 }
             ];
             let payrolls = JSON.parse(localStorage.getItem('erp_payrolls')) || {};
 
@@ -1127,18 +1071,18 @@
                 <div class="light-card">
                     <h2>👥 HR Management & Monthly Payroll Calculation</h2>
                     
-                    <div style="background:rgba(30,41,59,0.5); padding:12px; border-radius:10px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:8px;">+ Register Staff Member</h3>
+                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Register Staff Member</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Full Name</label><input type="text" id="sName" class="form-control" placeholder="Staff Name"></div>
-                            <div class="form-group"><label>Designation</label><input type="text" id="sRole" class="form-control" placeholder="Role"></div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="sPhone" class="form-control" placeholder="Phone"></div>
+                            <div class="form-group"><label>Full Name</label><input type="text" id="sName" class="form-control"></div>
+                            <div class="form-group"><label>Designation</label><input type="text" id="sRole" class="form-control"></div>
+                            <div class="form-group"><label>Phone</label><input type="text" id="sPhone" class="form-control"></div>
                             <div class="form-group"><label>Monthly Base Salary (₹)</label><input type="number" id="sSalary" class="form-control" value="15000"></div>
                             <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="registerStaff()" style="width:100%;">Save Staff</button></div>
                         </div>
                     </div>
 
-                    <h3 style="color:#34d399; font-size:13px; margin-bottom:8px;">Monthly Salary & Duty Hours Payroll Report</h3>
+                    <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">Monthly Salary & Duty Hours Payroll Report</h3>
                     <table class="data-table">
                         <thead><tr><th>Staff Name</th><th>Monthly Salary</th><th>Duty Hours</th><th>Paid / Unpaid</th><th>Paid Amount</th><th>Update Status</th></tr></thead>
                         <tbody>
@@ -1149,7 +1093,7 @@
                                         <td><b>${s.name}</b> (${s.role})</td>
                                         <td>₹${s.baseSalary || 15000}</td>
                                         <td><input type="number" id="pHours_${idx}" class="form-control" value="${p.hours}" style="width:70px;"> Hrs</td>
-                                        <td><b style="color:${p.status==='Paid'?'#34d399':'#ef4444'};">${p.status}</b></td>
+                                        <td><b style="color:${p.status==='Paid'?'#16a34a':'#ef4444'};">${p.status}</b></td>
                                         <td><input type="number" id="pAmt_${idx}" class="form-control" value="${p.paidAmt}" style="width:90px;"></td>
                                         <td>
                                             <button class="btn-success" onclick="updatePayroll('${s.name}', ${idx}, 'Paid')">Mark Paid</button>
@@ -1194,8 +1138,8 @@
                 <div class="light-card">
                     <h2>⚙️ Super Admin Control Panel & Pharmacy Branding</h2>
 
-                    <div style="background:rgba(30,41,59,0.5); padding:14px; border-radius:12px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">Pharmacy Store Branding & Details Form</h3>
+                    <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">Pharmacy Store Branding & Details Form</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
                             <div class="form-group"><label>Chairman Name</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
@@ -1207,8 +1151,8 @@
                         <button class="btn-success" onclick="saveSystemSettings()">💾 Save Store Settings</button>
                     </div>
 
-                    <div style="background:rgba(30,41,59,0.5); padding:14px; border-radius:12px; margin-bottom:15px;">
-                        <h3 style="color:#38bdf8; font-size:13px; margin-bottom:10px;">+ Create New System User</h3>
+                    <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Create New System User</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Full Name</label><input type="text" id="uName" class="form-control"></div>
                             <div class="form-group"><label>Username</label><input type="text" id="uUsername" class="form-control"></div>
@@ -1223,18 +1167,17 @@
                         <button class="btn-primary" onclick="createNewUser()">Create Account</button>
                     </div>
 
-                    <h3 style="color:#fff; font-size:13px; margin-bottom:8px;">Registered Users & Permissions Control</h3>
+                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Registered Users & Permissions Control</h3>
                     <table class="data-table">
                         <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody>
                             ${users.map((usr, i) => `
                                 <tr>
-                                    <td><b>${usr.name}</b></td><td>${usr.username}</td><td><span style="color:#38bdf8;">${usr.role}</span></td>
-                                    <td><span style="color:${usr.status === 'Deactivated' ? '#ef4444' : '#34d399'};">● ${usr.status || 'Active'}</span></td>
+                                    <td><b>${usr.name}</b></td><td>${usr.username}</td><td><span style="color:#0284c7;">${usr.role}</span></td>
+                                    <td><span style="color:${usr.status === 'Deactivated' ? '#ef4444' : '#16a34a'};">● ${usr.status || 'Active'}</span></td>
                                     <td>
                                         ${usr.username !== 'admin' ? `
-                                            <button class="btn-primary" onclick="openEditPermModal(${i})">Edit Perms</button>
-                                            <button class="btn-danger" onclick="toggleUserStatus(${i})">${usr.status === 'Deactivated' ? 'Activate' : 'Deactivate'}</button>
+                                            <button class="btn-primary" onclick="toggleUserStatus(${i})">${usr.status === 'Deactivated' ? 'Activate' : 'Deactivate'}</button>
                                         ` : 'Super Admin'}
                                     </td>
                                 </tr>
@@ -1269,39 +1212,6 @@
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 alert('User created!');
                 renderSuperAdmin(container);
-            };
-
-            window.openEditPermModal = function(i) {
-                document.getElementById('editUserIdx').value = i;
-                let u = users[i];
-                let p = u.permissions || {};
-                document.getElementById('epSales').checked = !!p.sales;
-                document.getElementById('epReturns').checked = !!p.returns;
-                document.getElementById('epMed').checked = !!p.medicines;
-                document.getElementById('epHR').checked = !!p.hr;
-                document.getElementById('epAdmin').checked = !!p.admin;
-                document.getElementById('editPermModal').style.display = 'flex';
-            };
-
-            window.closeEditPermModal = function() {
-                document.getElementById('editPermModal').style.display = 'none';
-            };
-
-            window.saveUserPermissions = function() {
-                let i = document.getElementById('editUserIdx').value;
-                if(i !== "") {
-                    users[i].permissions = {
-                        sales: document.getElementById('epSales').checked,
-                        returns: document.getElementById('epReturns').checked,
-                        medicines: document.getElementById('epMed').checked,
-                        hr: document.getElementById('epHR').checked,
-                        admin: document.getElementById('epAdmin').checked
-                    };
-                    localStorage.setItem('erp_users', JSON.stringify(users));
-                    alert('Permissions updated successfully!');
-                    closeEditPermModal();
-                    renderSuperAdmin(container);
-                }
             };
 
             window.toggleUserStatus = function(i) {
