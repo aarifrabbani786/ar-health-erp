@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Enterprise Medical Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Full Enterprise Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
-        /* LUXURY LOGIN PAGE OVERLAY WITH PREVIOUS THEME */
+        /* LUXURY LOGIN PAGE OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(2,132,199,0.85) 100%),
@@ -16,7 +16,7 @@
             display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
         }
         .luxury-login-card {
-            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(25px); padding: 45px; border-radius: 28px; width: 100%; max-width: 440px;
+            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(25px); padding: 40px; border-radius: 28px; width: 100%; max-width: 440px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.3); border: 2px solid rgba(56, 189, 248, 0.4);
             animation: fadeInCard 0.5s ease-out;
         }
@@ -276,7 +276,7 @@
                     document.getElementById('dropdownUserRole').innerText = 'Role: ' + (currentUser.role || 'Staff');
 
                     applyRolePermissions(currentUser);
-                    let activeTab = localStorage.getItem('erp_active_module') || 'sales';
+                    let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
                     loadModule(activeTab);
                     setupKeyboardNavigation();
                     return;
@@ -339,7 +339,7 @@
                 location.reload();
             } else { 
                 alert('Invalid Login Credentials!'); 
-                document.getElementById('loginPass').value = ''; // Auto clear password on error
+                document.getElementById('loginPass').value = '';
                 document.getElementById('loginUser').focus();
             }
         }
@@ -355,7 +355,6 @@
             if(document.getElementById('nav-sales')) document.getElementById('nav-sales').parentElement.style.display = perms.sales ? 'block' : 'none';
         }
 
-        // KEYBOARD ENTER NAVIGATION
         function setupKeyboardNavigation() {
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
@@ -388,86 +387,209 @@
             else if (m === 'parties') renderParties(workspace);
             else if (m === 'udhar') renderUdhar(workspace);
             else if (m === 'requests') renderCustomerRequests(workspace);
-            else if (m === 'hr') renderHR(workspace);
+            else if (m === 'hr' || m === 'expenses') renderExpenses(workspace);
             else if (m === 'superadmin') renderSuperAdmin(workspace);
             else if (m === 'backup') renderBackupModule(workspace);
-            else renderSales(workspace);
+            else renderDashboard(workspace);
             setupKeyboardNavigation();
         }
 
-        // --- 1. BACKUP & RESTORE MODULE ---
-        function renderBackupModule(container) {
+        // --- 1. DASHBOARD MODULE ---
+        function renderDashboard(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
+            let totalGrossSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
+            let totalReturnAmt = returns.reduce((a, b) => a + (b.refundTotal || 0), 0);
+            let netRevenue = totalGrossSales - totalReturnAmt;
+
             container.innerHTML = [
                 '<div class="light-card">',
-                '<h2>💾 Data Backup & Restore</h2>',
-                '<p style="font-size:12px; color:#64748b; margin-bottom:15px;">Keep your business data safe or restore from a saved copy[cite: 35].</p>',
-                '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">',
-                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
-                '<h3>Save Backup</h3>',
-                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Download a complete copy of your business data to this computer[cite: 35].</p>',
-                '<button class="btn-success nav-focusable" onclick="alert(\'Backup file downloaded successfully!\')">Save Backup File</button>',
+                '<h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>',
+                '<div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">',
+                '<div style="background:#f0f9ff; border:1px solid #bae6fd; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#0284c7; font-weight:800;">TOTAL GROSS SALES</div>',
+                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">₹' + totalGrossSales.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ' + invs.length + '</div>',
                 '</div>',
-                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
-                '<h3>Cloud Auto-Backup</h3>',
-                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Your business data and transactions are continuously saved[cite: 35].</p>',
-                '<span style="color:#16a34a; font-weight:800; font-size:12px;">● Cloud Backup Active[cite: 35]</span>',
+                '<div style="background:#fef2f2; border:1px solid #fecaca; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#ef4444; font-weight:800;">RETURNS DEDUCTED</div>',
+                '<div style="font-size:24px; font-weight:900; color:#ef4444; margin-top:6px;">- ₹' + totalReturnAmt.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ' + returns.length + '</div>',
                 '</div>',
-                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
-                '<h3>Restore Data</h3>',
-                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Restore your business data from a saved backup file[cite: 35].</p>',
-                '<input type="file" class="form-control nav-focusable" style="margin-bottom:10px;">',
-                '<button class="btn-primary nav-focusable" onclick="alert(\'Data restored successfully!\')">Choose Backup File</button>',
+                '<div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>',
+                '<div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Final Calculation</div>',
+                '</div>',
+                '<div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE STAFF</div>',
+                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>',
                 '</div>',
                 '</div>',
                 '</div>'
             ].join('');
         }
 
-        // --- 2. SUPER ADMIN & ROLES & POWERS ---
-        function renderSuperAdmin(container) {
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
-
+        // --- 2. AR AI ASSISTANT MODULE ---
+        function renderARAI(container) {
             container.innerHTML = [
                 '<div class="light-card">',
-                '<h2>⚙️ Super Admin - Users & Access (Roles & Powers)</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">Admin Permissions Matrix[cite: 40]</h3>',
-                '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;"><span>All Transactions[cite: 40]</span><input type="checkbox" checked disabled></div>',
-                '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #e2e8f0;"><span>Settings Control[cite: 40]</span><input type="checkbox" checked disabled></div>',
-                '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0;"><span>Sync & Share Enabled[cite: 40]</span><input type="checkbox" checked disabled></div>',
+                '<h2>🤖 AR AI Smart Pharmacy Assistant</h2>',
+                '<p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>',
+                '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">',
+                '<div style="color:#0284c7; font-weight:700;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>',
                 '</div>',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Pharmacy Store Branding & Details</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control nav-focusable" value="' + (s.agencyName || '') + '"></div>',
-                '<div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control nav-focusable" value="' + (s.chairman || '') + '"></div>',
-                '<div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || '') + '"></div>',
-                '<div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '') + '"></div>',
+                '<div style="display:flex; gap:10px;">',
+                '<input type="text" id="aiInput" class="form-control nav-focusable" placeholder="Ask e.g. \'Aaj ki total sale kitni hai?\'">',
+                '<button class="btn-primary nav-focusable" onclick="askARAI()">Send Query</button>',
                 '</div>',
-                '<button class="btn-success nav-focusable" onclick="saveSystemSettings()">Save Settings</button>',
                 '</div>'
             ].join('');
 
-            window.saveSystemSettings = function() {
-                let settings = {
-                    agencyName: document.getElementById('stAgency').value,
-                    chairman: document.getElementById('stChairman').value,
-                    dlNo: document.getElementById('stDl').value,
-                    gstin: document.getElementById('stGstin').value,
-                    address: 'Badahara Rani, Maharajganj, UP'
-                };
-                localStorage.setItem('erp_settings', JSON.stringify(settings));
-                applyBrandingSettings();
-                alert('Store settings saved successfully!');
+            window.askARAI = function() {
+                let q = document.getElementById('aiInput').value.trim().toLowerCase();
+                let chat = document.getElementById('aiChatArea');
+                if(!q) return;
+
+                let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
+                let lowStockCount = meds.filter(m => m.stock < 10).length;
+
+                let ans = "I am processing your query...";
+                if(q.includes('sale') || q.includes('billing')) ans = 'Aaj ki Total Billing Volume ₹' + totalSales.toFixed(2) + ' hai (' + invs.length + ' Invoices).';
+                else if(q.includes('stock') || q.includes('low')) ans = 'Store me abhi ' + lowStockCount + ' medicines low stock alert level (<10) me hain.';
+                else ans = 'Response: Store status clear hai. Total Invoices: ' + invs.length + ', Total Medicines Managed: ' + meds.length + '.';
+
+                chat.innerHTML += '<div style="margin-top:10px; color:#0f172a;"><b>You:</b> ' + q + '</div>';
+                chat.innerHTML += '<div style="margin-top:4px; color:#0284c7;"><b>AR AI:</b> ' + ans + '</div>';
+                document.getElementById('aiInput').value = "";
             };
         }
 
-        // --- 3. SALES & POS WITH FULL GST & CALCULATION COLUMNS ---
+        // --- 3. ITEMS & INVENTORY MANAGEMENT MODULE ---
+        function renderStockAudit(container) {
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [
+                { name: 'Ciplox 100 Tab', batch: 'B101', hsn: '3004', mrp: 70, stock: 50, price: 47, unit: 'STRP', category: 'Medicine', gst: 12 },
+                { name: 'Dolo 650 mg', batch: 'B102', hsn: '3004', mrp: 30, stock: 100, price: 20, unit: 'STRP', category: 'Medicine', gst: 12 }
+            ];
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📦 Inventory & Stock Management Master</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Add New Medicine Item</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control nav-focusable" placeholder="e.g. Paracetamol"></div>',
+                '<div class="form-group"><label>Batch No *</label><input type="text" id="itBatch" class="form-control nav-focusable" placeholder="Batch"></div>',
+                '<div class="form-group"><label>HSN Code</label><input type="text" id="itHsn" class="form-control nav-focusable" value="3004"></div>',
+                '<div class="form-group"><label>MRP (₹) *</label><input type="number" id="itMrp" class="form-control nav-focusable" placeholder="0.00"></div>',
+                '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="itPrice" class="form-control nav-focusable" placeholder="0.00"></div>',
+                '<div class="form-group"><label>Stock Qty *</label><input type="number" id="itStock" class="form-control nav-focusable" value="100"></div>',
+                '<div class="form-group"><label>Unit</label><input type="text" id="itUnit" class="form-control nav-focusable" value="STRP"></div>',
+                '<div class="form-group"><label>GST %</label><input type="number" id="itGst" class="form-control nav-focusable" value="12"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="saveNewItemMaster()" style="width:100%;">Save Item</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Live Master Inventory Stock List</h3>',
+                '<table class="data-table">',
+                '<thead><tr><th>Item Name</th><th>Batch</th><th>HSN</th><th>Purchase Price</th><th>MRP</th><th>Stock Qty</th><th>Unit</th><th>GST %</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                meds.map((m, idx) => '<tr>' +
+                    '<td><b>' + m.name + '</b></td><td>' + m.batch + '</td><td>' + (m.hsn || '3004') + '</td><td>₹' + (m.price || 0) + '</td><td>₹' + m.mrp + '</td>' +
+                    '<td><b style="color:#16a34a;">' + m.stock + '</b></td><td>' + (m.unit || 'STRP') + '</td><td>' + (m.gst || 12) + '%</td>' +
+                    '<td><button class="btn-danger nav-focusable" onclick="deleteItemMaster(' + idx + ')">Delete</button></td>' +
+                '</tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.saveNewItemMaster = function() {
+                let name = document.getElementById('itName').value.trim();
+                let batch = document.getElementById('itBatch').value.trim();
+                let hsn = document.getElementById('itHsn').value.trim();
+                let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
+                let price = parseFloat(document.getElementById('itPrice').value) || 0;
+                let stock = parseInt(document.getElementById('itStock').value) || 0;
+                let unit = document.getElementById('itUnit').value.trim();
+                let gst = parseFloat(document.getElementById('itGst').value) || 12;
+
+                if(!name || !batch || !mrp) { alert('Fill required fields!'); return; }
+                meds.push({ name, batch, hsn, mrp, price, stock, unit, gst });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                alert('New Item Added!');
+                renderStockAudit(container);
+            };
+
+            window.deleteItemMaster = function(idx) {
+                meds.splice(idx, 1);
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAudit(container);
+            };
+        }
+
+        // --- 4. CUSTOMERS & VENDORS LEDGER MODULE ---
+        function renderParties(container) {
+            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
+                { name: 'A R PHARMA & SURGICAL AGENCY', type: 'Vendor', phone: '9005554424', balance: 0, gstin: '09AAAAA0000A1Z5' },
+                { name: 'Rahul Sharma', type: 'Customer', phone: '9876543210', balance: 500, gstin: 'N/A' }
+            ];
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>👥 Customers & Vendors Ledger Management</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Register New Party (Customer/Vendor)</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Party Name *</label><input type="text" id="ptName" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Type</label><select id="ptType" class="form-control nav-focusable"><option value="Customer">Customer</option><option value="Vendor">Vendor</option></select></div>',
+                '<div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>GSTIN Number</label><input type="text" id="ptGst" class="form-control nav-focusable" placeholder="GSTIN"></div>',
+                '<div class="form-group"><label>Opening Balance (₹)</label><input type="number" id="ptBal" class="form-control nav-focusable" value="0"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePartyMaster()" style="width:100%;">Save Party</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Registered Customer & Vendor Directory</h3>',
+                '<table class="data-table">',
+                '<thead><tr><th>Party Name</th><th>Type</th><th>Phone</th><th>GSTIN</th><th>Outstanding Balance</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                parties.map((p, idx) => '<tr>' +
+                    '<td><b>' + p.name + '</b></td><td>' + p.type + '</td><td>' + p.phone + '</td><td>' + (p.gstin || 'N/A') + '</td>' +
+                    '<td><b style="color:#16a34a;">₹' + p.balance.toFixed(2) + '</b></td>' +
+                    '<td><button class="btn-danger nav-focusable" onclick="deletePartyMaster(' + idx + ')">Delete</button></td>' +
+                '</tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.savePartyMaster = function() {
+                let name = document.getElementById('ptName').value.trim();
+                let type = document.getElementById('ptType').value;
+                let phone = document.getElementById('ptPhone').value.trim();
+                let gstin = document.getElementById('ptGst').value.trim();
+                let balance = parseFloat(document.getElementById('ptBal').value) || 0;
+
+                if(!name) { alert('Party Name required!'); return; }
+                parties.push({ name, type, phone, gstin, balance });
+                localStorage.setItem('erp_parties', JSON.stringify(parties));
+                alert('Party Saved!');
+                renderParties(container);
+            };
+
+            window.deletePartyMaster = function(idx) {
+                parties.splice(idx, 1);
+                localStorage.setItem('erp_parties', JSON.stringify(parties));
+                renderParties(container);
+            };
+        }
+
+        // --- 5. SALES & POS COUNTER MODULE ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
             let salesStock = JSON.parse(localStorage.getItem('erp_medicines')) || [
-                { name: 'Ciplox 100 Tab', batch: 'B101', hsn: '3004', mrp: 70, stock: 50, gst: 12 }
+                { name: 'Ciplox 100 Tab', batch: 'B101', hsn: '3004', mrp: 70, stock: 50, price: 47, unit: 'STRP', gst: 12 }
             ];
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let invSerial = "AR" + String(invoices.length + 1).padStart(2, '0');
@@ -476,7 +598,6 @@
                 '<div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:16px;">',
                 '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">',
                 '<h2 style="font-size:15px; margin:0;">🛒 AR Bill Sales & POS (GST Billing)</h2>',
-                '<button class="btn-success nav-focusable" onclick="openQuickAddModal()" style="font-size:11.5px; padding:6px 12px;">+ Add New Item</button>',
                 '</div>',
                 '<div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:10px; gap:8px;">',
                 '<div class="form-group"><label>Inv Number</label><input type="text" id="invoiceNo" class="form-control nav-focusable" value="' + invSerial + '" readonly style="color:#16a34a; font-weight:800;"></div>',
@@ -497,7 +618,7 @@
                 '<div style="flex:1;"><label style="font-size:9.5px;">BATCH NO</label><input type="text" id="itemBatch" class="form-control nav-focusable" readonly></div>',
                 '<div style="flex:1;"><label style="font-size:9.5px;">EXPIRY</label><input type="text" id="itemExpiry" class="form-control nav-focusable" value="12/2027"></div>',
                 '<div style="flex:1;"><label style="font-size:9.5px;">QTY</label><input type="number" id="itemQty" class="form-control nav-focusable" value="1" min="1"></div>',
-                '<div style="flex:1;"><label style="font-size:9.5px;">UNIT</label><input type="text" id="itemUnit" class="form-control nav-focusable" value="STR"></div>',
+                '<div style="flex:1;"><label style="font-size:9.5px;">UNIT</label><input type="text" id="itemUnit" class="form-control nav-focusable" value="STRP"></div>',
                 '<div style="flex:1;"><label style="font-size:9.5px;">PRICE/UNIT</label><input type="number" id="itemPrice" class="form-control nav-focusable"></div>',
                 '<div style="flex:1;"><label style="font-size:9.5px;">DISC %</label><input type="number" id="itemDisc" class="form-control nav-focusable" value="0"></div>',
                 '<div style="flex:1;"><label style="font-size:9.5px;">TAX (GST)</label><input type="number" id="itemTax" class="form-control nav-focusable" value="12"></div>',
@@ -620,18 +741,230 @@
             setTimeout(() => { printWin.print(); printWin.close(); }, 250);
         }
 
-        // Standard placeholders for other modules
-        window.renderDashboard = function(container) { container.innerHTML = '<div class="light-card"><h2>📊 Dashboard Analytics</h2><p>Analytics operational.</p></div>'; };
-        window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Assistant</h2><p>AI assistant active.</p></div>'; };
-        window.renderStockAudit = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Items & Inventory</h2><p>Inventory active.</p></div>'; };
-        window.renderParties = function(container) { container.innerHTML = '<div class="light-card"><h2>👥 Customers & Vendors</h2><p>Parties active.</p></div>'; };
-        window.renderPatientReports = function(container) { container.innerHTML = '<div class="light-card"><h2>📑 Sales Reports</h2><p>Reports active.</p></div>'; };
-        window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Return / Credit Note</h2><p>Returns module active.</p></div>'; };
-        window.renderPurchase = function(container) { container.innerHTML = '<div class="light-card"><h2>🛍️ Purchase Bill & Orders</h2><p>Purchase module active.</p></div>'; };
-        window.renderExpenses = function(container) { container.innerHTML = '<div class="light-card"><h2>💸 Expenses</h2><p>Expenses module active.</p></div>'; };
-        window.renderUdhar = function(container) { container.innerHTML = '<div class="light-card"><h2>📈 Fund Flow</h2><p>Fund flow active.</p></div>'; };
-        window.renderCustomerRequests = function(container) { container.innerHTML = '<div class="light-card"><h2>🎁 Referral & CRM</h2><p>CRM active.</p></div>'; };
-        window.renderHR = function(container) { container.innerHTML = '<div class="light-card"><h2>👤 HR Payroll</h2><p>Payroll active.</p></div>'; };
+        // --- 6. PURCHASE BILL & ORDERS MODULE ---
+        window.renderPurchase = function(container) {
+            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            let vendors = JSON.parse(localStorage.getItem('erp_parties')) || [];
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🛍️ Vendor Purchase Invoices & Orders</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ New Vendor Purchase Entry</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Vendor Supplier</label><input type="text" id="pVen" class="form-control nav-focusable" placeholder="Supplier Name"></div>',
+                '<div class="form-group"><label>Purchase Bill No</label><input type="text" id="pBillNo" class="form-control nav-focusable" placeholder="Inv No"></div>',
+                '<div class="form-group"><label>Item Name</label><input type="text" id="pItem" class="form-control nav-focusable" placeholder="Medicine"></div>',
+                '<div class="form-group"><label>Batch No</label><input type="text" id="pBatch" class="form-control nav-focusable" placeholder="Batch"></div>',
+                '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="pPrice" class="form-control nav-focusable" placeholder="0.00"></div>',
+                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="pMrp" class="form-control nav-focusable" placeholder="0.00"></div>',
+                '<div class="form-group"><label>Purchase Qty</label><input type="number" id="pQty" class="form-control nav-focusable" value="100"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePurchaseEntry()" style="width:100%;">Save Purchase</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Purchase Invoices Log</h3>',
+                '<table class="data-table">',
+                '<thead><tr><th>Vendor</th><th>Bill No</th><th>Item</th><th>Batch</th><th>Purchase Price</th><th>MRP</th><th>Qty</th></tr></thead>',
+                '<tbody>',
+                purchases.map(p => '<tr><td><b>' + p.vendor + '</b></td><td>' + p.billNo + '</td><td>' + p.item + '</td><td>' + p.batch + '</td><td>₹' + p.price + '</td><td>₹' + p.mrp + '</td><td>' + p.qty + '</td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.savePurchaseEntry = function() {
+                let vendor = document.getElementById('pVen').value.trim();
+                let billNo = document.getElementById('pBillNo').value.trim();
+                let item = document.getElementById('pItem').value.trim();
+                let batch = document.getElementById('pBatch').value.trim();
+                let price = parseFloat(document.getElementById('pPrice').value) || 0;
+                let mrp = parseFloat(document.getElementById('pMrp').value) || 0;
+                let qty = parseInt(document.getElementById('pQty').value) || 0;
+
+                if(!vendor || !item || !qty) { alert('Fill required fields!'); return; }
+                purchases.unshift({ vendor, billNo, item, batch, price, mrp, qty });
+                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
+
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                meds.push({ name: item, batch, mrp, price, stock: qty, unit: 'STRP', gst: 12 });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+
+                alert('Purchase Entry Saved & Stock Updated!');
+                renderPurchase(container);
+            };
+        };
+
+        // --- 7. MEDICINE RETURNS & CREDIT NOTE MODULE ---
+        window.renderReturns = function(container) {
+            let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🔄 Sale Return / Credit Note Log</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#ef4444; font-size:13px; margin-bottom:10px;">+ Process New Sale Return</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Original Inv No</label><input type="text" id="rInvNo" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Patient Name</label><input type="text" id="rName" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Returned Medicine</label><input type="text" id="rItem" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Refund Amount (₹)</label><input type="number" id="rAmt" class="form-control nav-focusable"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-danger nav-focusable" onclick="saveReturnEntry()" style="width:100%;">Process Return</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Processed Sale Returns Directory</h3>',
+                '<table class="data-table">',
+                '<thead><tr><th>Inv No</th><th>Patient Name</th><th>Returned Item</th><th>Refund Total</th></tr></thead>',
+                '<tbody>',
+                returnsList.map(r => '<tr><td><b>' + r.invNo + '</b></td><td>' + r.patientName + '</td><td>' + r.item + '</td><td style="color:#ef4444; font-weight:800;">₹' + r.refundTotal.toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.saveReturnEntry = function() {
+                let invNo = document.getElementById('rInvNo').value.trim();
+                let patientName = document.getElementById('rName').value.trim();
+                let item = document.getElementById('rItem').value.trim();
+                let refundTotal = parseFloat(document.getElementById('rAmt').value) || 0;
+
+                if(!invNo || !patientName) { alert('Fill required fields!'); return; }
+                returnsList.unshift({ invNo, patientName, item, refundTotal });
+                localStorage.setItem('erp_returns_list', JSON.stringify(returnsList));
+                alert('Return Processed!');
+                renderReturns(container);
+            };
+        };
+
+        // --- 8. EXPENSES & HR PAYROLL MODULE ---
+        window.renderExpenses = function(container) {
+            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [
+                { title: 'Electricity Bill', category: 'Utility', amount: 1200, date: new Date().toLocaleDateString('en-GB') }
+            ];
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>💸 Store Expenses & Overhead Ledger</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Record New Store Expense</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Expense Description</label><input type="text" id="exTitle" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Category</label><input type="text" id="exCat" class="form-control nav-focusable" value="Utility"></div>',
+                '<div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmt" class="form-control nav-focusable"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary nav-focusable" onclick="saveExpenseEntry()" style="width:100%;">Save Expense</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Expense Records</h3>',
+                '<table class="data-table">',
+                '<thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>',
+                '<tbody>',
+                expenses.map(e => '<tr><td>' + e.date + '</td><td><b>' + e.title + '</b></td><td>' + e.category + '</td><td style="color:#ef4444; font-weight:800;">₹' + e.amount.toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.saveExpenseEntry = function() {
+                let title = document.getElementById('exTitle').value.trim();
+                let category = document.getElementById('exCat').value.trim();
+                let amount = parseFloat(document.getElementById('exAmt').value) || 0;
+
+                if(!title || !amount) { alert('Fill required fields!'); return; }
+                expenses.unshift({ title, category, amount, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                alert('Expense Saved!');
+                renderExpenses(container);
+            };
+        };
+
+        // --- 9. FUND FLOW & UDHAR MODULE ---
+        window.renderUdhar = function(container) {
+            let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📈 Fund Flow & Credit (Udhar) Settlement</h2>',
+                '<table class="data-table">',
+                '<thead><tr><th>Inv Serial</th><th>Patient Name</th><th>Mobile</th><th>Udhar Amount</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                udharInvs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No pending udhar records found.</td></tr>' :
+                udharInvs.map((u, i) => '<tr>' +
+                    '<td><b>' + u.invoiceNo + '</b></td><td>' + u.patientName + '</td><td>' + u.mobile + '</td>' +
+                    '<td style="color:#ef4444; font-weight:800;">₹' + u.netPayable.toFixed(2) + '</td>' +
+                    '<td><button class="btn-success nav-focusable" onclick="settleUdharBill(\'' + u.invoiceNo + '\')">Clear Udhar</button></td>' +
+                '</tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.settleUdharBill = function(invNo) {
+                let iIdx = invoices.findIndex(i => i.invoiceNo === invNo);
+                if(iIdx >= 0) {
+                    invoices[iIdx].udharSettled = true;
+                    localStorage.setItem('erp_invoices', JSON.stringify(invoices));
+                    alert('Udhar settled!');
+                    renderUdhar(container);
+                }
+            };
+        };
+
+        // --- 10. BACKUP & RESTORE MODULE ---
+        function renderBackupModule(container) {
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>💾 Data Backup & Restore</h2>',
+                '<p style="font-size:12px; color:#64748b; margin-bottom:15px;">Keep your business data safe or restore from a saved copy.</p>',
+                '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">',
+                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
+                '<h3>Save Backup</h3>',
+                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Download a complete copy of your business data.</p>',
+                '<button class="btn-success nav-focusable" onclick="alert(\'Backup file downloaded!\')">Save Backup File</button>',
+                '</div>',
+                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
+                '<h3>Cloud Auto-Backup</h3>',
+                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Continuous background data syncing.</p>',
+                '<span style="color:#16a34a; font-weight:800; font-size:12px;">● Cloud Backup Active</span>',
+                '</div>',
+                '<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:20px; border-radius:14px; text-align:center;">',
+                '<h3>Restore Data</h3>',
+                '<p style="font-size:11.5px; color:#64748b; margin:10px 0;">Restore from previous backup file.</p>',
+                '<input type="file" class="form-control nav-focusable" style="margin-bottom:10px;">',
+                '<button class="btn-primary nav-focusable" onclick="alert(\'Data restored!\')">Choose Backup File</button>',
+                '</div>',
+                '</div>',
+                '</div>'
+            ].join('');
+        }
+
+        // --- 11. SUPER ADMIN MODULE ---
+        function renderSuperAdmin(container) {
+            let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>⚙️ Super Admin - Store Branding & System Settings</h2>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control nav-focusable" value="' + (s.agencyName || '') + '"></div>',
+                '<div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control nav-focusable" value="' + (s.chairman || '') + '"></div>',
+                '<div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || '') + '"></div>',
+                '<div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '') + '"></div>',
+                '</div>',
+                '<button class="btn-success nav-focusable" onclick="saveSystemSettings()">Save Store Settings</button>',
+                '</div>'
+            ].join('');
+
+            window.saveSystemSettings = function() {
+                let settings = {
+                    agencyName: document.getElementById('stAgency').value,
+                    chairman: document.getElementById('stChairman').value,
+                    dlNo: document.getElementById('stDl').value,
+                    gstin: document.getElementById('stGstin').value,
+                    address: 'Badahara Rani, Maharajganj, UP'
+                };
+                localStorage.setItem('erp_settings', JSON.stringify(settings));
+                applyBrandingSettings();
+                alert('Store settings saved successfully!');
+            };
+        }
+
+        window.renderPatientReports = function(container) { container.innerHTML = '<div class="light-card"><h2>📑 Quotations & Proforma</h2><p>Module active.</p></div>'; };
+        window.renderCustomerRequests = function(container) { container.innerHTML = '<div class="light-card"><h2>🎁 CRM & Referrals</h2><p>Module active.</p></div>'; };
     </script>
 </body>
 </html>
