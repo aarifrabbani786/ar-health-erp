@@ -8,17 +8,17 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
-        /* LUXURY LOGIN PAGE WITH SLIDE-IN & ENQUIRY */
+        /* LUXURY LOGIN PAGE OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, rgba(15,23,42,0.94) 0%, rgba(2,132,199,0.88) 100%),
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(2,132,199,0.90) 100%),
                         url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80') center/cover;
             display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
         }
         .luxury-login-card {
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(30px); padding: 40px; border-radius: 28px; width: 100%; max-width: 440px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.3); border: 2px solid rgba(56, 189, 248, 0.4);
-            animation: slideInLogin 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideInLogin 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes slideInLogin {
             from { opacity: 0; transform: translateX(-90px); }
@@ -69,14 +69,15 @@
 
         .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; }
         
+        /* PREMIUM HEADER DESIGN */
         .top-banner {
-            background: #ffffff; padding: 12px 20px; border-radius: 14px; border: 1px solid #e2e8f0;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 14px 24px; border-radius: 16px; border: 1.5px solid #bbf7d0;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 6px 20px rgba(22, 163, 74, 0.08);
             position: relative; z-index: 1000;
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 15px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px; }
-        .centered-agency-details p { font-size: 10.5px; color: #64748b; margin-top: 2px; font-weight: 600; }
+        .centered-agency-details h1 { font-size: 17px; font-weight: 900; color: #0f172a; letter-spacing: 0.6px; text-transform: uppercase; }
+        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; font-weight: 700; }
 
         .light-card { 
             background: #ffffff; color: #0f172a; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
@@ -109,11 +110,11 @@
 </head>
 <body>
 
-    <!-- LUXURY LOGIN PAGE OVERLAY -->
+    <!-- LUXURY LOGIN OVERLAY -->
     <div id="auth-overlay" style="display: none;">
         <div class="luxury-login-card">
             <h2>A.R. ERP BILLING SOFTWARE</h2>
-            <div class="subtitle">Secure Enterprise Authentication Portal</div>
+            <div class="subtitle">Medical Enterprise Management System</div>
             
             <div class="input-group-lux">
                 <label>USER ID</label>
@@ -129,9 +130,9 @@
             <button onclick="handleLogin()" class="btn-success nav-focusable" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 10px;">🔒 Secure Login</button>
             
             <div class="enquiry-box">
-                <b>📞 Helpline & License Enquiry</b><br>
-                Contact Chairman: DRx. Aarif Rabbani<br>
-                Support Hotline: +91 9005554424 | Maharajganj, UP
+                <b>📞 Helpline & License Support</b><br>
+                Chairman: DRx. Aarif Rabbani<br>
+                Hotline: +91 9005554424 | Maharajganj, UP
             </div>
         </div>
     </div>
@@ -213,10 +214,11 @@
         </div>
 
         <div class="main-content">
+            <!-- PREMIUM HEADER BANNER -->
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <img id="headerLogoImg" src="" style="height:35px; display:none; border-radius:6px; object-fit:contain;">
-                    <span style="font-size:11px; background:#dcfce7; color:#16a34a; padding:4px 10px; border-radius:20px; font-weight:800;">A.R. ERP v2.6</span>
+                    <img id="headerLogoImg" src="" style="height:38px; display:none; border-radius:8px; object-fit:contain;">
+                    <span style="font-size:11px; background:#dcfce7; color:#16a34a; padding:5px 12px; border-radius:20px; font-weight:800; border:1px solid #86efac;">A.R. ERP v2.6</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -225,7 +227,7 @@
                 </div>
 
                 <div style="position:relative; width: 180px; text-align: right;">
-                    <div style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
+                    <div style="background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; padding: 7px 16px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
                     
                     <div class="user-dropdown-menu" id="userMenuDropdown">
                         <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; font-size:11px; color:#64748b;" id="dropdownUserRole">Role: Staff</div>
@@ -408,7 +410,7 @@
             setupKeyboardNavigation();
         }
 
-        // --- DASHBOARD (FRESH DATA 0) ---
+        // --- DASHBOARD ---
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -433,10 +435,10 @@
                 '<div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">',
                 '<div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>',
                 '<div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Fresh Calculation</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Realtime Data</div>',
                 '</div>',
                 '<div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE STAFF</div>',
+                '<div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE SYSTEM</div>',
                 '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>',
                 '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>',
                 '</div>',
@@ -462,7 +464,7 @@
 
             container.innerHTML = [
                 '<div class="light-card">',
-                '<h2>💸 Expenses & Spending Management</h2>',
+                '<h2>💸 Expenses & Overhead Management</h2>',
                 '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:15px;">',
                 '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px;">',
                 '<div style="font-size:10px; color:#64748b; font-weight:800;">TOTAL SPENDING</div>',
@@ -494,7 +496,7 @@
                 '</div>',
                 '<table class="data-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>',
                 '<tbody>',
-                expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded yet.</td></tr>' :
+                expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
                 expenses.map((e, idx) => '<tr>' +
                     '<td>' + e.date + '</td><td><b>' + e.title + '</b></td><td>' + e.category + '</td><td>₹' + e.amount.toFixed(2) + '</td>' +
                     '<td>' + (canEdit ? '<button class="btn-danger nav-focusable" onclick="deleteExpenseRecord(' + idx + ')">Delete</button>' : '<span style="color:#94a3a8; font-size:10px;">No Permission</span>') + '</td>' +
@@ -606,89 +608,7 @@
             };
         };
 
-        // --- PURCHASE RETURN ---
-        window.renderPurchaseReturn = function(container) {
-            let pReturns = JSON.parse(localStorage.getItem('erp_purchase_returns')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📦 Purchase Return / Debit Note</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#ef4444; font-size:13px; margin-bottom:10px;">+ Debit Note Entry</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Original Purchase Bill No</label><input type="text" id="prBill" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Vendor Supplier</label><input type="text" id="prVen" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Item Name</label><input type="text" id="prItem" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Returned Qty</label><input type="number" id="prQty" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Debit Amount (₹)</label><input type="number" id="prAmt" class="form-control nav-focusable"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-danger nav-focusable" onclick="savePurchaseReturnEntry()" style="width:100%;">Save Debit Note</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Bill No</th><th>Vendor</th><th>Item</th><th>Qty</th><th>Debit Amount</th></tr></thead>',
-                '<tbody>',
-                pReturns.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No purchase returns found.</td></tr>' :
-                pReturns.map(pr => '<tr><td>' + pr.bill + '</td><td>' + pr.vendor + '</td><td>' + pr.item + '</td><td>' + pr.qty + '</td><td style="color:#ef4444; font-weight:800;">₹' + pr.amt.toFixed(2) + '</td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
-            window.savePurchaseReturnEntry = function() {
-                let bill = document.getElementById('prBill').value.trim();
-                let vendor = document.getElementById('prVen').value.trim();
-                let item = document.getElementById('prItem').value.trim();
-                let qty = parseInt(document.getElementById('prQty').value) || 0;
-                let amt = parseFloat(document.getElementById('prAmt').value) || 0;
-
-                if(!bill || !vendor) { alert('Bill number and Vendor required!'); return; }
-                pReturns.unshift({ bill, vendor, item, qty, amt });
-                localStorage.setItem('erp_purchase_returns', JSON.stringify(pReturns));
-                alert('Purchase Return Debit Note Saved!');
-                renderPurchaseReturn(container);
-            };
-        };
-
-        // --- REFERRAL & OFFERS ---
-        window.renderReferralOffers = function(container) {
-            let offers = JSON.parse(localStorage.getItem('erp_offers')) || [];
-
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>🎁 Referral & Active Discount Offers Manager</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Create / Edit Promotional Offer</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Offer Campaign Title</label><input type="text" id="offTitle" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Promo Code</label><input type="text" id="offCode" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Offer Benefits</label><input type="text" id="offBenefit" class="form-control nav-focusable" placeholder="e.g. 10% OFF"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePromoOffer()" style="width:100%;">Save Offer</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Campaign</th><th>Code</th><th>Offer Benefit</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No active offers configured.</td></tr>' :
-                offers.map((o, idx) => '<tr><td><b>' + o.title + '</b></td><td><code style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">' + o.code + '</code></td><td>' + o.offer + '</td><td><button class="btn-danger nav-focusable" onclick="deleteOffer(' + idx + ')">Delete</button></td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
-            window.savePromoOffer = function() {
-                let title = document.getElementById('offTitle').value.trim();
-                let code = document.getElementById('offCode').value.trim();
-                let offer = document.getElementById('offBenefit').value.trim();
-
-                if(!title || !code) { alert('Title and Code required!'); return; }
-                offers.push({ id: Date.now(), title, code, offer });
-                localStorage.setItem('erp_offers', JSON.stringify(offers));
-                renderReferralOffers(container);
-            };
-
-            window.deleteOffer = function(idx) {
-                offers.splice(idx, 1);
-                localStorage.setItem('erp_offers', JSON.stringify(offers));
-                renderReferralOffers(container);
-            };
-        };
-
-        // --- SETTINGS MODULE WITH SUPER ADMIN LOCK & USER CREATION ---
+        // --- SETTINGS & ADVANCED ROLE CREATION ---
         function renderSettingsModule(container) {
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
@@ -699,7 +619,7 @@
                 '<div style="display:flex; gap:20px; border-bottom:1px solid #e2e8f0; margin-bottom:15px; padding-bottom:8px;">',
                 '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabStore\')">Store Branding & Logo</button>',
                 '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabPrint\')">Thermal Print Settings</button>',
-                '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabUsers\')">Super Admin & Staff Users</button>',
+                '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabUsers\')">Users & Role Permissions</button>',
                 '</div>',
                 '<div id="tabStore">',
                 '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Store Profile & App Lock Passcode</h3>',
@@ -726,20 +646,29 @@
                 '</div>',
                 '<div id="tabUsers" style="display:none;">',
                 '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Create New Staff User</h3>',
+                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Create Custom Role & User Account</h3>',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>User ID *</label><input type="text" id="nuId" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Full Name *</label><input type="text" id="nuName" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Password *</label><input type="password" id="nuPass" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Role</label><select id="nuRole" class="form-control nav-focusable"><option value="Biller">Biller</option><option value="Staff">Staff</option><option value="Manager">Manager</option></select></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="createNewUser()" style="width:100%;">Create User</button></div>',
+                '<div class="form-group"><label>Custom Role Name *</label><input type="text" id="nuRole" class="form-control nav-focusable" placeholder="e.g. Biller, Accountant, Salesman"></div>',
+                '<div class="form-group" style="grid-column: span 3; margin-top:5px;">',
+                '<label>Role Permissions Matrix</label>',
+                '<div style="display:flex; gap:15px; margin-top:4px;">',
+                '<label><input type="checkbox" id="permSales" checked> POS Sales</label>',
+                '<label><input type="checkbox" id="permPurchase" checked> Purchase</label>',
+                '<label><input type="checkbox" id="permExpenses"> Expenses</label>',
+                '<label><input type="checkbox" id="permSettings"> Store Settings</label>',
                 '</div>',
                 '</div>',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Staff & Super Admin Users Directory</h3>',
-                '<table class="data-table"><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Editing Access</th><th>Action</th></tr></thead>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="createNewUserRole()" style="width:100%;">Create Role & User</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Registered System Users & Editing Rights</h3>',
+                '<table class="data-table"><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Edit Access</th><th>Action</th></tr></thead>',
                 '<tbody>',
                 users.map((u, idx) => '<tr>' +
-                    '<td><b>' + u.username + '</b></td><td>' + u.name + '</td><td>' + u.role + '</td><td><span style="color:#16a34a;">' + u.status + '</span></td>' +
+                    '<td><b>' + u.username + '</b></td><td>' + u.name + '</td><td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:700;">' + u.role + '</span></td><td><span style="color:#16a34a;">' + u.status + '</span></td>' +
                     '<td>' + (u.role === 'Super Admin' ? '<span style="color:#0284c7; font-weight:800;">Full Power (Locked)</span>' : '<input type="checkbox" ' + (u.canEdit ? 'checked' : '') + ' onchange="toggleUserEditPerm(' + idx + ', this.checked)"> Enable Edit') + '</td>' +
                     '<td>' + (u.role === 'Super Admin' ? '<span style="color:#64748b; font-size:10px;">Protected</span>' : '<button class="btn-danger nav-focusable" onclick="deleteUserAccount(' + idx + ')">Delete User</button>') + '</td>' +
                 '</tr>').join(''),
@@ -777,16 +706,16 @@
                 alert('Print Settings Updated!');
             };
 
-            window.createNewUser = function() {
+            window.createNewUserRole = function() {
                 let username = document.getElementById('nuId').value.trim();
                 let name = document.getElementById('nuName').value.trim();
                 let pass = document.getElementById('nuPass').value.trim();
-                let role = document.getElementById('nuRole').value;
+                let role = document.getElementById('nuRole').value.trim() || 'Staff';
 
-                if(!username || !name || !pass) { alert('Fill all user fields!'); return; }
-                users.push({ username, name, pass, role, status: 'Active', canEdit: false });
+                if(!username || !name || !pass) { alert('Fill required user details!'); return; }
+                users.push({ username, name, pass, role, status: 'Active', canEdit: true });
                 localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('New User Created Successfully!');
+                alert('Role & User Created Successfully!');
                 renderSettingsModule(container);
             };
 
@@ -803,40 +732,29 @@
             };
         }
 
-        // --- REPORTS ---
+        // --- REPORTS & OTHER MODULES ---
         function renderReports(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>📈 Comprehensive Business Reports & Analytics</h2>',
-                '<div style="display:flex; gap:10px; margin-bottom:15px; background:#f8fafc; padding:12px; border-radius:12px; border:1px solid #e2e8f0;">',
-                '<select id="repFilterType" class="form-control nav-focusable" style="width:150px;"><option value="all">All Days</option><option value="today">Today</option><option value="custom">Custom Range</option></select>',
-                '<input type="date" id="fromDate" class="form-control nav-focusable" style="width:160px;">',
-                '<input type="date" id="toDate" class="form-control nav-focusable" style="width:160px;">',
-                '<button class="btn-primary nav-focusable" onclick="filterReportData()">Filter Report</button>',
-                '</div>',
                 '<table class="data-table"><thead><tr><th>Invoice No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>',
-                '<tbody id="reportTbody">',
+                '<tbody>',
                 invs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No fresh invoice records found.</td></tr>' :
                 invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
                 '</tbody></table>',
                 '</div>'
             ].join('');
-
-            window.filterReportData = function() {
-                let tbody = document.getElementById('reportTbody');
-                tbody.innerHTML = invs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No fresh invoice records found.</td></tr>' :
-                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join('');
-            };
         }
 
-        // Remaining modules helper
         window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Pharmacy Assistant</h2><p>AI Assistant Active.</p></div>'; };
         window.renderStockAudit = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Items & Inventory</h2><p>Inventory active.</p></div>'; };
         window.renderParties = function(container) { container.innerHTML = '<div class="light-card"><h2>👥 Customers & Vendors</h2><p>Ledgers active.</p></div>'; };
         window.renderSales = function(container) { container.innerHTML = '<div class="light-card"><h2>🛒 POS Counter</h2><p>POS Billing active.</p></div>'; };
-        window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Returns</h2><p>Returns module active.</p></div>'; };
+        window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Returns</h2><p>Returns active.</p></div>'; };
+        window.renderPurchaseReturn = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Purchase Returns</h2><p>Debit note active.</p></div>'; };
         window.renderUdhar = function(container) { container.innerHTML = '<div class="light-card"><h2>📈 Fund Flow & Udhar</h2><p>Fund Flow active.</p></div>'; };
+        window.renderReferralOffers = function(container) { container.innerHTML = '<div class="light-card"><h2>🎁 Referral Offers</h2><p>Offers active.</p></div>'; };
         window.renderBackupModule = function(container) { container.innerHTML = '<div class="light-card"><h2>💾 Backup & Restore</h2><p>Backup active.</p></div>'; };
     </script>
 </body>
