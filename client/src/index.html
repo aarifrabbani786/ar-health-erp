@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP - Enterprise Healthcare & Pharmacy Management</title>
+    <title>A.R. ERP BILLING SOFTWARE - Enterprise Management Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #060913; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
@@ -31,7 +31,7 @@
             font-size: 20px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
         .brand-text {
-            font-size: 24px; font-weight: 900; letter-spacing: 1.2px;
+            font-size: 20px; font-weight: 900; letter-spacing: 1px;
             background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #34d399 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -42,13 +42,13 @@
             border-radius: 20px; width: 100%; max-width: 420px;
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9); border: 1px solid rgba(56, 189, 248, 0.25);
         }
-        .auth-card h2 { font-size: 22px; color: #fff; margin-bottom: 6px; font-weight: 800; text-align: center; }
+        .auth-card h2 { font-size: 20px; color: #fff; margin-bottom: 6px; font-weight: 800; text-align: center; }
         .auth-card .subtitle { font-size: 12px; color: #38bdf8; text-align: center; margin-bottom: 24px; font-weight: 600; }
 
         /* APP LAYOUT */
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; }
         #sidebar-container {
-            width: 260px; background: #0b0f19; color: #cbd5e1; flex-shrink: 0;
+            width: 270px; background: #0b0f19; color: #cbd5e1; flex-shrink: 0;
             border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; height: 100vh;
         }
         .sidebar-brand { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; }
@@ -111,7 +111,7 @@
             <div>
                 <div class="brand-border-logo">
                     <div class="brand-icon">AR</div>
-                    <div class="brand-text">A.R. ERP</div>
+                    <div class="brand-text">A.R. ERP BILLING SOFTWARE</div>
                 </div>
                 <div style="font-size:13px; color:#38bdf8; font-weight:600; margin-top:12px;">Enterprise Pharmacy & Medical Management Suite</div>
             </div>
@@ -150,13 +150,13 @@
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
                     <div class="brand-icon">AR</div>
-                    <div class="brand-text" style="font-size:20px;">A.R. ERP</div>
+                    <div class="brand-text" style="font-size:15px;">A.R. ERP BILLING SOFTWARE</div>
                 </div>
             </div>
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Analytics Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('ved_ai')" id="nav-ved_ai"><span>🤖</span> Ved AI Assistant</a></li>
-                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales Counter & POS</a></li>
+                <li><a class="menu-link" onclick="loadModule('ar_ai')" id="nav-ar_ai"><span>🤖</span> AR AI Smart Assistant</a></li>
+                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> AR Bill Sales & POS</a></li>
                 <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Medicine Returns</a></li>
                 <li><a class="menu-link" onclick="loadModule('patient_reports')" id="nav-patient_reports"><span>📑</span> Patient Sales & Returns</a></li>
                 <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>🔍</span> Stock Audit Master</a></li>
@@ -171,7 +171,7 @@
 
         <div class="main-content">
             <div class="top-banner">
-                <div style="width: 140px; display:flex; align-items:center; gap:8px;">
+                <div style="width: 160px; display:flex; align-items:center; gap:8px;">
                     <img id="headerLogoImg" src="" style="height:32px; display:none; border-radius:6px;">
                     <span style="font-size:11px; background:rgba(56,189,248,0.15); color:#38bdf8; padding:4px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-weight:700;">A.R. ERP v2.6</span>
                 </div>
@@ -395,7 +395,7 @@
             workspace.innerHTML = ""; 
 
             if (m === 'sales') renderSales(workspace);
-            else if (m === 'ved_ai') renderVedAI(workspace);
+            else if (m === 'ar_ai') renderARAI(workspace);
             else if (m === 'returns') renderReturns(workspace);
             else if (m === 'patient_reports') renderPatientReports(workspace);
             else if (m === 'dashboard') renderDashboard(workspace);
@@ -425,7 +425,7 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📊 Business Analytics Dashboard</h2>
+                    <h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>
                     <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
                         <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4); padding:18px; border-radius:14px;">
                             <div style="font-size:11.5px; color:#38bdf8; font-weight:700;">TOTAL GROSS SALES</div>
@@ -452,23 +452,23 @@
             `;
         }
 
-        // --- 2. VED AI ASSISTANT ---
-        function renderVedAI(container) {
+        // --- 2. AR AI SMART ASSISTANT ---
+        function renderARAI(container) {
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🤖 Ved AI Smart Pharmacy Assistant</h2>
+                    <h2>🤖 AR AI Smart Pharmacy Assistant</h2>
                     <p style="font-size:12px; color:#94a3b8; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>
                     <div style="background:rgba(30,41,59,0.5); padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">
-                        <div style="color:#38bdf8; font-weight:600;">🤖 Ved AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
+                        <div style="color:#38bdf8; font-weight:600;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="aiInput" class="form-control" placeholder="Ask e.g. 'Aaj ki total sale kitni hai?'">
-                        <button class="btn-primary" onclick="askVedAI()">Send Query</button>
+                        <button class="btn-primary" onclick="askARAI()">Send Query</button>
                     </div>
                 </div>
             `;
 
-            window.askVedAI = function() {
+            window.askARAI = function() {
                 let q = document.getElementById('aiInput').value.trim().toLowerCase();
                 let chat = document.getElementById('aiChatArea');
                 if(!q) return;
@@ -484,12 +484,12 @@
                 else ans = `Response: Store status clear hai. Total Invoices: ${invs.length}, Total Medicines Managed: ${meds.length}.`;
 
                 chat.innerHTML += `<div style="margin-top:10px; color:#fff;"><b>You:</b> ${q}</div>`;
-                chat.innerHTML += `<div style="margin-top:4px; color:#38bdf8;"><b>Ved AI:</b> ${ans}</div>`;
+                chat.innerHTML += `<div style="margin-top:4px; color:#38bdf8;"><b>AR AI:</b> ${ans}</div>`;
                 document.getElementById('aiInput').value = "";
             };
         }
 
-        // --- 3. SALES COUNTER ---
+        // --- 3. AR BILL SALES COUNTER ---
         let currentSalesCart = [];
 
         window.renderSales = function(container) {
@@ -502,7 +502,7 @@
             container.innerHTML = `
                 <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:14px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <h2 style="font-size:15px; margin:0;">🛒 Sales Counter Module</h2>
+                        <h2 style="font-size:15px; margin:0;">🛒 AR Bill Sales & POS Module</h2>
                         <div style="display:flex; gap:8px;">
                             <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:5px 10px; background:#818cf8;">🔍 Find Substitute</button>
                             <button class="btn-success" onclick="openQuickAddModal()" style="font-size:11.5px; padding:5px 10px;">+ Quick Add Stock</button>
