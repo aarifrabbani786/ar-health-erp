@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.R. ERP BILLING SOFTWARE - Enterprise Medical Suite</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 700; }
         body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
-        /* LUXURY LOGIN PAGE OVERLAY */
+        /* BOLD TYPOGRAPHY & FORM STYLING */
+        b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger { font-weight: 900 !important; }
+        
+        /* LUXURY LOGIN OVERLAY WITH ENQUIRY FORM */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(2,132,199,0.90) 100%),
                         url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80') center/cover;
-            display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
+            display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px; overflow-y: auto;
         }
         .luxury-login-card {
-            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(30px); padding: 40px; border-radius: 28px; width: 100%; max-width: 440px;
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(30px); padding: 35px; border-radius: 28px; width: 100%; max-width: 480px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.3); border: 2px solid rgba(56, 189, 248, 0.4);
             animation: slideInLogin 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -24,19 +27,21 @@
             from { opacity: 0; transform: translateX(-90px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        .luxury-login-card h2 { font-size: 22px; color: #0f172a; margin-bottom: 6px; font-weight: 900; text-align: center; }
-        .luxury-login-card .subtitle { font-size: 12.5px; color: #0284c7; text-align: center; margin-bottom: 24px; font-weight: 700; }
+        .luxury-login-card h2 { font-size: 22px; color: #0f172a; margin-bottom: 4px; text-align: center; }
+        .luxury-login-card .subtitle { font-size: 12.5px; color: #0284c7; text-align: center; margin-bottom: 20px; }
         
-        .input-group-lux { position: relative; margin-bottom: 18px; }
-        .input-group-lux label { display: block; font-size: 10.5px; font-weight: 800; color: #475569; margin-bottom: 5px; text-transform: uppercase; }
-        .input-group-lux input {
-            width: 100%; padding: 12px 16px; padding-right: 45px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 14px; color: #0f172a; outline: none; transition: all 0.25s;
+        .input-group-lux { position: relative; margin-bottom: 14px; }
+        .input-group-lux label { display: block; font-size: 11px; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
+        .input-group-lux input, .input-group-lux textarea {
+            width: 100%; padding: 11px 14px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 13px; color: #0f172a; outline: none; transition: all 0.25s; font-weight: 800;
         }
-        .input-group-lux input:focus, .input-group-lux input:hover {
+        .input-group-lux input:focus, .input-group-lux textarea:focus {
             border-color: #0284c7; background: #ffffff; box-shadow: 0 0 15px rgba(2, 132, 199, 0.25);
         }
-        .eye-toggle-btn { position: absolute; right: 14px; top: 32px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
-        .enquiry-box { margin-top: 20px; padding: 12px; background: #f0f9ff; border: 1px dashed #0284c7; border-radius: 12px; text-align: center; font-size: 11.5px; color: #0369a1; }
+        .eye-toggle-btn { position: absolute; right: 14px; top: 30px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
+        
+        .enquiry-card-section { margin-top: 20px; padding-top: 18px; border-top: 2px dashed #cbd5e1; }
+        .enquiry-card-section h3 { font-size: 13.5px; color: #0284c7; margin-bottom: 12px; text-align: center; }
 
         /* APP LAYOUT & SIDEBAR */
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f1f5f9; }
@@ -50,89 +55,108 @@
             display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px;
             background: rgba(15, 23, 42, 0.9); border: 2px solid #22c55e; border-radius: 14px; box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
         }
-        .brand-icon { width: 30px; height: 30px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; color: #fff; }
-        .brand-text { font-size: 13px; font-weight: 900; color: #22c55e; letter-spacing: 0.5px; }
+        .brand-icon { width: 30px; height: 30px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; }
+        .brand-text { font-size: 13px; color: #22c55e; letter-spacing: 0.5px; }
 
         .sidebar-menu { list-style: none; padding: 10px; margin: 0; flex: 1; }
         .sidebar-menu li { margin-bottom: 3px; }
         .sidebar-menu a, .menu-dropdown-toggle {
-            display: flex; align-items: center; padding: 9px 12px; color: #94a3b8;
-            text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12px; gap: 10px; cursor: pointer;
+            display: flex; align-items: center; padding: 9px 12px; color: #cbd5e1;
+            text-decoration: none; border-radius: 10px; font-size: 12px; gap: 10px; cursor: pointer;
             transition: all 0.2s ease; width: 100%; background: none; border: none; text-align: left;
         }
         .sidebar-menu a:hover, .sidebar-menu a.active, .menu-dropdown-toggle:hover {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
         }
         .submenu-list { padding-left: 20px; list-style: none; display: none; margin-top: 2px; }
-        .submenu-list li a { font-size: 11px; padding: 6px 10px; color: #94a3b8; }
+        .submenu-list li a { font-size: 11px; padding: 6px 10px; color: #cbd5e1; }
         .submenu-list li a:hover { color: #fff; background: rgba(34,197,94,0.2); }
 
         .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; }
         
-        /* PREMIUM HEADER DESIGN */
+        /* PREMIUM HEADER BANNER */
         .top-banner {
             background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 14px 24px; border-radius: 16px; border: 1.5px solid #bbf7d0;
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 6px 20px rgba(22, 163, 74, 0.08);
             position: relative; z-index: 1000;
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 17px; font-weight: 900; color: #0f172a; letter-spacing: 0.6px; text-transform: uppercase; }
-        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; font-weight: 700; }
+        .centered-agency-details h1 { font-size: 17px; color: #0f172a; letter-spacing: 0.6px; text-transform: uppercase; }
+        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; }
 
         .light-card { 
             background: #ffffff; color: #0f172a; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
-            border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            border: 1.5px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
-        .light-card h2 { font-size: 15px; color: #0f172a; margin-bottom: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .light-card h2 { font-size: 15px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
         .form-group { margin-bottom: 6px; }
-        .form-group label { display: block; font-size: 10px; color: #475569; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; transition: all 0.2s; }
+        .form-group label { display: block; font-size: 10.5px; color: #475569; margin-bottom: 3px; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; transition: all 0.2s; font-weight: 800; }
         .form-control:focus { border-color: #16a34a; background: #fff; box-shadow: 0 0 10px rgba(22, 163, 74, 0.2); }
         
-        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
-        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-        .data-table th, .data-table td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #334155; }
-        .data-table th { color: #475569; font-weight: 800; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; position: sticky; top: 0; }
+        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; font-weight: 800; }
+        .data-table th { color: #475569; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; position: sticky; top: 0; }
         .data-table tr:hover td { background: #f0fdf4; }
 
         .user-dropdown-menu {
-            position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #cbd5e1;
+            position: absolute; right: 0; top: 48px; background: #ffffff; border: 1.5px solid #cbd5e1;
             border-radius: 12px; width: 220px; box-shadow: 0 20px 30px rgba(0,0,0,0.15); z-index: 9999999; display: none; padding: 8px 0;
         }
-        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .user-dropdown-menu a { display: block; padding: 10px 16px; color: #334155; text-decoration: none; font-size: 12px; cursor: pointer; }
         .user-dropdown-menu a:hover { background: #f0fdf4; color: #16a34a; }
     </style>
 </head>
 <body>
 
-    <!-- LUXURY LOGIN OVERLAY -->
+    <!-- LUXURY LOGIN & ENQUIRY OVERLAY -->
     <div id="auth-overlay" style="display: none;">
         <div class="luxury-login-card">
             <h2>A.R. ERP BILLING SOFTWARE</h2>
-            <div class="subtitle">Medical Enterprise Management System</div>
+            <div class="subtitle">Medical Enterprise Management Suite</div>
             
+            <!-- LOGIN SECTION -->
             <div class="input-group-lux">
-                <label>USER ID</label>
+                <label>USER ID *</label>
                 <input type="text" id="loginUser" class="nav-focusable" placeholder="Enter USER ID (e.g. admin)" autofocus>
             </div>
 
             <div class="input-group-lux">
-                <label>Password</label>
+                <label>Password *</label>
                 <input type="password" id="loginPass" class="nav-focusable" placeholder="••••••••">
                 <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
             </div>
 
-            <button onclick="handleLogin()" class="btn-success nav-focusable" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 10px;">🔒 Secure Login</button>
+            <button onclick="handleLogin()" class="btn-success nav-focusable" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 5px;">🔒 Secure Login</button>
             
-            <div class="enquiry-box">
-                <b>📞 Helpline & License Support</b><br>
-                Chairman: DRx. Aarif Rabbani<br>
-                Hotline: +91 9005554424 | Maharajganj, UP
+            <!-- ENQUIRY REQUEST FORM -->
+            <div class="enquiry-card-section">
+                <h3>📝 Submit License / Support Enquiry Request</h3>
+                <div class="input-group-lux">
+                    <label>Owner Name *</label>
+                    <input type="text" id="eqOwner" placeholder="Enter Owner Name">
+                </div>
+                <div class="input-group-lux">
+                    <label>Shop / Agency Name *</label>
+                    <input type="text" id="eqShop" placeholder="Enter Shop Name">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="input-group-lux">
+                        <label>Contact Mobile *</label>
+                        <input type="text" id="eqPhone" placeholder="Mobile Number">
+                    </div>
+                    <div class="input-group-lux">
+                        <label>City / Location *</label>
+                        <input type="text" id="eqLoc" placeholder="Location">
+                    </div>
+                </div>
+                <button onclick="submitEnquiryForm()" class="btn-primary" style="width: 100%; padding: 10px; font-size: 12.5px;">📩 Submit Enquiry Request</button>
             </div>
         </div>
     </div>
@@ -188,25 +212,7 @@
                 </li>
 
                 <li><a class="menu-link nav-focusable" onclick="loadModule('reports')" id="nav-reports"><span>📈</span> Reports & Analysis</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('dashboard')" id="nav-account"><span>📖</span> Account Book</a></li>
-
-                <!-- Extra Tools Dropdown -->
-                <li>
-                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('toolsSub')"><span>🔧</span> Extra Tools <span style="margin-left:auto;">▼</span></button>
-                    <ul class="submenu-list" id="toolsSub">
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Barcode Generator</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Import Item</a></li>
-                        <li><a onclick="loadModule('parties')" class="nav-focusable">Import Parties</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Update Items In Bulk</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Bulk Stock Adjustment</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Export Item</a></li>
-                        <li><a onclick="loadModule('parties')" class="nav-focusable">Export Parties</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Bulk Delete</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Recycle Bin</a></li>
-                        <li><a onclick="loadModule('audit')" class="nav-focusable">Merge Utility</a></li>
-                    </ul>
-                </li>
-
+                <li><a class="menu-link nav-focusable" onclick="loadModule('enquiries')" id="nav-enquiries"><span>📋</span> Enquiries Received</a></li>
                 <li><a class="menu-link nav-focusable" onclick="loadModule('backup')" id="nav-backup"><span>💾</span> Backup & Restore</a></li>
                 <li><a class="menu-link nav-focusable" onclick="loadModule('referral')" id="nav-referral"><span>🎁</span> Referral & Offers</a></li>
                 <li><a class="menu-link nav-focusable" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings</a></li>
@@ -218,7 +224,7 @@
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
                     <img id="headerLogoImg" src="" style="height:38px; display:none; border-radius:8px; object-fit:contain;">
-                    <span style="font-size:11px; background:#dcfce7; color:#16a34a; padding:5px 12px; border-radius:20px; font-weight:800; border:1px solid #86efac;">A.R. ERP v2.6</span>
+                    <span style="font-size:11px; background:#dcfce7; color:#16a34a; padding:5px 12px; border-radius:20px; border:1px solid #86efac;">A.R. ERP v2.6</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -227,7 +233,7 @@
                 </div>
 
                 <div style="position:relative; width: 180px; text-align: right;">
-                    <div style="background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; padding: 7px 16px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
+                    <div style="background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; padding: 7px 16px; border-radius: 20px; font-size: 11.5px; cursor:pointer; display:inline-block; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
                     
                     <div class="user-dropdown-menu" id="userMenuDropdown">
                         <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; font-size:11px; color:#64748b;" id="dropdownUserRole">Role: Staff</div>
@@ -244,8 +250,8 @@
 
     <!-- CHANGE PASSWORD MODAL -->
     <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
-        <div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.1);">
-            <h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">🔑 Change Account Password</h3>
+        <div style="background:#fff; border:1.5px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom:15px; color:#0f172a;">🔑 Change Account Password</h3>
             <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control nav-focusable"></div>
             <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control nav-focusable"></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
@@ -365,6 +371,35 @@
             }
         }
 
+        function submitEnquiryForm() {
+            let ownerName = document.getElementById('eqOwner').value.trim();
+            let shopName = document.getElementById('eqShop').value.trim();
+            let phone = document.getElementById('eqPhone').value.trim();
+            let location = document.getElementById('eqLoc').value.trim();
+
+            if(!ownerName || !shopName || !phone) {
+                alert('Owner Name, Shop Name and Contact Phone required!');
+                return;
+            }
+
+            let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
+            enquiries.unshift({
+                id: Date.now(),
+                date: new Date().toLocaleString('en-GB'),
+                ownerName,
+                shopName,
+                phone,
+                location
+            });
+            localStorage.setItem('erp_enquiries', JSON.stringify(enquiries));
+
+            alert('Enquiry Request Submitted Successfully!');
+            document.getElementById('eqOwner').value = '';
+            document.getElementById('eqShop').value = '';
+            document.getElementById('eqPhone').value = '';
+            document.getElementById('eqLoc').value = '';
+        }
+
         function logoutUser() {
             localStorage.removeItem('erp_active_session');
             location.reload();
@@ -404,6 +439,7 @@
             else if (m === 'udhar') renderUdhar(workspace);
             else if (m === 'referral') renderReferralOffers(workspace);
             else if (m === 'expenses') renderExpenses(workspace);
+            else if (m === 'enquiries') renderEnquiriesModule(workspace);
             else if (m === 'settings') renderSettingsModule(workspace);
             else if (m === 'backup') renderBackupModule(workspace);
             else renderDashboard(workspace);
@@ -414,6 +450,7 @@
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
+            let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
             let totalGrossSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
             let totalReturnAmt = returns.reduce((a, b) => a + (b.refundTotal || 0), 0);
             let netRevenue = totalGrossSales - totalReturnAmt;
@@ -422,38 +459,66 @@
                 '<div class="light-card">',
                 '<h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>',
                 '<div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">',
-                '<div style="background:#f0f9ff; border:1px solid #bae6fd; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#0284c7; font-weight:800;">TOTAL GROSS SALES</div>',
-                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">₹' + totalGrossSales.toFixed(2) + '</div>',
+                '<div style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#0284c7;">TOTAL GROSS SALES</div>',
+                '<div style="font-size:24px; color:#0f172a; margin-top:6px;">₹' + totalGrossSales.toFixed(2) + '</div>',
                 '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ' + invs.length + '</div>',
                 '</div>',
-                '<div style="background:#fef2f2; border:1px solid #fecaca; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#ef4444; font-weight:800;">RETURNS DEDUCTED</div>',
-                '<div style="font-size:24px; font-weight:900; color:#ef4444; margin-top:6px;">- ₹' + totalReturnAmt.toFixed(2) + '</div>',
+                '<div style="background:#fef2f2; border:1.5px solid #fecaca; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#ef4444;">RETURNS DEDUCTED</div>',
+                '<div style="font-size:24px; color:#ef4444; margin-top:6px;">- ₹' + totalReturnAmt.toFixed(2) + '</div>',
                 '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ' + returns.length + '</div>',
                 '</div>',
-                '<div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>',
-                '<div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
+                '<div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#16a34a;">NET REVENUE</div>',
+                '<div style="font-size:24px; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
                 '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Realtime Data</div>',
                 '</div>',
-                '<div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE SYSTEM</div>',
-                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>',
+                '<div style="background:#faf5ff; border:1.5px solid #e9d5ff; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#9333ea;">ENQUIRIES RECEIVED</div>',
+                '<div style="font-size:24px; color:#0f172a; margin-top:6px;">' + enquiries.length + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Pending Leads</div>',
                 '</div>',
                 '</div>',
                 '</div>'
             ].join('');
         }
 
-        /* --- 2. POS SALES MODULE --- */
+        /* --- 2. ENQUIRIES DIRECTORY MODULE --- */
+        function renderEnquiriesModule(container) {
+            let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📋 Enquiries Received & Leads Directory</h2>',
+                '<table class="data-table"><thead><tr><th>Date & Time</th><th>Owner Name</th><th>Shop / Agency</th><th>Contact Phone</th><th>Location</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                enquiries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiry requests received yet.</td></tr>' :
+                enquiries.map((eq, idx) => '<tr>' +
+                    '<td>' + eq.date + '</td>' +
+                    '<td><b>' + eq.ownerName + '</b></td>' +
+                    '<td>' + eq.shopName + '</td>' +
+                    '<td><a href="tel:' + eq.phone + '" style="color:#0284c7;">' + eq.phone + '</a></td>' +
+                    '<td>' + eq.location + '</td>' +
+                    '<td><button class="btn-danger nav-focusable" onclick="deleteEnquiryRecord(' + idx + ')">Delete</button></td>' +
+                '</tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.deleteEnquiryRecord = function(idx) {
+                enquiries.splice(idx, 1);
+                localStorage.setItem('erp_enquiries', JSON.stringify(enquiries));
+                renderEnquiriesModule(container);
+            };
+        }
+
+        /* --- 3. POS SALES MODULE --- */
         function renderSales(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>🛒 POS Counter Billing System</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control nav-focusable"></div>',
@@ -469,7 +534,7 @@
                 '<table class="data-table"><thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>',
                 '<tbody>',
                 invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
-                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td>' + (i.item || 'Medicine') + '</td><td>' + (i.batch || '-') + '</td><td>' + (i.qty || 1) + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
+                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td>' + (i.item || 'Medicine') + '</td><td>' + (i.batch || '-') + '</td><td>' + (i.qty || 1) + '</td><td style="color:#16a34a;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
                 '</tbody></table>',
                 '</div>'
             ].join('');
@@ -493,13 +558,13 @@
             };
         }
 
-        /* --- 3. ITEMS & INVENTORY MODULE --- */
+        /* --- 4. ITEMS & INVENTORY MODULE --- */
         function renderStockAudit(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>📦 Items Master & Stock Inventory</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Add New Medicine Stock Item</h3>',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control nav-focusable"></div>',
@@ -538,13 +603,13 @@
             };
         }
 
-        /* --- 4. CUSTOMERS & VENDORS MODULE --- */
+        /* --- 5. CUSTOMERS & VENDORS --- */
         function renderParties(container) {
             let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>👥 Customers & Vendor Ledgers</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Register New Party / Vendor</h3>',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Party / Vendor Name *</label><input type="text" id="ptName" class="form-control nav-focusable"></div>',
@@ -579,47 +644,19 @@
             };
         }
 
-        /* --- 5. EXPENSES MODULE --- */
+        /* --- 6. EXPENSES --- */
         function renderExpenses(container) {
-            let expCats = [
-                { name: 'Office Rent', total: 0 },
-                { name: 'Electricity Bill', total: 0 },
-                { name: 'Travel Expense', total: 0 },
-                { name: 'Tea & Snacks', total: 0 },
-                { name: 'Repair & Maint.', total: 0 },
-                { name: 'Other Expense', total: 0 }
-            ];
-
+            let expCats = ['Office Rent', 'Electricity Bill', 'Travel Expense', 'Tea & Snacks', 'Repair & Maint.', 'Other Expense'];
             let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
             let totalSpending = expenses.reduce((a, b) => a + b.amount, 0);
 
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>💸 Expenses & Overhead Management</h2>',
-                '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:15px;">',
-                '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px;">',
-                '<div style="font-size:10px; color:#64748b; font-weight:800;">TOTAL SPENDING</div>',
-                '<div style="font-size:20px; font-weight:900; color:#0f172a; margin-top:4px;">₹' + totalSpending.toFixed(2) + '</div>',
-                '</div>',
-                '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px;">',
-                '<div style="font-size:10px; color:#64748b; font-weight:800;">TOTAL PAID</div>',
-                '<div style="font-size:20px; font-weight:900; color:#16a34a; margin-top:4px;">₹' + totalSpending.toFixed(2) + '</div>',
-                '</div>',
-                '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px;">',
-                '<div style="font-size:10px; color:#64748b; font-weight:800;">UNPAID / DUE</div>',
-                '<div style="font-size:20px; font-weight:900; color:#ef4444; margin-top:4px;">₹0.00</div>',
-                '</div>',
-                '</div>',
-                '<div style="display:flex; gap:15px;">',
-                '<div style="width:250px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px;">',
-                '<h3 style="font-size:12px; color:#475569; margin-bottom:10px;">CATEGORIES</h3>',
-                expCats.map(c => '<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #cbd5e1; font-size:11.5px;"><span>' + c.name + '</span><b>₹' + c.total.toFixed(2) + '</b></div>').join(''),
-                '</div>',
-                '<div style="flex:1;">',
-                '<div style="background:#f8fafc; padding:12px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:12px;">',
+                '<div style="background:#f8fafc; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:12px;">',
                 '<h3 style="font-size:12px; color:#0284c7; margin-bottom:8px;">+ Record New Expense</h3>',
                 '<div class="form-grid">',
-                '<div class="form-group"><label>Category</label><select id="exCatSelect" class="form-control nav-focusable">' + expCats.map(c => '<option value="' + c.name + '">' + c.name + '</option>').join('') + '</select></div>',
+                '<div class="form-group"><label>Category</label><select id="exCatSelect" class="form-control nav-focusable">' + expCats.map(c => '<option value="' + c + '">' + c + '</option>').join('') + '</select></div>',
                 '<div class="form-group"><label>Description</label><input type="text" id="exTitleInput" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmtInput" class="form-control nav-focusable"></div>',
                 '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addExpenseRecord()" style="width:100%;">+ Save Expense</button></div>',
@@ -633,8 +670,6 @@
                     '<td><button class="btn-danger nav-focusable" onclick="deleteExpenseRecord(' + idx + ')">Delete</button></td>' +
                 '</tr>').join(''),
                 '</tbody></table>',
-                '</div>',
-                '</div>',
                 '</div>'
             ].join('');
 
@@ -656,20 +691,18 @@
             };
         }
 
-        /* --- 6. PURCHASE MODULE --- */
+        /* --- 7. PURCHASE --- */
         window.renderPurchase = function(container) {
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-            let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [
-                { name: 'A R PHARMA AGENCY', phone: '9005554424', gstin: '09AAAAA0000A1Z5' }
-            ];
+            let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [{ name: 'A R PHARMA AGENCY', phone: '9005554424', gstin: '09AAAAA0000A1Z5' }];
 
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>🛍️ Vendor Purchase Invoices Entry</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Vendor Supplier *</label><select id="pVendor" class="form-control nav-focusable">' + vendors.map(v => '<option value="' + v.name + '">' + v.name + '</option>').join('') + '</select></div>',
-                '<div class="form-group"><label>Invoice No (Compulsory) *</label><input type="text" id="pBillNo" class="form-control nav-focusable" value="PUR-' + Math.floor(1000 + Math.random()*9000) + '"></div>',
+                '<div class="form-group"><label>Invoice No *</label><input type="text" id="pBillNo" class="form-control nav-focusable" value="PUR-' + Math.floor(1000 + Math.random()*9000) + '"></div>',
                 '<div class="form-group"><label>Medicine Name *</label><input type="text" id="pItem" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Batch No</label><input type="text" id="pBatch" class="form-control nav-focusable" value="B-101"></div>',
                 '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="pPrice" class="form-control nav-focusable"></div>',
@@ -709,17 +742,16 @@
             };
         };
 
-        /* --- 7. FUND FLOW & UDHAR MODULE --- */
+        /* --- 8. FUND FLOW --- */
         function renderUdhar(container) {
             let udharList = JSON.parse(localStorage.getItem('erp_udhar_entries')) || [];
             container.innerHTML = [
                 '<div class="light-card">',
-                '<h2>📈 Fund Flow & Payment In/Out Ledger</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Record Payment Transaction</h3>',
+                '<h2>📈 Fund Flow & Payment Ledger</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Party Name *</label><input type="text" id="udName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Transaction Type</label><select id="udType" class="form-control nav-focusable"><option value="Payment In">Payment In (Received)</option><option value="Payment Out">Payment Out (Given)</option></select></div>',
+                '<div class="form-group"><label>Type</label><select id="udType" class="form-control nav-focusable"><option value="Payment In">Payment In (Received)</option><option value="Payment Out">Payment Out (Given)</option></select></div>',
                 '<div class="form-group"><label>Amount (₹)</label><input type="number" id="udAmt" class="form-control nav-focusable"></div>',
                 '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addUdharEntry()" style="width:100%;">Record Payment</button></div>',
                 '</div>',
@@ -750,26 +782,24 @@
             };
         }
 
-        /* --- 8. REFERRAL OFFERS MODULE --- */
+        /* --- 9. REFERRAL OFFERS --- */
         function renderReferralOffers(container) {
             let offers = JSON.parse(localStorage.getItem('erp_offers')) || [];
-
             container.innerHTML = [
                 '<div class="light-card">',
-                '<h2>🎁 Referral & Discount Campaign Manager</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Create Promo Offer</h3>',
+                '<h2>🎁 Referral & Discount Offers</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Campaign Title</label><input type="text" id="offTitle" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Promo Code</label><input type="text" id="offCode" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Discount Offer</label><input type="text" id="offBenefit" class="form-control nav-focusable" placeholder="e.g. 10% OFF"></div>',
+                '<div class="form-group"><label>Offer Benefit</label><input type="text" id="offBenefit" class="form-control nav-focusable" placeholder="e.g. 10% OFF"></div>',
                 '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePromoOffer()" style="width:100%;">Save Offer</button></div>',
                 '</div>',
                 '</div>',
                 '<table class="data-table"><thead><tr><th>Campaign</th><th>Code</th><th>Benefit</th><th>Action</th></tr></thead>',
                 '<tbody>',
-                offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No offers configured.</td></tr>' :
-                offers.map((o, idx) => '<tr><td><b>' + o.title + '</b></td><td><code style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">' + o.code + '</code></td><td>' + o.offer + '</td><td><button class="btn-danger nav-focusable" onclick="deleteOffer(' + idx + ')">Delete</button></td></tr>').join(''),
+                offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No active offers configured.</td></tr>' :
+                offers.map((o, idx) => '<tr><td><b>' + o.title + '</b></td><td><code>' + o.code + '</code></td><td>' + o.offer + '</td><td><button class="btn-danger nav-focusable" onclick="deleteOffer(' + idx + ')">Delete</button></td></tr>').join(''),
                 '</tbody></table>',
                 '</div>'
             ].join('');
@@ -792,12 +822,12 @@
             };
         }
 
-        /* --- 9. BACKUP & RESTORE MODULE --- */
+        /* --- 10. BACKUP & RESTORE --- */
         function renderBackupModule(container) {
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>💾 Database Backup & Cloud Restore Center</h2>',
-                '<div style="background:#f8fafc; padding:20px; border-radius:14px; border:1px solid #e2e8f0;">',
+                '<div style="background:#f8fafc; padding:20px; border-radius:14px; border:1.5px solid #e2e8f0;">',
                 '<p style="font-size:12.5px; color:#475569; margin-bottom:15px;">Export or restore complete store data (Invoices, Medicines, Purchases, Users & Settings).</p>',
                 '<div style="display:flex; gap:12px;">',
                 '<button class="btn-primary nav-focusable" onclick="exportDataBackup()">📥 Export Full Backup JSON</button>',
@@ -815,7 +845,8 @@
                     invoices: JSON.parse(localStorage.getItem('erp_invoices')),
                     medicines: JSON.parse(localStorage.getItem('erp_medicines')),
                     vendors: JSON.parse(localStorage.getItem('erp_vendors')),
-                    expenses: JSON.parse(localStorage.getItem('erp_expenses'))
+                    expenses: JSON.parse(localStorage.getItem('erp_expenses')),
+                    enquiries: JSON.parse(localStorage.getItem('erp_enquiries'))
                 };
                 let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
                 let dlAnchor = document.createElement('a');
@@ -841,6 +872,7 @@
                         if(parsed.medicines) localStorage.setItem('erp_medicines', JSON.stringify(parsed.medicines));
                         if(parsed.vendors) localStorage.setItem('erp_vendors', JSON.stringify(parsed.vendors));
                         if(parsed.expenses) localStorage.setItem('erp_expenses', JSON.stringify(parsed.expenses));
+                        if(parsed.enquiries) localStorage.setItem('erp_enquiries', JSON.stringify(parsed.enquiries));
                         alert('Database Restored Successfully!');
                         location.reload();
                     } catch(err) { alert('Invalid Backup File!'); }
@@ -849,7 +881,7 @@
             };
         }
 
-        /* --- 10. SETTINGS & USER ROLES MODULE --- */
+        /* --- 11. SETTINGS & USER ROLES --- */
         function renderSettingsModule(container) {
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
@@ -857,7 +889,7 @@
             container.innerHTML = [
                 '<div class="light-card">',
                 '<h2>⚙️ Complete Store Settings & Control Center</h2>',
-                '<div style="display:flex; gap:20px; border-bottom:1px solid #e2e8f0; margin-bottom:15px; padding-bottom:8px;">',
+                '<div style="display:flex; gap:20px; border-bottom:1.5px solid #e2e8f0; margin-bottom:15px; padding-bottom:8px;">',
                 '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabStore\')">Store Branding & Logo</button>',
                 '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabPrint\')">Thermal Print Settings</button>',
                 '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabUsers\')">Users & Role Permissions</button>',
@@ -867,14 +899,10 @@
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control nav-focusable" value="' + (s.agencyName || '') + '"></div>',
                 '<div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control nav-focusable" value="' + (s.chairman || '') + '"></div>',
-                '<div class="form-group"><label>DL No (Sample: UP-2026-MED-000000)</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || 'UP-2026-MED-000000') + '"></div>',
-                '<div class="form-group"><label>GSTIN (Sample: 09AAAAA0000A1Z5)</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '09AAAAA0000A1Z5') + '"></div>',
+                '<div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || 'UP-2026-MED-000000') + '"></div>',
+                '<div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '09AAAAA0000A1Z5') + '"></div>',
                 '<div class="form-group"><label>App Lock Passcode</label><input type="password" id="stPasscode" class="form-control nav-focusable" value="' + (s.lockPasscode || '1234') + '"></div>',
-                '<div class="form-group"><label>Shop Logo URL Image Link</label><input type="text" id="stLogo" class="form-control nav-focusable" value="' + (s.logoUrl || '') + '"></div>',
-                '<div class="form-group" style="grid-column: span 2; display:flex; align-items:center; gap:10px; margin-top:10px;">',
-                '<input type="checkbox" id="stShowDlGst" ' + (s.showDlGst ? 'checked' : '') + ' style="width:18px; height:18px;">',
-                '<label style="margin:0; font-size:12px;">Display DL & GSTIN on Header Top Banner</label>',
-                '</div>',
+                '<div class="form-group"><label>Shop Logo Image URL</label><input type="text" id="stLogo" class="form-control nav-focusable" value="' + (s.logoUrl || '') + '"></div>',
                 '</div>',
                 '<button class="btn-success nav-focusable" onclick="saveStoreBranding()">Save Store Branding</button>',
                 '</div>',
@@ -886,13 +914,13 @@
                 '<button class="btn-success nav-focusable" onclick="savePrintSettings()">Save Print Configuration</button>',
                 '</div>',
                 '<div id="tabUsers" style="display:none;">',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
                 '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Create Custom Role & User Account</h3>',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>User ID *</label><input type="text" id="nuId" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Full Name *</label><input type="text" id="nuName" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Password *</label><input type="password" id="nuPass" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Custom Role Name *</label><input type="text" id="nuRole" class="form-control nav-focusable" placeholder="e.g. Biller, Accountant, Salesman"></div>',
+                '<div class="form-group"><label>Custom Role Name *</label><input type="text" id="nuRole" class="form-control nav-focusable" placeholder="e.g. Biller, Accountant"></div>',
                 '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="createNewUserRole()" style="width:100%;">Create Role & User</button></div>',
                 '</div>',
                 '</div>',
@@ -900,8 +928,8 @@
                 '<table class="data-table"><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Edit Access</th><th>Action</th></tr></thead>',
                 '<tbody>',
                 users.map((u, idx) => '<tr>' +
-                    '<td><b>' + u.username + '</b></td><td>' + u.name + '</td><td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:700;">' + u.role + '</span></td><td><span style="color:#16a34a;">' + u.status + '</span></td>' +
-                    '<td>' + (u.role === 'Super Admin' ? '<span style="color:#0284c7; font-weight:800;">Full Power (Locked)</span>' : '<input type="checkbox" ' + (u.canEdit ? 'checked' : '') + ' onchange="toggleUserEditPerm(' + idx + ', this.checked)"> Enable Edit') + '</td>' +
+                    '<td><b>' + u.username + '</b></td><td>' + u.name + '</td><td>' + u.role + '</td><td><span style="color:#16a34a;">' + u.status + '</span></td>' +
+                    '<td>' + (u.role === 'Super Admin' ? '<span style="color:#0284c7;">Full Power (Locked)</span>' : '<input type="checkbox" ' + (u.canEdit ? 'checked' : '') + ' onchange="toggleUserEditPerm(' + idx + ', this.checked)"> Enable Edit') + '</td>' +
                     '<td>' + (u.role === 'Super Admin' ? '<span style="color:#64748b; font-size:10px;">Protected</span>' : '<button class="btn-danger nav-focusable" onclick="deleteUserAccount(' + idx + ')">Delete User</button>') + '</td>' +
                 '</tr>').join(''),
                 '</tbody></table>',
@@ -922,7 +950,6 @@
                 s.gstin = document.getElementById('stGstin').value;
                 s.lockPasscode = document.getElementById('stPasscode').value;
                 s.logoUrl = document.getElementById('stLogo').value;
-                s.showDlGst = document.getElementById('stShowDlGst').checked;
 
                 localStorage.setItem('erp_settings', JSON.stringify(s));
                 applyBrandingSettings();
@@ -964,7 +991,7 @@
             };
         }
 
-        /* --- 11. REPORTS MODULE --- */
+        /* --- 12. REPORTS MODULE --- */
         function renderReports(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = [
@@ -973,7 +1000,7 @@
                 '<table class="data-table"><thead><tr><th>Invoice No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>',
                 '<tbody>',
                 invs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No fresh invoice records found.</td></tr>' :
-                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
+                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
                 '</tbody></table>',
                 '</div>'
             ].join('');
