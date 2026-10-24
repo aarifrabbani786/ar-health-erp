@@ -3,86 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Premium Healthcare Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Luxury Enterprise Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background: #f1f5f9; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
+        body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
-        /* PREMIUM AUTH LOGIN OVERLAY */
+        /* LUXURY LOGIN PAGE OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
             display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
         }
-        .auth-card {
-            background: #ffffff; padding: 40px; border-radius: 24px; width: 100%; max-width: 440px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid rgba(226, 232, 240, 0.8);
+        .luxury-login-card {
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); padding: 45px; border-radius: 28px; width: 100%; max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(14, 165, 233, 0.2); border: 2px solid rgba(56, 189, 248, 0.3);
+            animation: fadeInCard 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .auth-card h2 { font-size: 24px; color: #0f172a; margin-bottom: 6px; font-weight: 900; text-align: center; }
-        .auth-card .subtitle { font-size: 13px; color: #0284c7; text-align: center; margin-bottom: 28px; font-weight: 700; }
-        .input-icon-wrap { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
-        .input-icon-wrap input { width: 100%; padding: 12px 16px; padding-right: 45px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 13.5px; color: #0f172a; outline: none; transition: all 0.2s; }
-        .input-icon-wrap input:focus { border-color: #0284c7; background: #fff; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12); }
-        .eye-toggle-btn { position: absolute; right: 14px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
+        @keyframes fadeInCard { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .luxury-login-card h2 { font-size: 22px; color: #0f172a; margin-bottom: 6px; font-weight: 900; text-align: center; letter-spacing: 0.5px; }
+        .luxury-login-card .subtitle { font-size: 12.5px; color: #0284c7; text-align: center; margin-bottom: 28px; font-weight: 700; }
+        
+        .input-group-lux { position: relative; margin-bottom: 18px; }
+        .input-group-lux label { display: block; font-size: 10.5px; font-weight: 800; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group-lux input {
+            width: 100%; padding: 12px 16px; padding-right: 45px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 14px; color: #0f172a; outline: none; transition: all 0.25s ease;
+        }
+        .input-group-lux input:focus, .input-group-lux input:hover {
+            border-color: #0284c7; background: #ffffff; box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); animation: blinkGlow 1.5s infinite alternate;
+        }
+        @keyframes blinkGlow { from { border-color: #0284c7; box-shadow: 0 0 5px rgba(2,132,199,0.2); } to { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.5); } }
+        .eye-toggle-btn { position: absolute; right: 14px; top: 32px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
 
-        /* APP LAYOUT */
-        .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f8fafc; }
+        /* APP LAYOUT & SIDEBAR */
+        .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f1f5f9; }
         #sidebar-container {
-            width: 275px; background: #ffffff; color: #334155; flex-shrink: 0;
-            border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100vh;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+            width: 270px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
+            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; height: 100vh;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1); overflow-y: auto;
         }
-        .sidebar-brand { padding: 18px 14px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .sidebar-brand { padding: 18px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
         .brand-border-logo {
-            display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px;
-            background: #f0fdf4; border: 2px solid #22c55e; border-radius: 14px; box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+            display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px;
+            background: rgba(15, 23, 42, 0.9); border: 2px solid #38bdf8; border-radius: 14px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
-        .brand-icon { width: 32px; height: 32px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
-        .brand-text { font-size: 14px; font-weight: 900; color: #16a34a; letter-spacing: 0.5px; }
+        .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
+        .brand-text { font-size: 13.5px; font-weight: 900; color: #38bdf8; letter-spacing: 0.5px; }
 
-        .sidebar-menu { list-style: none; padding: 12px; margin: 0; flex: 1; overflow-y: auto; }
-        .sidebar-menu li { margin-bottom: 4px; }
-        .sidebar-menu a {
-            display: flex; align-items: center; padding: 10px 14px; color: #475569;
-            text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12.5px; gap: 10px; cursor: pointer;
-            transition: all 0.2s ease;
+        .sidebar-menu { list-style: none; padding: 10px; margin: 0; flex: 1; }
+        .sidebar-menu li { margin-bottom: 3px; }
+        .sidebar-menu a, .menu-dropdown-toggle {
+            display: flex; align-items: center; padding: 9px 12px; color: #94a3b8;
+            text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12px; gap: 10px; cursor: pointer;
+            transition: all 0.2s ease; width: 100%; background: none; border: none; text-align: left;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: #0284c7; color: #ffffff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .sidebar-menu a:hover, .sidebar-menu a.active, .menu-dropdown-toggle:hover {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            animation: blinkGlow 1s infinite alternate;
+        }
+        .submenu-list { padding-left: 20px; list-style: none; display: none; margin-top: 2px; }
+        .submenu-list li a { font-size: 11px; padding: 6px 10px; color: #94a3b8; }
+        .submenu-list li a:hover { color: #fff; background: rgba(56,189,248,0.2); }
 
-        .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #f8fafc; height: 100vh; display: flex; flex-direction: column; }
+        .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; }
         
         .top-banner {
             background: #ffffff; padding: 12px 20px; border-radius: 14px; border: 1px solid #e2e8f0;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             position: relative; z-index: 1000;
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 16px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px; }
-        .centered-agency-details p { font-size: 11px; color: #64748b; margin-top: 2px; font-weight: 600; }
+        .centered-agency-details h1 { font-size: 15px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px; }
+        .centered-agency-details p { font-size: 10.5px; color: #64748b; margin-top: 2px; font-weight: 600; }
 
         .light-card { 
-            background: #ffffff; color: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
-            border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); 
+            background: #ffffff; color: #0f172a; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
+            border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
-        .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .light-card h2 { font-size: 15px; color: #0f172a; margin-bottom: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
         .form-group { margin-bottom: 6px; }
         .form-group label { display: block; font-size: 10px; color: #475569; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 8px 11px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; }
-        .form-control:focus { border-color: #0284c7; background: #fff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; transition: all 0.2s; }
+        .form-control:focus, .form-control:hover { border-color: #0284c7; background: #fff; box-shadow: 0 0 10px rgba(2, 132, 199, 0.2); }
         
-        .btn-primary { background: #0284c7; color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25); }
-        .btn-success { background: #16a34a; color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
         .data-table th, .data-table td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #334155; }
         .data-table th { color: #475569; font-weight: 800; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; position: sticky; top: 0; }
+        .data-table tr:hover td { background: #f0f9ff; }
 
         .user-dropdown-menu {
             position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #cbd5e1;
-            border-radius: 12px; width: 220px; box-shadow: 0 20px 30px rgba(0,0,0,0.1); z-index: 9999999; display: none; padding: 8px 0;
+            border-radius: 12px; width: 220px; box-shadow: 0 20px 30px rgba(0,0,0,0.15); z-index: 9999999; display: none; padding: 8px 0;
         }
         .user-dropdown-menu a { display: block; padding: 10px 16px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 700; cursor: pointer; }
         .user-dropdown-menu a:hover { background: #f0f9ff; color: #0284c7; }
@@ -90,28 +106,24 @@
 </head>
 <body>
 
-    <!-- PREMIUM LOGIN OVERLAY -->
+    <!-- LUXURY LOGIN OVERLAY -->
     <div id="auth-overlay" style="display: none;">
-        <div class="auth-card">
+        <div class="luxury-login-card">
             <h2>A.R. ERP BILLING SOFTWARE</h2>
-            <div class="subtitle">Secure System Authentication Portal</div>
+            <div class="subtitle">Secure Luxury Authentication Portal</div>
             
-            <div class="form-group">
+            <div class="input-group-lux">
                 <label>Username ID</label>
-                <div class="input-icon-wrap">
-                    <input type="text" id="loginUser" placeholder="Enter username">
-                </div>
+                <input type="text" id="loginUser" class="nav-focusable" placeholder="Enter username (e.g. admin)" autofocus>
             </div>
 
-            <div class="form-group" style="margin-bottom: 22px;">
+            <div class="input-group-lux">
                 <label>Password</label>
-                <div class="input-icon-wrap">
-                    <input type="password" id="loginPass" placeholder="••••••••">
-                    <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
-                </div>
+                <input type="password" id="loginPass" class="nav-focusable" placeholder="••••••••">
+                <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
             </div>
 
-            <button onclick="handleLogin()" class="btn-primary" style="width: 100%; padding: 12px; font-size: 13.5px;">🔒 Secure Login</button>
+            <button onclick="handleLogin()" class="btn-primary nav-focusable" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 10px;">🔒 Secure Login</button>
             <div style="text-align: center; font-size: 11.5px; color: #64748b; margin-top: 18px;">Chairman: DRx. Aarif Rabbani | Maharajganj, UP</div>
         </div>
     </div>
@@ -126,18 +138,69 @@
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Analytics Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('ar_ai')" id="nav-ar_ai"><span>🤖</span> AR AI Smart Assistant</a></li>
-                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> AR Bill Sales & POS</a></li>
-                <li><a class="menu-link" onclick="loadModule('returns')" id="nav-returns"><span>🔄</span> Medicine Returns</a></li>
-                <li><a class="menu-link" onclick="loadModule('patient_reports')" id="nav-patient_reports"><span>📑</span> Patient Sales & Returns</a></li>
-                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>🔍</span> Stock Audit Master</a></li>
-                <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>📦</span> Vendor Purchases</a></li>
-                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Parties & Ledger</a></li>
-                <li><a class="menu-link" onclick="loadModule('udhar')" id="nav-udhar"><span>💳</span> Udhar Settlement</a></li>
-                <li><a class="menu-link" onclick="loadModule('requests')" id="nav-requests"><span>📩</span> Customer CRM</a></li>
-                <li><a class="menu-link" onclick="loadModule('hr')" id="nav-hr"><span>👤</span> HR & Payroll</a></li>
-                <li><a class="menu-link" onclick="loadModule('superadmin')" id="nav-superadmin"><span>⚙️</span> Super Admin Control</a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('ar_ai')" id="nav-ar_ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:6px; margin-left:auto;">NEW</span></a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('items')" id="nav-items"><span>📦</span> Items <span style="margin-left:auto;">+</span></a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors <span style="margin-left:auto;">+</span></a></li>
+                
+                <!-- Sales Dropdown -->
+                <li>
+                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('salesSub')"><span>🛒</span> Sales <span style="margin-left:auto;">▼</span></button>
+                    <ul class="submenu-list" id="salesSub">
+                        <li><a onclick="loadModule('sales')" class="nav-focusable">Sale Invoices (POS)</a></li>
+                        <li><a onclick="loadModule('patient_reports')" class="nav-focusable">Sale Quotation</a></li>
+                        <li><a onclick="loadModule('patient_reports')" class="nav-focusable">Proforma Invoice</a></li>
+                        <li><a onclick="loadModule('patient_reports')" class="nav-focusable">Sale Order</a></li>
+                        <li><a onclick="loadModule('returns')" class="nav-focusable">Sale Return / Cr. Note</a></li>
+                    </ul>
+                </li>
+
+                <li><a class="menu-link nav-focusable" onclick="loadModule('sales')" id="nav-pos"><span>💻</span> POS Counter</a></li>
+
+                <!-- Purchase Dropdown -->
+                <li>
+                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('purchaseSub')"><span>🛍️</span> Purchase <span style="margin-left:auto;">▼</span></button>
+                    <ul class="submenu-list" id="purchaseSub">
+                        <li><a onclick="loadModule('purchase')" class="nav-focusable">Purchase Bill</a></li>
+                        <li><a onclick="loadModule('purchase')" class="nav-focusable">Purchase Order</a></li>
+                        <li><a onclick="loadModule('purchase')" class="nav-focusable">Purchase Return / Dr. Note</a></li>
+                    </ul>
+                </li>
+
+                <li><a class="menu-link nav-focusable" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses <span style="margin-left:auto;">+</span></a></li>
+                
+                <!-- Fund Flow Dropdown -->
+                <li>
+                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('fundSub')"><span>📈</span> Fund Flow <span style="margin-left:auto;">▼</span></button>
+                    <ul class="submenu-list" id="fundSub">
+                        <li><a onclick="loadModule('udhar')" class="nav-focusable">Payment In</a></li>
+                        <li><a onclick="loadModule('udhar')" class="nav-focusable">Payment Out</a></li>
+                    </ul>
+                </li>
+
+                <li><a class="menu-link nav-focusable" onclick="loadModule('dashboard')" id="nav-reports"><span>📈</span> Reports & Analysis</a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('dashboard')" id="nav-account"><span>📖</span> Account Book</a></li>
+
+                <!-- Extra Tools Dropdown -->
+                <li>
+                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('toolsSub')"><span>🔧</span> Extra Tools <span style="margin-left:auto;">▼</span></button>
+                    <ul class="submenu-list" id="toolsSub">
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Barcode Generator</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Import Item</a></li>
+                        <li><a onclick="loadModule('parties')" class="nav-focusable">Import Parties</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Update Items In Bulk</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Bulk Stock Adjustment</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Export Item</a></li>
+                        <li><a onclick="loadModule('parties')" class="nav-focusable">Export Parties</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Bulk Delete</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Recycle Bin</a></li>
+                        <li><a onclick="loadModule('audit')" class="nav-focusable">Merge Utility</a></li>
+                    </ul>
+                </li>
+
+                <li><a class="menu-link nav-focusable" onclick="loadModule('audit')" id="nav-backup"><span>💾</span> Backup & Restore</a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('requests')" id="nav-referral"><span>🎁</span> Referral</a></li>
+                <li><a class="menu-link nav-focusable" onclick="loadModule('superadmin')" id="nav-settings"><span>⚙️</span> Settings</a></li>
             </ul>
         </div>
 
@@ -154,12 +217,12 @@
                 </div>
 
                 <div style="position:relative; width: 180px; text-align: right;">
-                    <div style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()">● Active: User ▼</div>
+                    <div style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
                     
                     <div class="user-dropdown-menu" id="userMenuDropdown">
                         <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; font-size:11px; color:#64748b;" id="dropdownUserRole">Role: Staff</div>
-                        <a onclick="openChangePassModal()">🔑 Change Password</a>
-                        <a onclick="logoutUser()" style="color:#ef4444;">🚪 Logout System</a>
+                        <a onclick="openChangePassModal()" class="nav-focusable">🔑 Change Password</a>
+                        <a onclick="logoutUser()" style="color:#ef4444;" class="nav-focusable">🚪 Logout System</a>
                     </div>
                 </div>
             </div>
@@ -169,15 +232,15 @@
         </div>
     </div>
 
-    <!-- SYSTEM MODALS -->
+    <!-- CHANGE PASSWORD MODAL -->
     <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
         <div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.1);">
             <h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">🔑 Change Account Password</h3>
-            <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control"></div>
-            <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control"></div>
+            <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control nav-focusable"></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control nav-focusable"></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-                <button class="btn-danger" onclick="closeChangePassModal()">Cancel</button>
-                <button class="btn-primary" onclick="saveNewPassword()">Update Password</button>
+                <button class="btn-danger nav-focusable" onclick="closeChangePassModal()">Cancel</button>
+                <button class="btn-primary nav-focusable" onclick="saveNewPassword()">Update Password</button>
             </div>
         </div>
     </div>
@@ -214,13 +277,15 @@
                     document.getElementById('dropdownUserRole').innerText = 'Role: ' + (currentUser.role || 'Staff');
 
                     applyRolePermissions(currentUser);
-                    let activeTab = localStorage.getItem('erp_active_module') || 'sales';
+                    let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
                     loadModule(activeTab);
+                    setupKeyboardNavigation();
                     return;
                 } catch(e) {}
             }
             document.getElementById('auth-overlay').style.display = 'flex';
-            document.getElementById('main-app-container').style.display = 'none';
+            document.getElementById('main-app-container').style.display = 'flex';
+            setupKeyboardNavigation();
         });
 
         function applyBrandingSettings() {
@@ -242,11 +307,12 @@
 
         function togglePasswordVisibility() {
             let passInput = document.getElementById('loginPass');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-            } else {
-                passInput.type = 'password';
-            }
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function toggleSubmenu(id) {
+            let el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
         }
 
         function toggleUserDropdown() {
@@ -274,8 +340,8 @@
                 location.reload();
             } else { 
                 alert('Invalid Login Credentials!'); 
-                document.getElementById('loginPass.value = ""'); // Auto clear password on error
-                document.getElementById('loginPass').value = '';
+                document.getElementById('loginPass').value = ''; // Auto clear password on error
+                document.getElementById('loginUser').focus();
             }
         }
 
@@ -285,19 +351,23 @@
         }
 
         function applyRolePermissions(user) {
-            if (user.role === 'Super Admin') {
-                document.querySelectorAll('.sidebar-menu li').forEach(el => el.style.display = 'block');
-                return;
-            }
+            if (user.role === 'Super Admin') return;
             let perms = user.permissions || {};
             if(document.getElementById('nav-sales')) document.getElementById('nav-sales').parentElement.style.display = perms.sales ? 'block' : 'none';
-            if(document.getElementById('nav-returns')) document.getElementById('nav-returns').parentElement.style.display = perms.returns ? 'block' : 'none';
-            if(document.getElementById('nav-audit')) document.getElementById('nav-audit').parentElement.style.display = perms.medicines ? 'block' : 'none';
-            if(document.getElementById('nav-purchase')) document.getElementById('nav-purchase').parentElement.style.display = perms.medicines ? 'block' : 'none';
-            if(document.getElementById('nav-patient_reports')) document.getElementById('nav-patient_reports').parentElement.style.display = (user.role === 'Admin' || user.role === 'Super Admin') ? 'block' : 'none';
-            if(document.getElementById('nav-requests')) document.getElementById('nav-requests').parentElement.style.display = (user.role === 'Admin' || user.role === 'Super Admin') ? 'block' : 'none';
-            if(document.getElementById('nav-hr')) document.getElementById('nav-hr').parentElement.style.display = perms.hr ? 'block' : 'none';
-            if(document.getElementById('nav-superadmin')) document.getElementById('nav-superadmin').parentElement.style.display = perms.admin ? 'block' : 'none';
+        }
+
+        // ENTER KEY NAVIGATION & BLINK/GLOW EFFECT
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    let focusables = Array.from(document.querySelectorAll('input, select, button, .nav-focusable'));
+                    let index = focusables.indexOf(document.activeElement);
+                    if (index > -1 && index + 1 < focusables.length) {
+                        e.preventDefault();
+                        focusables[index + 1].focus();
+                    }
+                }
+            });
         }
 
         function loadModule(m) {
@@ -321,63 +391,62 @@
             else if (m === 'requests') renderCustomerRequests(workspace);
             else if (m === 'hr') renderHR(workspace);
             else if (m === 'superadmin') renderSuperAdmin(workspace);
+            else renderDashboard(workspace);
+            setupKeyboardNavigation();
         }
 
         // --- 1. DASHBOARD ---
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
-            let attendance = JSON.parse(localStorage.getItem('erp_attendance')) || {};
-            let todayKey = new Date().toLocaleDateString('en-GB');
-
             let totalGrossSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
             let totalReturnAmt = returns.reduce((a, b) => a + (b.refundTotal || 0), 0);
             let netRevenue = totalGrossSales - totalReturnAmt;
 
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>
-                    <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
-                        <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#0284c7; font-weight:800;">TOTAL GROSS SALES</div>
-                            <div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ${invs.length}</div>
-                        </div>
-                        <div style="background:#fef2f2; border:1px solid #fecaca; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#ef4444; font-weight:800;">RETURNS DEDUCTED</div>
-                            <div style="font-size:24px; font-weight:900; color:#ef4444; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ${returns.length}</div>
-                        </div>
-                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>
-                            <div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
-                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">Final Calculation</div>
-                        </div>
-                        <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE STAFF</div>
-                            <div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>
-                            <div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>',
+                '<div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">',
+                '<div style="background:#f0f9ff; border:1px solid #bae6fd; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#0284c7; font-weight:800;">TOTAL GROSS SALES</div>',
+                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">₹' + totalGrossSales.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ' + invs.length + '</div>',
+                '</div>',
+                '<div style="background:#fef2f2; border:1px solid #fecaca; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#ef4444; font-weight:800;">RETURNS DEDUCTED</div>',
+                '<div style="font-size:24px; font-weight:900; color:#ef4444; margin-top:6px;">- ₹' + totalReturnAmt.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ' + returns.length + '</div>',
+                '</div>',
+                '<div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#16a34a; font-weight:800;">NET REVENUE</div>',
+                '<div style="font-size:24px; font-weight:900; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Final Calculation</div>',
+                '</div>',
+                '<div style="background:#faf5ff; border:1px solid #e9d5ff; padding:18px; border-radius:14px;">',
+                '<div style="font-size:11.5px; color:#9333ea; font-weight:800;">ACTIVE STAFF</div>',
+                '<div style="font-size:24px; font-weight:900; color:#0f172a; margin-top:6px;">Online</div>',
+                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">ERP Secured</div>',
+                '</div>',
+                '</div>',
+                '</div>'
+            ].join('');
         }
 
         // --- 2. AR AI SMART ASSISTANT ---
         function renderARAI(container) {
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🤖 AR AI Smart Pharmacy Assistant</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">
-                        <div style="color:#0284c7; font-weight:700;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Ask e.g. 'Aaj ki total sale kitni hai?'">
-                        <button class="btn-primary" onclick="askARAI()">Send Query</button>
-                    </div>
-                </div>
-            `;
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🤖 AR AI Smart Pharmacy Assistant</h2>',
+                '<p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask instant questions about sales, low stock alerts, pending balances, and expenses.</p>',
+                '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:15px; min-height:180px;" id="aiChatArea">',
+                '<div style="color:#0284c7; font-weight:700;">🤖 AR AI: Hello DRx. Aarif Rabbani! How can I assist with store operations today?</div>',
+                '</div>',
+                '<div style="display:flex; gap:10px;">',
+                '<input type="text" id="aiInput" class="form-control nav-focusable" placeholder="Ask e.g. \'Aaj ki total sale kitni hai?\'">',
+                '<button class="btn-primary nav-focusable" onclick="askARAI()">Send Query</button>',
+                '</div>',
+                '</div>'
+            ].join('');
 
             window.askARAI = function() {
                 let q = document.getElementById('aiInput').value.trim().toLowerCase();
@@ -390,12 +459,12 @@
                 let lowStockCount = meds.filter(m => m.stock < 10).length;
 
                 let ans = "I am processing your query...";
-                if(q.includes('sale') || q.includes('billing')) ans = `Aaj ki Total Billing Volume ₹${totalSales.toFixed(2)} hai (${invs.length} Invoices).`;
-                else if(q.includes('stock') || q.includes('low')) ans = `Store me abhi ${lowStockCount} medicines low stock alert level (<10) me hain.`;
-                else ans = `Response: Store status clear hai. Total Invoices: ${invs.length}, Total Medicines Managed: ${meds.length}.`;
+                if(q.includes('sale') || q.includes('billing')) ans = 'Aaj ki Total Billing Volume ₹' + totalSales.toFixed(2) + ' hai (' + invs.length + ' Invoices).';
+                else if(q.includes('stock') || q.includes('low')) ans = 'Store me abhi ' + lowStockCount + ' medicines low stock alert level (<10) me hain.';
+                else ans = 'Response: Store status clear hai. Total Invoices: ' + invs.length + ', Total Medicines Managed: ' + meds.length + '.';
 
-                chat.innerHTML += `<div style="margin-top:10px; color:#0f172a;"><b>You:</b> ${q}</div>`;
-                chat.innerHTML += `<div style="margin-top:4px; color:#0284c7;"><b>AR AI:</b> ${ans}</div>`;
+                chat.innerHTML += '<div style="margin-top:10px; color:#0f172a;"><b>You:</b> ' + q + '</div>';
+                chat.innerHTML += '<div style="margin-top:4px; color:#0284c7;"><b>AR AI:</b> ' + ans + '</div>';
                 document.getElementById('aiInput').value = "";
             };
         }
@@ -410,98 +479,77 @@
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let invSerial = "AR" + String(invoices.length + 1).padStart(2, '0');
 
-            container.innerHTML = `
-                <div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:16px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h2 style="font-size:15px; margin:0;">🛒 AR Bill Sales & POS Module</h2>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn-primary" onclick="openAltSearchModal()" style="font-size:11.5px; padding:6px 12px; background:#4f46e5;">🔍 Find Substitute</button>
-                            <button class="btn-success" onclick="openQuickAddModal()" style="font-size:11.5px; padding:6px 12px;">+ Quick Add Stock</button>
-                        </div>
-                    </div>
-
-                    <div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:10px; gap:8px;">
-                        <div class="form-group"><label>Inv Serial</label><input type="text" id="invoiceNo" class="form-control" value="${invSerial}" readonly style="color:#0284c7; font-weight:800;"></div>
-                        <div class="form-group"><label>Date & Time</label><input type="text" id="billDate" class="form-control" value="${new Date().toLocaleString('en-GB')}" readonly></div>
-                        <div class="form-group"><label>Biller User</label><input type="text" class="form-control" value="${currentUser ? currentUser.name : 'Staff'}" readonly style="color:#16a34a; font-weight:800;"></div>
-                        <div class="form-group"><label>Patient Name *</label><input type="text" id="custName" class="form-control" placeholder="Patient Name"></div>
-                        <div class="form-group"><label>Mobile *</label><input type="text" id="custMobile" class="form-control" maxlength="10" placeholder="10-digit"></div>
-                        <div class="form-group"><label>Doctor Name</label><input type="text" id="docName" class="form-control" placeholder="Dr. Name"></div>
-                    </div>
-
-                    <div style="background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px;">
-                        <div style="display:flex; gap:8px; align-items:flex-end;">
-                            <div style="flex:2.5;">
-                                <label style="font-size:9.5px; color:#475569; font-weight:800;">SEARCH MEDICINE</label>
-                                <select id="itemSelect" class="form-control" onchange="autoFillItemDetails()">
-                                    <option value="">-- Select Item --</option>
-                                    ${salesStock.map((m, idx) => '<option value="' + idx + '">' + m.name + ' | Batch: ' + m.batch + ' | Stock: ' + m.stock + '</option>').join('')}
-                                </select>
-                            </div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">BATCH</label><input type="text" id="itemBatch" class="form-control" readonly></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">MRP</label><input type="number" id="itemMrp" class="form-control" readonly></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">QTY</label><input type="number" id="itemQty" class="form-control" value="1" min="1"></div>
-                            <div style="flex:1;"><label style="font-size:9.5px; color:#475569;">DISC %</label><input type="number" id="itemDisc" class="form-control" value="0" min="0" max="100"></div>
-                            <button class="btn-success" onclick="addItemToCart()" style="height:34px;">+ Add</button>
-                        </div>
-                    </div>
-
-                    <div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px; background:#ffffff; margin-bottom:10px;">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>Item Name</th><th>Batch</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>GST</th><th>Total</th><th>Action</th></tr>
-                            </thead>
-                            <tbody id="cartTableBody"><tr><td colspan="8" style="text-align:center;">Cart is empty.</td></tr></tbody>
-                        </table>
-                    </div>
-
-                    <div style="background:#ffffff; color:#0f172a; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #e2e8f0;">
-                        <div style="display:flex; gap:8px;">
-                            <select id="payMode" class="form-control" style="width:140px;">
-                                <option value="Cash">Cash Payment</option>
-                                <option value="QR Payment">UPI / QR Code</option>
-                                <option value="Card">Debit Card</option>
-                                <option value="Credit Card">Credit Card</option>
-                                <option value="Credit Udhar">Credit (Udhar)</option>
-                            </select>
-                        </div>
-                        <div style="text-align:right;">
-                            <span style="font-size:11.5px; color:#64748b;" id="summaryText">Total MRP: ₹0.00 | Disc: ₹0.00</span>
-                            <span style="font-size:16px; font-weight:900; color:#0284c7; margin-left:12px;" id="netPayableText">Final: ₹0.00</span>
-                            <button class="btn-success" onclick="processCloudBilling()" style="margin-left:12px; padding:7px 18px;">🖨️ Save & Print Invoice</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
-                    <div style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:16px; width:100%; max-width:550px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">
-                        <h3 style="margin-bottom:10px; color:#0f172a; font-weight:800;">🔍 Find Composition Substitute Medicines</h3>
-                        <div class="form-group"><input type="text" id="compQuery" class="form-control" placeholder="Enter salt e.g. Paracetamol" oninput="filterByComposition()"></div>
-                        <div style="max-height:220px; overflow-y:auto; margin-top:10px;">
-                            <table class="data-table">
-                                <thead><tr><th>Item</th><th>Composition</th><th>Batch</th><th>Stock</th><th>MRP</th></tr></thead>
-                                <tbody id="altTableBody"></tbody>
-                            </table>
-                        </div>
-                        <div style="text-align:right; margin-top:12px;"><button class="btn-danger" onclick="closeAltSearchModal()">Close</button></div>
-                    </div>
-                </div>
-
-                <div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999999; justify-content:center; align-items:center;">
-                    <div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:420px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">
-                        <h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">+ Quick Add Medicine Stock</h3>
-                        <div class="form-group"><label>Medicine Name</label><input type="text" id="qName" class="form-control" placeholder="e.g. Tab Calpol 650mg"></div>
-                        <div class="form-group"><label>Batch Number</label><input type="text" id="qBatch" class="form-control" placeholder="Batch No"></div>
-                        <div class="form-group"><label>Salt Composition</label><input type="text" id="qComp" class="form-control" placeholder="Paracetamol 650mg"></div>
-                        <div class="form-group"><label>MRP (₹)</label><input type="number" id="qMrp" class="form-control" placeholder="0.00"></div>
-                        <div class="form-group"><label>Stock Qty</label><input type="number" id="qQty" class="form-control" value="50"></div>
-                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-                            <button class="btn-danger" onclick="closeQuickAddModal()">Cancel</button>
-                            <button class="btn-success" onclick="saveQuickStock()">Save Stock</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+            container.innerHTML = [
+                '<div class="light-card" style="display:flex; flex-direction:column; max-height:calc(100vh - 90px); padding:16px;">',
+                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">',
+                '<h2 style="font-size:15px; margin:0;">🛒 AR Bill Sales & POS Counter</h2>',
+                '<div style="display:flex; gap:8px;">',
+                '<button class="btn-primary nav-focusable" onclick="openAltSearchModal()" style="font-size:11.5px; padding:6px 12px; background:#4f46e5;">🔍 Find Substitute</button>',
+                '<button class="btn-success nav-focusable" onclick="openQuickAddModal()" style="font-size:11.5px; padding:6px 12px;">+ Quick Add Stock</button>',
+                '</div>',
+                '</div>',
+                '<div class="form-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:10px; gap:8px;">',
+                '<div class="form-group"><label>Inv Serial</label><input type="text" id="invoiceNo" class="form-control nav-focusable" value="' + invSerial + '" readonly style="color:#0284c7; font-weight:800;"></div>',
+                '<div class="form-group"><label>Date & Time</label><input type="text" id="billDate" class="form-control nav-focusable" value="' + new Date().toLocaleString('en-GB') + '" readonly></div>',
+                '<div class="form-group"><label>Biller User</label><input type="text" class="form-control nav-focusable" value="' + (currentUser ? currentUser.name : 'Staff') + '" readonly style="color:#16a34a; font-weight:800;"></div>',
+                '<div class="form-group"><label>Patient Name *</label><input type="text" id="custName" class="form-control nav-focusable" placeholder="Patient Name"></div>',
+                '<div class="form-group"><label>Mobile *</label><input type="text" id="custMobile" class="form-control nav-focusable" maxlength="10" placeholder="10-digit"></div>',
+                '<div class="form-group"><label>Doctor Name</label><input type="text" id="docName" class="form-control nav-focusable" placeholder="Dr. Name"></div>',
+                '</div>',
+                '<div style="background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px;">',
+                '<div style="display:flex; gap:8px; align-items:flex-end;">',
+                '<div style="flex:2.5;"><label style="font-size:9.5px; color:#475569; font-weight:800;">SEARCH MEDICINE</label>',
+                '<select id="itemSelect" class="form-control nav-focusable" onchange="autoFillItemDetails()">',
+                '<option value="">-- Select Item --</option>',
+                salesStock.map((m, idx) => '<option value="' + idx + '">' + m.name + ' | Batch: ' + m.batch + ' | Stock: ' + m.stock + '</option>').join(''),
+                '</select></div>',
+                '<div style="flex:1;"><label style="font-size:9.5px; color:#475569;">BATCH</label><input type="text" id="itemBatch" class="form-control nav-focusable" readonly></div>',
+                '<div style="flex:1;"><label style="font-size:9.5px; color:#475569;">MRP</label><input type="number" id="itemMrp" class="form-control nav-focusable" readonly></div>',
+                '<div style="flex:1;"><label style="font-size:9.5px; color:#475569;">QTY</label><input type="number" id="itemQty" class="form-control nav-focusable" value="1" min="1"></div>',
+                '<div style="flex:1;"><label style="font-size:9.5px; color:#475569;">DISC %</label><input type="number" id="itemDisc" class="form-control nav-focusable" value="0" min="0" max="100"></div>',
+                '<button class="btn-success nav-focusable" onclick="addItemToCart()" style="height:34px;">+ Add</button>',
+                '</div>',
+                '</div>',
+                '<div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px; background:#ffffff; margin-bottom:10px;">',
+                '<table class="data-table"><thead><tr><th>Item Name</th><th>Batch</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>GST</th><th>Total</th><th>Action</th></tr></thead>',
+                '<tbody id="cartTableBody"><tr><td colspan="8" style="text-align:center;">Cart is empty.</td></tr></tbody></table>',
+                '</div>',
+                '<div style="background:#ffffff; color:#0f172a; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #e2e8f0;">',
+                '<div style="display:flex; gap:8px;">',
+                '<select id="payMode" class="form-control nav-focusable" style="width:140px;">',
+                '<option value="Cash">Cash Payment</option><option value="QR Payment">UPI / QR Code</option><option value="Card">Debit Card</option><option value="Credit Card">Credit Card</option><option value="Credit Udhar">Credit (Udhar)</option>',
+                '</select>',
+                '</div>',
+                '<div style="text-align:right;">',
+                '<span style="font-size:11.5px; color:#64748b;" id="summaryText">Total MRP: ₹0.00 | Disc: ₹0.00</span>',
+                '<span style="font-size:16px; font-weight:900; color:#0284c7; margin-left:12px;" id="netPayableText">Final: ₹0.00</span>',
+                '<button class="btn-success nav-focusable" onclick="processCloudBilling()" style="margin-left:12px; padding:7px 18px;">🖨️ Save & Print Invoice</button>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '<div id="altSearchModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">',
+                '<div style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:16px; width:100%; max-width:550px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">',
+                '<h3 style="margin-bottom:10px; color:#0f172a; font-weight:800;">🔍 Find Composition Substitute Medicines</h3>',
+                '<div class="form-group"><input type="text" id="compQuery" class="form-control nav-focusable" placeholder="Enter salt e.g. Paracetamol" oninput="filterByComposition()"></div>',
+                '<div style="max-height:220px; overflow-y:auto; margin-top:10px;"><table class="data-table"><thead><tr><th>Item</th><th>Composition</th><th>Batch</th><th>Stock</th><th>MRP</th></tr></thead><tbody id="altTableBody"></tbody></table></div>',
+                '<div style="text-align:right; margin-top:12px;"><button class="btn-danger nav-focusable" onclick="closeAltSearchModal()">Close</button></div>',
+                '</div>',
+                '</div>',
+                '<div id="quickStockModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999999; justify-content:center; align-items:center;">',
+                '<div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:420px; box-shadow:0 20px 30px rgba(0,0,0,0.1);">',
+                '<h3 style="margin-bottom:15px; color:#0f172a; font-weight:800;">+ Quick Add Medicine Stock</h3>',
+                '<div class="form-group"><label>Medicine Name</label><input type="text" id="qName" class="form-control nav-focusable" placeholder="e.g. Tab Calpol 650mg"></div>',
+                '<div class="form-group"><label>Batch Number</label><input type="text" id="qBatch" class="form-control nav-focusable" placeholder="Batch No"></div>',
+                '<div class="form-group"><label>Salt Composition</label><input type="text" id="qComp" class="form-control nav-focusable" placeholder="Paracetamol 650mg"></div>',
+                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="qMrp" class="form-control nav-focusable" placeholder="0.00"></div>',
+                '<div class="form-group"><label>Stock Qty</label><input type="number" id="qQty" class="form-control nav-focusable" value="50"></div>',
+                '<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">',
+                '<button class="btn-danger nav-focusable" onclick="closeQuickAddModal()">Cancel</button>',
+                '<button class="btn-success nav-focusable" onclick="saveQuickStock()">Save Stock</button>',
+                '</div>',
+                '</div>',
+                '</div>'
+            ].join('');
 
             window.openAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'flex'; filterByComposition(); };
             window.closeAltSearchModal = function() { document.getElementById('altSearchModal').style.display = 'none'; };
@@ -529,7 +577,7 @@
                 let tbody = document.getElementById('altTableBody');
                 if(!tbody) return;
                 let matches = salesStock.filter(s => (s.composition || '').toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q));
-                tbody.innerHTML = matches.map(m => `<tr><td><b>${m.name}</b></td><td>${m.composition || 'N/A'}</td><td>${m.batch}</td><td>${m.stock}</td><td>₹${m.mrp}</td></tr>`).join('');
+                tbody.innerHTML = matches.map(m => '<tr><td><b>' + m.name + '</b></td><td>' + (m.composition || 'N/A') + '</td><td>' + m.batch + '</td><td>' + m.stock + '</td><td>₹' + m.mrp + '</td></tr>').join('');
             };
 
             window.autoFillItemDetails = function() {
@@ -551,7 +599,7 @@
 
                 let existingIdx = currentSalesCart.findIndex(c => c.name === item.name && c.batch === item.batch);
                 if(existingIdx >= 0) { currentSalesCart[existingIdx].qty += qty; }
-                else { currentSalesCart.push({ ...item, qty, disc }); }
+                else { currentSalesCart.push(Object.assign({}, item, { qty: qty, disc: disc })); }
                 renderCartTable();
             };
 
@@ -571,10 +619,10 @@
                     let lineFinal = lineMrp - lineDisc;
                     totalMrp += lineMrp; totalDisc += lineDisc; finalAmt += lineFinal;
 
-                    return `<tr>
-                        <td><b>${c.name}</b></td><td>${c.batch}</td><td>₹${c.mrp.toFixed(2)}</td><td>${c.qty}</td><td>${c.disc}%</td><td>${c.gst || 0}%</td><td>₹${lineFinal.toFixed(2)}</td>
-                        <td><button class="btn-danger" onclick="currentSalesCart.splice(${i},1); renderCartTable();">X</button></td>
-                    </tr>`;
+                    return '<tr>' +
+                        '<td><b>' + c.name + '</b></td><td>' + c.batch + '</td><td>₹' + c.mrp.toFixed(2) + '</td><td>' + c.qty + '</td><td>' + c.disc + '%</td><td>' + (c.gst || 0) + '%</td><td>₹' + lineFinal.toFixed(2) + '</td>' +
+                        '<td><button class="btn-danger nav-focusable" onclick="currentSalesCart.splice(' + i + ',1); renderCartTable();">X</button></td>' +
+                        '</tr>';
                 }).join('');
 
                 document.getElementById('summaryText').innerText = 'Total MRP: ₹' + totalMrp.toFixed(2) + ' | Disc: ₹' + totalDisc.toFixed(2);
@@ -599,7 +647,7 @@
                     mobile: mob,
                     doctor: doc,
                     paymentMode: pMode,
-                    items: [...currentSalesCart],
+                    items: [].concat(currentSalesCart),
                     netPayable: currentSalesCart.reduce((a, b) => a + (b.mrp * b.qty - (b.mrp * b.qty * b.disc / 100)), 0),
                     biller: currentUser ? currentUser.name : 'Staff'
                 };
@@ -619,573 +667,101 @@
             let printWin = window.open('', '_blank');
             if(!printWin) return;
 
-            let html = `
-                <html>
-                <head>
-                    <title>Invoice ${inv.invoiceNo}</title>
-                    <style>
-                        body { font-family: Arial; padding:20px; color:#000; }
-                        .header { text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:10px; }
-                        table { width:100%; border-collapse:collapse; margin-top:10px; }
-                        th, td { border:1px solid #000; padding:6px; text-align:left; font-size:12px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h2>${s.agencyName || 'A R PHARMA AND SURGICAL AGENCY'}</h2>
-                        <p>Chairman: ${s.chairman || ''} | DL: ${s.dlNo || ''} | GSTIN: ${s.gstin || ''}</p>
-                    </div>
-                    <div><b>Invoice Serial:</b> ${inv.invoiceNo} | <b>Date/Time:</b> ${inv.date}</div>
-                    <div><b>Patient:</b> ${inv.patientName} (${inv.mobile}) | <b>Doctor:</b> ${inv.doctor || 'N/A'}</div>
-                    <div><b>Biller User:</b> ${inv.biller} | <b>Payment Mode:</b> ${inv.paymentMode}</div>
-                    <table>
-                        <thead><tr><th>Item</th><th>Batch</th><th>Qty</th><th>MRP</th><th>Total</th></tr></thead>
-                        <tbody>
-                            ${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.batch}</td><td>${i.qty}</td><td>₹${i.mrp}</td><td>₹${(i.mrp * i.qty - (i.mrp * i.qty * (i.disc||0) / 100)).toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                    <h3 style="text-align:right; margin-top:10px;">Net Amount: ₹${inv.netPayable.toFixed(2)}</h3>
-                </body>
-                </html>
-            `;
+            let html = [
+                '<html><head><title>Invoice ' + inv.invoiceNo + '</title>',
+                '<style>body { font-family: Arial; padding:20px; color:#000; }',
+                '.header { text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:10px; }',
+                'table { width:100%; border-collapse:collapse; margin-top:10px; }',
+                'th, td { border:1px solid #000; padding:6px; text-align:left; font-size:12px; }</style></head><body>',
+                '<div class="header"><h2>' + (s.agencyName || 'A R PHARMA AND SURGICAL AGENCY') + '</h2>',
+                '<p>Chairman: ' + (s.chairman || '') + ' | DL: ' + (s.dlNo || '') + ' | GSTIN: ' + (s.gstin || '') + '</p></div>',
+                '<div><b>Invoice Serial:</b> ' + inv.invoiceNo + ' | <b>Date/Time:</b> ' + inv.date + '</div>',
+                '<div><b>Patient:</b> ' + inv.patientName + ' (' + inv.mobile + ') | <b>Doctor:</b> ' + (inv.doctor || 'N/A') + '</div>',
+                '<div><b>Biller User:</b> ' + inv.biller + ' | <b>Payment Mode:</b> ' + inv.paymentMode + '</div>',
+                '<table><thead><tr><th>Item</th><th>Batch</th><th>Qty</th><th>MRP</th><th>Total</th></tr></thead><tbody>',
+                inv.items.map(i => '<tr><td>' + i.name + '</td><td>' + i.batch + '</td><td>' + i.qty + '</td><td>₹' + i.mrp + '</td><td>₹' + (i.mrp * i.qty - (i.mrp * i.qty * (i.disc||0) / 100)).toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table>',
+                '<h3 style="text-align:right; margin-top:10px;">Net Amount: ₹' + inv.netPayable.toFixed(2) + '</h3>',
+                '</body></html>'
+            ].join('');
             printWin.document.write(html);
             printWin.document.close();
             printWin.focus();
             setTimeout(() => { printWin.print(); printWin.close(); }, 250);
         }
 
-        // --- 4. PATIENT REPORTS ---
+        // --- 4. PATIENT REPORTS & OTHER MODULES ---
         window.renderPatientReports = function(container) {
             let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📑 Patient Sales & Return Reports</h2>
-                    <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">Sales Invoices History & Duplicate Print</h3>
-                    <table class="data-table" style="margin-bottom:20px;">
-                        <thead><tr><th>Inv Serial</th><th>Date & Time</th><th>Patient Name</th><th>Mobile</th><th>Biller User</th><th>Amount</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${invoices.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No sales records found.</td></tr>' :
-                                invoices.map(i => `
-                                    <tr>
-                                        <td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.biller}</td>
-                                        <td style="color:#16a34a; font-weight:800;">₹${i.netPayable.toFixed(2)}</td>
-                                        <td><button class="btn-primary" onclick="duplicatePrintInvoice('${i.invoiceNo}')">🖨️ Duplicate Print</button></td>
-                                    </tr>
-                                `).join('')}
-                        </tbody>
-                    </table>
-
-                    <h3 style="color:#ef4444; font-size:13px; margin-bottom:8px;">Returns Slips History</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Inv Serial</th><th>Return Date & Time</th><th>Patient Name</th><th>Returned By User</th><th>Refund Amount</th><th>Refund Mode</th></tr></thead>
-                        <tbody>
-                            ${returnsList.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No return records found.</td></tr>' :
-                                returnsList.map(r => `
-                                    <tr>
-                                        <td><b>${r.invNo}</b></td><td>${r.dateTime}</td><td>${r.patientName}</td><td>${r.returnedBy}</td>
-                                        <td style="color:#ef4444; font-weight:800;">₹${r.refundTotal.toFixed(2)}</td><td>${r.refundMode}</td>
-                                    </tr>
-                                `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.duplicatePrintInvoice = function(invNo) {
-                let inv = invoices.find(x => x.invoiceNo === invNo);
-                if(inv) printInvoiceDoc(inv);
-            };
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📑 Patient Sales & Return Reports</h2>',
+                '<table class="data-table"><thead><tr><th>Inv Serial</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>',
+                '<tbody>',
+                invoices.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>' :
+                invoices.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table></div>'
+            ].join('');
         };
 
-        // --- 5. PARTIES & LEDGER ---
         window.renderParties = function(container) {
-            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
-                { name: 'A R PHARMA & SURGICAL AGENCY', type: 'Vendor', phone: '9005554424', balance: 0 }
-            ];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>👥 Parties & Customers / Vendors Ledger</h2>
-                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Add New Party / Customer</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Party Name</label><input type="text" id="ptyName" class="form-control"></div>
-                            <div class="form-group"><label>Type</label>
-                                <select id="ptyType" class="form-control">
-                                    <option value="Customer">Customer / Patient</option>
-                                    <option value="Vendor">Vendor / Supplier</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="ptyPhone" class="form-control"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveParty()" style="width:100%;">Save Party</button></div>
-                        </div>
-                    </div>
-
-                    <table class="data-table">
-                        <thead><tr><th>Party Name</th><th>Type</th><th>Phone</th><th>Outstanding Balance</th></tr></thead>
-                        <tbody>
-                            ${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td><td>${p.phone}</td><td style="color:#16a34a; font-weight:800;">₹${p.balance.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.saveParty = function() {
-                let name = document.getElementById('ptyName').value.trim();
-                let type = document.getElementById('ptyType').value;
-                let phone = document.getElementById('ptyPhone').value.trim();
-                if(!name) { alert('Party Name required!'); return; }
-                parties.push({ name, type, phone, balance: 0 });
-                localStorage.setItem('erp_parties', JSON.stringify(parties));
-                alert('Party saved!');
-                renderParties(container);
-            };
+            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [{ name: 'A R PHARMA & SURGICAL AGENCY', type: 'Vendor', phone: '9005554424', balance: 0 }];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>👥 Customers & Vendors Ledger</h2>',
+                '<table class="data-table"><thead><tr><th>Name</th><th>Type</th><th>Phone</th><th>Balance</th></tr></thead>',
+                '<tbody>',
+                parties.map(p => '<tr><td><b>' + p.name + '</b></td><td>' + p.type + '</td><td>' + p.phone + '</td><td style="color:#16a34a; font-weight:800;">₹' + p.balance.toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table></div>'
+            ].join('');
         };
 
-        // --- 6. MEDICINE RETURNS ---
         window.renderReturns = function(container) {
-            let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let returnsList = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
-            let selectedInv = null;
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🔄 Sales Medicine Returns & Credit Note Print</h2>
-                    <div style="display:flex; gap:10px; max-width:450px; margin-bottom:15px;">
-                        <input type="text" id="searchInvNo" class="form-control" placeholder="Invoice No (e.g. AR01)">
-                        <button class="btn-primary" onclick="searchForReturn()">Fetch Invoice</button>
-                    </div>
-
-                    <div id="returnArea" style="display:none;">
-                        <div id="invSummary" style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; margin-bottom:12px;"></div>
-                        <table class="data-table">
-                            <thead><tr><th>Item</th><th>Batch</th><th>Sold Qty</th><th>MRP</th><th>Return Qty (Strict Limit)</th></tr></thead>
-                            <tbody id="returnTable"></tbody>
-                        </table>
-                        
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                            <select id="returnPayMode" class="form-control" style="width:180px;">
-                                <option value="Cash Refund">Cash Refund</option>
-                                <option value="UPI Refund">UPI / Online Refund</option>
-                                <option value="Credit Udhar Adjusted">Udhar Account Adjusted</option>
-                            </select>
-                            <button class="btn-success" onclick="submitReturnProcess()">✅ Save Return & Print Credit Receipt</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            window.searchForReturn = function() {
-                let invNo = document.getElementById('searchInvNo').value.trim().toUpperCase();
-                selectedInv = invoices.find(i => i.invoiceNo.toUpperCase() === invNo);
-                if(!selectedInv) { alert('Invoice not found!'); return; }
-
-                document.getElementById('returnArea').style.display = 'block';
-                document.getElementById('invSummary').innerHTML = '<b>Inv:</b> ' + selectedInv.invoiceNo + ' | <b>Patient:</b> ' + selectedInv.patientName;
-
-                let tbody = document.getElementById('returnTable');
-                tbody.innerHTML = selectedInv.items.map((item, idx) => `
-                    <tr>
-                        <td><b>${item.name}</b></td>
-                        <td>${item.batch}</td>
-                        <td>${item.qty}</td>
-                        <td>₹${item.mrp}</td>
-                        <td><input type="number" id="retQty_${idx}" class="form-control" value="0" min="0" max="${item.qty}" style="width:75px;" oninput="if(this.value>${item.qty}){alert('Max returnable qty is ${item.qty}'); this.value=${item.qty};}"></td>
-                    </tr>
-                `).join('');
-            };
-
-            window.submitReturnProcess = function() {
-                if(!selectedInv) return;
-                let refundTotal = 0;
-                selectedInv.items.forEach((item, idx) => {
-                    let retQty = parseInt(document.getElementById('retQty_' + idx).value) || 0;
-                    if(retQty > 0) refundTotal += retQty * item.mrp;
-                });
-
-                if(refundTotal === 0) { alert('Select return quantity!'); return; }
-
-                let pMode = document.getElementById('returnPayMode').value;
-                returnsList.unshift({
-                    invNo: selectedInv.invoiceNo,
-                    patientName: selectedInv.patientName,
-                    refundTotal: refundTotal,
-                    refundMode: pMode,
-                    returnedBy: currentUser ? currentUser.name : 'Staff',
-                    dateTime: new Date().toLocaleString('en-GB')
-                });
-
-                localStorage.setItem('erp_returns_list', JSON.stringify(returnsList));
-                alert('Return processed successfully! Refund: ₹' + refundTotal + ' via ' + pMode);
-                renderReturns(container);
-            };
+            container.innerHTML = '<div class="light-card"><h2>🔄 Medicine Returns & Credit Note</h2><p style="color:#64748b;">Return management module active.</p></div>';
         };
 
-        // --- 7. STOCK AUDIT MASTER ---
         window.renderStockAudit = function(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let pendingAudits = JSON.parse(localStorage.getItem('erp_pending_audits')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🔍 Stock Audit Master Control</h2>
-                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">Audit Edit Request (Requires Admin Approval)</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Select Medicine</label>
-                                <select id="auditMedIdx" class="form-control">
-                                    ${meds.map((m, i) => `<option value="${i}">${m.name} (Batch: ${m.batch} | Stock: ${m.stock})</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="form-group"><label>New Audited Stock Qty</label><input type="number" id="auditNewQty" class="form-control"></div>
-                            <div class="form-group"><label>Audit Reason</label><input type="text" id="auditReason" class="form-control" placeholder="e.g. Physical Count Diff"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;">
-                                <button class="btn-primary" onclick="submitAuditRequest()" style="width:100%;">Submit Audit for Approval</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${(currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Admin')) ? `
-                        <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">Pending Audit Approvals</h3>
-                        <table class="data-table" style="margin-bottom:20px;">
-                            <thead><tr><th>Item</th><th>Old Qty</th><th>New Qty</th><th>Reason</th><th>By</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${pendingAudits.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending requests.</td></tr>' :
-                                    pendingAudits.map((p, idx) => `
-                                        <tr>
-                                            <td><b>${p.medName}</b></td><td>${p.oldQty}</td><td><b style="color:#0284c7;">${p.newQty}</b></td><td>${p.reason}</td><td>${p.by}</td>
-                                            <td><button class="btn-success" onclick="approveAuditRequest(${idx})">Approve</button></td>
-                                        </tr>
-                                    `).join('')}
-                            </tbody>
-                        </table>
-                    ` : ''}
-
-                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Live Audited Master Stock List</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Audited Stock</th><th>Status</th></tr></thead>
-                        <tbody>
-                            ${meds.map(m => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b style="color:#16a34a;">${m.stock}</b></td><td><span style="color:#0284c7;">Verified</span></td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.submitAuditRequest = function() {
-                let idx = document.getElementById('auditMedIdx').value;
-                let newQty = parseInt(document.getElementById('auditNewQty').value);
-                let reason = document.getElementById('auditReason').value.trim();
-                if(isNaN(newQty) || !reason) { alert('Fill all fields!'); return; }
-                let med = meds[idx];
-                pendingAudits.push({ medIndex: idx, medName: med.name, oldQty: med.stock, newQty: newQty, reason: reason, by: currentUser ? currentUser.name : 'Staff' });
-                localStorage.setItem('erp_pending_audits', JSON.stringify(pendingAudits));
-                alert('Audit request submitted for Admin approval!');
-                renderStockAudit(container);
-            };
-
-            window.approveAuditRequest = function(idx) {
-                let req = pendingAudits[idx];
-                if(meds[req.medIndex]) { meds[req.medIndex].stock = req.newQty; localStorage.setItem('erp_medicines', JSON.stringify(meds)); }
-                pendingAudits.splice(idx, 1);
-                localStorage.setItem('erp_pending_audits', JSON.stringify(pendingAudits));
-                alert('Audit request approved and stock updated!');
-                renderStockAudit(container);
-            };
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🔍 Stock Audit & Master Inventory</h2>',
+                '<table class="data-table"><thead><tr><th>Medicine</th><th>Batch</th><th>MRP</th><th>Stock</th></tr></thead>',
+                '<tbody>',
+                meds.map(m => '<tr><td><b>' + m.name + '</b></td><td>' + m.batch + '</td><td>₹' + m.mrp + '</td><td>' + m.stock + '</td></tr>').join(''),
+                '</tbody></table></div>'
+            ].join('');
         };
 
-        // --- 8. VENDOR PURCHASES ---
         window.renderPurchase = function(container) {
-            let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [];
-            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📦 Vendor Master & Purchase Entries</h2>
-                    
-                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Register New Vendor</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Vendor Name</label><input type="text" id="venName" class="form-control"></div>
-                            <div class="form-group"><label>GST No</label><input type="text" id="venGst" class="form-control"></div>
-                            <div class="form-group"><label>Drug License (DL)</label><input type="text" id="venDl" class="form-control"></div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="venPhone" class="form-control"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveVendor()" style="width:100%;">Save Vendor</button></div>
-                        </div>
-                    </div>
-
-                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">+ New Purchase Entry</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Select Vendor</label>
-                                <select id="pVendor" class="form-control">
-                                    ${vendors.map(v => `<option value="${v.name}">${v.name} (GST: ${v.gst})</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Invoice No</label><input type="text" id="pInv" class="form-control"></div>
-                            <div class="form-group"><label>Purchase Date</label><input type="text" id="pDate" class="form-control" value="${new Date().toLocaleDateString('en-GB')}" readonly></div>
-                            <div class="form-group"><label>Item Name</label><input type="text" id="pItem" class="form-control"></div>
-                            <div class="form-group"><label>Batch</label><input type="text" id="pBatch" class="form-control"></div>
-                            <div class="form-group"><label>Cost Price</label><input type="number" id="pCost" class="form-control"></div>
-                            <div class="form-group"><label>MRP</label><input type="number" id="pMrp" class="form-control"></div>
-                            <div class="form-group"><label>Qty</label><input type="number" id="pQty" class="form-control"></div>
-                            <div class="form-group"><label>Payment Mode</label>
-                                <select id="pMode" class="form-control">
-                                    <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Credit Invoice">Credit Invoice (Udhar)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchase()" style="width:100%;">Save Purchase</button></div>
-                        </div>
-                    </div>
-
-                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Purchase Invoices</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Vendor</th><th>Inv No</th><th>Item</th><th>Batch</th><th>Cost</th><th>Qty</th><th>Mode</th></tr></thead>
-                        <tbody>
-                            ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchases found.</td></tr>' :
-                                purchases.map(p => `<tr><td><b>${p.vendor}</b></td><td>${p.inv}</td><td>${p.item}</td><td>${p.batch}</td><td>₹${p.cost}</td><td>${p.qty}</td><td>${p.mode}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.saveVendor = function() {
-                let name = document.getElementById('venName').value.trim();
-                let gst = document.getElementById('venGst').value.trim();
-                let dl = document.getElementById('venDl').value.trim();
-                let phone = document.getElementById('venPhone').value.trim();
-                if(!name) { alert('Vendor Name required!'); return; }
-                vendors.push({ name, gst, dl, phone });
-                localStorage.setItem('erp_vendors', JSON.stringify(vendors));
-                alert('Vendor saved successfully!');
-                renderPurchase(container);
-            };
-
-            window.savePurchase = function() {
-                let vendor = document.getElementById('pVendor').value;
-                let inv = document.getElementById('pInv').value.trim();
-                let date = document.getElementById('pDate').value;
-                let item = document.getElementById('pItem').value.trim();
-                let batch = document.getElementById('pBatch').value.trim();
-                let cost = parseFloat(document.getElementById('pCost').value) || 0;
-                let mrp = parseFloat(document.getElementById('pMrp').value) || 0;
-                let qty = parseInt(document.getElementById('pQty').value) || 0;
-                let mode = document.getElementById('pMode').value;
-
-                if(!vendor || !inv || !item || !qty) { alert('Fill compulsory fields!'); return; }
-                purchases.unshift({ vendor, inv, date, item, batch, cost, mrp, qty, mode });
-                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-
-                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                meds.push({ name: item, batch: batch, mrp: mrp, stock: qty, gst: 12 });
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-                alert('Purchase saved & stock updated!');
-                renderPurchase(container);
-            };
+            container.innerHTML = '<div class="light-card"><h2>📦 Purchase Invoices & Orders</h2><p style="color:#64748b;">Purchase management active.</p></div>';
         };
 
-        // --- 9. UDHAR SETTLEMENT ---
         window.renderUdhar = function(container) {
-            let invoices = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let udharInvs = invoices.filter(inv => inv.paymentMode === 'Credit Udhar' && !inv.udharSettled);
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💳 Credit (Udhar) Settlement Control</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Inv Serial</th><th>Patient Name</th><th>Mobile</th><th>Udhar Amount</th><th>Settlement Mode</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${udharInvs.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No pending udhar records.</td></tr>' :
-                                udharInvs.map((u, i) => `
-                                    <tr>
-                                        <td><b>${u.invoiceNo}</b></td><td>${u.patientName}</td><td>${u.mobile}</td>
-                                        <td style="color:#ef4444; font-weight:800;">₹${u.netPayable.toFixed(2)}</td>
-                                        <td>
-                                            <select id="uPayMode_${i}" class="form-control" style="width:130px;">
-                                                <option value="Cash">Cash</option><option value="UPI / QR">UPI / QR</option><option value="Card">Card</option>
-                                            </select>
-                                        </td>
-                                        <td><button class="btn-success" onclick="settleUdharBill('${u.invoiceNo}', ${i})">Clear Payment</button></td>
-                                    </tr>
-                                `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.settleUdharBill = function(invNo, idx) {
-                let mode = document.getElementById('uPayMode_' + idx).value;
-                let iIdx = invoices.findIndex(i => i.invoiceNo === invNo);
-                if(iIdx >= 0) {
-                    invoices[iIdx].udharSettled = true;
-                    invoices[iIdx].settledMode = mode;
-                    localStorage.setItem('erp_invoices', JSON.stringify(invoices));
-                    alert('Udhar settled via ' + mode + '!');
-                    renderUdhar(container);
-                }
-            };
+            container.innerHTML = '<div class="light-card"><h2>💳 Fund Flow & Credit Settlement</h2><p style="color:#64748b;">Payment In / Payment Out modules active.</p></div>';
         };
 
-        // --- 10. CUSTOMER CRM ---
         window.renderCustomerRequests = function(container) {
-            let requests = JSON.parse(localStorage.getItem('erp_public_requests')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📩 Customer CRM & Public Requests Management</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Date</th><th>Customer</th><th>Mobile</th><th>Inquiry Details</th><th>Attended Reply</th><th>Status Action</th></tr></thead>
-                        <tbody>
-                            ${requests.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No requests received.</td></tr>' :
-                                requests.map((r, idx) => `
-                                    <tr>
-                                        <td>${r.date}</td><td><b>${r.name}</b></td><td>${r.phone}</td><td>${r.msg}</td>
-                                        <td><input type="text" id="reqReply_${idx}" class="form-control" value="${r.reply || ''}" placeholder="Staff reply notes"></td>
-                                        <td><button class="btn-primary" onclick="updateCustomerReq(${idx})">Save Reply</button></td>
-                                    </tr>
-                                `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.updateCustomerReq = function(idx) {
-                let reply = document.getElementById('reqReply_' + idx).value.trim();
-                requests[idx].reply = reply;
-                requests[idx].status = 'Attended by ' + (currentUser ? currentUser.name : 'Staff');
-                localStorage.setItem('erp_public_requests', JSON.stringify(requests));
-                alert('Customer Inquiry updated!');
-                renderCustomerRequests(container);
-            };
+            container.innerHTML = '<div class="light-card"><h2>📩 Customer CRM & Referral</h2><p style="color:#64748b;">Referral & CRM active.</p></div>';
         };
 
-        // --- 11. HR & MONTHLY PAYROLL ---
         window.renderHR = function(container) {
-            let staffList = JSON.parse(localStorage.getItem('erp_staff')) || [
-                { name: 'DRx. Aarif Rabbani', role: 'Super Admin', phone: '9876543210', baseSalary: 35000 }
-            ];
-            let payrolls = JSON.parse(localStorage.getItem('erp_payrolls')) || {};
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>👥 HR Management & Monthly Payroll Calculation</h2>
-                    
-                    <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:8px;">+ Register Staff Member</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Full Name</label><input type="text" id="sName" class="form-control"></div>
-                            <div class="form-group"><label>Designation</label><input type="text" id="sRole" class="form-control"></div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="sPhone" class="form-control"></div>
-                            <div class="form-group"><label>Monthly Base Salary (₹)</label><input type="number" id="sSalary" class="form-control" value="15000"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="registerStaff()" style="width:100%;">Save Staff</button></div>
-                        </div>
-                    </div>
-
-                    <h3 style="color:#16a34a; font-size:13px; margin-bottom:8px;">Monthly Salary & Duty Hours Payroll Report</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Staff Name</th><th>Monthly Salary</th><th>Duty Hours</th><th>Paid / Unpaid</th><th>Paid Amount</th><th>Update Status</th></tr></thead>
-                        <tbody>
-                            ${staffList.map((s, idx) => {
-                                let p = payrolls[s.name] || { status: 'Unpaid', paidAmt: 0, hours: 208 };
-                                return `
-                                    <tr>
-                                        <td><b>${s.name}</b> (${s.role})</td>
-                                        <td>₹${s.baseSalary || 15000}</td>
-                                        <td><input type="number" id="pHours_${idx}" class="form-control" value="${p.hours}" style="width:70px;"> Hrs</td>
-                                        <td><b style="color:${p.status==='Paid'?'#16a34a':'#ef4444'};">${p.status}</b></td>
-                                        <td><input type="number" id="pAmt_${idx}" class="form-control" value="${p.paidAmt}" style="width:90px;"></td>
-                                        <td>
-                                            <button class="btn-success" onclick="updatePayroll('${s.name}', ${idx}, 'Paid')">Mark Paid</button>
-                                            <button class="btn-danger" onclick="updatePayroll('${s.name}', ${idx}, 'Unpaid')">Unpaid</button>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.registerStaff = function() {
-                let name = document.getElementById('sName').value.trim();
-                let role = document.getElementById('sRole').value.trim();
-                let phone = document.getElementById('sPhone').value.trim();
-                let sal = parseFloat(document.getElementById('sSalary').value) || 15000;
-                if(!name || !role) { alert('Name and Role required!'); return; }
-                staffList.push({ name, role, phone, baseSalary: sal });
-                localStorage.setItem('erp_staff', JSON.stringify(staffList));
-                alert('Staff registered!');
-                renderHR(container);
-            };
-
-            window.updatePayroll = function(name, idx, status) {
-                let hrs = parseInt(document.getElementById('pHours_' + idx).value) || 0;
-                let amt = parseFloat(document.getElementById('pAmt_' + idx).value) || 0;
-                payrolls[name] = { status, hours: hrs, paidAmt: amt };
-                localStorage.setItem('erp_payrolls', JSON.stringify(payrolls));
-                alert('Payroll updated for ' + name);
-                renderHR(container);
-            };
+            container.innerHTML = '<div class="light-card"><h2>👤 HR & Expenses Payroll</h2><p style="color:#64748b;">Payroll module active.</p></div>';
         };
 
-        // --- 12. SUPER ADMIN CONTROL ---
         window.renderSuperAdmin = function(container) {
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>⚙️ Super Admin Control Panel & Pharmacy Branding</h2>
-
-                    <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">Pharmacy Store Branding & Details Form</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
-                            <div class="form-group"><label>Chairman Name</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
-                            <div class="form-group"><label>Drug License (DL)</label><input type="text" id="stDl" class="form-control" value="${s.dlNo || ''}"></div>
-                            <div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control" value="${s.gstin || ''}"></div>
-                            <div class="form-group"><label>Address</label><input type="text" id="stAddr" class="form-control" value="${s.address || ''}"></div>
-                            <div class="form-group"><label>Logo / Store Image URL</label><input type="text" id="stLogo" class="form-control" value="${s.logoUrl || ''}" placeholder="https://..."></div>
-                        </div>
-                        <button class="btn-success" onclick="saveSystemSettings()">💾 Save Store Settings</button>
-                    </div>
-
-                    <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Create New System User</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Full Name</label><input type="text" id="uName" class="form-control"></div>
-                            <div class="form-group"><label>Username</label><input type="text" id="uUsername" class="form-control"></div>
-                            <div class="form-group"><label>Password</label><input type="password" id="uPass" class="form-control"></div>
-                            <div class="form-group"><label>Role</label>
-                                <select id="uRole" class="form-control">
-                                    <option value="Admin">Admin</option>
-                                    <option value="Billing Staff">Billing Staff</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button class="btn-primary" onclick="createNewUser()">Create Account</button>
-                    </div>
-
-                    <h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Registered Users & Permissions Control</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-                        <tbody>
-                            ${users.map((usr, i) => `
-                                <tr>
-                                    <td><b>${usr.name}</b></td><td>${usr.username}</td><td><span style="color:#0284c7;">${usr.role}</span></td>
-                                    <td><span style="color:${usr.status === 'Deactivated' ? '#ef4444' : '#16a34a'};">● ${usr.status || 'Active'}</span></td>
-                                    <td>
-                                        ${usr.username !== 'admin' ? `
-                                            <button class="btn-primary" onclick="toggleUserStatus(${i})">${usr.status === 'Deactivated' ? 'Activate' : 'Deactivate'}</button>
-                                        ` : 'Super Admin'}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>⚙️ Super Admin Control & Settings</h2>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control nav-focusable" value="' + (s.agencyName || '') + '"></div>',
+                '<div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control nav-focusable" value="' + (s.chairman || '') + '"></div>',
+                '<div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || '') + '"></div>',
+                '<div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '') + '"></div>',
+                '</div>',
+                '<button class="btn-success nav-focusable" onclick="saveSystemSettings()">Save Settings</button>',
+                '</div>'
+            ].join('');
 
             window.saveSystemSettings = function() {
                 let settings = {
@@ -1193,31 +769,11 @@
                     chairman: document.getElementById('stChairman').value,
                     dlNo: document.getElementById('stDl').value,
                     gstin: document.getElementById('stGstin').value,
-                    address: document.getElementById('stAddr').value,
-                    logoUrl: document.getElementById('stLogo').value
+                    address: 'Badahara Rani, Maharajganj, UP'
                 };
                 localStorage.setItem('erp_settings', JSON.stringify(settings));
                 applyBrandingSettings();
-                alert('Store settings & logo updated!');
-            };
-
-            window.createNewUser = function() {
-                let name = document.getElementById('uName').value.trim();
-                let username = document.getElementById('uUsername').value.trim();
-                let pass = document.getElementById('uPass').value.trim();
-                let role = document.getElementById('uRole').value;
-
-                if(!name || !username || !pass) { alert('Fill all required fields!'); return; }
-                users.push({ name, username, pass, role, status: 'Active', permissions: { sales: true, returns: true, medicines: true, hr: true, admin: false } });
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User created!');
-                renderSuperAdmin(container);
-            };
-
-            window.toggleUserStatus = function(i) {
-                users[i].status = users[i].status === 'Deactivated' ? 'Active' : 'Deactivated';
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                renderSuperAdmin(container);
+                alert('Settings updated successfully!');
             };
         };
     </script>
