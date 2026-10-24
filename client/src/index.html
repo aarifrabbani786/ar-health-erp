@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Enterprise Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Enterprise Medical Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
@@ -410,7 +410,7 @@
             setupKeyboardNavigation();
         }
 
-        // --- DASHBOARD ---
+        /* --- 1. DASHBOARD --- */
         function renderDashboard(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
@@ -447,7 +447,139 @@
             ].join('');
         }
 
-        // --- EXPENSES MODULE ---
+        /* --- 2. POS SALES MODULE --- */
+        function renderSales(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🛒 POS Counter Billing System</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Doctor Name</label><input type="text" id="posDoc" class="form-control nav-focusable" value="Self"></div>',
+                '<div class="form-group"><label>Medicine Name *</label><input type="text" id="posItem" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control nav-focusable" value="B-101"></div>',
+                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control nav-focusable" value="1"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="generateInvoice()" style="width:100%;">Create Invoice</button></div>',
+                '</div>',
+                '</div>',
+                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Invoices Log</h3>',
+                '<table class="data-table"><thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>',
+                '<tbody>',
+                invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
+                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td>' + (i.item || 'Medicine') + '</td><td>' + (i.batch || '-') + '</td><td>' + (i.qty || 1) + '</td><td style="color:#16a34a; font-weight:800;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.generateInvoice = function() {
+                let patientName = document.getElementById('posPatient').value.trim();
+                let mobile = document.getElementById('posMobile').value.trim();
+                let item = document.getElementById('posItem').value.trim();
+                let batch = document.getElementById('posBatch').value.trim();
+                let mrp = parseFloat(document.getElementById('posMrp').value) || 0;
+                let qty = parseInt(document.getElementById('posQty').value) || 1;
+
+                if(!patientName || !item || mrp <= 0) { alert('Patient name, Medicine, and MRP required!'); return; }
+                let netPayable = mrp * qty;
+                let invoiceNo = 'INV-' + Math.floor(10000 + Math.random()*90000);
+
+                invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable });
+                localStorage.setItem('erp_invoices', JSON.stringify(invs));
+                alert('Invoice Created Successfully: ' + invoiceNo);
+                renderSales(container);
+            };
+        }
+
+        /* --- 3. ITEMS & INVENTORY MODULE --- */
+        function renderStockAudit(container) {
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📦 Items Master & Stock Inventory</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Add New Medicine Stock Item</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control nav-focusable" value="B-101"></div>',
+                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="itPrice" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Opening Stock</label><input type="number" id="itStock" class="form-control nav-focusable" value="100"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addInventoryItem()" style="width:100%;">Add Item</button></div>',
+                '</div>',
+                '</div>',
+                '<table class="data-table"><thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                meds.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No stock items added yet.</td></tr>' :
+                meds.map((m, idx) => '<tr><td><b>' + m.name + '</b></td><td>' + m.batch + '</td><td>₹' + m.mrp + '</td><td>₹' + m.price + '</td><td><b>' + m.stock + '</b></td><td><button class="btn-danger nav-focusable" onclick="deleteStockItem(' + idx + ')">Delete</button></td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.addInventoryItem = function() {
+                let name = document.getElementById('itName').value.trim();
+                let batch = document.getElementById('itBatch').value.trim();
+                let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
+                let price = parseFloat(document.getElementById('itPrice').value) || 0;
+                let stock = parseInt(document.getElementById('itStock').value) || 0;
+
+                if(!name || mrp <= 0) { alert('Medicine Name and MRP required!'); return; }
+                meds.push({ name, batch, mrp, price, stock });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAudit(container);
+            };
+
+            window.deleteStockItem = function(idx) {
+                meds.splice(idx, 1);
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAudit(container);
+            };
+        }
+
+        /* --- 4. CUSTOMERS & VENDORS MODULE --- */
+        function renderParties(container) {
+            let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>👥 Customers & Vendor Ledgers</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Register New Party / Vendor</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Party / Vendor Name *</label><input type="text" id="ptName" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>GSTIN</label><input type="text" id="ptGst" class="form-control nav-focusable" value="09AAAAA0000A1Z5"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addPartyRecord()" style="width:100%;">Save Party</button></div>',
+                '</div>',
+                '</div>',
+                '<table class="data-table"><thead><tr><th>Party Name</th><th>Phone</th><th>GSTIN</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                parties.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No parties registered.</td></tr>' :
+                parties.map((p, idx) => '<tr><td><b>' + p.name + '</b></td><td>' + p.phone + '</td><td>' + p.gstin + '</td><td><button class="btn-danger nav-focusable" onclick="deletePartyRecord(' + idx + ')">Delete</button></td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.addPartyRecord = function() {
+                let name = document.getElementById('ptName').value.trim();
+                let phone = document.getElementById('ptPhone').value.trim();
+                let gstin = document.getElementById('ptGst').value.trim();
+
+                if(!name) { alert('Party name required!'); return; }
+                parties.push({ name, phone, gstin });
+                localStorage.setItem('erp_vendors', JSON.stringify(parties));
+                renderParties(container);
+            };
+
+            window.deletePartyRecord = function(idx) {
+                parties.splice(idx, 1);
+                localStorage.setItem('erp_vendors', JSON.stringify(parties));
+                renderParties(container);
+            };
+        }
+
+        /* --- 5. EXPENSES MODULE --- */
         function renderExpenses(container) {
             let expCats = [
                 { name: 'Office Rent', total: 0 },
@@ -460,7 +592,6 @@
 
             let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
             let totalSpending = expenses.reduce((a, b) => a + b.amount, 0);
-            let canEdit = currentUser ? (currentUser.role === 'Super Admin' || currentUser.canEdit) : true;
 
             container.innerHTML = [
                 '<div class="light-card">',
@@ -499,7 +630,7 @@
                 expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
                 expenses.map((e, idx) => '<tr>' +
                     '<td>' + e.date + '</td><td><b>' + e.title + '</b></td><td>' + e.category + '</td><td>₹' + e.amount.toFixed(2) + '</td>' +
-                    '<td>' + (canEdit ? '<button class="btn-danger nav-focusable" onclick="deleteExpenseRecord(' + idx + ')">Delete</button>' : '<span style="color:#94a3a8; font-size:10px;">No Permission</span>') + '</td>' +
+                    '<td><button class="btn-danger nav-focusable" onclick="deleteExpenseRecord(' + idx + ')">Delete</button></td>' +
                 '</tr>').join(''),
                 '</tbody></table>',
                 '</div>',
@@ -519,14 +650,13 @@
             };
 
             window.deleteExpenseRecord = function(idx) {
-                if(!canEdit) { alert('You do not have permissions!'); return; }
                 expenses.splice(idx, 1);
                 localStorage.setItem('erp_expenses', JSON.stringify(expenses));
                 renderExpenses(container);
             };
         }
 
-        // --- PURCHASE & VENDOR ENTRY ---
+        /* --- 6. PURCHASE MODULE --- */
         window.renderPurchase = function(container) {
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
             let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [
@@ -537,10 +667,6 @@
                 '<div class="light-card">',
                 '<h2>🛍️ Vendor Purchase Invoices Entry</h2>',
                 '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
-                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">',
-                '<h3 style="color:#16a34a; font-size:13px; margin:0;">+ Create Purchase Bill Entry</h3>',
-                '<button class="btn-primary nav-focusable" onclick="openVendorModal()">+ Create New Vendor</button>',
-                '</div>',
                 '<div class="form-grid">',
                 '<div class="form-group"><label>Vendor Supplier *</label><select id="pVendor" class="form-control nav-focusable">' + vendors.map(v => '<option value="' + v.name + '">' + v.name + '</option>').join('') + '</select></div>',
                 '<div class="form-group"><label>Invoice No (Compulsory) *</label><input type="text" id="pBillNo" class="form-control nav-focusable" value="PUR-' + Math.floor(1000 + Math.random()*9000) + '"></div>',
@@ -557,33 +683,8 @@
                 purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
                 purchases.map(p => '<tr><td><b>' + p.vendor + '</b></td><td>' + p.billNo + '</td><td>' + p.item + '</td><td>' + p.batch + '</td><td>₹' + p.price + '</td><td>₹' + p.mrp + '</td><td>' + p.qty + '</td></tr>').join(''),
                 '</tbody></table>',
-                '</div>',
-                '<div id="vendorModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">',
-                '<div style="background:#fff; border:1px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px;">',
-                '<h3 style="margin-bottom:15px; color:#0f172a;">+ Add Vendor Supplier Details</h3>',
-                '<div class="form-group"><label>Vendor Name</label><input type="text" id="vName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Phone Mobile</label><input type="text" id="vPhone" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>GSTIN</label><input type="text" id="vGst" class="form-control nav-focusable" value="09AAAAA0000A1Z5"></div>',
-                '<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">',
-                '<button class="btn-danger nav-focusable" onclick="closeVendorModal()">Cancel</button>',
-                '<button class="btn-success nav-focusable" onclick="saveNewVendor()">Save Vendor</button>',
-                '</div></div></div>'
+                '</div>'
             ].join('');
-
-            window.openVendorModal = function() { document.getElementById('vendorModal').style.display = 'flex'; };
-            window.closeVendorModal = function() { document.getElementById('vendorModal').style.display = 'none'; };
-
-            window.saveNewVendor = function() {
-                let name = document.getElementById('vName').value.trim();
-                let phone = document.getElementById('vPhone').value.trim();
-                let gstin = document.getElementById('vGst').value.trim();
-                if(!name) { alert('Vendor name required!'); return; }
-
-                vendors.push({ name, phone, gstin });
-                localStorage.setItem('erp_vendors', JSON.stringify(vendors));
-                closeVendorModal();
-                renderPurchase(container);
-            };
 
             window.savePurchaseInvoice = function() {
                 let vendor = document.getElementById('pVendor').value;
@@ -608,7 +709,147 @@
             };
         };
 
-        // --- SETTINGS & ADVANCED ROLE CREATION ---
+        /* --- 7. FUND FLOW & UDHAR MODULE --- */
+        function renderUdhar(container) {
+            let udharList = JSON.parse(localStorage.getItem('erp_udhar_entries')) || [];
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>📈 Fund Flow & Payment In/Out Ledger</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Record Payment Transaction</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Party Name *</label><input type="text" id="udName" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Transaction Type</label><select id="udType" class="form-control nav-focusable"><option value="Payment In">Payment In (Received)</option><option value="Payment Out">Payment Out (Given)</option></select></div>',
+                '<div class="form-group"><label>Amount (₹)</label><input type="number" id="udAmt" class="form-control nav-focusable"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addUdharEntry()" style="width:100%;">Record Payment</button></div>',
+                '</div>',
+                '</div>',
+                '<table class="data-table"><thead><tr><th>Date</th><th>Party Name</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                udharList.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No payment records found.</td></tr>' :
+                udharList.map((u, idx) => '<tr><td>' + u.date + '</td><td><b>' + u.name + '</b></td><td>' + u.type + '</td><td>₹' + u.amt.toFixed(2) + '</td><td><button class="btn-danger nav-focusable" onclick="deleteUdharEntry(' + idx + ')">Delete</button></td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.addUdharEntry = function() {
+                let name = document.getElementById('udName').value.trim();
+                let type = document.getElementById('udType').value;
+                let amt = parseFloat(document.getElementById('udAmt').value) || 0;
+
+                if(!name || amt <= 0) { alert('Party Name and Amount required!'); return; }
+                udharList.unshift({ date: new Date().toLocaleDateString('en-GB'), name, type, amt });
+                localStorage.setItem('erp_udhar_entries', JSON.stringify(udharList));
+                renderUdhar(container);
+            };
+
+            window.deleteUdharEntry = function(idx) {
+                udharList.splice(idx, 1);
+                localStorage.setItem('erp_udhar_entries', JSON.stringify(udharList));
+                renderUdhar(container);
+            };
+        }
+
+        /* --- 8. REFERRAL OFFERS MODULE --- */
+        function renderReferralOffers(container) {
+            let offers = JSON.parse(localStorage.getItem('erp_offers')) || [];
+
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>🎁 Referral & Discount Campaign Manager</h2>',
+                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">',
+                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Create Promo Offer</h3>',
+                '<div class="form-grid">',
+                '<div class="form-group"><label>Campaign Title</label><input type="text" id="offTitle" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Promo Code</label><input type="text" id="offCode" class="form-control nav-focusable"></div>',
+                '<div class="form-group"><label>Discount Offer</label><input type="text" id="offBenefit" class="form-control nav-focusable" placeholder="e.g. 10% OFF"></div>',
+                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePromoOffer()" style="width:100%;">Save Offer</button></div>',
+                '</div>',
+                '</div>',
+                '<table class="data-table"><thead><tr><th>Campaign</th><th>Code</th><th>Benefit</th><th>Action</th></tr></thead>',
+                '<tbody>',
+                offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No offers configured.</td></tr>' :
+                offers.map((o, idx) => '<tr><td><b>' + o.title + '</b></td><td><code style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">' + o.code + '</code></td><td>' + o.offer + '</td><td><button class="btn-danger nav-focusable" onclick="deleteOffer(' + idx + ')">Delete</button></td></tr>').join(''),
+                '</tbody></table>',
+                '</div>'
+            ].join('');
+
+            window.savePromoOffer = function() {
+                let title = document.getElementById('offTitle').value.trim();
+                let code = document.getElementById('offCode').value.trim();
+                let offer = document.getElementById('offBenefit').value.trim();
+
+                if(!title || !code) { alert('Title and Code required!'); return; }
+                offers.push({ id: Date.now(), title, code, offer });
+                localStorage.setItem('erp_offers', JSON.stringify(offers));
+                renderReferralOffers(container);
+            };
+
+            window.deleteOffer = function(idx) {
+                offers.splice(idx, 1);
+                localStorage.setItem('erp_offers', JSON.stringify(offers));
+                renderReferralOffers(container);
+            };
+        }
+
+        /* --- 9. BACKUP & RESTORE MODULE --- */
+        function renderBackupModule(container) {
+            container.innerHTML = [
+                '<div class="light-card">',
+                '<h2>💾 Database Backup & Cloud Restore Center</h2>',
+                '<div style="background:#f8fafc; padding:20px; border-radius:14px; border:1px solid #e2e8f0;">',
+                '<p style="font-size:12.5px; color:#475569; margin-bottom:15px;">Export or restore complete store data (Invoices, Medicines, Purchases, Users & Settings).</p>',
+                '<div style="display:flex; gap:12px;">',
+                '<button class="btn-primary nav-focusable" onclick="exportDataBackup()">📥 Export Full Backup JSON</button>',
+                '<button class="btn-success nav-focusable" onclick="triggerRestoreUpload()">📤 Restore Database</button>',
+                '<input type="file" id="restoreFileInput" style="display:none;" onchange="importDataBackup(event)">',
+                '</div>',
+                '</div>',
+                '</div>'
+            ].join('');
+
+            window.exportDataBackup = function() {
+                let backupObj = {
+                    settings: JSON.parse(localStorage.getItem('erp_settings')),
+                    users: JSON.parse(localStorage.getItem('erp_users')),
+                    invoices: JSON.parse(localStorage.getItem('erp_invoices')),
+                    medicines: JSON.parse(localStorage.getItem('erp_medicines')),
+                    vendors: JSON.parse(localStorage.getItem('erp_vendors')),
+                    expenses: JSON.parse(localStorage.getItem('erp_expenses'))
+                };
+                let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+                let dlAnchor = document.createElement('a');
+                dlAnchor.setAttribute("href", dataStr);
+                dlAnchor.setAttribute("download", "AR_ERP_BACKUP_" + new Date().toISOString().slice(0,10) + ".json");
+                document.body.appendChild(dlAnchor);
+                dlAnchor.click();
+                dlAnchor.remove();
+            };
+
+            window.triggerRestoreUpload = function() { document.getElementById('restoreFileInput').click(); };
+
+            window.importDataBackup = function(event) {
+                let file = event.target.files[0];
+                if (!file) return;
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let parsed = JSON.parse(e.target.result);
+                        if(parsed.settings) localStorage.setItem('erp_settings', JSON.stringify(parsed.settings));
+                        if(parsed.users) localStorage.setItem('erp_users', JSON.stringify(parsed.users));
+                        if(parsed.invoices) localStorage.setItem('erp_invoices', JSON.stringify(parsed.invoices));
+                        if(parsed.medicines) localStorage.setItem('erp_medicines', JSON.stringify(parsed.medicines));
+                        if(parsed.vendors) localStorage.setItem('erp_vendors', JSON.stringify(parsed.vendors));
+                        if(parsed.expenses) localStorage.setItem('erp_expenses', JSON.stringify(parsed.expenses));
+                        alert('Database Restored Successfully!');
+                        location.reload();
+                    } catch(err) { alert('Invalid Backup File!'); }
+                };
+                reader.readAsText(file);
+            };
+        }
+
+        /* --- 10. SETTINGS & USER ROLES MODULE --- */
         function renderSettingsModule(container) {
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
@@ -652,15 +893,6 @@
                 '<div class="form-group"><label>Full Name *</label><input type="text" id="nuName" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Password *</label><input type="password" id="nuPass" class="form-control nav-focusable"></div>',
                 '<div class="form-group"><label>Custom Role Name *</label><input type="text" id="nuRole" class="form-control nav-focusable" placeholder="e.g. Biller, Accountant, Salesman"></div>',
-                '<div class="form-group" style="grid-column: span 3; margin-top:5px;">',
-                '<label>Role Permissions Matrix</label>',
-                '<div style="display:flex; gap:15px; margin-top:4px;">',
-                '<label><input type="checkbox" id="permSales" checked> POS Sales</label>',
-                '<label><input type="checkbox" id="permPurchase" checked> Purchase</label>',
-                '<label><input type="checkbox" id="permExpenses"> Expenses</label>',
-                '<label><input type="checkbox" id="permSettings"> Store Settings</label>',
-                '</div>',
-                '</div>',
                 '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="createNewUserRole()" style="width:100%;">Create Role & User</button></div>',
                 '</div>',
                 '</div>',
@@ -732,7 +964,7 @@
             };
         }
 
-        // --- REPORTS & OTHER MODULES ---
+        /* --- 11. REPORTS MODULE --- */
         function renderReports(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = [
@@ -747,15 +979,10 @@
             ].join('');
         }
 
-        window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Pharmacy Assistant</h2><p>AI Assistant Active.</p></div>'; };
-        window.renderStockAudit = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Items & Inventory</h2><p>Inventory active.</p></div>'; };
-        window.renderParties = function(container) { container.innerHTML = '<div class="light-card"><h2>👥 Customers & Vendors</h2><p>Ledgers active.</p></div>'; };
-        window.renderSales = function(container) { container.innerHTML = '<div class="light-card"><h2>🛒 POS Counter</h2><p>POS Billing active.</p></div>'; };
-        window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Returns</h2><p>Returns active.</p></div>'; };
-        window.renderPurchaseReturn = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Purchase Returns</h2><p>Debit note active.</p></div>'; };
-        window.renderUdhar = function(container) { container.innerHTML = '<div class="light-card"><h2>📈 Fund Flow & Udhar</h2><p>Fund Flow active.</p></div>'; };
-        window.renderReferralOffers = function(container) { container.innerHTML = '<div class="light-card"><h2>🎁 Referral Offers</h2><p>Offers active.</p></div>'; };
-        window.renderBackupModule = function(container) { container.innerHTML = '<div class="light-card"><h2>💾 Backup & Restore</h2><p>Backup active.</p></div>'; };
+        /* --- OTHER SUBMODULES --- */
+        window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Pharmacy Assistant</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Smart AI Medicine Search & Prescription Assistant Active.</p></div>'; };
+        window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Returns & Credit Notes</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Sale Return Invoice System Active.</p></div>'; };
+        window.renderPurchaseReturn = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Purchase Returns & Debit Notes</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Vendor Debit Note Manager Active.</p></div>'; };
     </script>
 </body>
 </html>
