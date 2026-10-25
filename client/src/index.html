@@ -248,7 +248,7 @@
                 <!-- SALES TOGGLE MENU -->
                 <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
                 <ul class="sub-menu" id="salesSubMenu">
-                    <li><a onclick="loadModule('sales_invoices')">Sale Bill / Invoices</a></li>
+                    <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
                     <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
                     <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
                     <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
@@ -648,7 +648,7 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🩺 BME Master Portal & Department-wise PDF Print</h2>
-                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
+                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:10px; flex-wrap:wrap;">
                         <button class="btn-${bmeTab==='quotation'?'success':'primary'}" onclick="switchBmeTab('quotation')">New Quotation & Audit</button>
                         <button class="btn-${bmeTab==='physical'?'success':'primary'}" onclick="switchBmeTab('physical')">Item Physical Audit</button>
                         <button class="btn-${bmeTab==='store'?'success':'primary'}" onclick="switchBmeTab('store')">Store (Stock & Issue)</button>
@@ -877,13 +877,6 @@
                             <p style="font-size:11.5px; color:#64748b;">Select department to filter and print/save PDF.</p>
                         </div>
                         <div style="display:flex; gap:10px; align-items:center;">
-                            <select id="bmeDeptFilter" class="form-control" style="width:180px; padding:6px;" onchange="renderBmeSubTab('report')">
-                                <option value="ALL">All Departments</option>
-                                <option value="ICU">ICU</option>
-                                <option value="Emergency">Emergency</option>
-                                <option value="OT">OT</option>
-                                <option value="Ward">Ward</option>
-                            </select>
                             <button class="btn-primary" onclick="window.print()" style="padding:7px 16px;">🖨️ Print / Save PDF</button>
                         </div>
                     </div>
@@ -1046,25 +1039,28 @@
                         <input type="text" id="stockSearchBox" class="form-control" style="width:250px; padding:6px 12px;" placeholder="🔍 Find by Name, Serial or Vendor..." value="${filterText}" oninput="renderStockAuditModule(container)">
                     </div>
 
-                    <table class="data-table">
-                        <thead><tr><th>Item Name</th><th>MRP</th><th>Cost</th><th>GST</th><th>Net Rate</th><th>Expiry</th><th>Vendor</th><th>Stock</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${filteredMeds.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No stock records found.</td></tr>' :
-                            filteredMeds.map((m, idx) => `
-                                <tr>
-                                    <td><b>${m.name}</b></td>
-                                    <td>₹${m.mrp || 0}</td>
-                                    <td>₹${m.cost || 0}</td>
-                                    <td>${m.gst || 0}%</td>
-                                    <td style="color:#0284c7;">₹${m.netRate || m.mrp || 0}</td>
-                                    <td>${m.expiry || 'N/A'}</td>
-                                    <td>${m.vendor || 'General'}</td>
-                                    <td><b>${m.stock}</b></td>
-                                    <td><button class="btn-danger" onclick="delItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                    <div style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr.No</th><th>Item Name</th><th>MRP</th><th>Cost</th><th>GST</th><th>Net Rate</th><th>Expiry</th><th>Vendor</th><th>Stock</th><th>Action</th></tr></thead>
+                            <tbody>
+                                ${filteredMeds.length === 0 ? '<tr><td colspan="10" style="text-align:center;">No stock records found.</td></tr>' :
+                                filteredMeds.map((m, idx) => `
+                                    <tr>
+                                        <td>${idx + 1}</td>
+                                        <td><b>${m.name}</b></td>
+                                        <td>₹${m.mrp || 0}</td>
+                                        <td>₹${m.cost || 0}</td>
+                                        <td>${m.gst || 0}%</td>
+                                        <td style="color:#0284c7;">₹${m.netRate || m.mrp || 0}</td>
+                                        <td>${m.expiry || 'N/A'}</td>
+                                        <td>${m.vendor || 'General'}</td>
+                                        <td><b>${m.stock}</b></td>
+                                        <td><button class="btn-danger" onclick="delItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
             window.addItem = function() {
@@ -1079,7 +1075,6 @@
 
                 if(!name) { alert('Item name required!'); return; }
 
-                // Quick add approval check if not admin
                 if(currentUser && currentUser.username !== 'admin' && !checkPermission('all')) {
                     alert('Quick Add Item submitted! Waiting for Admin / Super Admin approval.');
                     let pendingQuick = JSON.parse(localStorage.getItem('erp_quick_pending')) || [];
@@ -1108,8 +1103,6 @@
             let todayStr = new Date().toISOString().split('T')[0];
             let timeStr = new Date().toLocaleTimeString();
 
-            // Generate AR format invoice no e.g. AR25102601
-            let todayDateCode = '251026'; // DDMMYY format for Oct 25, 2026
             let d = new Date();
             let dd = String(d.getDate()).padStart(2, '0');
             let mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -1125,13 +1118,16 @@
                     <h2>🛒 Sale Bill & Invoice Generation</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
-                            <div class="form-group"><label>Invoice No (Auto AR Format)</label><input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" readonly></div>
+                            <div class="form-group">
+                                <label>Invoice No (Auto AR Format)</label>
+                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin') ? '' : 'readonly'} title="Admin can override invoice number">
+                            </div>
                             <div class="form-group"><label>Patient Name * (Compulsory)</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
                             <div class="form-group"><label>Mobile No * (10 Digit Lock)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
                             <div class="form-group"><label>Dr. Name *</label><input type="text" id="saleDr" class="form-control" placeholder="Dr. Name"></div>
                             <div class="form-group"><label>Billing Date (Locked)</label><input type="date" id="saleDate" class="form-control" value="${todayStr}" readonly></div>
                             <div class="form-group"><label>Billing Time (Locked)</label><input type="text" id="saleTime" class="form-control" value="${timeStr}" readonly></div>
-                            <div class="form-group"><label>Item / Medicine Name *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name"></div>
+                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name"></div>
                             <div class="form-group"><label>Batch</label><input type="text" id="saleBatch" class="form-control" value="B-2026"></div>
                             <div class="form-group"><label>HSN Code</label><input type="text" id="saleHsn" class="form-control" value="3004"></div>
                             <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="150"></div>
@@ -1141,8 +1137,8 @@
                         </div>
                     </div>
 
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Bills & Invoices History (Single Page Scroll)</h3>
-                    <div style="max-height: 400px; overflow-y: auto;">
+                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Bills & Invoices History (Single Page Scroll 50+ Items)</h3>
+                    <div style="max-height: 450px; overflow-y: auto;">
                         <table class="data-table">
                             <thead><tr><th>Sr.No</th><th>Invoice No</th><th>Date & Time</th><th>Patient & Dr.</th><th>Mobile</th><th>Item & Batch</th><th>Qty</th><th>Net Payable</th><th>Action</th></tr></thead>
                             <tbody>
@@ -1157,7 +1153,7 @@
                                         <td>${i.item} (HSN: ${i.hsn || 'N/A'})<br><small>Batch: ${i.batch}</small></td>
                                         <td><b>${i.qty}</b></td>
                                         <td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td>
-                                        <td><button class="btn-primary" onclick="printSingleSaleInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Bill</button></td>
+                                        <td><button class="btn-primary" onclick="printSingleSaleInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Sale Bill</button></td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1167,6 +1163,7 @@
             `;
 
             window.saveSaleInvoice = function() {
+                let customInvBox = document.getElementById('invNoDisplay').value.trim();
                 let patientName = document.getElementById('salePatient').value.trim();
                 let mobile = document.getElementById('saleMobile').value.trim();
                 let drName = document.getElementById('saleDr').value.trim();
@@ -1188,9 +1185,8 @@
 
                 let totalAmt = mrp * qty;
                 let netPayable = totalAmt - (totalAmt * disc / 100);
-                let invoiceNo = generatedInvoiceNo;
+                let invoiceNo = customInvBox || generatedInvoiceNo;
 
-                // Increment counter for next bill today
                 localStorage.setItem(dailyCounterKey, counter + 1);
 
                 invs.unshift({
@@ -1210,7 +1206,6 @@
                 });
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
 
-                // Auto-fetch stock deduct
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
                 let foundMed = meds.find(m => m.name.toLowerCase() === item.toLowerCase());
                 if(foundMed) {
@@ -1228,12 +1223,12 @@
                 let inv = invs[idx];
                 let printWin = window.open('', '_blank');
                 printWin.document.write(`
-                    <html><head><title>Invoice ${inv.invoiceNo}</title><style>body{font-family:sans-serif;padding:20px;}h2{color:#16a34a;}</style></head>
+                    <html><head><title>Sale Bill ${inv.invoiceNo}</title><style>body{font-family:sans-serif;padding:20px;}h2{color:#16a34a;}</style></head>
                     <body>
                         <h2>A R PHARMA AND SURGICAL AGENCY</h2>
                         <p>Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
                         <hr>
-                        <h3>TAX INVOICE / SALE BILL</h3>
+                        <h3>SALE BILL / TAX INVOICE</h3>
                         <p><b>Invoice No:</b> ${inv.invoiceNo} | <b>Date:</b> ${inv.date} ${inv.time || ''}</p>
                         <p><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
                         <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse;">
@@ -1254,7 +1249,7 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🔄 Sale Return Bill & Max Limit Validation</h2>
+                    <h2>🔄 Sale Return Bill & Dedicated Printing</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Enter Invoice No *</label><input type="text" id="retInvNo" class="form-control" placeholder="AR25102601" onblur="autofetchInvoiceForReturn(this.value)"></div>
@@ -1268,14 +1263,16 @@
                         </div>
                     </div>
 
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Return History Ledger</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Returned Qty</th><th>Reason</th></tr></thead>
-                        <tbody>
-                            ${returns.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No sale returns recorded.</td></tr>' :
-                            returns.map(r => `<tr><td><b>${r.returnId}</b></td><td>${r.invoiceNo}</td><td>${r.date}</td><td>${r.patient}</td><td>${r.item}</td><td style="color:#ef4444;"><b>${r.qty}</b></td><td>${r.reason}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
+                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Return Bills History (Single Page Scroll 50+ Items)</h3>
+                    <div style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr.No</th><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Returned Qty</th><th>Reason</th><th>Action</th></tr></thead>
+                            <tbody>
+                                ${returns.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No sale returns recorded.</td></tr>' :
+                                returns.map((r, idx) => `<tr><td>${idx + 1}</td><td><b>${r.returnId}</b></td><td>${r.invoiceNo}</td><td>${r.date}</td><td>${r.patient}</td><td>${r.item}</td><td style="color:#ef4444;"><b>${r.qty}</b></td><td>${r.reason}</td><td><button class="btn-primary" onclick="printSaleReturnBill(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Return Bill</button></td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
 
@@ -1311,7 +1308,6 @@
                 returns.unshift({ returnId, invoiceNo, date, patient, item, qty, reason });
                 localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
 
-                // Stock auto-fetch back
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
                 let foundMed = meds.find(m => m.name.toLowerCase() === item.toLowerCase());
                 if(foundMed) {
@@ -1321,6 +1317,29 @@
 
                 alert('Sale Return processed successfully & Stock Auto-Fetched!');
                 renderSalesReturnModule(container);
+            };
+
+            window.printSaleReturnBill = function(idx) {
+                let ret = returns[idx];
+                let printWin = window.open('', '_blank');
+                printWin.document.write(`
+                    <html><head><title>Sale Return Bill ${ret.returnId}</title><style>body{font-family:sans-serif;padding:20px;}h2{color:#ef4444;}</style></head>
+                    <body>
+                        <h2>A R PHARMA AND SURGICAL AGENCY</h2>
+                        <p>Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
+                        <hr>
+                        <h3>SALE RETURN CREDIT NOTE / BILL</h3>
+                        <p><b>Return ID:</b> ${ret.returnId} | <b>Original Invoice No:</b> ${ret.invoiceNo} | <b>Date:</b> ${ret.date}</p>
+                        <p><b>Patient Name:</b> ${ret.patient}</p>
+                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse;">
+                            <tr><th>Item Name</th><th>Returned Qty</th><th>Reason</th></tr>
+                            <tr><td><b>${ret.item}</b></td><td style="color:red;"><b>${ret.qty}</b></td><td>${ret.reason}</td></tr>
+                        </table>
+                        <br><p>Thank you for your business!</p>
+                    </body></html>
+                `);
+                printWin.document.close();
+                printWin.print();
             };
         }
 
@@ -1350,7 +1369,7 @@
                             <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generatePurchaseRecord('${activeSub}')" style="width:100%;">Save ${subTitle}</button></div>
                         </div>
                     </div>
-                    <div style="max-height: 380px; overflow-y: auto;">
+                    <div style="max-height: 450px; overflow-y: auto;">
                         <table class="data-table">
                             <thead><tr><th>Sr.No</th><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
                             <tbody>
