@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - BME & CRM Suite</title>
+    <title>A. R ERP SOFTWARE - BME & CRM Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -59,8 +59,18 @@
             display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px;
             background: rgba(15, 23, 42, 0.9); border: 2px solid #22c55e; border-radius: 14px;
         }
-        .brand-icon { width: 30px; height: 30px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; }
-        .brand-text { font-size: 13px; color: #22c55e; letter-spacing: 0.5px; }
+        
+        /* BLINKING MONEY PLANT LOGO ICON */
+        @keyframes blinkPlant {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        .brand-icon { 
+            width: 30px; height: 30px; background: #16a34a; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff;
+            animation: blinkPlant 1.5s infinite ease-in-out;
+        }
+        .brand-text { font-size: 12px; color: #22c55e; letter-spacing: 0.5px; }
 
         .sidebar-menu { list-style: none; padding: 8px 10px; margin: 0; flex: 1; }
         .sidebar-menu li { margin-bottom: 2px; }
@@ -115,7 +125,6 @@
             border-radius: 12px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 14px;
         }
 
-        /* JUMPING LUCKY EMOJI */
         @keyframes bounceLucky {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
@@ -130,7 +139,7 @@
         <div class="auth-container-grid">
             <div class="neumorphic-card">
                 <div>
-                    <h2>A.R. ERP BILLING & COMPLETE INVENTORY SOFTWARE</h2>
+                    <h2>A. R ERP SOFTWARE - SECURE ACCESS</h2>
                     <div class="subtitle">Secure Administrator & Staff Access</div>
                     
                     <div class="input-wrap-3d">
@@ -198,7 +207,7 @@
 
         <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:8px; border-radius:8px; margin-bottom:10px;" id="licenseBoxContainer">
             <div style="display:flex; align-items:center; gap:6px; color:#16a34a; font-size:11px; font-weight:900;" id="licenseStatusText">
-                <span>✅</span> Lifetime Access (Owner)
+                <span>🌿</span> Lifetime Access (Owner)
             </div>
             <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:10px; color:#334155; font-weight:900; border-top:1px dashed #bbf7d0; padding-top:4px;">
                 <span>Plan Valid</span>
@@ -228,8 +237,8 @@
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
-                    <div class="brand-icon">AR</div>
-                    <div class="brand-text">A.R. ERP BILLING <span class="lucky-emoji">🍀</span></div>
+                    <div class="brand-icon" title="Money Plant Logo">🌿</div>
+                    <div class="brand-text">A. R ERP SOFTWARE <span class="lucky-emoji">🍀</span></div>
                 </div>
             </div>
             <ul class="sidebar-menu">
@@ -237,6 +246,8 @@
                 <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
                 <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
                 <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
+                
+                <!-- SALES MENU -->
                 <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales & POS</a></li>
                 <ul class="sub-menu">
                     <li><a onclick="loadModule('sales')">Sale Invoices</a></li>
@@ -245,6 +256,15 @@
                     <li><a onclick="loadModule('sales')">Sale Order</a></li>
                     <li><a onclick="loadModule('sales')">Sale Return / Cr. Note</a></li>
                 </ul>
+
+                <!-- PURCHASE MENU -->
+                <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>🛍️</span> Purchase</a></li>
+                <ul class="sub-menu">
+                    <li><a onclick="loadModule('purchase')">Purchase Bill</a></li>
+                    <li><a onclick="loadModule('purchase')">Purchase Order</a></li>
+                    <li><a onclick="loadModule('purchase')">Purchase Return / Dr. Note</a></li>
+                </ul>
+
                 <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items & Inventory</a></li>
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
                 <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
@@ -255,7 +275,7 @@
         <div class="main-content">
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;">A.R. ERP v2.6 <span class="lucky-emoji">🚀</span></span>
+                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;">A. R v2.6 🌿</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -329,7 +349,7 @@
                 document.getElementById('changeUserBox').value = currentUser.username;
 
                 if(currentUser.username === 'admin') {
-                    document.getElementById('licenseStatusText').innerHTML = `<span>👑</span> Lifetime Owner Access`;
+                    document.getElementById('licenseStatusText').innerHTML = `<span>🌿</span> Lifetime Owner Access`;
                     document.getElementById('licenseExpiryText').innerText = `Unlimited`;
                 } else {
                     let yrs = currentUser.planYears || '1 Year';
@@ -473,6 +493,7 @@
             else if (m === 'bme') renderBmeModule(workspace);
             else if (m === 'queries') renderQueryPortalModule(workspace);
             else if (m === 'sales') renderSalesModule(workspace);
+            else if (m === 'purchase') renderPurchaseModule(workspace);
             else if (m === 'audit') renderStockAuditModule(workspace);
             else if (m === 'parties') renderPartiesModule(workspace);
             else if (m === 'expenses') renderExpensesModule(workspace);
@@ -515,7 +536,6 @@
                     </div>
                 </div>
 
-                <!-- BME STATUS QUICK BAR -->
                 <div class="light-card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <b>🩺 BME Master Status:</b> ${bmeItems.length} Instruments Audited | <span style="color:#16a34a;">${workingCount} Working</span> | <span style="color:#ef4444;">${repairCount} Repairing</span>
@@ -538,7 +558,6 @@
                         </div>
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:center; background:#f8fafc; padding:25px; border-radius:12px; border:1.5px solid #cbd5e1;">
-                        <!-- SINGLE GOLA / DOUGHNUT GRAPH WITH HOVER VALUES -->
                         <div style="display:flex; justify-content:center; align-items:center;">
                             <div style="width:180px; height:180px; border-radius:50%; background:conic-gradient(#0284c7 0deg 210deg, #16a34a 210deg 320deg, #7c3aed 320deg 360deg); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(0,0,0,0.1); position:relative;" title="Sales: ₹${totalSales.toFixed(2)} | Purchases: ₹${totalPurchases.toFixed(2)} | Profit: ₹${estimatedProfit.toFixed(2)}">
                                 <div style="width:110px; height:110px; background:#ffffff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
@@ -574,16 +593,25 @@
 
         function renderBmeModule(container) {
             let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
+            let filterText = document.getElementById('bmeSearchBox')?.value?.toLowerCase() || '';
+            let filteredItems = bmeItems.filter(b => 
+                b.name.toLowerCase().includes(filterText) || 
+                b.serial.toLowerCase().includes(filterText) || 
+                b.dept.toLowerCase().includes(filterText)
+            );
+
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🩺 BME Master Portal (Biomedical & Store Audit)</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Audit instruments, track department allocation, installation date, serial numbers, and live operational status (Working / Not Working / Repairing).</p>
+                    <h2>🩺 BME Master Portal & Quotation Management</h2>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Audit instruments, make new quotation, track department allocation, serial numbers, and operational status.</p>
                     
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Make New Quotation / Add Instrument Audit</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="e.g. ICU Ventilator / ECG"></div>
+                            <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="ICU Ventilator / ECG"></div>
                             <div class="form-group"><label>Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
                             <div class="form-group"><label>Department *</label><input type="text" id="bmeDept" class="form-control" placeholder="ICU / Emergency / OT"></div>
+                            <div class="form-group"><label>Quantity</label><input type="number" id="bmeQty" class="form-control" value="1"></div>
                             <div class="form-group"><label>BME Engineer Name</label><input type="text" id="bmeEngineer" class="form-control" placeholder="Engineer Name"></div>
                             <div class="form-group"><label>Installation Date</label><input type="date" id="bmeDate" class="form-control"></div>
                             <div class="form-group"><label>Quotation / Purchase Ref</label><input type="text" id="bmeQuote" class="form-control" placeholder="QT-2026-01"></div>
@@ -594,21 +622,27 @@
                                     <option value="Repairing">Repairing</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addBmeItem()" style="width:100%;">Save BME Audit</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addBmeItem()" style="width:100%;">Save Quotation & Audit</button></div>
                         </div>
                     </div>
 
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px;">Audited Instruments & Quotations Log</h3>
+                        <input type="text" id="bmeSearchBox" class="form-control" style="width:250px; padding:6px 12px;" placeholder="🔍 Find by Name, Serial, Dept..." value="${filterText}" oninput="renderBmeModule(container)">
+                    </div>
+
                     <table class="data-table">
-                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Department</th><th>BME Engineer</th><th>Install Date</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Dept & Qty</th><th>BME Engineer</th><th>Install Date</th><th>Quotation Ref</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${bmeItems.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No biomedical instruments audited yet.</td></tr>' :
-                            bmeItems.map((b, idx) => `
+                            ${filteredItems.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No matching instruments or quotations found.</td></tr>' :
+                            filteredItems.map((b, idx) => `
                                 <tr>
-                                    <td><b>${b.name}</b><br><small>Ref: ${b.quote}</small></td>
+                                    <td><b>${b.name}</b></td>
                                     <td>${b.serial}</td>
-                                    <td>${b.dept}</td>
+                                    <td>${b.dept} (Qty: ${b.qty || 1})</td>
                                     <td>${b.engineer}</td>
                                     <td>${b.date}</td>
+                                    <td><b>${b.quote}</b></td>
                                     <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${b.status === 'Working' ? '#dcfce7; color:#16a34a;' : b.status === 'Repairing' ? '#fef3c7; color:#d97706;' : '#fee2e2; color:#ef4444;'}">${b.status}</span></td>
                                     <td><button class="btn-danger" onclick="delBme(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
                                 </tr>
@@ -621,15 +655,16 @@
                 let name = document.getElementById('bmeName').value.trim();
                 let serial = document.getElementById('bmeSerial').value.trim();
                 let dept = document.getElementById('bmeDept').value.trim();
+                let qty = parseInt(document.getElementById('bmeQty').value) || 1;
                 let engineer = document.getElementById('bmeEngineer').value.trim() || 'Drx. Aarif';
                 let date = document.getElementById('bmeDate').value || new Date().toLocaleDateString('en-GB');
-                let quote = document.getElementById('bmeQuote').value.trim() || 'PO-GEN';
+                let quote = document.getElementById('bmeQuote').value.trim() || 'QT-GEN';
                 let status = document.getElementById('bmeStatus').value;
 
                 if(!name || !serial || !dept) { alert('Instrument Name, Serial No, and Department required!'); return; }
-                bmeItems.unshift({ name, serial, dept, engineer, date, quote, status });
+                bmeItems.unshift({ name, serial, dept, qty, engineer, date, quote, status });
                 localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
-                alert('BME Audit record saved successfully!');
+                alert('BME Quotation & Audit saved successfully!');
                 renderBmeModule(container);
             };
             window.delBme = function(idx) {
@@ -639,14 +674,133 @@
             };
         }
 
+        function renderStockAuditModule(container) {
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            let filterText = document.getElementById('stockSearchBox')?.value?.toLowerCase() || '';
+            let filteredMeds = meds.filter(m => 
+                m.name.toLowerCase().includes(filterText) || 
+                (m.serial && m.serial.toLowerCase().includes(filterText)) || 
+                (m.dept && m.dept.toLowerCase().includes(filterText)) ||
+                (m.location && m.location.toLowerCase().includes(filterText))
+            );
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📦 Items & Inventory Management (Advanced Search)</h2>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Find items by Serial No, Name, Department, Location, Date of Issue, and Installation Report.</p>
+                    
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Item / Medicine Name *</label><input type="text" id="itName" class="form-control" placeholder="Item Name"></div>
+                            <div class="form-group"><label>Serial No *</label><input type="text" id="itSerial" class="form-control" placeholder="SN-1001"></div>
+                            <div class="form-group"><label>Department</label><input type="text" id="itDept" class="form-control" placeholder="Pharmacy / ICU"></div>
+                            <div class="form-group"><label>Location</label><input type="text" id="itLoc" class="form-control" placeholder="Rack 3 / Store Room"></div>
+                            <div class="form-group"><label>Issue Date</label><input type="date" id="itIssueDate" class="form-control"></div>
+                            <div class="form-group"><label>Installation Report</label><input type="text" id="itReport" class="form-control" placeholder="Installed & Tested"></div>
+                            <div class="form-group"><label>Stock / Qty</label><input type="number" id="itStock" class="form-control" value="100"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addItem()" style="width:100%;">Add Inventory Item</button></div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px;">Inventory Ledger & Reports</h3>
+                        <input type="text" id="stockSearchBox" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Find by Serial, Name, Dept, Location..." value="${filterText}" oninput="renderStockAuditModule(container)">
+                    </div>
+
+                    <table class="data-table">
+                        <thead><tr><th>Item Name</th><th>Serial No</th><th>Dept & Location</th><th>Issue Date</th><th>Installation Report</th><th>Stock</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${filteredMeds.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No inventory items found matching search.</td></tr>' :
+                            filteredMeds.map((m, idx) => `
+                                <tr>
+                                    <td><b>${m.name}</b></td>
+                                    <td>${m.serial || 'N/A'}</td>
+                                    <td>${m.dept || 'General'} (${m.location || 'Main Store'})</td>
+                                    <td>${m.issueDate || 'N/A'}</td>
+                                    <td>${m.installReport || 'Pending'}</td>
+                                    <td><b>${m.stock}</b></td>
+                                    <td><button class="btn-danger" onclick="delItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.addItem = function() {
+                let name = document.getElementById('itName').value.trim();
+                let serial = document.getElementById('itSerial').value.trim() || ('SN-' + Math.floor(1000+Math.random()*9000));
+                let dept = document.getElementById('itDept').value.trim() || 'General';
+                let location = document.getElementById('itLoc').value.trim() || 'Main Store';
+                let issueDate = document.getElementById('itIssueDate').value || new Date().toLocaleDateString('en-GB');
+                let installReport = document.getElementById('itReport').value.trim() || 'Installed OK';
+                let stock = parseInt(document.getElementById('itStock').value) || 0;
+
+                if(!name) { alert('Item name required!'); return; }
+                meds.push({ name, serial, dept, location, issueDate, installReport, stock });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAuditModule(container);
+            };
+            window.delItem = function(idx) {
+                meds.splice(idx, 1);
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAuditModule(container);
+            };
+        }
+
+        function renderPurchaseModule(container) {
+            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛍️ Purchase Management (Bills, Orders & Returns)</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Vendor Name *</label><input type="text" id="purVendor" class="form-control" placeholder="Supplier Name"></div>
+                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="purItem" class="form-control" placeholder="Item Name"></div>
+                            <div class="form-group"><label>Quantity</label><input type="number" id="purQty" class="form-control" value="10"></div>
+                            <div class="form-group"><label>Total Amount (₹) *</label><input type="number" id="purAmt" class="form-control" placeholder="5000"></div>
+                            <div class="form-group"><label>Purchase Type</label>
+                                <select id="purType" class="form-control">
+                                    <option value="Purchase Bill">Purchase Bill</option>
+                                    <option value="Purchase Order">Purchase Order</option>
+                                    <option value="Purchase Return">Purchase Return / Dr. Note</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addPurchase()" style="width:100%;">Save Purchase Entry</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>PO / Bill No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${purchases.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No purchase records found.</td></tr>' :
+                            purchases.map(p => `<tr><td><b>${p.poNo}</b></td><td>${p.date}</td><td>${p.vendor}</td><td>${p.item} (${p.qty})</td><td>${p.type}</td><td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.addPurchase = function() {
+                let vendor = document.getElementById('purVendor').value.trim();
+                let item = document.getElementById('purItem').value.trim();
+                let qty = parseInt(document.getElementById('purQty').value) || 1;
+                let amount = parseFloat(document.getElementById('purAmt').value) || 0;
+                let type = document.getElementById('purType').value;
+
+                if(!vendor || !item || amount <= 0) { alert('Vendor, Item and Amount required!'); return; }
+                let poNo = 'PO-' + Math.floor(10000 + Math.random()*90000);
+                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type });
+                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
+                alert('Purchase Entry Saved Successfully!');
+                renderPurchaseModule(container);
+            };
+        }
+
         function renderAiModule(container) {
             container.innerHTML = `
                 <div class="light-card" style="max-width:800px; margin: 0 auto;">
                     <h2>🤖 AR AI Assistant & Business Intelligence <span class="lucky-emoji">🍀</span></h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask AI regarding your pharmacy inventory, biomedical audit, or tax filing inquiries.</p>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask AI regarding your pharmacy inventory, BME audit, or purchase orders.</p>
                     <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:15px; height:320px; overflow-y:auto; margin-bottom:15px;" id="aiChatBox">
                         <div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;">
-                            <b>AR AI:</b> Hello Aarif bhai! Main aapka AR AI assistant hoon. Aaj BME audit ya sales report ke baare mein kya janna chahenge?
+                            <b>AR AI:</b> Hello Aarif bhai! Main aapka AR AI assistant hoon. Aaj BME audit ya inventory search ke baare mein kya janna chahenge?
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -662,7 +816,7 @@
                 chatBox.innerHTML += `<div style="text-align:right; margin-bottom:10px;"><span style="background:#0284c7; color:#fff; padding:8px 12px; border-radius:10px; display:inline-block; font-size:13px;">${txt}</span></div>`;
                 document.getElementById('aiInput').value = '';
                 setTimeout(() => {
-                    chatBox.innerHTML += `<div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;"><b>AR AI:</b> Aapki query "${txt}" par process kiya gaya hai. Store aur BME instruments bilkul secure aur healthy hain!</div>`;
+                    chatBox.innerHTML += `<div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;"><b>AR AI:</b> Aapki query "${txt}" par process kiya gaya hai. Store aur BME records bilkul safe hain!</div>`;
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }, 500);
             };
@@ -676,7 +830,7 @@
                     <table class="data-table">
                         <thead><tr><th>Date</th><th>Owner / Request Info</th><th>Purpose / Enquiry</th><th>Response & Updates</th><th>Final Decision</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${queries.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No enquiries or requests submitted yet.</td></tr>' :
+                            ${queries.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No enquiries submitted yet.</td></tr>' :
                             queries.map((q, idx) => `
                                 <tr>
                                     <td>${q.date}</td>
@@ -709,7 +863,6 @@
                     </table>
                 </div>
             `;
-
             window.updateQueryRecord = function(idx) {
                 queries[idx].response = document.getElementById('resp_' + idx).value;
                 queries[idx].dayReport = document.getElementById('day_' + idx).value;
@@ -720,7 +873,6 @@
                 renderQueryPortalModule(container);
                 updateQueryBadge();
             };
-
             window.deleteQueryRecord = function(idx) {
                 queries.splice(idx, 1);
                 localStorage.setItem('erp_software_queries', JSON.stringify(queries));
@@ -771,48 +923,6 @@
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
                 alert('Invoice Created Successfully: ' + invoiceNo);
                 renderSalesModule(container);
-            };
-        }
-
-        function renderStockAuditModule(container) {
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📦 Items Master & Stock Inventory</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control"></div>
-                            <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-101"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control"></div>
-                            <div class="form-group"><label>Price (₹)</label><input type="number" id="itPrice" class="form-control"></div>
-                            <div class="form-group"><label>Stock</label><input type="number" id="itStock" class="form-control" value="100"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addItem()" style="width:100%;">Add Item</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${meds.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No stock items added yet.</td></tr>' :
-                            meds.map((m, idx) => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td>₹${m.price}</td><td><b>${m.stock}</b></td><td><button class="btn-danger" onclick="delItem(${idx})">Delete</button></td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.addItem = function() {
-                let name = document.getElementById('itName').value.trim();
-                let batch = document.getElementById('itBatch').value.trim();
-                let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
-                let price = parseFloat(document.getElementById('itPrice').value) || 0;
-                let stock = parseInt(document.getElementById('itStock').value) || 0;
-                if(!name || mrp <= 0) { alert('Name and MRP required!'); return; }
-                meds.push({ name, batch, mrp, price, stock });
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockAuditModule(container);
-            };
-            window.delItem = function(idx) {
-                meds.splice(idx, 1);
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockAuditModule(container);
             };
         }
 
