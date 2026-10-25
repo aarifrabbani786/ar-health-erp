@@ -263,7 +263,7 @@
                     <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
                 </ul>
 
-                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items & Inventory</a></li>
+                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items & Inventory & Audit</a></li>
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
                 <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
                 
@@ -859,7 +859,6 @@
                 `;
             }
 
-            // Global BME handlers
             window.saveBmeAudit = function() {
                 let name = document.getElementById('bmeName').value.trim();
                 let serial = document.getElementById('bmeSerial').value.trim();
@@ -958,12 +957,12 @@
                 (m.serial && m.serial.toLowerCase().includes(filterText)) || 
                 (m.dept && m.dept.toLowerCase().includes(filterText)) ||
                 (m.location && m.location.toLowerCase().includes(filterText))
-            ) : [];
+            ) : meds;
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📦 Items & Inventory Management (Advanced Search)</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Find items by Serial No, Name, Department, Location, Date of Issue, and Installation Report.</p>
+                    <h2>📦 Items & Inventory Stock Register & Audit</h2>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Auto-synced inventory stock register. Find items by Serial No or Name, and print stock list.</p>
                     
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
@@ -979,15 +978,17 @@
                     </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3 style="font-size:14px;">Inventory Ledger & Reports</h3>
-                        <input type="text" id="stockSearchBox" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Find by Serial, Name, Dept, Location..." value="${filterText}" oninput="renderStockAuditModule(container)">
+                        <h3 style="font-size:14px;">Stock Register & Audit Ledger</h3>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="stockSearchBox" class="form-control" style="width:250px; padding:6px 12px;" placeholder="🔍 Find by Serial or Name..." value="${filterText}" oninput="renderStockAuditModule(container)">
+                            <button class="btn-primary" onclick="window.print()" style="padding:6px 14px; font-size:11.5px;">🖨️ Print Stock List</button>
+                        </div>
                     </div>
 
                     <table class="data-table">
                         <thead><tr><th>Item Name</th><th>Serial No</th><th>Dept & Location</th><th>Issue Date</th><th>Installation Report</th><th>Stock</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${!filterText ? '<tr><td colspan="7" style="text-align:center; color:#64748b;">Please search / find an inventory item above to display results.</td></tr>' :
-                            filteredMeds.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No inventory items found matching search.</td></tr>' :
+                            ${filteredMeds.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No inventory items found.</td></tr>' :
                             filteredMeds.map((m, idx) => `
                                 <tr>
                                     <td><b>${m.name}</b></td>
@@ -1066,7 +1067,13 @@
 
                 invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable, type: sType });
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
-                alert(subTitle + ' Created Successfully: ' + invoiceNo);
+
+                // Auto-fetch stock update
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                meds.unshift({ name: item, serial: 'SN-' + Math.floor(1000+Math.random()*9000), dept: 'Sales', location: 'Counter', issueDate: new Date().toLocaleDateString('en-GB'), installReport: 'Sold OK', stock: qty });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+
+                alert(subTitle + ' Created Successfully & Stock Auto-Fetched: ' + invoiceNo);
                 renderSalesModule(container, activeSub);
             };
         }
@@ -1106,7 +1113,13 @@
                 let poNo = (pType.includes('order') ? 'PO-' : pType.includes('return') ? 'DR-' : 'PB-') + Math.floor(10000 + Math.random()*90000);
                 purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                alert(subTitle + ' Saved Successfully!');
+
+                // Auto-fetch stock update
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                meds.unshift({ name: item, serial: 'SN-' + Math.floor(1000+Math.random()*9000), dept: 'Purchase', location: 'Main Store', issueDate: new Date().toLocaleDateString('en-GB'), installReport: 'Purchased OK', stock: qty });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+
+                alert(subTitle + ' Saved Successfully & Stock Auto-Fetched!');
                 renderPurchaseModule(container, activeSub);
             };
         }
@@ -1118,7 +1131,7 @@
                     <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask AI regarding your pharmacy inventory, BME audit, or purchase orders.</p>
                     <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:15px; height:320px; overflow-y:auto; margin-bottom:15px;" id="aiChatBox">
                         <div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;">
-                            <b>AR AI:</b> Hello Aarif bhai! Main aapka AR AI assistant hoon. Aaj BME audit ya inventory search ke baare mein kya janna chahenge?
+                            <b>AR AI:</b> Hello Aarif bhai! Main aapka AR AI assistant hoon. Aaj stock register ya BME audit ke baare mein kya janna chahenge?
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -1134,7 +1147,7 @@
                 chatBox.innerHTML += `<div style="text-align:right; margin-bottom:10px;"><span style="background:#0284c7; color:#fff; padding:8px 12px; border-radius:10px; display:inline-block; font-size:13px;">${txt}</span></div>`;
                 document.getElementById('aiInput').value = '';
                 setTimeout(() => {
-                    chatBox.innerHTML += `<div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;"><b>AR AI:</b> Aapki query "${txt}" par process kiya gaya hai. Store aur BME records bilkul safe hain!</div>`;
+                    chatBox.innerHTML += `<div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;"><b>AR AI:</b> Aapki query "${txt}" par process kiya gaya hai. Store aur stock records bilkul safe hain!</div>`;
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }, 500);
             };
