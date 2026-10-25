@@ -261,47 +261,7 @@
                     <div class="brand-text">A. R ERP SOFTWARE <span style="font-size:14px;">🍀</span></div>
                 </div>
             </div>
-            <ul class="sidebar-menu">
-                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
-                
-                <!-- SALES TOGGLE MENU -->
-                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="salesSubMenu">
-                    <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
-                    <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
-                    <li><a onclick="loadModule('stock_master')">Stock Master</a></li>
-                    <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
-                    <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
-                    <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
-                </ul>
-
-                <!-- PURCHASE TOGGLE MENU -->
-                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="purchaseSubMenu">
-                    <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
-                    <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
-                    <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
-                </ul>
-
-                <!-- MASTER REPORT TOGGLE MENU -->
-                <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Report <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="reportSubMenu">
-                    <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
-                    <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
-                    <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
-                    <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
-                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
-                
-                <!-- BME & ENQUIRY AT BOTTOM -->
-                <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
-                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
-                
-                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings & Users</a></li>
-            </ul>
+            <ul class="sidebar-menu" id="dynamicSidebarList"></ul>
         </div>
 
         <div class="main-content">
@@ -330,13 +290,20 @@
         let currentUser = null;
 
         let defaultUsers = [
-            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', planYears: 'Lifetime', permissions: ['all'] }
+            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', planYears: 'Lifetime', permissions: ['all'] },
+            { username: 'bme', pass: 'bme', name: 'BME Engineer', role: 'BME Staff', status: 'Active', planYears: '1 Year', permissions: ['bme'] }
         ];
 
         let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
         if (!storedUsers || !Array.isArray(storedUsers)) {
             localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
             storedUsers = defaultUsers;
+        } else {
+            let bmeCheck = storedUsers.find(x => x.username === 'bme');
+            if(!bmeCheck) {
+                storedUsers.push({ username: 'bme', pass: 'bme', name: 'BME Engineer', role: 'BME Staff', status: 'Active', planYears: '1 Year', permissions: ['bme'] });
+                localStorage.setItem('erp_users', JSON.stringify(storedUsers));
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -357,6 +324,7 @@
                         document.getElementById('auth-overlay').style.display = 'none';
                         document.getElementById('main-app-container').style.display = 'flex';
                         setupTopUserAvatar();
+                        buildSidebarMenu();
                         loadModule(localStorage.getItem('erp_active_module') || 'dashboard');
                         return;
                     }
@@ -376,6 +344,75 @@
             let hSub = document.getElementById('bannerAgencySub');
             if(hName) hName.innerText = settings.shopName;
             if(hSub) hSub.innerText = settings.tagline;
+        }
+
+        function buildSidebarMenu() {
+            let sList = document.getElementById('dynamicSidebarList');
+            if(!sList) return;
+
+            let isSuperAdmin = currentUser && currentUser.username === 'admin';
+            let permissions = currentUser ? (currentUser.permissions || []) : [];
+
+            let html = `
+                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
+                <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
+            `;
+
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('sales')) {
+                html += `
+                    <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                    <ul class="sub-menu" id="salesSubMenu">
+                        <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
+                        <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
+                        <li><a onclick="loadModule('stock_master')">Stock Master</a></li>
+                        <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
+                        <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
+                        <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
+                    </ul>
+                `;
+            }
+
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('purchase')) {
+                html += `
+                    <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                    <ul class="sub-menu" id="purchaseSubMenu">
+                        <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
+                        <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
+                        <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
+                    </ul>
+                `;
+            }
+
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('reports')) {
+                html += `
+                    <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Report <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                    <ul class="sub-menu" id="reportSubMenu">
+                        <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
+                        <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
+                        <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
+                        <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
+                    </ul>
+                `;
+            }
+
+            if(isSuperAdmin || permissions.includes('all')) {
+                html += `
+                    <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
+                    <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
+                `;
+            }
+
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('bme')) {
+                html += `<li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>`;
+            }
+
+            html += `<li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>`;
+
+            if(isSuperAdmin || permissions.includes('all')) {
+                html += `<li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings & Users</a></li>`;
+            }
+
+            sList.innerHTML = html;
         }
 
         function toggleSubMenu(menuId, e) {
@@ -485,9 +522,10 @@
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'flex';
                 setupTopUserAvatar();
+                buildSidebarMenu();
                 loadModule('dashboard');
             } else { 
-                alert('Invalid Login Credentials! Use admin / admin123'); 
+                alert('Invalid Login Credentials! Use admin / admin123 or bme / bme'); 
                 document.getElementById('loginPass').value = '';
             }
         }
@@ -999,7 +1037,24 @@
                         </div>
                     </div>
 
-                    <h2>👥 User Management, Plan Validation & Permissions</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:20px;">
+                        <h3 style="font-size:13px; color:#16a34a; margin-bottom:10px;">➕ Create New User (e.g. BME User)</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Username *</label><input type="text" id="newUName" class="form-control" placeholder="bme"></div>
+                            <div class="form-group"><label>Password *</label><input type="text" id="newUPass" class="form-control" placeholder="bme123"></div>
+                            <div class="form-group"><label>Role / Title</label><input type="text" id="newURole" class="form-control" value="BME Engineer"></div>
+                            <div class="form-group"><label>Module Access</label>
+                                <select id="newUPerm" class="form-control">
+                                    <option value="bme">BME Portal Only</option>
+                                    <option value="sales">Sales Only</option>
+                                    <option value="all">All Modules</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="createNewSystemUser()" style="width:100%;">Create User</button></div>
+                        </div>
+                    </div>
+
+                    <h2>👥 User Management & Permissions</h2>
                     <table class="data-table">
                         <thead><tr><th>Username</th><th>Role</th><th>Plan Validity</th><th>Modules Access</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
@@ -1008,17 +1063,18 @@
                                     <td><b>${u.username}</b> ${u.username === 'admin' ? '👑 (Owner)' : ''}</td>
                                     <td>${u.role || 'Staff'}</td>
                                     <td>
-                                        ${u.username === 'admin' ? '<b>Lifetime (Permanent)</b>' : `
+                                        ${u.username === 'admin' ? '<b>Lifetime</b>' : `
                                             <select class="form-control" style="padding:4px; font-size:11px; width:110px;" onchange="updateUserPlan(${idx}, this.value)">
                                                 <option value="1 Year" ${u.planYears === '1 Year' ? 'selected' : ''}>1 Year</option>
-                                                <option value="2 Years" ${u.planYears === '2 Years' ? 'selected' : ''}>2 Years</option>
                                                 <option value="Lifetime" ${u.planYears === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
                                             </select>
                                         `}
                                     </td>
-                                    <td>Full Access</td>
+                                    <td>${u.permissions?.join(', ') || 'all'}</td>
                                     <td><span style="color:#16a34a;">${u.status || 'Active'}</span></td>
-                                    <td><span style="color:#64748b; font-size:11px;">Active Owner</span></td>
+                                    <td>
+                                        ${u.username === 'admin' ? 'Protected' : `<button class="btn-danger" onclick="delSystemUser(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button>`}
+                                    </td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1033,6 +1089,23 @@
                 localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline, footerText }));
                 alert('Shop settings updated successfully!');
                 applyAgencyHeaderSettings();
+            };
+            window.createNewSystemUser = function() {
+                let username = document.getElementById('newUName').value.trim();
+                let pass = document.getElementById('newUPass').value.trim();
+                let role = document.getElementById('newURole').value.trim();
+                let perm = document.getElementById('newUPerm').value;
+
+                if(!username || !pass) { alert('Username and Password required!'); return; }
+                users.push({ username, pass, role, status: 'Active', planYears: '1 Year', permissions: [perm] });
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User created successfully!');
+                renderSettingsModule(container);
+            };
+            window.delSystemUser = function(idx) {
+                users.splice(idx, 1);
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                renderSettingsModule(container);
             };
         }
     </script>
