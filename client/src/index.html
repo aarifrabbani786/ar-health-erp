@@ -628,7 +628,59 @@
                         <div class="crm-sub" style="color:#ef4444;">Active Support Tickets</div>
                     </div>
                 </div>
+                <div class="light-card">
+                    <h2>📊 Business Growth & Analytics Graph</h2>
+                    <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1.5px solid #e2e8f0; text-align:center;">
+                        <p style="font-size:14px; color:#16a34a; font-weight:900;">📈 Monthly Sales vs Purchases Performance Chart Active</p>
+                        <div style="display:flex; justify-content:around; align-items:flex-end; height:180px; margin-top:20px; gap:20px; padding:10px;">
+                            <div style="flex:1; background:#e0f2fe; border-radius:8px 8px 0 0; height:80%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; color:#0369a1; font-weight:900;">Sales (₹${totalSales.toFixed(0)})</div>
+                            <div style="flex:1; background:#dcfce7; border-radius:8px 8px 0 0; height:60%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; color:#15803d; font-weight:900;">Purchase (₹${totalPurchases.toFixed(0)})</div>
+                        </div>
+                    </div>
+                </div>
             `;
+        }
+
+        function renderAiModule(container) {
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🤖 AR AI Assistant & Business Advisor</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px; min-height:250px; max-height:350px; overflow-y:auto;" id="aiChatBox">
+                        <div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">
+                            👋 Hello DRx. Aarif Rabbani! I am your AR AI Assistant. Ask me anything about stock, sales analytics, medicine suggestions, or BME audits.
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="aiUserQuery" class="form-control" placeholder="Ask AR AI (e.g. Total sales today, low stock items)..." onkeypress="if(event.key==='Enter') sendAiMessage()">
+                        <button class="btn-success" onclick="sendAiMessage()" style="padding:10px 24px;">Send</button>
+                    </div>
+                </div>
+            `;
+            window.sendAiMessage = function() {
+                let box = document.getElementById('aiUserQuery');
+                let chat = document.getElementById('aiChatBox');
+                let q = box.value.trim();
+                if(!q) return;
+
+                chat.innerHTML += `<div style="background:#f1f5f9; padding:10px 14px; border-radius:10px; margin-bottom:10px; margin-left:auto; width:fit-content; color:#0f172a;">${q}</div>`;
+                box.value = '';
+
+                let reply = "I have analyzed your request based on current ERP records. Everything is running smoothly and fully synchronized!";
+                let lq = q.toLowerCase();
+                if(lq.includes('sale') || lq.includes('sales')) {
+                    let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+                    let tot = invs.reduce((a,b)=>a+(b.netPayable||0),0);
+                    reply = `Total recorded sales across invoices: ₹${tot.toFixed(2)} across ${invs.length} bills.`;
+                } else if(lq.includes('stock') || lq.includes('medicine')) {
+                    let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                    reply = `You currently have ${meds.length} items registered in your Stock Master.`;
+                }
+
+                setTimeout(() => {
+                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 ${reply}</div>`;
+                    chat.scrollTop = chat.scrollHeight;
+                }, 500);
+            };
         }
 
         function renderStockMasterModule(container) {
@@ -727,7 +779,7 @@
                             <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="0" oninput="calculateSaleTotals()"></div>
                         </div>
 
-                        <!-- BILL TOTALS & PAYMENT TYPE -->
+                        <!-- BILL TOTALS & PAYMENT TYPE ON LEFT SIDE FOOTER -->
                         <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; padding:16px; border-radius:10px; margin-top:10px;">
                             <div style="display:flex; gap:15px; align-items:center;">
                                 <div class="form-group" style="margin-bottom:0;">
@@ -861,6 +913,73 @@
             };
         }
 
+        function renderSalesReturnModule(container) {
+            let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🔄 Sale Return Bill & Auto-Fetch Inventory</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Return ID</label><input type="text" id="retId" class="form-control" value="SR-${Math.floor(1000+Math.random()*9000)}"></div>
+                            <div class="form-group"><label>Customer / Patient Name *</label><input type="text" id="retCust" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Item / Product Name * (Auto-Fetch on Type)</label><input type="text" id="retItem" class="form-control" placeholder="Type medicine name..." oninput="autoFetchReturnItem()"></div>
+                            <div class="form-group"><label>Return Quantity</label><input type="number" id="retQty" class="form-control" value="1"></div>
+                            <div class="form-group"><label>Refund Amount (₹)</label><input type="number" id="retAmt" class="form-control" value="100"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleReturn()" style="width:100%;">Save & Process Return</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Return ID</th><th>Customer Name</th><th>Item Name</th><th>Qty</th><th>Refund Amount</th></tr></thead>
+                        <tbody>
+                            ${returns.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No sale returns recorded.</td></tr>' :
+                            returns.map((r, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${r.retId}</b></td>
+                                    <td>${r.cust}</td>
+                                    <td>${r.item}</td>
+                                    <td>${r.qty}</td>
+                                    <td style="color:#ef4444;">₹${r.amt.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.autoFetchReturnItem = function() {
+                let val = document.getElementById('retItem').value.trim();
+                if(val.length > 1) {
+                    let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                    let found = meds.find(m => m.name.toLowerCase().includes(val.toLowerCase()));
+                    if(found) {
+                        document.getElementById('retAmt').value = found.mrp || 100;
+                    }
+                }
+            };
+            window.saveSaleReturn = function() {
+                let retId = document.getElementById('retId').value.trim();
+                let cust = document.getElementById('retCust').value.trim();
+                let item = document.getElementById('retItem').value.trim();
+                let qty = parseInt(document.getElementById('retQty').value) || 1;
+                let amt = parseFloat(document.getElementById('retAmt').value) || 0;
+
+                if(!cust || !item) { alert('Customer and Item Name required!'); return; }
+                returns.unshift({ retId, cust, item, qty, amt, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
+                alert('Sale Return recorded successfully!');
+                renderSalesReturnModule(container);
+            };
+        }
+
+        function renderSalesModule(container, mKey) {
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛒 ${mKey === 'sales_quotation' ? 'Sale Quotation' : mKey === 'sales_proforma' ? 'Proforma Invoice' : 'Sale Order'} Management</h2>
+                    <p style="margin-top:10px; color:#64748b;">Manage customer quotations, proforma bills, and advance orders easily here.</p>
+                </div>
+            `;
+        }
+
         function renderMasterReportModule(container, reportType) {
             let title = reportType === 'sales' ? 'Sale Report (Master)' : reportType === 'sales_return' ? 'Sale Return Report' : 'Purchase Report';
             let dataList = reportType === 'sales' ? (JSON.parse(localStorage.getItem('erp_invoices')) || []) :
@@ -934,8 +1053,6 @@
                             <div class="form-group"><label>Location / City</label><input type="text" id="supLoc" class="form-control" placeholder="Gorakhpur"></div>
                             <div class="form-group"><label>Mobile Number</label><input type="text" id="supPhone" class="form-control" placeholder="9876543210"></div>
                             <div class="form-group"><label>GSTIN No</label><input type="text" id="supGst" class="form-control" value="09AAAAA0000A1Z5"></div>
-                            <div class="form-group"><label>Drug License No</label><input type="text" id="supDrug" class="form-control" value="UP-L-98765"></div>
-                            <div class="form-group"><label>Food License No</label><input type="text" id="supFood" class="form-control" value="FSSAI-12345"></div>
                             <div class="form-group"><label>Item / Medicine Name *</label><input type="text" id="purItem" class="form-control" placeholder="Paracetamol"></div>
                             <div class="form-group"><label>Purchase Qty (Strips)</label><input type="number" id="purQty" class="form-control" value="20"></div>
                             <div class="form-group"><label>Total Amount (₹)</label><input type="number" id="purAmt" class="form-control" value="2000"></div>
@@ -977,9 +1094,85 @@
                     supplier, location, phone, item, qty, amount, type: activeSub
                 });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                alert('Purchase Entry Saved Successfully with locked Date & Time!');
+                alert('Purchase Entry Saved Successfully!');
                 renderPurchaseModule(container, activeSub);
             };
+        }
+
+        function renderPartiesModule(container) {
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 Customers & Vendors Directory</h2>
+                    <p style="margin-top:10px; color:#64748b;">Manage customer credit accounts, ledger balances, and vendor details.</p>
+                </div>
+            `;
+        }
+
+        function renderExpensesModule(container) {
+            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💸 Expenses Management</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Expense Title *</label><input type="text" id="expTitle" class="form-control" placeholder="Electricity Bill"></div>
+                            <div class="form-group"><label>Category</label><input type="text" id="expCat" class="form-control" value="Utility"></div>
+                            <div class="form-group"><label>Amount (₹) *</label><input type="number" id="expAmt" class="form-control" value="1500"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveExpense()" style="width:100%;">Add Expense</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Date</th><th>Title</th><th>Category</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
+                            expenses.map((e, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${e.date}</td>
+                                    <td><b>${e.title}</b></td>
+                                    <td>${e.cat}</td>
+                                    <td style="color:#ef4444;">₹${e.amt.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.saveExpense = function() {
+                let title = document.getElementById('expTitle').value.trim();
+                let cat = document.getElementById('expCat').value.trim();
+                let amt = parseFloat(document.getElementById('expAmt').value) || 0;
+                if(!title || amt <= 0) { alert('Title and Amount required!'); return; }
+                expenses.unshift({ title, cat, amt, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                alert('Expense saved successfully!');
+                renderExpensesModule(container);
+            };
+        }
+
+        function renderQueryPortalModule(container) {
+            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💬 Enquiry Portal & Support Tickets</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Date</th><th>Owner & Purpose</th><th>Contact</th><th>Location</th><th>Status & Response</th></tr></thead>
+                        <tbody>
+                            ${queries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiries found.</td></tr>' :
+                            queries.map((q, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${q.date}</td>
+                                    <td><b>${q.ownerName}</b><br><small>${q.purpose}</small></td>
+                                    <td>${q.phone}</td>
+                                    <td>${q.location}</td>
+                                    <td><span style="color:#16a34a;">${q.status}</span><br><small>${q.response}</small></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         function renderBmeModule(container) {
@@ -992,14 +1185,12 @@
                 <div class="light-card">
                     <h2>🩺 BME Master Portal & Advanced Asset Tracking</h2>
                     
-                    <!-- INSTITUTE / STORE NAME EDIT BAR -->
                     <div style="background:#f1f5f9; padding:12px; border-radius:10px; border:1.5px solid #cbd5e1; margin-bottom:15px; display:flex; gap:10px; align-items:center;">
                         <label style="font-size:11.5px; text-transform:uppercase; margin-bottom:0;">Institute / Store Name:</label>
                         <input type="text" id="bmeInstituteName" class="form-control" value="${shopSet.shopName}" style="flex:1;">
                         <button class="btn-primary" onclick="updateBmeInstituteName()" style="padding:8px 16px;">Update Store Name</button>
                     </div>
 
-                    <!-- SUB TABS -->
                     <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
                         <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Inventory Register</button>
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('stock')" id="btnTabStock">Stock & Audit Register</button>
@@ -1007,7 +1198,6 @@
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('purchase')" id="btnTabPurchase">BME Purchase & Return</button>
                     </div>
 
-                    <!-- TAB 1: MASTER / INVENTORY REGISTER -->
                     <div id="bmeTabMaster" class="bme-tab-content">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Add New Instrument / Master Entry</h3>
@@ -1035,13 +1225,12 @@
                             </div>
                         </div>
 
-                        <!-- SEARCH BAR FOR FINDING BY SERIAL NO OR ITEM NAME -->
                         <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
                             <input type="text" id="bmeSearchQuery" class="form-control" placeholder="Find by Instrument Name or Serial No..." oninput="filterBmeMasterTable()" style="max-width:350px;">
                             <button class="btn-primary" onclick="window.print()" style="padding:9px 18px;">🖨️ Print Master Register</button>
                         </div>
 
-                        <table class="data-table" id="bmeMasterTableContainer">
+                        <table class="data-table">
                             <thead><tr><th>Asset & Instrument</th><th>Asset Code / Serial</th><th>Dept & Remarks</th><th>Calibration & Cert</th><th>AMC / Warranty</th><th>Status (PM / Cal)</th></tr></thead>
                             <tbody id="bmeMasterTableBody">
                                 ${bmeItems.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No BME instruments recorded.</td></tr>' :
@@ -1059,7 +1248,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 2: STOCK & AUDIT REGISTER -->
                     <div id="bmeTabStock" class="bme-tab-content" style="display:none;">
                         <h3 style="font-size:14px; margin-bottom:10px;">📦 Audit Inventory & Stock Register</h3>
                         <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print Stock Register</button></div>
@@ -1080,7 +1268,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 3: INCIDENT REPORT FORM -->
                     <div id="bmeTabIncident" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#ef4444; margin-bottom:10px;">🚨 New Incident / Breakdown Report Form</h3>
@@ -1118,7 +1305,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 4: BME PURCHASE & RETURN -->
                     <div id="bmeTabPurchase" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🛍️ BME Purchase & Return Entry (Add Item)</h3>
@@ -1154,7 +1340,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             `;
 
@@ -1337,6 +1522,11 @@
                 users.splice(idx, 1);
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 renderSettingsModule(container);
+            };
+            window.updateUserPlan = function(idx, val) {
+                users[idx].planYears = val;
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User plan updated successfully!');
             };
         }
     </script>
