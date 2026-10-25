@@ -124,7 +124,6 @@
         .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
-        /* EXACT POSITIONED USER PROFILE DROPDOWN */
         #userDropdownModal {
             display: none; position: absolute; right: 24px; top: 75px; width: 290px;
             background: #ffffff; border-radius: 14px; border: 1.5px solid #cbd5e1;
@@ -576,15 +575,6 @@
         }
 
         function loadModule(m) {
-            if (m === 'bme' && !checkPermission('bme')) { alert('Access Denied!'); return; }
-            if (m === 'parties' && !checkPermission('parties')) { alert('Access Denied!'); return; }
-            if (m === 'expenses' && !checkPermission('expenses')) { alert('Access Denied!'); return; }
-            if (m === 'queries' && !checkPermission('queries')) { alert('Access Denied!'); return; }
-            if ((m === 'settings' || m === 'users_portal') && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) {
-                // If regular user accessing user portal, allow them to view their profile/settings
-                if(m !== 'users_portal') { alert('Access Denied!'); return; }
-            }
-
             let newSaleBtn = document.getElementById('headerNewSaleBtn');
             if(newSaleBtn) {
                 newSaleBtn.style.display = (m === 'bme' || m === 'ai') ? 'none' : 'block';
@@ -1014,7 +1004,6 @@
             `;
         }
 
-        /* FULLY WORKING CUSTOMERS & VENDORS MODULE */
         function renderPartiesModule(container) {
             let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
                 { name: 'Dr. Ramesh Kumar', type: 'Customer', phone: '9876543210', balance: 1500 },
@@ -1073,7 +1062,6 @@
             };
         }
 
-        /* FULLY WORKING EXPENSES MODULE */
         function renderExpensesModule(container) {
             let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [
                 { title: 'Electricity Bill', cat: 'Utility', amt: 2400, date: '25/10/2026' }
@@ -1123,7 +1111,6 @@
             };
         }
 
-        /* FULLY WORKING ENQUIRY PORTAL MODULE */
         function renderQueryPortalModule(container) {
             let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
             container.innerHTML = `
@@ -1149,7 +1136,6 @@
             `;
         }
 
-        /* BME MASTER PORTAL WITH ALL REGISTERS & FULL STORE DETAILS */
         function renderBmeModule(container) {
             let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             let incidents = JSON.parse(localStorage.getItem('erp_bme_incidents')) || [];
@@ -1467,7 +1453,6 @@
             };
         }
 
-        /* SEPARATED SYSTEM SETTINGS MODULE */
         function renderSystemSettingsModule(container) {
             let shopSet = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
                 shopName: 'A R PHARMA AND SURGICAL AGENCY',
@@ -1500,7 +1485,6 @@
             };
         }
 
-        /* SEPARATED USERS & ADMIN PORTAL MODULE */
         function renderUsersPortalModule(container) {
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
 
