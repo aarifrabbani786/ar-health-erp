@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Analytics Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - CRM Analytics Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -103,18 +103,18 @@
         .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #0f172a; }
         .data-table th { color: #334155; font-size: 12px; text-transform: uppercase; background: #f1f5f9; }
 
-        /* CRM POWER BI STYLE METRIC CARDS */
-        .crm-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
-        .crm-metric-card {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border-radius: 14px; padding: 20px;
-            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25); position: relative; overflow: hidden;
+        /* CRM DASHBOARD POWER BI CARDS */
+        .crm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+        .crm-box { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .crm-title { font-size: 11.5px; color: #64748b; text-transform: uppercase; font-weight: 900; }
+        .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
+        .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
+
+        /* PROFILE DROPDOWN MODAL AS REQUESTED */
+        #userDropdownModal {
+            display: none; position: absolute; right: 24px; top: 75px; width: 310px; background: #ffffff;
+            border-radius: 14px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 18px;
         }
-        .crm-metric-card.green { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25); }
-        .crm-metric-card.purple { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); box-shadow: 0 10px 25px rgba(124, 58, 237, 0.25); }
-        .crm-metric-card.orange { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); box-shadow: 0 10px 25px rgba(234, 88, 12, 0.25); }
-        .crm-metric-title { font-size: 11px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; }
-        .crm-metric-value { font-size: 26px; font-weight: 900; margin-top: 8px; }
-        .crm-metric-sub { font-size: 11px; opacity: 0.85; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -180,22 +180,38 @@
         </div>
     </div>
 
-    <!-- PROFILE & PASSWORD CHANGE MODAL -->
-    <div id="profileModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999999; justify-content:center; align-items:center;">
-        <div class="light-card" style="width:100%; max-width:420px; background:#ffffff;">
-            <h2>👤 User Profile & Security Settings</h2>
-            <div class="form-group" style="margin-top:12px;">
-                <label>Change Username</label>
-                <input type="text" id="modalUsername" class="form-control">
+    <!-- USER PROFILE MODAL (EXACTLY AS REQUESTED IMAGE) -->
+    <div id="userDropdownModal">
+        <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px;">
+            <div style="width:38px; height:38px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900;" id="modalUserInitial">U</div>
+            <div>
+                <div style="font-size:14px; color:#0f172a; font-weight:900;" id="modalUserNameDisplay">User</div>
+                <div style="font-size:11px; color:#64748b; font-weight:900;" id="modalUserRoleDisplay">ADMIN</div>
             </div>
-            <div class="form-group">
-                <label>New Password</label>
-                <input type="password" id="modalNewPass" class="form-control" placeholder="Leave blank to keep current">
+        </div>
+
+        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:10px; border-radius:10px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:6px; color:#16a34a; font-size:12px; font-weight:900;">
+                <span>✅</span> premium 3 Years
             </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-success" onclick="saveProfileChanges()" style="flex:1;">Save Changes</button>
-                <button class="btn-danger" onclick="closeProfileModal()" style="flex:1;">Cancel</button>
+            <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:#334155; font-weight:900; border-top:1px dashed #bbf7d0; padding-top:6px;">
+                <span>Platform AMC</span>
+                <span>Due: 13/10/2029</span>
             </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+            <label style="font-size:11px; color:#475569; margin-bottom:4px; display:block;">Change Username</label>
+            <input type="text" id="changeUserBox" class="form-control" style="margin-bottom:8px; padding:8px;">
+            <label style="font-size:11px; color:#475569; margin-bottom:4px; display:block;">New Password</label>
+            <input type="password" id="changePassBox" class="form-control" style="margin-bottom:8px; padding:8px;" placeholder="Leave blank if unchanged">
+            <button class="btn-success" onclick="saveUserCredentials()" style="width:100%; padding:8px; font-size:12px;">Update Credentials</button>
+        </div>
+
+        <div style="border-top:1px solid #e2e8f0; padding-top:10px;">
+            <button onclick="logoutUser()" style="width:100%; background:none; border:none; text-align:left; color:#ef4444; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:8px; padding:6px 0;">
+                <span>🚪</span> Logout
+            </button>
         </div>
     </div>
 
@@ -232,9 +248,9 @@
                     <p id="bannerAgencySub">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
                 </div>
 
-                <div style="width: 240px; text-align: right; display:flex; gap:8px; justify-content:flex-end;">
-                    <button onclick="openProfileModal()" class="btn-primary" style="padding:7px 10px; font-size:11px;">⚙️ Profile</button>
-                    <button onclick="logoutUser()" class="btn-danger" style="padding:7px 10px; font-size:11px;">Logout</button>
+                <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+                    <button class="btn-success" onclick="loadModule('sales')" style="padding:7px 12px; font-size:11.5px;">+ New Sale</button>
+                    <div onclick="toggleUserDropdown(event)" style="width:36px; height:36px; background:#0284c7; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; font-weight:900;" id="topUserAvatarBtn">U</div>
                 </div>
             </div>
 
@@ -258,8 +274,15 @@
             if (savedSession) {
                 try {
                     currentUser = JSON.parse(savedSession);
+                    if(currentUser.status !== 'Active') {
+                        alert('Your account is currently Deactivated by Admin! Please contact Super Admin to activate.');
+                        localStorage.removeItem('erp_active_session');
+                        location.reload();
+                        return;
+                    }
                     document.getElementById('auth-overlay').style.display = 'none';
                     document.getElementById('main-app-container').style.display = 'flex';
+                    setupTopUserAvatar();
                     loadModule(localStorage.getItem('erp_active_module') || 'dashboard');
                     return;
                 } catch(e) {}
@@ -268,25 +291,31 @@
             document.getElementById('main-app-container').style.display = 'flex';
         });
 
-        function togglePasswordVisibility() {
-            let passInput = document.getElementById('loginPass');
-            passInput.type = passInput.type === 'password' ? 'text' : 'password';
-        }
-
-        function openProfileModal() {
+        function setupTopUserAvatar() {
             if(currentUser) {
-                document.getElementById('modalUsername').value = currentUser.username;
-                document.getElementById('modalNewPass').value = '';
-                document.getElementById('profileModal').style.display = 'flex';
+                let initial = currentUser.username.charAt(0).toUpperCase();
+                document.getElementById('topUserAvatarBtn').innerText = initial;
+                document.getElementById('modalUserInitial').innerText = initial;
+                document.getElementById('modalUserNameDisplay').innerText = currentUser.username;
+                document.getElementById('modalUserRoleDisplay').innerText = currentUser.role || 'ADMIN';
+                document.getElementById('changeUserBox').value = currentUser.username;
             }
         }
-        function closeProfileModal() {
-            document.getElementById('profileModal').style.display = 'none';
+
+        function toggleUserDropdown(e) {
+            e.stopPropagation();
+            let modal = document.getElementById('userDropdownModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
 
-        function saveProfileChanges() {
-            let newU = document.getElementById('modalUsername').value.trim();
-            let newP = document.getElementById('modalNewPass').value.trim();
+        window.addEventListener('click', () => {
+            let modal = document.getElementById('userDropdownModal');
+            if(modal) modal.style.display = 'none';
+        });
+
+        function saveUserCredentials() {
+            let newU = document.getElementById('changeUserBox').value.trim();
+            let newP = document.getElementById('changePassBox').value.trim();
             if(!newU) { alert('Username cannot be empty!'); return; }
 
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
@@ -297,9 +326,15 @@
                 currentUser = users[idx];
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 localStorage.setItem('erp_active_session', JSON.stringify(currentUser));
-                alert('Profile updated successfully!');
-                closeProfileModal();
+                alert('Credentials updated successfully!');
+                setupTopUserAvatar();
+                document.getElementById('userDropdownModal').style.display = 'none';
             }
+        }
+
+        function togglePasswordVisibility() {
+            let passInput = document.getElementById('loginPass');
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
         function sendAdminForgotRequest() {
@@ -338,6 +373,10 @@
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
+                if (found.status !== 'Active') {
+                    alert('Access Denied! Your account status is Deactivated. Please ask Super Admin or Admin to activate your account.');
+                    return;
+                }
                 currentUser = found;
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
                 location.reload();
@@ -409,32 +448,32 @@
             let totalPurchases = purchases.reduce((a, b) => a + (b.amount || 0), 0);
             
             container.innerHTML = `
-                <div class="crm-metric-grid">
-                    <div class="crm-metric-card">
-                        <div class="crm-metric-title">TOTAL SALES (GROSS)</div>
-                        <div class="crm-metric-value" id="dashSalesVal">₹${totalSales.toFixed(2)}</div>
-                        <div class="crm-metric-sub" id="dashSalesCount">${invs.length} Invoices Recorded</div>
+                <div class="crm-grid">
+                    <div class="crm-box">
+                        <div class="crm-title">TOTAL SALES (GROSS)</div>
+                        <div class="crm-val">₹${totalSales.toFixed(2)}</div>
+                        <div class="crm-sub">${invs.length} Invoices Recorded</div>
                     </div>
-                    <div class="crm-metric-card green">
-                        <div class="crm-metric-title">TOTAL PURCHASES</div>
-                        <div class="crm-metric-value" id="dashPurVal">₹${totalPurchases.toFixed(2)}</div>
-                        <div class="crm-metric-sub" id="dashPurCount">${purchases.length} Purchase Orders</div>
+                    <div class="crm-box">
+                        <div class="crm-title">TOTAL PURCHASES</div>
+                        <div class="crm-val">₹${totalPurchases.toFixed(2)}</div>
+                        <div class="crm-sub" style="color:#0284c7;">${purchases.length} Purchase Orders</div>
                     </div>
-                    <div class="crm-metric-card purple">
-                        <div class="crm-metric-title">WIN / PROFIT MARGIN</div>
-                        <div class="crm-metric-value">₹${(totalSales * 0.25).toFixed(2)}</div>
-                        <div class="crm-metric-sub">Estimated 25% Margin</div>
+                    <div class="crm-box">
+                        <div class="crm-title">ESTIMATED PROFIT</div>
+                        <div class="crm-val" style="color:#16a34a;">₹${(totalSales * 0.25).toFixed(2)}</div>
+                        <div class="crm-sub">25% Margin Calculation</div>
                     </div>
-                    <div class="crm-metric-card orange">
-                        <div class="crm-metric-title">PENDING QUERIES</div>
-                        <div class="crm-metric-value">${JSON.parse(localStorage.getItem('erp_software_queries') || '[]').filter(q => q.status === 'Pending').length}</div>
-                        <div class="crm-metric-sub">Active Support Tickets</div>
+                    <div class="crm-box">
+                        <div class="crm-title">PENDING QUERIES</div>
+                        <div class="crm-val" style="color:#ef4444;">${JSON.parse(localStorage.getItem('erp_software_queries') || '[]').filter(q => q.status === 'Pending').length}</div>
+                        <div class="crm-sub" style="color:#ef4444;">Active Support Tickets</div>
                     </div>
                 </div>
 
                 <div class="light-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h2 style="margin-bottom:0;">Sales & Purchases Overview Analytics</h2>
+                        <h2 style="margin-bottom:0;">Sales & Purchases Analytics Overview</h2>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <select id="dateFilterSelect" class="form-control" style="width:140px; padding:6px 10px;" onchange="filterDashboardData()">
                                 <option value="today">Today</option>
@@ -451,9 +490,9 @@
                             </div>
                         </div>
                     </div>
-                    <div style="height:260px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:12px; background:#f8fafc; color:#0f172a;">
-                        <div style="font-size:16px; margin-bottom:6px;">📈 CRM Analytics Chart (Filtered by <span id="activeFilterLabel" style="color:#0284c7;">Today</span>)</div>
-                        <div style="font-size:12px; color:#64748b;">Calculated Sales: ₹${totalSales.toFixed(2)} | Purchases: ₹${totalPurchases.toFixed(2)}</div>
+                    <div style="height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5 dashed #cbd5e1; border-radius:12px; background:#f8fafc; color:#0f172a;">
+                        <div style="font-size:16px; margin-bottom:6px;">📈 Power BI Analytics (Filtered by <span id="activeFilterLabel" style="color:#0284c7;">Today</span>)</div>
+                        <div style="font-size:12px; color:#64748b;">Total Revenue: ₹${totalSales.toFixed(2)} | Net Purchases: ₹${totalPurchases.toFixed(2)}</div>
                     </div>
                 </div>
             `;
@@ -692,26 +731,35 @@
         }
 
         function renderSettingsModule(container) {
-            let s = JSON.parse(localStorage.getItem('erp_settings')) || { agencyName: 'A R PHARMA AND SURGICAL AGENCY', chairman: 'DRx. Aarif Rabbani' };
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Store Settings & User Management</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:14px; color:#0284c7; margin-bottom:10px;">Store Branding</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName}"></div>
-                            <div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control" value="${s.chairman}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSettings()" style="width:100%;">Save Settings</button></div>
-                        </div>
-                    </div>
+                    <h2>⚙️ Store Settings & User Status Management</h2>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin / Admin can activate or deactivate user accounts here.</p>
+                    <table class="data-table">
+                        <thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${users.map((u, idx) => `
+                                <tr>
+                                    <td><b>${u.username}</b></td>
+                                    <td>${u.role || 'Staff'}</td>
+                                    <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${u.status === 'Active' ? '#dcfce7; color:#16a34a;' : '#fee2e2; color:#ef4444;'}">${u.status || 'Active'}</span></td>
+                                    <td>
+                                        <button class="${u.status === 'Active' ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus(${idx})" style="padding:5px 12px; font-size:11px;">
+                                            ${u.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
-            window.saveSettings = function() {
-                s.agencyName = document.getElementById('stAgency').value;
-                s.chairman = document.getElementById('stChairman').value;
-                localStorage.setItem('erp_settings', JSON.stringify(s));
-                alert('Settings Saved Successfully!');
-                location.reload();
+            window.toggleUserStatus = function(idx) {
+                users[idx].status = users[idx].status === 'Active' ? 'Deactivated' : 'Active';
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User status updated successfully!');
+                renderSettingsModule(container);
             };
         }
     </script>
