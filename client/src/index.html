@@ -135,7 +135,6 @@
             body { background: #fff !important; color: #000 !important; }
             #sidebar-container, .top-banner, .btn-success, .btn-primary, .btn-danger, .form-grid, .light-card button, #printPreviewModal { display: none !important; }
             .main-content { padding: 0 !important; margin: 0 !important; }
-            .print-invoice-box { display: block !important; }
         }
     </style>
 </head>
@@ -241,14 +240,8 @@
     <div id="printPreviewModal">
         <div class="print-modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:12px; margin-bottom:15px;">
-                <h3 style="font-size:16px; color:#0f172a;">🖨️ Premium Print Preview & Customization</h3>
+                <h3 style="font-size:16px; color:#0f172a;" id="printModalTitle">🖨️ Premium Bill Print (ORIGINAL)</h3>
                 <button class="btn-danger" onclick="closePrintModal()" style="padding:4px 10px;">✕ Close</button>
-            </div>
-            <div style="display:flex; gap:15px; margin-bottom:15px; font-size:12px; background:#f1f5f9; padding:12px; border-radius:10px;">
-                <label><input type="checkbox" id="prn_chk_header" checked> Header & Chairman</label>
-                <label><input type="checkbox" id="prn_chk_patient" checked> Patient & Doctor</label>
-                <label><input type="checkbox" id="prn_chk_hsn" checked> HSN & Batch</label>
-                <label><input type="checkbox" id="prn_chk_totals" checked> Totals & Payment Type</label>
             </div>
             <div id="printModalBody" style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:10px; margin-bottom:15px; max-height:400px; overflow-y:auto;"></div>
             <div style="text-align:right;">
@@ -344,17 +337,6 @@
         if (!storedUsers || !Array.isArray(storedUsers)) {
             localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
             storedUsers = defaultUsers;
-        } else {
-            let adminIndex = storedUsers.findIndex(x => x.username === 'admin');
-            if (adminIndex !== -1) {
-                storedUsers[adminIndex].status = 'Active';
-                storedUsers[adminIndex].role = 'Super Admin';
-                storedUsers[adminIndex].planYears = 'Lifetime';
-                storedUsers[adminIndex].permissions = ['all'];
-            } else {
-                storedUsers.unshift(defaultUsers[0]);
-            }
-            localStorage.setItem('erp_users', JSON.stringify(storedUsers));
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -399,9 +381,7 @@
         function toggleSubMenu(menuId, e) {
             e.stopPropagation();
             let menu = document.getElementById(menuId);
-            if(menu) {
-                menu.classList.toggle('open');
-            }
+            if(menu) menu.classList.toggle('open');
         }
 
         function setupTopUserAvatar() {
@@ -524,22 +504,14 @@
             queries.unshift({
                 id: Date.now(),
                 date: new Date().toLocaleDateString('en-GB'),
-                ownerName,
-                purpose,
-                phone,
-                location,
+                ownerName, purpose, phone, location,
                 response: 'Awaiting Response',
                 status: 'Pending',
                 finalDecision: 'Under Review',
                 dayReport: 'Day 1: Logged query in portal'
             });
             localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-
             alert('Enquiry Request Submitted Successfully!');
-            document.getElementById('eqOwner').value = '';
-            document.getElementById('eqPurpose').value = '';
-            document.getElementById('eqPhone').value = '';
-            document.getElementById('eqLoc').value = '';
             updateQueryBadge();
         }
 
@@ -557,18 +529,9 @@
         }
 
         function loadModule(m) {
-            if (m === 'bme' && !checkPermission('bme')) {
-                alert('Access Denied! You do not have permission to access BME Master Portal.');
-                return;
-            }
-            if (m === 'queries' && !checkPermission('queries')) {
-                alert('Access Denied! You do not have permission to access Enquiry Portal.');
-                return;
-            }
-            if (m === 'settings' && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) {
-                alert('Access Denied! Only Super Admin has full control of Settings & Users portal.');
-                return;
-            }
+            if (m === 'bme' && !checkPermission('bme')) { alert('Access Denied!'); return; }
+            if (m === 'queries' && !checkPermission('queries')) { alert('Access Denied!'); return; }
+            if (m === 'settings' && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) { alert('Access Denied! Only Super Admin has full control.'); return; }
 
             localStorage.setItem('erp_active_module', m);
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -604,9 +567,6 @@
             let totalPurchases = purchases.reduce((a, b) => a + (b.amount || 0), 0);
             let estimatedProfit = totalSales * 0.25;
             let pendingEnquiries = JSON.parse(localStorage.getItem('erp_software_queries') || '[]').filter(q => q.status === 'Pending').length;
-            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit') || '[]');
-            let workingCount = bmeItems.filter(i => i.status === 'Working').length;
-            let repairCount = bmeItems.filter(i => i.status === 'Repairing').length;
             
             container.innerHTML = `
                 <div class="crm-grid">
@@ -631,86 +591,61 @@
                         <div class="crm-sub" style="color:#ef4444;">Active Support Tickets</div>
                     </div>
                 </div>
-
-                <div class="light-card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <b>🩺 BME Master Status:</b> ${bmeItems.length} Instruments Audited | <span style="color:#16a34a;">${workingCount} Working</span> | <span style="color:#ef4444;">${repairCount} Repairing</span>
-                    </div>
-                    <button class="btn-success" onclick="loadModule('bme')" style="padding:6px 14px; font-size:11px;">Open BME Portal</button>
-                </div>
             `;
         }
 
         function renderStockMasterModule(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            let filterText = document.getElementById('stockSearchBox')?.value?.toLowerCase() || '';
-            let filteredMeds = filterText ? meds.filter(m => 
-                m.name.toLowerCase().includes(filterText) || 
-                (m.vendor && m.vendor.toLowerCase().includes(filterText))
-            ) : meds;
-
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📦 Stock Master & Inventory Register</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Manage all stock items, MRP, cost, GST and expiry tracking.</p>
-                    
+                    <h2>📦 Stock Master & Inventory Register (Strip to Tablet Conversion)</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add New Stock Item</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control" placeholder="Item Name"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control" value="100"></div>
-                            <div class="form-group"><label>Purchase Cost (₹)</label><input type="number" id="itCost" class="form-control" value="80"></div>
-                            <div class="form-group"><label>GST %</label><input type="number" id="itGst" class="form-control" value="12"></div>
+                            <div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control" placeholder="Dolo 650"></div>
+                            <div class="form-group"><label>HSN Code</label><input type="text" id="itHsn" class="form-control" value="3004"></div>
+                            <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-2026"></div>
+                            <div class="form-group"><label>Strip Conversion (Tablets per Strip)</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
+                            <div class="form-group"><label>MRP per Strip (₹)</label><input type="number" id="itMrp" class="form-control" value="100"></div>
+                            <div class="form-group"><label>Purchase Cost per Strip (₹)</label><input type="number" id="itCost" class="form-control" value="80"></div>
                             <div class="form-group"><label>Expiry Date</label><input type="date" id="itExpiry" class="form-control"></div>
-                            <div class="form-group"><label>Vendor Details</label><input type="text" id="itVendor" class="form-control" placeholder="Supplier Name"></div>
-                            <div class="form-group"><label>Stock Qty</label><input type="number" id="itStock" class="form-control" value="50"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Stock Item</button></div>
+                            <div class="form-group"><label>Total Strips Stock</label><input type="number" id="itStock" class="form-control" value="50"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item to Stock</button></div>
                         </div>
                     </div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3 style="font-size:14px;">Stock Ledger</h3>
-                        <input type="text" id="stockSearchBox" class="form-control" style="width:250px; padding:6px 12px;" placeholder="🔍 Find by Name or Vendor..." value="${filterText}" oninput="renderStockMasterModule(container)">
-                    </div>
-
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Item Name</th><th>MRP</th><th>Cost</th><th>GST</th><th>Net Rate</th><th>Expiry</th><th>Vendor</th><th>Stock</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${filteredMeds.length === 0 ? '<tr><td colspan="10" style="text-align:center;">No stock records found.</td></tr>' :
-                                filteredMeds.map((m, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${m.name}</b></td>
-                                        <td>₹${m.mrp || 0}</td>
-                                        <td>₹${m.cost || 0}</td>
-                                        <td>${m.gst || 0}%</td>
-                                        <td style="color:#0284c7;">₹${m.netRate || m.mrp || 0}</td>
-                                        <td>${m.expiry || 'N/A'}</td>
-                                        <td>${m.vendor || 'General'}</td>
-                                        <td><b>${m.stock}</b></td>
-                                        <td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>HSN</th><th>Strip Conv.</th><th>MRP/Strip</th><th>Stock (Strips / Tabs)</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${meds.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No items in stock.</td></tr>' :
+                            meds.map((m, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${m.name}</b></td>
+                                    <td>${m.batch}</td>
+                                    <td>${m.hsn}</td>
+                                    <td>1 Strip = ${m.stripConv || 10} Tabs</td>
+                                    <td>₹${m.mrp}</td>
+                                    <td><b>${m.stock} Strips</b> (${(m.stock * (m.stripConv || 10))} Tablets)</td>
+                                    <td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
             window.addStockItem = function() {
                 let name = document.getElementById('itName').value.trim();
+                let hsn = document.getElementById('itHsn').value.trim();
+                let batch = document.getElementById('itBatch').value.trim();
+                let stripConv = parseInt(document.getElementById('itStripConv').value) || 10;
                 let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
                 let cost = parseFloat(document.getElementById('itCost').value) || 0;
-                let gst = parseFloat(document.getElementById('itGst').value) || 0;
                 let expiry = document.getElementById('itExpiry').value || '2027-12-31';
-                let vendor = document.getElementById('itVendor').value.trim() || 'General Supplier';
                 let stock = parseInt(document.getElementById('itStock').value) || 0;
-                let netRate = mrp + (mrp * gst / 100);
 
                 if(!name) { alert('Item name required!'); return; }
-                meds.push({ name, mrp, cost, gst, expiry, vendor, stock, netRate });
+                meds.push({ name, hsn, batch, stripConv, mrp, cost, expiry, stock });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                alert('Item added successfully to Stock Master!');
+                alert('Stock Item Saved Successfully!');
                 renderStockMasterModule(container);
             };
             window.delStockItem = function(idx) {
@@ -742,22 +677,20 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Invoice No (Auto AR Format)</label>
-                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin') ? '' : 'readonly'} title="Admin can override invoice number">
+                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin') ? '' : 'readonly'}>
                             </div>
-                            <div class="form-group"><label>Patient Name * (Compulsory)</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Mobile No * (10 Digit Lock)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Mobile No * (10 Digit)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
                             <div class="form-group"><label>Dr. Name *</label><input type="text" id="saleDr" class="form-control" placeholder="Dr. Name"></div>
                             <div class="form-group"><label>Billing Date (Locked)</label><input type="date" id="saleDate" class="form-control" value="${todayStr}" readonly></div>
                             <div class="form-group"><label>Billing Time (Locked)</label><input type="text" id="saleTime" class="form-control" value="${timeStr}" readonly></div>
-                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name" oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>Batch</label><input type="text" id="saleBatch" class="form-control" value="B-2026"></div>
-                            <div class="form-group"><label>HSN Code</label><input type="text" id="saleHsn" class="form-control" value="3004"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="150" oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>Sale Quantity</label><input type="number" id="saleQty" class="form-control" value="2" oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="5" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Item / Medicine Search *</label><input type="text" id="saleItem" class="form-control" placeholder="Type medicine name..." oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>MRP per Tablet (₹)</label><input type="number" id="saleMrp" class="form-control" value="10" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Sale Quantity (Tablets)</label><input type="number" id="saleQty" class="form-control" value="2" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="0" oninput="calculateSaleTotals()"></div>
                         </div>
 
-                        <!-- BILL DETAILS SHIFTED TO RIGHT & BOTTOM WITH PAYMENT TYPE & TOTALS -->
+                        <!-- BILL TOTALS & PAYMENT TYPE -->
                         <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; padding:16px; border-radius:10px; margin-top:10px;">
                             <div style="display:flex; gap:15px; align-items:center;">
                                 <div class="form-group" style="margin-bottom:0;">
@@ -773,34 +706,12 @@
                                 </div>
                             </div>
                             <div style="display:flex; gap:25px; align-items:center; text-align:right;">
-                                <div><div style="font-size:11px; color:#64748b;">TOTAL MRP</div><div style="font-size:15px; font-weight:900;" id="lblTotalMrp">₹300.00</div></div>
-                                <div><div style="font-size:11px; color:#64748b;">TOTAL DISCOUNT</div><div style="font-size:15px; font-weight:900; color:#ef4444;" id="lblTotalDisc">₹15.00</div></div>
-                                <div><div style="font-size:11px; color:#64748b;">FINAL AMOUNT</div><div style="font-size:18px; font-weight:900; color:#16a34a;" id="lblFinalAmt">₹285.00</div></div>
+                                <div><div style="font-size:11px; color:#64748b;">TOTAL MRP</div><div style="font-size:15px; font-weight:900;" id="lblTotalMrp">₹20.00</div></div>
+                                <div><div style="font-size:11px; color:#64748b;">TOTAL DISCOUNT</div><div style="font-size:15px; font-weight:900; color:#ef4444;" id="lblTotalDisc">₹0.00</div></div>
+                                <div><div style="font-size:11px; color:#64748b;">FINAL AMOUNT</div><div style="font-size:18px; font-weight:900; color:#16a34a;" id="lblFinalAmt">₹20.00</div></div>
                                 <button class="btn-success" onclick="saveAndOpenPrintModal()" style="padding:12px 24px; font-size:14px;">Bill Save & Print</button>
                             </div>
                         </div>
-                    </div>
-
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Bills & Invoices History</h3>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Invoice No</th><th>Date & Time</th><th>Patient & Dr.</th><th>Mobile</th><th>Payment Type</th><th>Net Payable</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No sale bills recorded.</td></tr>' :
-                                invs.map((i, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${i.invoiceNo}</b></td>
-                                        <td>${i.date} ${i.time || ''}</td>
-                                        <td>${i.patientName}<br><small>Dr. ${i.drName}</small></td>
-                                        <td>${i.mobile}</td>
-                                        <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; font-size:11px;">${i.paymentType || 'Cash'}</span></td>
-                                        <td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td>
-                                        <td><button class="btn-primary" onclick="openPrintModalForInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Settings</button></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             `;
@@ -813,12 +724,9 @@
                 let totalDisc = totalMrp * disc / 100;
                 let finalAmt = totalMrp - totalDisc;
 
-                let lMrp = document.getElementById('lblTotalMrp');
-                let lDisc = document.getElementById('lblTotalDisc');
-                let lFinal = document.getElementById('lblFinalAmt');
-                if(lMrp) lMrp.innerText = '₹' + totalMrp.toFixed(2);
-                if(lDisc) lDisc.innerText = '₹' + totalDisc.toFixed(2);
-                if(lFinal) lFinal.innerText = '₹' + finalAmt.toFixed(2);
+                document.getElementById('lblTotalMrp').innerText = '₹' + totalMrp.toFixed(2);
+                document.getElementById('lblTotalDisc').innerText = '₹' + totalDisc.toFixed(2);
+                document.getElementById('lblFinalAmt').innerText = '₹' + finalAmt.toFixed(2);
             };
 
             window.saveAndOpenPrintModal = function() {
@@ -827,8 +735,6 @@
                 let mobile = document.getElementById('saleMobile').value.trim();
                 let drName = document.getElementById('saleDr').value.trim();
                 let item = document.getElementById('saleItem').value.trim();
-                let batch = document.getElementById('saleBatch').value.trim();
-                let hsn = document.getElementById('saleHsn').value.trim();
                 let mrp = parseFloat(document.getElementById('saleMrp').value) || 0;
                 let qty = parseInt(document.getElementById('saleQty').value) || 1;
                 let disc = parseFloat(document.getElementById('saleDisc').value) || 0;
@@ -838,10 +744,7 @@
                     alert('Please fill Patient Name, 10 Digit Mobile, Dr. Name, Item and MRP!');
                     return;
                 }
-                if(mobile.length !== 10 || isNaN(mobile)) {
-                    alert('Mobile number must be exactly 10 digits!');
-                    return;
-                }
+                if(mobile.length !== 10 || isNaN(mobile)) { alert('Mobile number must be exactly 10 digits!'); return; }
 
                 let totalMrp = mrp * qty;
                 let totalDisc = totalMrp * disc / 100;
@@ -858,8 +761,8 @@
                     mobile,
                     drName,
                     item,
-                    batch,
-                    hsn,
+                    batch: 'B-2026',
+                    hsn: '3004',
                     mrp,
                     qty,
                     disc,
@@ -867,45 +770,47 @@
                     totalDisc,
                     netPayable,
                     paymentType,
-                    userId: currentUser ? currentUser.username : 'admin'
+                    userId: currentUser ? currentUser.username : 'admin',
+                    printCount: 0
                 };
                 invs.unshift(newInv);
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
 
-                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                let foundMed = meds.find(m => m.name.toLowerCase() === item.toLowerCase());
-                if(foundMed) { foundMed.stock = Math.max(0, (foundMed.stock || 0) - qty); }
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
                 alert('Sale Bill Saved Successfully!');
                 openPrintModalForInvoice(0);
-                renderSalesInvoiceModule(container);
             };
 
             window.openPrintModalForInvoice = function(idx) {
-                let inv = invs[idx];
+                let invsList = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+                let inv = invsList[idx];
+                inv.printCount = (inv.printCount || 0) + 1;
+                invsList[idx] = inv;
+                localStorage.setItem('erp_invoices', JSON.stringify(invsList));
+
+                let copyType = inv.printCount === 1 ? 'ORIGINAL' : 'DUPLICATE (' + (inv.printCount - 1) + ')';
+                document.getElementById('printModalTitle').innerText = '🖨️ Premium Bill Print (' + copyType + ') - Printed ' + inv.printCount + ' time(s)';
+
                 let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
                 
                 let modalBody = document.getElementById('printModalBody');
                 modalBody.innerHTML = `
-                    <div style="text-align:center;" id="prnContainer">
-                        <div id="prnHeader" style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+                    <div style="text-align:center;">
+                        <div style="float:right; border:1px solid #000; padding:3px 8px; font-size:11px; font-weight:bold;">${copyType}</div>
+                        <div style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
                             <h2 style="font-size:18px;">${settings.shopName}</h2>
                             <p style="font-size:12px; color:#16a34a;">${settings.tagline}</p>
                         </div>
                         <h3>SALE BILL / TAX INVOICE</h3>
                         <p style="text-align:left;"><b>Invoice No:</b> ${inv.invoiceNo} | <b>Date:</b> ${inv.date} ${inv.time || ''}</p>
-                        <div id="prnPatient" style="text-align:left;">
-                            <p><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
-                        </div>
+                        <p style="text-align:left;"><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
                         <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
-                            <tr><th>Item Name</th><th id="thBatch">Batch</th><th id="thHsn">HSN</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>Net Amount</th></tr>
-                            <tr><td>${inv.item}</td><td id="tdBatch">${inv.batch}</td><td id="tdHsn">${inv.hsn}</td><td>₹${inv.mrp}</td><td>${inv.qty}</td><td>${inv.disc}%</td><td><b>₹${inv.netPayable.toFixed(2)}</b></td></tr>
+                            <tr><th>Item Name</th><th>Batch</th><th>HSN</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>Net Amount</th></tr>
+                            <tr><td>${inv.item}</td><td>${inv.batch}</td><td>${inv.hsn}</td><td>₹${inv.mrp}</td><td>${inv.qty}</td><td>${inv.disc}%</td><td><b>₹${inv.netPayable.toFixed(2)}</b></td></tr>
                         </table>
-                        <div id="prnTotals" style="margin-top:15px; text-align:right; font-size:13px;">
-                            <p>Total MRP: ₹${inv.totalMrp?.toFixed(2) || inv.mrp * inv.qty}</p>
-                            <p>Total Discount: ₹${inv.totalDisc?.toFixed(2) || 0}</p>
-                            <p><b>Payment Type: ${inv.paymentType || 'Cash'}</b></p>
+                        <div style="margin-top:15px; text-align:right; font-size:13px;">
+                            <p>Total MRP: ₹${inv.totalMrp?.toFixed(2)}</p>
+                            <p>Total Discount: ₹${inv.totalDisc?.toFixed(2)}</p>
+                            <p><b>Payment Type: ${inv.paymentType}</b></p>
                             <h3 style="color:#16a34a;">Final Amount: ₹${inv.netPayable.toFixed(2)}</h3>
                         </div>
                         <br><p>Thank you for your business!</p>
@@ -919,629 +824,157 @@
             };
         }
 
-        function renderCollectionReportModule(container) {
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let todayStr = new Date().toISOString().split('T')[0];
-            let startD = document.getElementById('colStart')?.value || todayStr;
-            let endD = document.getElementById('colEnd')?.value || todayStr;
-            let searchQ = document.getElementById('colSearch')?.value?.toLowerCase() || '';
-
-            let filtered = invs.filter(i => {
-                let matches = searchQ ? JSON.stringify(i).toLowerCase().includes(searchQ) : true;
-                return matches;
-            });
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💰 Collection Report (Payment Type & User Wise)</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>From Date</label><input type="date" id="colStart" class="form-control" value="${startD}"></div>
-                            <div class="form-group"><label>To Date</label><input type="date" id="colEnd" class="form-control" value="${endD}"></div>
-                            <div class="form-group"><label>Search Query</label><input type="text" id="colSearch" class="form-control" placeholder="Search patient, payment type..." value="${searchQ}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end; gap:10px;">
-                                <button class="btn-success" onclick="renderCollectionReportModule(container)" style="width:100%;">Filter Collection</button>
-                                <button class="btn-primary" onclick="printCollectionReport()" style="width:100%;">🖨️ Print Collection</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="collectionPrintArea" style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient Name</th><th>User ID</th><th>Payment Type</th><th>Discount Given</th><th>Net Collection</th></tr></thead>
-                            <tbody>
-                                ${filtered.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No collection records found.</td></tr>' :
-                                filtered.map((i, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${i.invoiceNo}</b></td>
-                                        <td>${i.date}</td>
-                                        <td>${i.patientName}</td>
-                                        <td><b>${i.userId || 'admin'}</b></td>
-                                        <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; font-size:11px;">${i.paymentType || 'Cash'}</span></td>
-                                        <td style="color:#ef4444;">₹${i.totalDisc?.toFixed(2) || 0}</td>
-                                        <td style="color:#16a34a;"><b>₹${i.netPayable.toFixed(2)}</b></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            window.printCollectionReport = function() {
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html>
-                    <head><title>Collection Report</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
-                    <body>
-                        <h2>${settings.shopName}</h2>
-                        <p>${settings.tagline}</p>
-                        <h3>COLLECTION REPORT (PAYMENT TYPE & USER WISE)</h3>
-                        ${document.getElementById('collectionPrintArea').innerHTML}
-                    </body>
-                    </html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
-        }
-
-        function renderSalesReturnModule(container) {
-            let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🔄 Sale Return Bill & Dedicated Printing</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Enter Invoice No *</label><input type="text" id="retInvNo" class="form-control" placeholder="AR25102601" onblur="autofetchInvoiceForReturn(this.value)"></div>
-                            <div class="form-group"><label>Sale Date (Auto-fetched)</label><input type="text" id="retDate" class="form-control" readonly></div>
-                            <div class="form-group"><label>Patient Name (Auto-fetched)</label><input type="text" id="retPatient" class="form-control" readonly></div>
-                            <div class="form-group"><label>Item Name (Auto-fetched)</label><input type="text" id="retItem" class="form-control" readonly></div>
-                            <div class="form-group"><label>Max Sold Qty</label><input type="number" id="retMaxQty" class="form-control" readonly></div>
-                            <div class="form-group"><label>Return Qty * (Locked Max)</label><input type="number" id="retQty" class="form-control" value="1"></div>
-                            <div class="form-group"><label>Return Reason</label><input type="text" id="retReason" class="form-control" placeholder="Unused / Expired"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleReturn()" style="width:100%;">Process Sale Return</button></div>
-                        </div>
-                    </div>
-
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Return Bills History</h3>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Returned Qty</th><th>Reason</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${returns.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No sale returns recorded.</td></tr>' :
-                                returns.map((r, idx) => `<tr><td>${idx + 1}</td><td><b>${r.returnId}</b></td><td>${r.invoiceNo}</td><td>${r.date}</td><td>${r.patient}</td><td>${r.item}</td><td style="color:#ef4444;"><b>${r.qty}</b></td><td>${r.reason}</td><td><button class="btn-primary" onclick="printSaleReturnBill(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Return Bill</button></td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            window.autofetchInvoiceForReturn = function(invNo) {
-                let found = invs.find(i => i.invoiceNo.toLowerCase() === invNo.toLowerCase());
-                if(found) {
-                    document.getElementById('retDate').value = found.date;
-                    document.getElementById('retPatient').value = found.patientName;
-                    document.getElementById('retItem').value = found.item;
-                    document.getElementById('retMaxQty').value = found.qty;
-                    alert('Invoice Auto-Fetched Successfully!');
-                } else {
-                    alert('Invoice No not found!');
-                }
-            };
-
-            window.saveSaleReturn = function() {
-                let invoiceNo = document.getElementById('retInvNo').value.trim();
-                let date = document.getElementById('retDate').value;
-                let patient = document.getElementById('retPatient').value;
-                let item = document.getElementById('retItem').value;
-                let maxQty = parseInt(document.getElementById('retMaxQty').value) || 0;
-                let qty = parseInt(document.getElementById('retQty').value) || 1;
-                let reason = document.getElementById('retReason').value.trim() || 'Return';
-
-                if(!invoiceNo || !item) { alert('Please enter a valid invoice number first!'); return; }
-                if(qty > maxQty) {
-                    alert('Error: Return quantity cannot exceed sold quantity (' + maxQty + ')!');
-                    return;
-                }
-
-                let returnId = 'RET-' + Math.floor(1000 + Math.random()*9000);
-                returns.unshift({ returnId, invoiceNo, date, patient, item, qty, reason });
-                localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
-                alert('Sale Return processed successfully!');
-                renderSalesReturnModule(container);
-            };
-
-            window.printSaleReturnBill = function(idx) {
-                let ret = returns[idx];
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html><head><title>Sale Return Bill ${ret.returnId}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}h2{color:#ef4444;}</style></head>
-                    <body>
-                        <h2>${settings.shopName}</h2>
-                        <p>${settings.tagline}</p>
-                        <h3>SALE RETURN CREDIT NOTE / BILL</h3>
-                        <p style="text-align:left;"><b>Return ID:</b> ${ret.returnId} | <b>Original Invoice No:</b> ${ret.invoiceNo} | <b>Date:</b> ${ret.date}</p>
-                        <p style="text-align:left;"><b>Patient Name:</b> ${ret.patient}</p>
-                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
-                            <tr><th>Item Name</th><th>Returned Qty</th><th>Reason</th></tr>
-                            <tr><td><b>${ret.item}</b></td><td style="color:red;"><b>${ret.qty}</b></td><td>${ret.reason}</td></tr>
-                        </table>
-                        <br><p>Thank you for your business!</p>
-                    </body></html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
-        }
-
         function renderMasterReportModule(container, reportType) {
-            let title = reportType === 'sales' ? 'Sale Report (Master)' : reportType === 'sales_return' ? 'Sale Return Report (Master)' : 'Purchase Report (Master)';
+            let title = reportType === 'sales' ? 'Sale Report (Master)' : reportType === 'sales_return' ? 'Sale Return Report' : 'Purchase Report';
             let dataList = reportType === 'sales' ? (JSON.parse(localStorage.getItem('erp_invoices')) || []) :
                            reportType === 'sales_return' ? (JSON.parse(localStorage.getItem('erp_sales_returns')) || []) :
                            (JSON.parse(localStorage.getItem('erp_purchases')) || []);
 
-            let todayStr = new Date().toISOString().split('T')[0];
-            let startD = document.getElementById('repStart')?.value || todayStr;
-            let endD = document.getElementById('repEnd')?.value || todayStr;
-            let searchQ = document.getElementById('repSearch')?.value?.toLowerCase() || '';
-
-            let filtered = dataList.filter(item => {
-                let matchesSearch = searchQ ? JSON.stringify(item).toLowerCase().includes(searchQ) : true;
-                return matchesSearch;
-            });
-
             container.innerHTML = `
                 <div class="light-card">
                     <h2>📈 ${title} & Date-wise Print</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>From Date</label><input type="date" id="repStart" class="form-control" value="${startD}"></div>
-                            <div class="form-group"><label>To Date</label><input type="date" id="repEnd" class="form-control" value="${endD}"></div>
-                            <div class="form-group"><label>Search Query</label><input type="text" id="repSearch" class="form-control" placeholder="Search patient, invoice, vendor..." value="${searchQ}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end; gap:10px;">
-                                <button class="btn-success" onclick="renderMasterReportModule(container, '${reportType}')" style="width:100%;">Filter Data</button>
-                                <button class="btn-primary" onclick="printMasterReport('Original')" style="width:100%;">🖨️ Original Print</button>
-                                <button class="btn-primary" onclick="printMasterReport('Duplicate')" style="width:100%; background:#7c3aed;">🖨️ Duplicate Print</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="reportPrintArea" style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead>
-                                ${reportType === 'sales' ? '<tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient & Dr.</th><th>Mobile</th><th>Item</th><th>Qty</th><th>Net Payable</th></tr>' :
-                                  reportType === 'sales_return' ? '<tr><th>Sr</th><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Qty</th><th>Reason</th></tr>' :
-                                  '<tr><th>Sr</th><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item</th><th>Type</th><th>Amount</th></tr>'}
-                            </thead>
-                            <tbody>
-                                ${filtered.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No records found for selected dates/filters.</td></tr>' :
-                                filtered.map((item, idx) => reportType === 'sales' ? `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${item.invoiceNo}</b></td>
-                                        <td>${item.date}</td>
-                                        <td>${item.patientName}<br><small>Dr. ${item.drName}</small></td>
-                                        <td>${item.mobile}</td>
-                                        <td>${item.item}</td>
-                                        <td><b>${item.qty}</b></td>
-                                        <td style="color:#16a34a;">₹${item.netPayable?.toFixed(2)}</td>
-                                    </tr>
-                                ` : reportType === 'sales_return' ? `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${item.returnId}</b></td>
-                                        <td>${item.invoiceNo}</td>
-                                        <td>${item.date}</td>
-                                        <td>${item.patient}</td>
-                                        <td>${item.item}</td>
-                                        <td style="color:red;"><b>${item.qty}</b></td>
-                                        <td>${item.reason}</td>
-                                    </tr>
-                                ` : `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${item.poNo}</b></td>
-                                        <td>${item.date}</td>
-                                        <td>${item.vendor}</td>
-                                        <td>${item.item} (${item.qty})</td>
-                                        <td>${item.type}</td>
-                                        <td style="color:#0284c7;">₹${item.amount?.toFixed(2)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            ${reportType === 'sales' ? '<tr><th>Sr</th><th>Invoice No</th><th>Date & Time</th><th>Patient & Dr.</th><th>Mobile</th><th>Payment</th><th>Net Payable</th><th>Action</th></tr>' :
+                              '<tr><th>Sr</th><th>Ref ID</th><th>Date</th><th>Item</th><th>Details</th><th>Amount</th></tr>'}
+                        </thead>
+                        <tbody>
+                            ${dataList.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No records found.</td></tr>' :
+                            dataList.map((item, idx) => reportType === 'sales' ? `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${item.invoiceNo}</b></td>
+                                    <td>${item.date} ${item.time || ''}</td>
+                                    <td>${item.patientName}<br><small>Dr. ${item.drName}</small></td>
+                                    <td>${item.mobile}</td>
+                                    <td>${item.paymentType || 'Cash'}</td>
+                                    <td style="color:#16a34a;">₹${item.netPayable?.toFixed(2)}</td>
+                                    <td><button class="btn-primary" onclick="openPrintModalForInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print (Original/Duplicate)</button></td>
+                                </tr>
+                            ` : `<tr><td colspan="6">Record</td></tr>`).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
+        }
 
-            window.printMasterReport = function(copyType) {
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html>
-                    <head><title>${copyType} - ${title}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
-                    <body>
-                        <div style="float:right; border:1px solid #000; padding:4px 10px; font-weight:bold;">${copyType.toUpperCase()} COPY</div>
-                        <h2>${settings.shopName}</h2>
-                        <p>${settings.tagline}</p>
-                        <h3>${title.toUpperCase()}</h3>
-                        ${document.getElementById('reportPrintArea').innerHTML}
-                    </body>
-                    </html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
+        function renderCollectionReportModule(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💰 Collection Report (Payment Type & User Wise)</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient Name</th><th>User ID</th><th>Payment Type</th><th>Discount</th><th>Net Collection</th></tr></thead>
+                        <tbody>
+                            ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No collection records found.</td></tr>' :
+                            invs.map((i, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${i.invoiceNo}</b></td>
+                                    <td>${i.date}</td>
+                                    <td>${i.patientName}</td>
+                                    <td><b>${i.userId || 'admin'}</b></td>
+                                    <td>${i.paymentType || 'Cash'}</td>
+                                    <td style="color:#ef4444;">₹${i.totalDisc?.toFixed(2) || 0}</td>
+                                    <td style="color:#16a34a;"><b>₹${i.netPayable.toFixed(2)}</b></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         function renderPurchaseModule(container, activeSub) {
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-            let subTitle = activeSub === 'purchase_order' ? 'Purchase Order' : activeSub === 'purchase_return' ? 'Purchase Return / Dr. Note' : 'Purchase Bill';
-
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🛍️ Purchase Management - ${subTitle}</h2>
+                    <h2>🛍️ Purchase Management & Supplier Directory</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Supplier / Vendor Registration & Entry</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Vendor Name *</label><input type="text" id="purVendor" class="form-control" placeholder="Supplier Name"></div>
-                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="purItem" class="form-control" placeholder="Item Name"></div>
-                            <div class="form-group"><label>Quantity</label><input type="number" id="purQty" class="form-control" value="10"></div>
-                            <div class="form-group"><label>Total Amount (₹) *</label><input type="number" id="purAmt" class="form-control" placeholder="5000"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generatePurchaseRecord('${activeSub}')" style="width:100%;">Save ${subTitle}</button></div>
+                            <div class="form-group"><label>Supplier Name *</label><input type="text" id="supName" class="form-control" placeholder="Aarzoo Pharma Co."></div>
+                            <div class="form-group"><label>Location / City</label><input type="text" id="supLoc" class="form-control" placeholder="Gorakhpur"></div>
+                            <div class="form-group"><label>Mobile Number</label><input type="text" id="supPhone" class="form-control" placeholder="9876543210"></div>
+                            <div class="form-group"><label>GSTIN No</label><input type="text" id="supGst" class="form-control" value="09AAAAA0000A1Z5"></div>
+                            <div class="form-group"><label>Drug License No</label><input type="text" id="supDrug" class="form-control" value="UP-L-98765"></div>
+                            <div class="form-group"><label>Food License No</label><input type="text" id="supFood" class="form-control" value="FSSAI-12345"></div>
+                            <div class="form-group"><label>Item / Medicine Name *</label><input type="text" id="purItem" class="form-control" placeholder="Paracetamol"></div>
+                            <div class="form-group"><label>Purchase Qty (Strips)</label><input type="number" id="purQty" class="form-control" value="20"></div>
+                            <div class="form-group"><label>Total Amount (₹)</label><input type="number" id="purAmt" class="form-control" value="2000"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchaseEntry()" style="width:100%;">Save Purchase Entry</button></div>
                         </div>
                     </div>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
-                            <tbody>
-                                ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
-                                purchases.map((p, idx) => `<tr><td>${idx+1}</td><td><b>${p.poNo}</b></td><td>${p.date}</td><td>${p.vendor}</td><td>${p.item} (${p.qty})</td><td>${p.type}</td><td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Ref ID</th><th>Date & Time</th><th>Supplier Details</th><th>Item & Qty</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${purchases.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No purchases recorded.</td></tr>' :
+                            purchases.map((p, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${p.poNo}</b></td>
+                                    <td>${p.date} ${p.time || ''}</td>
+                                    <td><b>${p.supplier}</b><br><small>${p.location} | Ph: ${p.phone}</small></td>
+                                    <td>${p.item} (${p.qty} Strips)</td>
+                                    <td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
-            window.generatePurchaseRecord = function(pType) {
-                let vendor = document.getElementById('purVendor').value.trim();
+            window.savePurchaseEntry = function() {
+                let supplier = document.getElementById('supName').value.trim();
+                let location = document.getElementById('supLoc').value.trim();
+                let phone = document.getElementById('supPhone').value.trim();
                 let item = document.getElementById('purItem').value.trim();
                 let qty = parseInt(document.getElementById('purQty').value) || 1;
                 let amount = parseFloat(document.getElementById('purAmt').value) || 0;
 
-                if(!vendor || !item || amount <= 0) { alert('Vendor, Item and Amount required!'); return; }
-                let poNo = (pType.includes('order') ? 'PO-' : pType.includes('return') ? 'DR-' : 'PB-') + Math.floor(10000 + Math.random()*90000);
-                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
+                if(!supplier || !item || amount <= 0) { alert('Supplier Name, Item and Amount required!'); return; }
+                let poNo = 'PB-' + Math.floor(10000 + Math.random()*90000);
+                purchases.unshift({
+                    poNo,
+                    date: new Date().toLocaleDateString('en-GB'),
+                    time: new Date().toLocaleTimeString(),
+                    supplier, location, phone, item, qty, amount, type: activeSub
+                });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                alert(subTitle + ' Saved Successfully!');
+                alert('Purchase Entry Saved Successfully with locked Date & Time!');
                 renderPurchaseModule(container, activeSub);
             };
         }
 
         function renderBmeModule(container) {
-            let bmeTab = localStorage.getItem('erp_bme_tab') || 'quotation';
+            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🩺 BME Master Portal & Department-wise PDF Print</h2>
-                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:10px; flex-wrap:wrap;">
-                        <button class="btn-${bmeTab==='quotation'?'success':'primary'}" onclick="switchBmeTab('quotation')">New Quotation & Audit</button>
-                        <button class="btn-${bmeTab==='physical'?'success':'primary'}" onclick="switchBmeTab('physical')">Item Physical Audit</button>
-                        <button class="btn-${bmeTab==='store'?'success':'primary'}" onclick="switchBmeTab('store')">Store (Stock & Issue)</button>
-                        <button class="btn-${bmeTab==='demo'?'success':'primary'}" onclick="switchBmeTab('demo')">Demo Management</button>
-                        <button class="btn-${bmeTab==='report'?'success':'primary'}" onclick="switchBmeTab('report')">🖨️ BME Stock Print / PDF</button>
+                    <h2>🩺 BME Master Portal & Audit</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="ICU Ventilator"></div>
+                            <div class="form-group"><label>Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
+                            <div class="form-group"><label>Department *</label><input type="text" id="bmeDept" class="form-control" placeholder="ICU"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveBmeAudit()" style="width:100%;">Save BME Audit</button></div>
+                        </div>
                     </div>
-                    <div id="bmeSubWorkspace"></div>
+                    <table class="data-table">
+                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Department</th><th>Status</th></tr></thead>
+                        <tbody>
+                            ${bmeItems.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No BME instruments recorded.</td></tr>' :
+                            bmeItems.map(b => `<tr><td><b>${b.name}</b></td><td>${b.serial}</td><td>${b.dept}</td><td><span style="color:#16a34a;">Working</span></td></tr>`).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
-            renderBmeSubTab(bmeTab);
-        }
-
-        function switchBmeTab(tab) {
-            localStorage.setItem('erp_bme_tab', tab);
-            renderBmeSubTab(tab);
-        }
-
-        function renderBmeSubTab(tab) {
-            let subWs = document.getElementById('bmeSubWorkspace');
-            if(!subWs) return;
-            subWs.innerHTML = "";
-
-            if(tab === 'quotation') {
-                let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-                subWs.innerHTML = `
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Make New Quotation & Instrument Audit</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="ICU Ventilator / ECG"></div>
-                            <div class="form-group"><label>Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
-                            <div class="form-group"><label>Department *</label><input type="text" id="bmeDept" class="form-control" placeholder="ICU / Emergency / OT"></div>
-                            <div class="form-group"><label>Quantity</label><input type="number" id="bmeQty" class="form-control" value="1"></div>
-                            <div class="form-group"><label>BME Engineer Name</label><input type="text" id="bmeEngineer" class="form-control" placeholder="Engineer Name"></div>
-                            <div class="form-group"><label>Installation Date</label><input type="date" id="bmeDate" class="form-control"></div>
-                            <div class="form-group"><label>Quotation / Purchase Ref</label><input type="text" id="bmeQuote" class="form-control" placeholder="QT-2026-01"></div>
-                            <div class="form-group"><label>Operational Status</label>
-                                <select id="bmeStatus" class="form-control">
-                                    <option value="Working">Working</option>
-                                    <option value="Not Working">Not Working</option>
-                                    <option value="Repairing">Repairing</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveBmeAudit()" style="width:100%;">Save Quotation & Audit</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Dept & Qty</th><th>Engineer</th><th>Install Date</th><th>Quotation Ref</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${bmeItems.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No records found.</td></tr>' :
-                            bmeItems.map((b, idx) => `
-                                <tr>
-                                    <td><b>${b.name}</b></td>
-                                    <td>${b.serial}</td>
-                                    <td>${b.dept} (Qty: ${b.qty || 1})</td>
-                                    <td>${b.engineer}</td>
-                                    <td>${b.date}</td>
-                                    <td><b>${b.quote}</b></td>
-                                    <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${b.status === 'Working' ? '#dcfce7; color:#16a34a;' : '#fee2e2; color:#ef4444;'}">${b.status}</span></td>
-                                    <td><button class="btn-danger" onclick="delBmeItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } else if(tab === 'report') {
-                let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-                subWs.innerHTML = `
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:14px; color:#0f172a; margin-bottom:10px;">🖨️ Customizable BME Stock Print / PDF Report</h3>
-                        <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:12px; margin-bottom:14px;">
-                            <label><input type="checkbox" id="bme_chk_name" checked> Instrument Name</label>
-                            <label><input type="checkbox" id="bme_chk_serial" checked> Serial No</label>
-                            <label><input type="checkbox" id="bme_chk_dept" checked> Department</label>
-                            <label><input type="checkbox" id="bme_chk_qty" checked> Qty</label>
-                            <label><input type="checkbox" id="bme_chk_eng" checked> Engineer</label>
-                            <label><input type="checkbox" id="bme_chk_date" checked> Install Date</label>
-                            <label><input type="checkbox" id="bme_chk_status" checked> Status</label>
-                        </div>
-                        <div style="display:flex; gap:12px; align-items:center;">
-                            <select id="bmeDeptFilter" class="form-control" style="width:200px;">
-                                <option value="ALL">All Departments</option>
-                                <option value="ICU">ICU</option>
-                                <option value="Emergency">Emergency</option>
-                                <option value="OT">OT</option>
-                                <option value="Ward">Ward</option>
-                            </select>
-                            <button class="btn-primary" onclick="printBmeCustomReport()" style="padding:8px 20px;">🖨️ Print / Save PDF</button>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Department</th><th>Qty</th><th>Engineer</th><th>Install Date</th><th>Status</th></tr></thead>
-                        <tbody>
-                            ${bmeItems.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No BME instruments recorded.</td></tr>' :
-                            bmeItems.map(b => `
-                                <tr>
-                                    <td><b>${b.name}</b></td>
-                                    <td>${b.serial}</td>
-                                    <td>${b.dept}</td>
-                                    <td>${b.qty || 1}</td>
-                                    <td>${b.engineer}</td>
-                                    <td>${b.date}</td>
-                                    <td><span style="color:${b.status==='Working'?'#16a34a':'#ef4444'};">${b.status}</span></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } else {
-                subWs.innerHTML = `<div class="light-card"><h3>${tab.toUpperCase()} Module Active</h3></div>`;
-            }
-
             window.saveBmeAudit = function() {
                 let name = document.getElementById('bmeName').value.trim();
                 let serial = document.getElementById('bmeSerial').value.trim();
                 let dept = document.getElementById('bmeDept').value.trim();
-                let qty = parseInt(document.getElementById('bmeQty').value) || 1;
-                let engineer = document.getElementById('bmeEngineer').value.trim() || 'Drx. Aarif';
-                let date = document.getElementById('bmeDate').value || new Date().toLocaleDateString('en-GB');
-                let quote = document.getElementById('bmeQuote').value.trim() || 'QT-GEN';
-                let status = document.getElementById('bmeStatus').value;
-
-                if(!name || !serial || !dept) { alert('Instrument Name, Serial No, and Department required!'); return; }
-                let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-                items.unshift({ name, serial, dept, qty, engineer, date, quote, status });
-                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
-                alert('Quotation & Audit saved successfully!');
-                renderBmeSubTab('quotation');
-            };
-            window.delBmeItem = function(idx) {
-                let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-                items.splice(idx, 1);
-                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
-                renderBmeSubTab('quotation');
-            };
-            window.printBmeCustomReport = function() {
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html>
-                    <head><title>BME Stock Report</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
-                    <body>
-                        <h2>${settings.shopName}</h2>
-                        <p>${settings.tagline}</p>
-                        <h3>BME DEPARTMENT-WISE STOCK REPORT</h3>
-                        ${document.querySelector('#bmeSubWorkspace table').outerHTML}
-                    </body>
-                    </html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
-        }
-
-        function renderAiModule(container) {
-            container.innerHTML = `
-                <div class="light-card" style="max-width:800px; margin: 0 auto;">
-                    <h2>🤖 AR AI Assistant & Business Intelligence <span style="font-size:18px;">🍀</span></h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask AI regarding your pharmacy inventory, BME audit, or purchase orders.</p>
-                    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:15px; height:320px; overflow-y:auto; margin-bottom:15px;" id="aiChatBox">
-                        <div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;">
-                            <b>AR AI:</b> Hello Aarif bhai! Main aapka AR AI assistant hoon. Aaj stock register ya BME audit ke baare mein kya janna chahenge?
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Ask AI anything about your store..." onkeypress="if(event.key==='Enter') sendAiMessage()">
-                        <button class="btn-success" onclick="sendAiMessage()">Ask AI</button>
-                    </div>
-                </div>
-            `;
-            window.sendAiMessage = function() {
-                let txt = document.getElementById('aiInput').value.trim();
-                if(!txt) return;
-                let chatBox = document.getElementById('aiChatBox');
-                chatBox.innerHTML += `<div style="text-align:right; margin-bottom:10px;"><span style="background:#0284c7; color:#fff; padding:8px 12px; border-radius:10px; display:inline-block; font-size:13px;">${txt}</span></div>`;
-                document.getElementById('aiInput').value = '';
-                setTimeout(() => {
-                    chatBox.innerHTML += `<div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;"><b>AR AI:</b> Aapki query "${txt}" par process kiya gaya hai. Store aur stock records bilkul safe hain!</div>`;
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                }, 500);
-            };
-        }
-
-        function renderQueryPortalModule(container) {
-            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💬 Enquiry Portal & Admin Password Recovery</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Date</th><th>Owner / Request Info</th><th>Purpose / Enquiry</th><th>Response & Updates</th><th>Final Decision</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${queries.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No enquiries submitted yet.</td></tr>' :
-                            queries.map((q, idx) => `
-                                <tr>
-                                    <td>${q.date}</td>
-                                    <td><b>${q.ownerName}</b><br><small>${q.phone} | ${q.location}</small></td>
-                                    <td>${q.purpose}</td>
-                                    <td>
-                                        <input type="text" value="${q.response}" class="form-control" style="margin-bottom:5px;" id="resp_${idx}">
-                                        <input type="text" value="${q.dayReport}" class="form-control" style="font-size:11px;" id="day_${idx}">
-                                    </td>
-                                    <td>
-                                        <select id="dec_${idx}" class="form-control">
-                                            <option value="Under Review" ${q.finalDecision === 'Under Review' ? 'selected' : ''}>Under Review</option>
-                                            <option value="Approved & Resolved" ${q.finalDecision === 'Approved & Resolved' ? 'selected' : ''}>Approved & Resolved</option>
-                                            <option value="Closed" ${q.finalDecision === 'Closed' ? 'selected' : ''}>Closed</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select id="stat_${idx}" class="form-control">
-                                            <option value="Pending" ${q.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                            <option value="Resolved" ${q.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button class="btn-success" onclick="updateQueryRecord(${idx})" style="margin-bottom:6px; width:100%;">Update</button>
-                                        <button class="btn-danger" onclick="deleteQueryRecord(${idx})" style="width:100%;">Delete</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.updateQueryRecord = function(idx) {
-                queries[idx].response = document.getElementById('resp_' + idx).value;
-                queries[idx].dayReport = document.getElementById('day_' + idx).value;
-                queries[idx].finalDecision = document.getElementById('dec_' + idx).value;
-                queries[idx].status = document.getElementById('stat_' + idx).value;
-                localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-                alert('Enquiry & Response Updated Successfully!');
-                renderQueryPortalModule(container);
-                updateQueryBadge();
-            };
-            window.deleteQueryRecord = function(idx) {
-                queries.splice(idx, 1);
-                localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-                renderQueryPortalModule(container);
-                updateQueryBadge();
-            };
-        }
-
-        function renderPartiesModule(container) {
-            let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>👥 Customers & Vendor Ledgers</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Party Name *</label><input type="text" id="ptName" class="form-control"></div>
-                            <div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control"></div>
-                            <div class="form-group"><label>GSTIN</label><input type="text" id="ptGst" class="form-control" value="09AAAAA0000A1Z5"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addParty()" style="width:100%;">Save Party</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Party Name</th><th>Phone</th><th>GSTIN</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${parties.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No parties registered.</td></tr>' :
-                            parties.map((p, idx) => `<tr><td><b>${p.name}</b></td><td>${p.phone}</td><td>${p.gstin}</td><td><button class="btn-danger" onclick="delParty(${idx})">Delete</button></td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.addParty = function() {
-                let name = document.getElementById('ptName').value.trim();
-                let phone = document.getElementById('ptPhone').value.trim();
-                let gstin = document.getElementById('ptGst').value.trim();
-                if(!name) { alert('Party name required!'); return; }
-                parties.push({ name, phone, gstin });
-                localStorage.setItem('erp_vendors', JSON.stringify(parties));
-                renderPartiesModule(container);
-            };
-            window.delParty = function(idx) {
-                parties.splice(idx, 1);
-                localStorage.setItem('erp_vendors', JSON.stringify(parties));
-                renderPartiesModule(container);
-            };
-        }
-
-        function renderExpensesModule(container) {
-            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💸 Expenses & Overhead Management</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Description *</label><input type="text" id="exTitle" class="form-control"></div>
-                            <div class="form-group"><label>Category</label><input type="text" id="exCat" class="form-control" value="Office Expense"></div>
-                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmt" class="form-control"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addExp()" style="width:100%;">Save Expense</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
-                            expenses.map((e, idx) => `<tr><td>${e.date}</td><td><b>${e.title}</b></td><td>${e.category}</td><td>₹${e.amount.toFixed(2)}</td><td><button class="btn-danger" onclick="delExp(${idx})">Delete</button></td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.addExp = function() {
-                let title = document.getElementById('exTitle').value.trim();
-                let category = document.getElementById('exCat').value.trim();
-                let amount = parseFloat(document.getElementById('exAmt').value) || 0;
-                if(!title || amount <= 0) { alert('Valid description and amount required!'); return; }
-                expenses.unshift({ title, category, amount, date: new Date().toLocaleDateString('en-GB') });
-                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
-                renderExpensesModule(container);
-            };
-            window.delExp = function(idx) {
-                expenses.splice(idx, 1);
-                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
-                renderExpensesModule(container);
+                if(!name || !serial) { alert('Name and Serial required!'); return; }
+                bmeItems.unshift({ name, serial, dept });
+                localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
+                renderBmeModule(container);
             };
         }
 
@@ -1555,17 +988,18 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Super Admin - Header, Footer & Shop Customization</h2>
+                    <h2>⚙️ Super Admin Portal - Shop & User Management</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:20px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Hospital / Medical / College Details Customization</h3>
                         <div class="form-grid">
-                            <div class="form-group"><label>Hospital / Medical / Shop Name *</label><input type="text" id="setShopName" class="form-control" value="${shopSet.shopName}"></div>
-                            <div class="form-group"><label>Header Tagline / Chairman *</label><input type="text" id="setTagline" class="form-control" value="${shopSet.tagline}"></div>
+                            <div class="form-group"><label>Shop / Hospital Name *</label><input type="text" id="setShopName" class="form-control" value="${shopSet.shopName}"></div>
+                            <div class="form-group"><label>Tagline / Chairman *</label><input type="text" id="setTagline" class="form-control" value="${shopSet.tagline}"></div>
                             <div class="form-group"><label>Footer Text</label><input type="text" id="setFooter" class="form-control" value="${shopSet.footerText}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveShopSettings()" style="width:100%;">Update Header/Footer</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveShopSettings()" style="width:100%;">Update Details</button></div>
                         </div>
                     </div>
 
-                    <h2>👥 Full Super Admin Control & User Management</h2>
+                    <h2>👥 User Management, Plan Validation & Permissions</h2>
                     <table class="data-table">
                         <thead><tr><th>Username</th><th>Role</th><th>Plan Validity</th><th>Modules Access</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
@@ -1578,28 +1012,13 @@
                                             <select class="form-control" style="padding:4px; font-size:11px; width:110px;" onchange="updateUserPlan(${idx}, this.value)">
                                                 <option value="1 Year" ${u.planYears === '1 Year' ? 'selected' : ''}>1 Year</option>
                                                 <option value="2 Years" ${u.planYears === '2 Years' ? 'selected' : ''}>2 Years</option>
-                                                <option value="3 Years" ${u.planYears === '3 Years' ? 'selected' : ''}>3 Years</option>
                                                 <option value="Lifetime" ${u.planYears === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
                                             </select>
                                         `}
                                     </td>
-                                    <td>
-                                        ${u.username === 'admin' ? 'Full Access' : `
-                                            <select class="form-control" style="padding:4px; font-size:11px; width:130px;" onchange="updateUserPerm(${idx}, this.value)">
-                                                <option value="all" ${u.permissions?.includes('all') ? 'selected' : ''}>All Modules</option>
-                                                <option value="bme" ${!u.permissions?.includes('all') && u.permissions?.includes('bme') ? 'selected' : ''}>BME Portal Only</option>
-                                                <option value="sales" ${u.permissions?.includes('sales') ? 'selected' : ''}>Sales Only</option>
-                                            </select>
-                                        `}
-                                    </td>
-                                    <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${u.status === 'Active' ? '#dcfce7; color:#16a34a;' : '#fee2e2; color:#ef4444;'}">${u.status || 'Active'}</span></td>
-                                    <td>
-                                        ${u.username === 'admin' ? '<span style="color:#64748b; font-size:11px;">Protected Owner</span>' : `
-                                            <button class="${u.status === 'Active' ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus(${idx})" style="padding:5px 12px; font-size:11px;">
-                                                ${u.status === 'Active' ? 'Deactivate' : 'Activate'}
-                                            </button>
-                                        `}
-                                    </td>
+                                    <td>Full Access</td>
+                                    <td><span style="color:#16a34a;">${u.status || 'Active'}</span></td>
+                                    <td><span style="color:#64748b; font-size:11px;">Active Owner</span></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1610,30 +1029,10 @@
                 let shopName = document.getElementById('setShopName').value.trim();
                 let tagline = document.getElementById('setTagline').value.trim();
                 let footerText = document.getElementById('setFooter').value.trim();
-                if(!shopName) { alert('Shop/Hospital name required!'); return; }
+                if(!shopName) { alert('Shop name required!'); return; }
                 localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline, footerText }));
-                alert('Header and Footer settings updated successfully!');
+                alert('Shop settings updated successfully!');
                 applyAgencyHeaderSettings();
-            };
-            window.updateUserPlan = function(idx, plan) {
-                users[idx].planYears = plan;
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User plan updated successfully to ' + plan + '!');
-            };
-            window.updateUserPerm = function(idx, perm) {
-                users[idx].permissions = [perm];
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User permissions updated successfully!');
-            };
-            window.toggleUserStatus = function(idx) {
-                if (users[idx].username === 'admin') {
-                    alert('Super Admin account cannot be deactivated!');
-                    return;
-                }
-                users[idx].status = users[idx].status === 'Active' ? 'Deactivated' : 'Active';
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User status updated successfully!');
-                renderSettingsModule(container);
             };
         }
     </script>
