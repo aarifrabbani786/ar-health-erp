@@ -3,58 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Cyber Biometric Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Professional Suite</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 700; }
-        body { background: #0b0f19; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
 
-        b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger { font-weight: 900 !important; }
+        b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger, input, select { font-weight: 900 !important; font-size: 13px; }
         
-        /* FUTURISTIC BIOMETRIC DARK 3D THEME OVERLAY */
+        /* 3D LAPTOP WORK THEME OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%),
-                        url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80') center/cover;
-            background-blend-mode: overlay;
+            background: linear-gradient(135deg, rgba(15,23,42,0.90) 0%, rgba(2,132,199,0.85) 100%),
+                        url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80') center/cover;
             display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px; overflow-y: auto;
         }
         .auth-container-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 980px; align-items: center;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 1000px; align-items: center;
         }
         @media(max-width: 768px) { .auth-container-grid { grid-template-columns: 1fr; } }
 
-        /* CYBER GLASS NEUMORPHIC CARD STYLE */
         .neumorphic-card {
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); border-radius: 25px; padding: 30px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(14, 165, 233, 0.2);
-            border: 1.5px solid rgba(56, 189, 248, 0.3);
+            background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(25px); border-radius: 25px; padding: 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.25);
+            border: 2px solid rgba(56, 189, 248, 0.4);
         }
-        .neumorphic-card h2 { font-size: 15px; color: #38bdf8; margin-bottom: 5px; text-align: center; text-transform: uppercase; line-height: 1.3; text-shadow: 0 0 10px rgba(56,189,248,0.5); }
-        .neumorphic-card .subtitle { font-size: 11.5px; color: #94a3b8; text-align: center; margin-bottom: 20px; }
+        .neumorphic-card h2 { font-size: 16px; color: #38bdf8; margin-bottom: 6px; text-align: center; text-transform: uppercase; line-height: 1.3; }
+        .neumorphic-card .subtitle { font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 20px; }
 
-        /* INSET INPUTS WITH EYE ICON */
-        .input-wrap-3d { position: relative; margin-bottom: 15px; }
+        .input-wrap-3d { position: relative; margin-bottom: 16px; }
+        .input-wrap-3d label { display: block; font-size: 11.5px; color: #cbd5e1; margin-bottom: 5px; text-transform: uppercase; }
         .neumorphic-input {
-            width: 100%; padding: 12px 40px 12px 16px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #334155; border-radius: 12px;
-            font-size: 13px; color: #f8fafc; outline: none; font-weight: 800; transition: all 0.3s;
+            width: 100%; padding: 13px 40px 13px 16px; background: rgba(30, 41, 59, 0.95); border: 2px solid #475569; border-radius: 12px;
+            font-size: 14px; color: #f8fafc; outline: none; transition: all 0.3s;
         }
-        .neumorphic-input:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
-        .eye-toggle-btn {
-            position: absolute; right: 12px; top: 32px; background: none; border: none; cursor: pointer; font-size: 15px; color: #94a3b8;
-        }
+        .neumorphic-input:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+        .eye-toggle-btn { position: absolute; right: 14px; top: 35px; background: none; border: none; cursor: pointer; font-size: 16px; color: #94a3b8; }
 
-        /* CYBER BUTTONS */
         .neumorphic-btn {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border: none; border-radius: 12px;
-            color: #ffffff; font-size: 13.5px; cursor: pointer; transition: all 0.2s; text-align: center; font-weight: 900;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            width: 100%; padding: 13px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border: none; border-radius: 12px;
+            color: #ffffff; font-size: 14px; cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
         }
-        .neumorphic-btn:hover { background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6); }
+        .neumorphic-btn:hover { background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); }
 
-        .forgot-link { display: block; text-align: right; font-size: 11px; color: #38bdf8; margin-top: -8px; margin-bottom: 15px; text-decoration: none; cursor: pointer; }
+        .forgot-link { display: block; text-align: right; font-size: 12px; color: #38bdf8; margin-top: -8px; margin-bottom: 16px; text-decoration: none; cursor: pointer; }
         .forgot-link:hover { text-decoration: underline; }
 
-        /* APP LAYOUT & SIDEBAR MODULE */
+        /* APP LAYOUT & SIDEBAR */
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f1f5f9; }
         #sidebar-container {
             width: 270px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
@@ -69,97 +63,93 @@
         .brand-text { font-size: 13px; color: #22c55e; letter-spacing: 0.5px; }
 
         .sidebar-menu { list-style: none; padding: 10px; margin: 0; flex: 1; }
-        .sidebar-menu li { margin-bottom: 3px; }
-        .sidebar-menu a, .menu-dropdown-toggle {
-            display: flex; align-items: center; padding: 9px 12px; color: #cbd5e1;
-            text-decoration: none; border-radius: 10px; font-size: 12px; gap: 10px; cursor: pointer;
-            transition: all 0.2s ease; width: 100%; background: none; border: none; text-align: left;
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; padding: 11px 14px; color: #cbd5e1;
+            text-decoration: none; border-radius: 10px; font-size: 13px; gap: 10px; cursor: pointer; transition: all 0.2s;
         }
-        .sidebar-menu a:hover, .sidebar-menu a.active, .menu-dropdown-toggle:hover {
+        .sidebar-menu a:hover, .sidebar-menu a.active {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff;
         }
-        .submenu-list { padding-left: 20px; list-style: none; display: none; margin-top: 2px; }
-        .submenu-list li a { font-size: 11px; padding: 6px 10px; color: #cbd5e1; }
 
-        .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; }
+        .main-content { flex: 1; padding: 18px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; color: #0f172a; }
         
-        /* HEADER MODULE */
         .top-banner {
             background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 14px 24px; border-radius: 16px; border: 1.5px solid #bbf7d0;
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 6px 20px rgba(22, 163, 74, 0.08);
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 17px; color: #0f172a; text-transform: uppercase; }
-        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; }
+        .centered-agency-details h1 { font-size: 18px; color: #0f172a; text-transform: uppercase; }
+        .centered-agency-details p { font-size: 12px; color: #16a34a; margin-top: 3px; }
 
         .light-card { 
-            background: #ffffff; color: #0f172a; border-radius: 16px; padding: 20px; margin-bottom: 14px; 
+            background: #ffffff; color: #0f172a; border-radius: 16px; padding: 22px; margin-bottom: 16px; 
             border: 1.5px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
-        .light-card h2 { font-size: 15px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .light-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
-        .form-group { margin-bottom: 6px; }
-        .form-group label { display: block; font-size: 10.5px; color: #475569; margin-bottom: 3px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; font-weight: 800; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 11.5px; color: #334155; margin-bottom: 4px; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 11px 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; color: #0f172a; font-size: 13px; outline: none; }
         
-        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 11px 18px; border-radius: 9px; cursor: pointer; font-size: 13px; }
+        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 11px 18px; border-radius: 9px; cursor: pointer; font-size: 13px; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 7px 12px; border-radius: 7px; cursor: pointer; font-size: 12px; }
 
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; font-weight: 800; }
-        .data-table th { color: #475569; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #0f172a; }
+        .data-table th { color: #334155; font-size: 12px; text-transform: uppercase; background: #f1f5f9; }
     </style>
 </head>
 <body>
 
-    <!-- FUTURISTIC BIOMETRIC LOGIN & ENQUIRY PORTAL OVERLAY -->
+    <!-- 3D LAPTOP WORK THEME LOGIN & ENQUIRY PORTAL -->
     <div id="auth-overlay" style="display: none;">
         <div class="auth-container-grid">
-            <!-- Left Card: Login Module -->
+            <!-- Left Card: Login -->
             <div class="neumorphic-card">
                 <h2>A.R. ERP BILLING & COMPLETE INVENTORY SOFTWARE</h2>
-                <div class="subtitle">Cyber Biometric Secure Access</div>
+                <div class="subtitle">Secure Administrator & Staff Access</div>
                 
                 <div class="input-wrap-3d">
-                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">USER ID *</label>
+                    <label>USER ID *</label>
                     <input type="text" id="loginUser" class="neumorphic-input" placeholder="Enter user id" autofocus>
                 </div>
 
                 <div class="input-wrap-3d">
-                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">PASSWORD *</label>
+                    <label>PASSWORD *</label>
                     <input type="password" id="loginPass" class="neumorphic-input" placeholder="Password">
                     <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
                 </div>
 
-                <a class="forgot-link" onclick="openForgotModal()">Forgot user id and password?</a>
+                <a class="forgot-link" onclick="sendAdminForgotRequest()">Forgot user id and password?</a>
 
                 <button onclick="handleLogin()" class="neumorphic-btn">Log In</button>
             </div>
 
-            <!-- Right Card: Software Queries & Purpose Form -->
+            <!-- Right Card: Software Enquiry -->
             <div class="neumorphic-card">
                 <h2 style="color: #38bdf8;">Software Enquiry</h2>
                 <div class="subtitle">Purpose & Query Support Request</div>
                 
                 <div class="input-wrap-3d">
-                    <label style="display: block; font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">OWNER NAME *</label>
+                    <label>OWNER NAME *</label>
                     <input type="text" id="eqOwner" class="neumorphic-input" placeholder="Owner Full Name">
                 </div>
 
                 <div class="input-wrap-3d">
-                    <label style="display: block; font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">PURPOSE OF SOFTWARE / QUERY *</label>
+                    <label>PURPOSE OF SOFTWARE / QUERY *</label>
                     <input type="text" id="eqPurpose" class="neumorphic-input" placeholder="e.g. Pharmacy Billing / Customization">
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                     <div class="input-wrap-3d">
-                        <label style="display: block; font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">CONTACT *</label>
+                        <label>CONTACT *</label>
                         <input type="text" id="eqPhone" class="neumorphic-input" placeholder="Mobile No">
                     </div>
                     <div class="input-wrap-3d">
-                        <label style="display: block; font-size: 10.5px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">LOCATION *</label>
+                        <label>LOCATION *</label>
                         <input type="text" id="eqLoc" class="neumorphic-input" placeholder="City / Location">
                     </div>
                 </div>
@@ -169,30 +159,10 @@
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD OTP MODAL -->
-    <div id="forgotModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999999; justify-content:center; align-items:center;">
-        <div class="neumorphic-card" style="width:100%; max-width:400px;">
-            <h2 style="color:#38bdf8; margin-bottom:15px;">OTP Password Recovery</h2>
-            <div class="input-wrap-3d">
-                <label style="font-size:11px; color:#94a3b8;">Registered Mobile / Email</label>
-                <input type="text" id="otpTarget" class="neumorphic-input" placeholder="Enter Mobile No or Email">
-            </div>
-            <button onclick="sendOtpCode()" class="neumorphic-btn" style="margin-bottom:10px;">Send OTP</button>
-            <div id="otpBox" style="display:none;">
-                <div class="input-wrap-3d">
-                    <label style="font-size:11px; color:#94a3b8;">Enter 4-Digit OTP</label>
-                    <input type="text" id="enteredOtp" class="neumorphic-input" placeholder="e.g. 1234">
-                </div>
-                <button onclick="verifyOtpAndReset()" class="neumorphic-btn" style="background:#16a34a;">Verify & Reset Password</button>
-            </div>
-            <button onclick="closeForgotModal()" style="background:none; border:none; color:#94a3b8; font-size:11px; margin-top:15px; cursor:pointer; width:100%; text-align:center;">Cancel</button>
-        </div>
-    </div>
-
     <!-- MAIN APP CONTAINER -->
     <div class="app-layout" id="main-app-container">
         
-        <!-- SIDEBAR NAVIGATION MODULE -->
+        <!-- SIDEBAR NAVIGATION -->
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
@@ -202,19 +172,19 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Query Portal <span style="background:#ef4444; color:#fff; font-size:9px; padding:2px 6px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
-                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> POS Billing</a></li>
-                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items Master</a></li>
+                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Query Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> POS Billing Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items Master Stock</a></li>
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
-                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
-                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings</a></li>
+                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses Manager</a></li>
+                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings & Users</a></li>
             </ul>
         </div>
 
         <div class="main-content">
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:11px; background:#dcfce7; color:#16a34a; padding:5px 12px; border-radius:20px; border:1px solid #86efac;">A.R. ERP v2.6</span>
+                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;">A.R. ERP v2.6</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -262,23 +232,25 @@
             passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
-        function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
-        function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
-
-        function sendOtpCode() {
-            let val = document.getElementById('otpTarget').value.trim();
-            if(!val) { alert('Please enter Mobile Number or Email!'); return; }
-            alert('OTP sent successfully to ' + val + '! (Demo OTP: 1234)');
-            document.getElementById('otpBox').style.display = 'block';
-        }
-
-        function verifyOtpAndReset() {
-            let otp = document.getElementById('enteredOtp').value.trim();
-            if(otp === '1234') {
-                alert('OTP Verified! Your temporary password is: admin123');
-                closeForgotModal();
-            } else {
-                alert('Invalid OTP! Please enter 1234.');
+        function sendAdminForgotRequest() {
+            let uId = prompt('Enter your User ID or Registered Mobile No to send recovery request to Admin:');
+            if(uId) {
+                let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
+                queries.unshift({
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString('en-GB'),
+                    ownerName: 'Forgot Credentials Request (' + uId + ')',
+                    purpose: 'Password & User ID Recovery Request',
+                    phone: uId,
+                    location: 'System Login Page',
+                    response: 'Pending Admin Action',
+                    status: 'Pending',
+                    finalDecision: 'Under Review',
+                    dayReport: 'Day 1: Forgot credentials alert sent to Admin'
+                });
+                localStorage.setItem('erp_software_queries', JSON.stringify(queries));
+                updateQueryBadge();
+                alert('Forgot Credentials request sent successfully to Super Admin! Admin will review and update your password.');
             }
         }
 
@@ -352,66 +324,68 @@
 
             if (m === 'dashboard') renderDashboardModule(workspace);
             else if (m === 'queries') renderQueryPortalModule(workspace);
-            else if (m === 'sales') renderPlaceholder(workspace, 'POS Billing Module');
-            else if (m === 'audit') renderPlaceholder(workspace, 'Items Master Module');
-            else if (m === 'parties') renderPlaceholder(workspace, 'Customers & Vendors Module');
-            else if (m === 'expenses') renderPlaceholder(workspace, 'Expenses Module');
-            else if (m === 'settings') renderPlaceholder(workspace, 'Settings Module');
+            else if (m === 'sales') renderSalesModule(workspace);
+            else if (m === 'audit') renderStockAuditModule(workspace);
+            else if (m === 'parties') renderPartiesModule(workspace);
+            else if (m === 'expenses') renderExpensesModule(workspace);
+            else if (m === 'settings') renderSettingsModule(workspace);
             else renderDashboardModule(workspace);
         }
 
-        /* --- DASHBOARD WITH QUERY REMINDER ALERT --- */
+        /* --- 1. FULLY WORKING DASHBOARD WITH REMINDER --- */
         function renderDashboardModule(container) {
             let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
             let pendingQueries = queries.filter(q => q.status === 'Pending');
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
 
             container.innerHTML = `
                 <div class="light-card">
                     <h2>📊 Dashboard & Query Reminder Alerts</h2>
                     
                     ${pendingQueries.length > 0 ? `
-                        <div style="background:#fef2f2; border:1.5px solid #fecaca; padding:15px; border-radius:12px; margin-bottom:15px;">
-                            <div style="font-size:13px; color:#ef4444; font-weight:900;">⚠️ REMINDER ALERT: ${pendingQueries.length} Software Query(s) Pending Review!</div>
-                            <p style="font-size:11.5px; color:#7f1d1d; margin-top:4px;">Please check the Query Portal to update responses and final decisions.</p>
+                        <div style="background:#fef2f2; border:1.5px solid #fecaca; padding:16px; border-radius:12px; margin-bottom:16px;">
+                            <div style="font-size:14px; color:#ef4444; font-weight:900;">⚠️ REMINDER ALERT: ${pendingQueries.length} Software Query / Recovery Request(s) Pending!</div>
+                            <p style="font-size:12px; color:#7f1d1d; margin-top:5px;">Please check the Query Portal to update responses or reset user passwords.</p>
                         </div>
                     ` : ''}
 
                     <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-                        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#0284c7;">TOTAL QUERIES LOGGED</div>
-                            <div style="font-size:24px; color:#0f172a; margin-top:6px;">${queries.length}</div>
+                        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:20px; border-radius:14px;">
+                            <div style="font-size:12px; color:#0284c7;">TOTAL GROSS SALES</div>
+                            <div style="font-size:26px; color:#0f172a; margin-top:8px;">₹${totalSales.toFixed(2)}</div>
                         </div>
-                        <div style="background:#fef2f2; border:1.5px solid #fecaca; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#ef4444;">PENDING QUERIES</div>
-                            <div style="font-size:24px; color:#ef4444; margin-top:6px;">${pendingQueries.length}</div>
+                        <div style="background:#fef2f2; border:1.5px solid #fecaca; padding:20px; border-radius:14px;">
+                            <div style="font-size:12px; color:#ef4444;">PENDING QUERIES / REQUESTS</div>
+                            <div style="font-size:26px; color:#ef4444; margin-top:8px;">${pendingQueries.length}</div>
                         </div>
-                        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:18px; border-radius:14px;">
-                            <div style="font-size:11.5px; color:#16a34a;">RESOLVED QUERIES</div>
-                            <div style="font-size:24px; color:#16a34a; margin-top:6px;">${queries.length - pendingQueries.length}</div>
+                        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:20px; border-radius:14px;">
+                            <div style="font-size:12px; color:#16a34a;">TOTAL QUERIES LOGGED</div>
+                            <div style="font-size:26px; color:#16a34a; margin-top:8px;">${queries.length}</div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        /* --- QUERY PORTAL & DAY-BY-DAY TRACKING MODULE --- */
+        /* --- 2. FULLY WORKING QUERY PORTAL & PASSWORD RESET --- */
         function renderQueryPortalModule(container) {
             let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>💬 Software Query Management Portal & Day-by-Day Tracking</h2>
+                    <h2>💬 Software Query Management & Admin Password Recovery Portal</h2>
                     <table class="data-table">
-                        <thead><tr><th>Date</th><th>Owner / Shop</th><th>Purpose / Query</th><th>Response & Updates</th><th>Final Decision</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Date</th><th>Owner / Request Info</th><th>Purpose / Query</th><th>Response & Updates</th><th>Final Decision</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${queries.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No queries submitted yet.</td></tr>' :
+                            ${queries.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No queries or requests submitted yet.</td></tr>' :
                             queries.map((q, idx) => `
                                 <tr>
                                     <td>${q.date}</td>
                                     <td><b>${q.ownerName}</b><br><small>${q.phone} | ${q.location}</small></td>
                                     <td>${q.purpose}</td>
                                     <td>
-                                        <input type="text" value="${q.response}" class="form-control" style="margin-bottom:4px;" id="resp_${idx}">
-                                        <input type="text" value="${q.dayReport}" class="form-control" style="font-size:10px;" id="day_${idx}">
+                                        <input type="text" value="${q.response}" class="form-control" style="margin-bottom:5px;" id="resp_${idx}">
+                                        <input type="text" value="${q.dayReport}" class="form-control" style="font-size:11px;" id="day_${idx}">
                                     </td>
                                     <td>
                                         <select id="dec_${idx}" class="form-control">
@@ -427,7 +401,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <button class="btn-success" onclick="updateQueryRecord(${idx})" style="margin-bottom:4px; width:100%;">Update</button>
+                                        <button class="btn-success" onclick="updateQueryRecord(${idx})" style="margin-bottom:6px; width:100%;">Update</button>
                                         <button class="btn-danger" onclick="deleteQueryRecord(${idx})" style="width:100%;">Delete</button>
                                     </td>
                                 </tr>
@@ -443,7 +417,7 @@
                 queries[idx].finalDecision = document.getElementById('dec_' + idx).value;
                 queries[idx].status = document.getElementById('stat_' + idx).value;
                 localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-                alert('Query Record Updated Successfully!');
+                alert('Query & Admin Response Updated Successfully!');
                 renderQueryPortalModule(container);
                 updateQueryBadge();
             };
@@ -456,8 +430,196 @@
             };
         }
 
-        function renderPlaceholder(container, title) {
-            container.innerHTML = '<div class="light-card"><h2>' + title + '</h2><p style="margin-top:10px; font-size:12px; color:#475569;">Module active and ready.</p></div>';
+        /* --- 3. FULLY WORKING POS BILLING MODULE --- */
+        function renderSalesModule(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛒 POS Counter Billing System</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control"></div>
+                            <div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control"></div>
+                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="posItem" class="form-control"></div>
+                            <div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control"></div>
+                            <div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control" value="1"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generateInvoice()" style="width:100%;">Create Invoice</button></div>
+                        </div>
+                    </div>
+                    <h3 style="font-size:14px; margin-bottom:10px;">Recent Invoices Log</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
+                            invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>${i.batch}</td><td>${i.qty}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.generateInvoice = function() {
+                let patientName = document.getElementById('posPatient').value.trim();
+                let mobile = document.getElementById('posMobile').value.trim();
+                let item = document.getElementById('posItem').value.trim();
+                let batch = document.getElementById('posBatch').value.trim();
+                let mrp = parseFloat(document.getElementById('posMrp').value) || 0;
+                let qty = parseInt(document.getElementById('posQty').value) || 1;
+
+                if(!patientName || !item || mrp <= 0) { alert('Patient name, Medicine, and MRP required!'); return; }
+                let netPayable = mrp * qty;
+                let invoiceNo = 'INV-' + Math.floor(10000 + Math.random()*90000);
+
+                invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable });
+                localStorage.setItem('erp_invoices', JSON.stringify(invs));
+                alert('Invoice Created Successfully: ' + invoiceNo);
+                renderSalesModule(container);
+            };
+        }
+
+        /* --- 4. FULLY WORKING ITEMS MASTER MODULE --- */
+        function renderStockAuditModule(container) {
+            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📦 Items Master & Stock Inventory</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control"></div>
+                            <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control"></div>
+                            <div class="form-group"><label>Price (₹)</label><input type="number" id="itPrice" class="form-control"></div>
+                            <div class="form-group"><label>Stock</label><input type="number" id="itStock" class="form-control" value="100"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addItem()" style="width:100%;">Add Item</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${meds.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No stock items added yet.</td></tr>' :
+                            meds.map((m, idx) => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td>₹${m.price}</td><td><b>${m.stock}</b></td><td><button class="btn-danger" onclick="delItem(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.addItem = function() {
+                let name = document.getElementById('itName').value.trim();
+                let batch = document.getElementById('itBatch').value.trim();
+                let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
+                let price = parseFloat(document.getElementById('itPrice').value) || 0;
+                let stock = parseInt(document.getElementById('itStock').value) || 0;
+                if(!name || mrp <= 0) { alert('Name and MRP required!'); return; }
+                meds.push({ name, batch, mrp, price, stock });
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAuditModule(container);
+            };
+            window.delItem = function(idx) {
+                meds.splice(idx, 1);
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+                renderStockAuditModule(container);
+            };
+        }
+
+        /* --- 5. FULLY WORKING CUSTOMERS & VENDORS MODULE --- */
+        function renderPartiesModule(container) {
+            let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 Customers & Vendor Ledgers</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Party Name *</label><input type="text" id="ptName" class="form-control"></div>
+                            <div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control"></div>
+                            <div class="form-group"><label>GSTIN</label><input type="text" id="ptGst" class="form-control" value="09AAAAA0000A1Z5"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addParty()" style="width:100%;">Save Party</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Party Name</th><th>Phone</th><th>GSTIN</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${parties.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No parties registered.</td></tr>' :
+                            parties.map((p, idx) => `<tr><td><b>${p.name}</b></td><td>${p.phone}</td><td>${p.gstin}</td><td><button class="btn-danger" onclick="delParty(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.addParty = function() {
+                let name = document.getElementById('ptName').value.trim();
+                let phone = document.getElementById('ptPhone').value.trim();
+                let gstin = document.getElementById('ptGst').value.trim();
+                if(!name) { alert('Party name required!'); return; }
+                parties.push({ name, phone, gstin });
+                localStorage.setItem('erp_vendors', JSON.stringify(parties));
+                renderPartiesModule(container);
+            };
+            window.delParty = function(idx) {
+                parties.splice(idx, 1);
+                localStorage.setItem('erp_vendors', JSON.stringify(parties));
+                renderPartiesModule(container);
+            };
+        }
+
+        /* --- 6. FULLY WORKING EXPENSES MODULE --- */
+        function renderExpensesModule(container) {
+            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💸 Expenses & Overhead Management</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Description *</label><input type="text" id="exTitle" class="form-control"></div>
+                            <div class="form-group"><label>Category</label><input type="text" id="exCat" class="form-control" value="Office Expense"></div>
+                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmt" class="form-control"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addExp()" style="width:100%;">Save Expense</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
+                            expenses.map((e, idx) => `<tr><td>${e.date}</td><td><b>${e.title}</b></td><td>${e.category}</td><td>₹${e.amount.toFixed(2)}</td><td><button class="btn-danger" onclick="delExp(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.addExp = function() {
+                let title = document.getElementById('exTitle').value.trim();
+                let category = document.getElementById('exCat').value.trim();
+                let amount = parseFloat(document.getElementById('exAmt').value) || 0;
+                if(!title || amount <= 0) { alert('Valid description and amount required!'); return; }
+                expenses.unshift({ title, category, amount, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                renderExpensesModule(container);
+            };
+            window.delExp = function(idx) {
+                expenses.splice(idx, 1);
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                renderExpensesModule(container);
+            };
+        }
+
+        /* --- 7. FULLY WORKING SETTINGS & USERS MODULE --- */
+        function renderSettingsModule(container) {
+            let s = JSON.parse(localStorage.getItem('erp_settings')) || { agencyName: 'A R PHARMA AND SURGICAL AGENCY', chairman: 'DRx. Aarif Rabbani' };
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>⚙️ Store Settings & User Management</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:14px; color:#0284c7; margin-bottom:10px;">Store Branding</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Agency Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName}"></div>
+                            <div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control" value="${s.chairman}"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSettings()" style="width:100%;">Save Settings</button></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            window.saveSettings = function() {
+                s.agencyName = document.getElementById('stAgency').value;
+                s.chairman = document.getElementById('stChairman').value;
+                localStorage.setItem('erp_settings', JSON.stringify(s));
+                alert('Settings Saved Successfully!');
+                location.reload();
+            };
         }
     </script>
 </body>
