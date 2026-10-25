@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - CRM Analytics Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Analytics Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -107,9 +107,10 @@
         .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
+        /* COMPACT PREMIUM USER PROFILE MODAL */
         #userDropdownModal {
-            display: none; position: absolute; right: 24px; top: 75px; width: 310px; background: #ffffff;
-            border-radius: 14px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 18px;
+            display: none; position: absolute; right: 24px; top: 75px; width: 280px; background: #ffffff;
+            border-radius: 12px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 14px;
         }
     </style>
 </head>
@@ -176,36 +177,36 @@
         </div>
     </div>
 
-    <!-- USER PROFILE MODAL -->
+    <!-- COMPACT PREMIUM USER PROFILE MODAL -->
     <div id="userDropdownModal">
-        <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px;">
-            <div style="width:38px; height:38px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900;" id="modalUserInitial">U</div>
+        <div style="display:flex; align-items:center; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:10px;">
+            <div style="width:34px; height:34px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900;" id="modalUserInitial">U</div>
             <div>
-                <div style="font-size:14px; color:#0f172a; font-weight:900;" id="modalUserNameDisplay">User</div>
-                <div style="font-size:11px; color:#64748b; font-weight:900;" id="modalUserRoleDisplay">ADMIN</div>
+                <div style="font-size:13px; color:#0f172a; font-weight:900;" id="modalUserNameDisplay">User</div>
+                <div style="font-size:10.5px; color:#64748b; font-weight:900;" id="modalUserRoleDisplay">ADMIN</div>
             </div>
         </div>
 
-        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:10px; border-radius:10px; margin-bottom:12px;">
-            <div style="display:flex; align-items:center; gap:6px; color:#16a34a; font-size:12px; font-weight:900;">
-                <span>✅</span> premium 3 Years
+        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:8px; border-radius:8px; margin-bottom:10px;" id="licenseBoxContainer">
+            <div style="display:flex; align-items:center; gap:6px; color:#16a34a; font-size:11px; font-weight:900;" id="licenseStatusText">
+                <span>✅</span> Lifetime Access (Owner)
             </div>
-            <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:#334155; font-weight:900; border-top:1px dashed #bbf7d0; padding-top:6px;">
-                <span>Platform AMC</span>
-                <span>Due: 13/10/2029</span>
+            <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:10px; color:#334155; font-weight:900; border-top:1px dashed #bbf7d0; padding-top:4px;">
+                <span>Plan Valid</span>
+                <span id="licenseExpiryText">Lifetime</span>
             </div>
         </div>
 
-        <div style="margin-bottom:12px;">
-            <label style="font-size:11px; color:#475569; margin-bottom:4px; display:block;">Change Username</label>
-            <input type="text" id="changeUserBox" class="form-control" style="margin-bottom:8px; padding:8px;">
-            <label style="font-size:11px; color:#475569; margin-bottom:4px; display:block;">New Password</label>
-            <input type="password" id="changePassBox" class="form-control" style="margin-bottom:8px; padding:8px;" placeholder="Leave blank if unchanged">
-            <button class="btn-success" onclick="saveUserCredentials()" style="width:100%; padding:8px; font-size:12px;">Update Credentials</button>
+        <div style="margin-bottom:10px;">
+            <label style="font-size:10.5px; color:#475569; margin-bottom:3px; display:block;">Change Username</label>
+            <input type="text" id="changeUserBox" class="form-control" style="margin-bottom:6px; padding:6px 10px; font-size:12px;">
+            <label style="font-size:10.5px; color:#475569; margin-bottom:3px; display:block;">New Password</label>
+            <input type="password" id="changePassBox" class="form-control" style="margin-bottom:6px; padding:6px 10px; font-size:12px;" placeholder="Leave blank if unchanged">
+            <button class="btn-success" onclick="saveUserCredentials()" style="width:100%; padding:7px; font-size:11.5px;">Update Credentials</button>
         </div>
 
-        <div style="border-top:1px solid #e2e8f0; padding-top:10px;">
-            <button onclick="logoutUser()" style="width:100%; background:none; border:none; text-align:left; color:#ef4444; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:8px; padding:6px 0;">
+        <div style="border-top:1px solid #e2e8f0; padding-top:8px;">
+            <button onclick="logoutUser()" style="width:100%; background:none; border:none; text-align:left; color:#ef4444; font-size:12px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; padding:4px 0;">
                 <span>🚪</span> Logout
             </button>
         </div>
@@ -258,20 +259,19 @@
     <script>
         let currentUser = null;
 
-        // Ensure default Super Admin user 'admin' is always active and protected
         let defaultUsers = [
-            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
+            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', planYears: 'Lifetime' }
         ];
 
         let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
         if (!storedUsers) {
             localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
         } else {
-            // Force ensure 'admin' is always Active and Super Admin
             let adminIndex = storedUsers.findIndex(x => x.username === 'admin');
             if (adminIndex !== -1) {
                 storedUsers[adminIndex].status = 'Active';
                 storedUsers[adminIndex].role = 'Super Admin';
+                storedUsers[adminIndex].planYears = 'Lifetime';
             } else {
                 storedUsers.unshift(defaultUsers[0]);
             }
@@ -309,6 +309,15 @@
                 document.getElementById('modalUserNameDisplay').innerText = currentUser.username;
                 document.getElementById('modalUserRoleDisplay').innerText = currentUser.role || 'ADMIN';
                 document.getElementById('changeUserBox').value = currentUser.username;
+
+                if(currentUser.username === 'admin') {
+                    document.getElementById('licenseStatusText').innerHTML = `<span>👑</span> Lifetime Owner Access`;
+                    document.getElementById('licenseExpiryText').innerText = `Unlimited`;
+                } else {
+                    let yrs = currentUser.planYears || '1 Year';
+                    document.getElementById('licenseStatusText').innerHTML = `<span>✅</span> Active Plan (${yrs})`;
+                    document.getElementById('licenseExpiryText').innerText = `Valid (${yrs})`;
+                }
             }
         }
 
@@ -483,7 +492,7 @@
 
                 <div class="light-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h2 style="margin-bottom:0;">Sales & Purchases Analytics Overview</h2>
+                        <h2 style="margin-bottom:0;">Sales & Purchases Circular Analytics Graph</h2>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <select id="dateFilterSelect" class="form-control" style="width:140px; padding:6px 10px;" onchange="filterDashboardData()">
                                 <option value="today">Today</option>
@@ -493,16 +502,27 @@
                                 <option value="this_year">This Year</option>
                                 <option value="last_year">Last Year</option>
                             </select>
-                            <div style="display:flex; gap:4px; background:#f1f5f9; padding:4px; border-radius:8px;">
-                                <button style="background:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Line</button>
-                                <button style="background:none; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; color:#64748b;">Area</button>
-                                <button style="background:none; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; color:#64748b;">Bar</button>
-                            </div>
                         </div>
                     </div>
-                    <div style="height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5 dashed #cbd5e1; border-radius:12px; background:#f8fafc; color:#0f172a;">
-                        <div style="font-size:16px; margin-bottom:6px;">📈 Power BI Analytics (Filtered by <span id="activeFilterLabel" style="color:#0284c7;">Today</span>)</div>
-                        <div style="font-size:12px; color:#64748b;">Total Revenue: ₹${totalSales.toFixed(2)} | Net Purchases: ₹${totalPurchases.toFixed(2)}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:center; background:#f8fafc; padding:20px; border-radius:12px; border:1.5px solid #cbd5e1;">
+                        <!-- DOUGHNUT / GOLA CHART REPRESENTATION -->
+                        <div style="display:flex; justify-content:center; align-items:center;">
+                            <div style="width:180px; height:180px; border-radius:50%; background:conic-gradient(#0284c7 0deg 220deg, #16a34a 220deg 360deg); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+                                <div style="width:110px; height:110px; background:#ffffff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                                    <div style="font-size:10px; color:#64748b;">TOTAL</div>
+                                    <div style="font-size:13px; color:#0f172a; font-weight:900;">₹${(totalSales + totalPurchases).toFixed(0)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:14px; color:#0f172a; font-weight:900; margin-bottom:10px;">Analytics Breakdown (<span id="activeFilterLabel">Today</span>)</div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px;">
+                                <span style="width:12px; height:12px; background:#0284c7; border-radius:3px; display:inline-block;"></i></span> Sales Revenue: <b>₹${totalSales.toFixed(2)}</b>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px;">
+                                <span style="width:12px; height:12px; background:#16a34a; border-radius:3px; display:inline-block;"></span> Purchases Cost: <b>₹${totalPurchases.toFixed(2)}</b>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -744,15 +764,25 @@
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Store Settings & User Status Management</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin (admin) account is permanently protected and active. Other users can be managed here.</p>
+                    <h2>⚙️ Store Settings & User Plan Management</h2>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin (admin) is the permanent Owner with Lifetime access. Set validity plans for other users below.</p>
                     <table class="data-table">
-                        <thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Username</th><th>Role</th><th>Plan Validity</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
                             ${users.map((u, idx) => `
                                 <tr>
                                     <td><b>${u.username}</b> ${u.username === 'admin' ? '👑 (Owner)' : ''}</td>
                                     <td>${u.role || 'Staff'}</td>
+                                    <td>
+                                        ${u.username === 'admin' ? '<b>Lifetime (Permanent)</b>' : `
+                                            <select class="form-control" style="padding:4px; font-size:11px; width:110px;" onchange="updateUserPlan(${idx}, this.value)">
+                                                <option value="1 Year" ${u.planYears === '1 Year' ? 'selected' : ''}>1 Year</option>
+                                                <option value="2 Years" ${u.planYears === '2 Years' ? 'selected' : ''}>2 Years</option>
+                                                <option value="3 Years" ${u.planYears === '3 Years' ? 'selected' : ''}>3 Years</option>
+                                                <option value="Lifetime" ${u.planYears === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
+                                            </select>
+                                        `}
+                                    </td>
                                     <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${u.status === 'Active' ? '#dcfce7; color:#16a34a;' : '#fee2e2; color:#ef4444;'}">${u.status || 'Active'}</span></td>
                                     <td>
                                         ${u.username === 'admin' ? '<span style="color:#64748b; font-size:11px;">Protected Owner</span>' : `
@@ -767,6 +797,11 @@
                     </table>
                 </div>
             `;
+            window.updateUserPlan = function(idx, plan) {
+                users[idx].planYears = plan;
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User plan updated successfully to ' + plan + '!');
+            };
             window.toggleUserStatus = function(idx) {
                 if (users[idx].username === 'admin') {
                     alert('Super Admin account cannot be deactivated!');
