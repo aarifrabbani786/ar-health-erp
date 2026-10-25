@@ -274,8 +274,8 @@
                     <p id="bannerAgencySub">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
                 </div>
 
-                <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;">
-                    <button class="btn-success" onclick="loadModule('sales_invoices')" style="padding:7px 12px; font-size:11.5px;">+ New Sale</button>
+                <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;" id="headerActionRightBox">
+                    <button class="btn-success" onclick="loadModule('sales_invoices')" style="padding:7px 12px; font-size:11.5px;" id="headerNewSaleBtn">+ New Sale</button>
                     <div onclick="toggleUserDropdown(event)" style="width:36px; height:36px; background:#0284c7; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; font-weight:900;" id="topUserAvatarBtn">U</div>
                 </div>
             </div>
@@ -569,6 +569,12 @@
             if (m === 'bme' && !checkPermission('bme')) { alert('Access Denied!'); return; }
             if (m === 'queries' && !checkPermission('queries')) { alert('Access Denied!'); return; }
             if (m === 'settings' && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) { alert('Access Denied! Only Super Admin has full control.'); return; }
+
+            // Handle header new sale button visibility when BME is active
+            let newSaleBtn = document.getElementById('headerNewSaleBtn');
+            if(newSaleBtn) {
+                newSaleBtn.style.display = m === 'bme' ? 'none' : 'block';
+            }
 
             localStorage.setItem('erp_active_module', m);
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -1178,7 +1184,7 @@
         function renderBmeModule(container) {
             let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             let incidents = JSON.parse(localStorage.getItem('erp_bme_incidents')) || [];
-            let bmePurchases = JSON.parse(localStorage.getItem('erp_bme_purchases')) || [];
+            let gatePasses = JSON.parse(localStorage.getItem('erp_bme_gatepass')) || [];
             let shopSet = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY' };
 
             container.innerHTML = `
@@ -1191,13 +1197,14 @@
                         <button class="btn-primary" onclick="updateBmeInstituteName()" style="padding:8px 16px;">Update Store Name</button>
                     </div>
 
-                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
-                        <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Inventory Register</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('stock')" id="btnTabStock">Stock & Audit Register</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('incident')" id="btnTabIncident">Incident Report Form</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('purchase')" id="btnTabPurchase">BME Purchase & Return</button>
+                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Inventory</button>
+                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('amc')" id="btnTabAmc">AMC / CMC Tracker</button>
+                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('breakdown')" id="btnTabBreakdown">Breakdown Register</button>
+                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('gatepass')" id="btnTabGatepass">Gate Pass Register</button>
                     </div>
 
+                    <!-- TAB 1: MASTER / INVENTORY -->
                     <div id="bmeTabMaster" class="bme-tab-content">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Add New Instrument / Master Entry</h3>
@@ -1206,6 +1213,8 @@
                                 <div class="form-group"><label>Asset Code *</label><input type="text" id="bmeAsset" class="form-control" placeholder="AST-1001"></div>
                                 <div class="form-group"><label>Mfr. Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
                                 <div class="form-group"><label>Department *</label><input type="text" id="bmeDept" class="form-control" placeholder="ICU"></div>
+                                <div class="form-group"><label>Dept Incharge Name</label><input type="text" id="bmeIncharge" class="form-control" placeholder="Dr. Sharma"></div>
+                                <div class="form-group"><label>BME Engineer Name</label><input type="text" id="bmeEngineer" class="form-control" placeholder="Er. Rahul"></div>
                                 
                                 <div class="form-group"><label>Calibration Date</label><input type="date" id="bmeCalDate" class="form-control"></div>
                                 <div class="form-group"><label>Calibration Report / Cert No</label><input type="text" id="bmeCert" class="form-control" placeholder="CR-2026-09"></div>
@@ -1225,21 +1234,22 @@
                             </div>
                         </div>
 
+                        <!-- FIND & SEARCH BAR -->
                         <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-                            <input type="text" id="bmeSearchQuery" class="form-control" placeholder="Find by Instrument Name or Serial No..." oninput="filterBmeMasterTable()" style="max-width:350px;">
+                            <input type="text" id="bmeSearchQuery" class="form-control" placeholder="🔍 Find by Instrument Name or Serial No (Enter instantly)..." oninput="filterBmeMasterTable()" style="max-width:400px;">
                             <button class="btn-primary" onclick="window.print()" style="padding:9px 18px;">🖨️ Print Master Register</button>
                         </div>
 
                         <table class="data-table">
-                            <thead><tr><th>Asset & Instrument</th><th>Asset Code / Serial</th><th>Dept & Remarks</th><th>Calibration & Cert</th><th>AMC / Warranty</th><th>Status (PM / Cal)</th></tr></thead>
+                            <thead><tr><th>Asset & Instrument</th><th>Asset Code / Serial</th><th>Dept & Incharge</th><th>BME Engineer</th><th>AMC / Warranty</th><th>Status (PM / Cal)</th></tr></thead>
                             <tbody id="bmeMasterTableBody">
                                 ${bmeItems.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No BME instruments recorded.</td></tr>' :
                                 bmeItems.map(b => `
                                     <tr>
                                         <td><b>${b.name}</b></td>
                                         <td>Code: <b>${b.assetCode}</b><br><small>SN: ${b.serial}</small></td>
-                                        <td><b>${b.dept}</b><br><small>${b.remarks || 'No remarks'}</small></td>
-                                        <td>Cal Date: ${b.calDate || '-'}<br><small>Cert: ${b.cert || '-'}</small></td>
+                                        <td><b>${b.dept}</b><br><small>Incharge: ${b.incharge || '-'}</small></td>
+                                        <td>${b.engineer || '-'}</td>
                                         <td>AMC: ${b.amcFrom || '-'} to ${b.amcTo || '-'}<br><small>Warranty: ${b.warranty || '-'}</small></td>
                                         <td>PM: <span style="color:${b.pmStatus === 'Done' ? '#16a34a' : '#ef4444'}">${b.pmStatus}</span><br>Cal: <span style="color:${b.calStatus === 'Done' ? '#16a34a' : '#ef4444'}">${b.calStatus}</span></td>
                                     </tr>
@@ -1248,56 +1258,61 @@
                         </table>
                     </div>
 
-                    <div id="bmeTabStock" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">📦 Audit Inventory & Stock Register</h3>
-                        <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print Stock Register</button></div>
+                    <!-- TAB 2: AMC / CMC TRACKER -->
+                    <div id="bmeTabAmc" class="bme-tab-content" style="display:none;">
+                        <h3 style="font-size:14px; margin-bottom:10px;">📋 AMC / CMC Tracker & Validity Register</h3>
+                        <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print AMC Tracker</button></div>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Instrument Name</th><th>Asset Code</th><th>Serial No</th><th>Department</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Sr</th><th>Instrument Name</th><th>Asset Code / Serial</th><th>Department</th><th>AMC From</th><th>AMC To</th><th>Warranty Finish</th></tr></thead>
                             <tbody>
                                 ${bmeItems.map((b, idx) => `
                                     <tr>
                                         <td>${idx + 1}</td>
                                         <td><b>${b.name}</b></td>
-                                        <td>${b.assetCode}</td>
-                                        <td>${b.serial}</td>
+                                        <td>${b.assetCode} (${b.serial})</td>
                                         <td>${b.dept}</td>
-                                        <td><span style="color:#16a34a;">Audited & Verified</span></td>
+                                        <td>${b.amcFrom || '-'}</td>
+                                        <td style="color:#0284c7;"><b>${b.amcTo || '-'}</b></td>
+                                        <td style="color:#ef4444;">${b.warranty || '-'}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
 
-                    <div id="bmeTabIncident" class="bme-tab-content" style="display:none;">
+                    <!-- TAB 3: BREAKDOWN REGISTER -->
+                    <div id="bmeTabBreakdown" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#ef4444; margin-bottom:10px;">🚨 New Incident / Breakdown Report Form</h3>
+                            <h3 style="font-size:13px; color:#ef4444; margin-bottom:10px;">🚨 Breakdown & Incident Register (Department & Problem Wise)</h3>
                             <div class="form-grid">
-                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="incName" class="form-control" placeholder="Defibrillator"></div>
-                                <div class="form-group"><label>Department *</label><input type="text" id="incDept" class="form-control" placeholder="Emergency"></div>
-                                <div class="form-group"><label>Staff Name *</label><input type="text" id="incStaff" class="form-control" placeholder="Staff Nurse Amit"></div>
-                                <div class="form-group"><label>Action Taken *</label><input type="text" id="incAction" class="form-control" placeholder="Replaced battery & recalibrated"></div>
-                                <div class="form-group"><label>Status</label>
-                                    <select id="incStatus" class="form-control">
-                                        <option value="Resolved">Resolved</option>
-                                        <option value="Under Repair">Under Repair</option>
-                                        <option value="Pending">Pending</option>
-                                    </select>
+                                <div class="form-group"><label>Date & Time</label><input type="text" id="bdDateTime" class="form-control" value="${new Date().toLocaleString()}"></div>
+                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="bdName" class="form-control" placeholder="Defibrillator"></div>
+                                <div class="form-group"><label>Department *</label><input type="text" id="bdDept" class="form-control" placeholder="Emergency"></div>
+                                <div class="form-group"><label>Problem Description *</label><input type="text" id="bdProblem" class="form-control" placeholder="Display not working"></div>
+                                <div class="form-group"><label>BME Name</label><input type="text" id="bdBme" class="form-control" placeholder="Er. Rahul"></div>
+                                <div class="form-group"><label>Solve Status</label>
+                                    <select id="bdStatus" class="form-control"><option value="Resolved">Resolved</option><option value="Under Repair">Under Repair</option><option value="Pending">Pending</option></select>
                                 </div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-danger" onclick="saveBmeIncident()" style="width:100%;">Save Incident Report</button></div>
+                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-danger" onclick="saveBmeBreakdown()" style="width:100%;">Save Breakdown Report</button></div>
                             </div>
                         </div>
-                        <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print Incident Register</button></div>
+
+                        <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
+                            <input type="text" id="bdSearchQuery" class="form-control" placeholder="🔍 Find by Dept or Item Name..." oninput="filterBreakdownTable()" style="max-width:350px;">
+                            <button class="btn-primary" onclick="window.print()" style="padding:9px 18px;">🖨️ Print Breakdown Register</button>
+                        </div>
+
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Instrument Name</th><th>Department</th><th>Staff Name</th><th>Action Taken</th><th>Status</th></tr></thead>
-                            <tbody>
-                                ${incidents.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No incident reports found.</td></tr>' :
+                            <thead><tr><th>Sr</th><th>Date & Time</th><th>Instrument & Dept</th><th>Problem</th><th>BME Name</th><th>Status</th></tr></thead>
+                            <tbody id="bdTableBody">
+                                ${incidents.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No breakdown records found.</td></tr>' :
                                 incidents.map((inc, idx) => `
                                     <tr>
                                         <td>${idx + 1}</td>
-                                        <td><b>${inc.name}</b></td>
-                                        <td>${inc.dept}</td>
-                                        <td>${inc.staff}</td>
-                                        <td>${inc.action}</td>
+                                        <td>${inc.dateTime}</td>
+                                        <td><b>${inc.name}</b><br><small>Dept: ${inc.dept}</small></td>
+                                        <td>${inc.problem}</td>
+                                        <td>${inc.bme}</td>
                                         <td><span style="color:${inc.status === 'Resolved' ? '#16a34a' : '#ef4444'}">${inc.status}</span></td>
                                     </tr>
                                 `).join('')}
@@ -1305,46 +1320,41 @@
                         </table>
                     </div>
 
-                    <div id="bmeTabPurchase" class="bme-tab-content" style="display:none;">
+                    <!-- TAB 4: GATE PASS REGISTER -->
+                    <div id="bmeTabGatepass" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🛍️ BME Purchase & Return Entry (Add Item)</h3>
+                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🎫 Gate Pass Entry Form</h3>
                             <div class="form-grid">
-                                <div class="form-group"><label>Item / Instrument Name *</label><input type="text" id="bpurItem" class="form-control" placeholder="Pulse Oximeter"></div>
-                                <div class="form-group"><label>Serial No *</label><input type="text" id="bpurSerial" class="form-control" placeholder="SN-8821"></div>
-                                <div class="form-group"><label>Supplier Name</label><input type="text" id="bpurSupplier" class="form-control" placeholder="MediCorp Surgicals"></div>
-                                <div class="form-group"><label>Type</label>
-                                    <select id="bpurType" class="form-control">
-                                        <option value="Purchase">Purchase</option>
-                                        <option value="Purchase Return">Purchase Return</option>
-                                    </select>
-                                </div>
-                                <div class="form-group"><label>Amount (₹)</label><input type="number" id="bpurAmt" class="form-control" value="15000"></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveBmePurchase()" style="width:100%;">Save BME Purchase</button></div>
+                                <div class="form-group"><label>Gate Pass Date & Time</label><input type="text" id="gpDateTime" class="form-control" value="${new Date().toLocaleString()}"></div>
+                                <div class="form-group"><label>Item / Instrument Name *</label><input type="text" id="gpItem" class="form-control" placeholder="X-Ray Machine"></div>
+                                <div class="form-group"><label>BME Name</label><input type="text" id="gpBme" class="form-control" placeholder="Er. Amit"></div>
+                                <div class="form-group"><label>Authority Permit Name *</label><input type="text" id="gpAuthority" class="form-control" placeholder="Medical Superintendent"></div>
+                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveGatePassEntry()" style="width:100%;">Save Gate Pass</button></div>
                             </div>
                         </div>
-                        <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print Purchase Register</button></div>
+                        <div style="margin-bottom:12px;"><button class="btn-primary" onclick="window.print()">🖨️ Print Gate Pass Register</button></div>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Item Name</th><th>Serial No</th><th>Supplier</th><th>Type</th><th>Amount</th></tr></thead>
+                            <thead><tr><th>Sr</th><th>Date & Time</th><th>Instrument Name</th><th>BME Name</th><th>Authority Permit Name</th></tr></thead>
                             <tbody>
-                                ${bmePurchases.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No BME purchase records found.</td></tr>' :
-                                bmePurchases.map((bp, idx) => `
+                                ${gatePasses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No gate pass records found.</td></tr>' :
+                                gatePasses.map((gp, idx) => `
                                     <tr>
                                         <td>${idx + 1}</td>
-                                        <td><b>${bp.item}</b></td>
-                                        <td>${bp.serial}</td>
-                                        <td>${bp.supplier}</td>
-                                        <td><span style="color:${bp.type === 'Purchase' ? '#16a34a' : '#ef4444'}">${bp.type}</span></td>
-                                        <td>₹${bp.amt.toFixed(2)}</td>
+                                        <td>${gp.dateTime}</td>
+                                        <td><b>${gp.item}</b></td>
+                                        <td>${gp.bme}</td>
+                                        <td><span style="color:#16a34a;"><b>${gp.authority}</b></span></td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             `;
 
             window.switchBmeTab = function(tabName) {
-                ['Master', 'Stock', 'Incident', 'Purchase'].forEach(t => {
+                ['Master', 'Amc', 'Breakdown', 'Gatepass'].forEach(t => {
                     let el = document.getElementById('bmeTab' + t);
                     let btn = document.getElementById('btnTab' + t);
                     if(el) el.style.display = t.toLowerCase() === tabName ? 'block' : 'none';
@@ -1372,10 +1382,28 @@
                     <tr>
                         <td><b>${b.name}</b></td>
                         <td>Code: <b>${b.assetCode}</b><br><small>SN: ${b.serial}</small></td>
-                        <td><b>${b.dept}</b><br><small>${b.remarks || 'No remarks'}</small></td>
-                        <td>Cal Date: ${b.calDate || '-'}<br><small>Cert: ${b.cert || '-'}</small></td>
+                        <td><b>${b.dept}</b><br><small>Incharge: ${b.incharge || '-'}</small></td>
+                        <td>${b.engineer || '-'}</td>
                         <td>AMC: ${b.amcFrom || '-'} to ${b.amcTo || '-'}<br><small>Warranty: ${b.warranty || '-'}</small></td>
                         <td>PM: <span style="color:${b.pmStatus === 'Done' ? '#16a34a' : '#ef4444'}">${b.pmStatus}</span><br>Cal: <span style="color:${b.calStatus === 'Done' ? '#16a34a' : '#ef4444'}">${b.calStatus}</span></td>
+                    </tr>
+                `).join('');
+            };
+
+            window.filterBreakdownTable = function() {
+                let q = document.getElementById('bdSearchQuery').value.toLowerCase();
+                let tbody = document.getElementById('bdTableBody');
+                let filtered = incidents.filter(inc => inc.name.toLowerCase().includes(q) || inc.dept.toLowerCase().includes(q) || inc.problem.toLowerCase().includes(q));
+                
+                tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No matching breakdown record found.</td></tr>' :
+                filtered.map((inc, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${inc.dateTime}</td>
+                        <td><b>${inc.name}</b><br><small>Dept: ${inc.dept}</small></td>
+                        <td>${inc.problem}</td>
+                        <td>${inc.bme}</td>
+                        <td><span style="color:${inc.status === 'Resolved' ? '#16a34a' : '#ef4444'}">${inc.status}</span></td>
                     </tr>
                 `).join('');
             };
@@ -1385,6 +1413,8 @@
                 let assetCode = document.getElementById('bmeAsset').value.trim();
                 let serial = document.getElementById('bmeSerial').value.trim();
                 let dept = document.getElementById('bmeDept').value.trim();
+                let incharge = document.getElementById('bmeIncharge').value.trim();
+                let engineer = document.getElementById('bmeEngineer').value.trim();
                 let calDate = document.getElementById('bmeCalDate').value;
                 let cert = document.getElementById('bmeCert').value.trim();
                 let amcFrom = document.getElementById('bmeAmcFrom').value;
@@ -1395,40 +1425,40 @@
                 let remarks = document.getElementById('bmeRemarks').value.trim();
 
                 if(!name || !serial || !assetCode) { alert('Instrument Name, Asset Code and Serial No required!'); return; }
-                bmeItems.unshift({ name, assetCode, serial, dept, calDate, cert, amcFrom, amcTo, warranty, pmStatus, calStatus, remarks });
+                bmeItems.unshift({ name, assetCode, serial, dept, incharge, engineer, calDate, cert, amcFrom, amcTo, warranty, pmStatus, calStatus, remarks });
                 localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
                 alert('BME Instrument details saved successfully!');
                 renderBmeModule(container);
             };
 
-            window.saveBmeIncident = function() {
-                let name = document.getElementById('incName').value.trim();
-                let dept = document.getElementById('incDept').value.trim();
-                let staff = document.getElementById('incStaff').value.trim();
-                let action = document.getElementById('incAction').value.trim();
-                let status = document.getElementById('incStatus').value;
+            window.saveBmeBreakdown = function() {
+                let dateTime = document.getElementById('bdDateTime').value;
+                let name = document.getElementById('bdName').value.trim();
+                let dept = document.getElementById('bdDept').value.trim();
+                let problem = document.getElementById('bdProblem').value.trim();
+                let bme = document.getElementById('bdBme').value.trim();
+                let status = document.getElementById('bdStatus').value;
 
-                if(!name || !dept || !staff) { alert('Fill all required incident fields!'); return; }
-                incidents.unshift({ name, dept, staff, action, status });
+                if(!name || !dept || !problem) { alert('Fill all required breakdown fields!'); return; }
+                incidents.unshift({ dateTime, name, dept, problem, bme, status });
                 localStorage.setItem('erp_bme_incidents', JSON.stringify(incidents));
-                alert('Incident report saved successfully!');
+                alert('Breakdown report saved successfully!');
                 renderBmeModule(container);
-                switchBmeTab('incident');
+                switchBmeTab('breakdown');
             };
 
-            window.saveBmePurchase = function() {
-                let item = document.getElementById('bpurItem').value.trim();
-                let serial = document.getElementById('bpurSerial').value.trim();
-                let supplier = document.getElementById('bpurSupplier').value.trim();
-                let type = document.getElementById('bpurType').value;
-                let amt = parseFloat(document.getElementById('bpurAmt').value) || 0;
+            window.saveGatePassEntry = function() {
+                let dateTime = document.getElementById('gpDateTime').value;
+                let item = document.getElementById('gpItem').value.trim();
+                let bme = document.getElementById('gpBme').value.trim();
+                let authority = document.getElementById('gpAuthority').value.trim();
 
-                if(!item || !serial) { alert('Item and Serial No required!'); return; }
-                bmePurchases.unshift({ item, serial, supplier, type, amt });
-                localStorage.setItem('erp_bme_purchases', JSON.stringify(bmePurchases));
-                alert('BME Purchase entry saved successfully!');
+                if(!item || !authority) { alert('Item Name and Authority Permit Name required!'); return; }
+                gatePasses.unshift({ dateTime, item, bme, authority });
+                localStorage.setItem('erp_bme_gatepass', JSON.stringify(gatePasses));
+                alert('Gate Pass entry saved successfully!');
                 renderBmeModule(container);
-                switchBmeTab('purchase');
+                switchBmeTab('gatepass');
             };
         }
 
