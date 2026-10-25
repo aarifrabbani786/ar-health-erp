@@ -124,7 +124,7 @@
         .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
-        /* USER PROFILE DROPDOWN EXACT POSITIONING */
+        /* EXACT POSITIONED USER PROFILE DROPDOWN */
         #userDropdownModal {
             display: none; position: absolute; right: 24px; top: 75px; width: 290px;
             background: #ffffff; border-radius: 14px; border: 1.5px solid #cbd5e1;
@@ -136,7 +136,6 @@
         }
         .print-modal-content { background: #ffffff; width: 90%; max-width: 850px; border-radius: 16px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 
-        /* STICKER PRINT FORMAT */
         .asset-sticker-box {
             width: 320px; border: 2.5px solid #0f172a; border-radius: 10px; padding: 12px; background: #fff; text-align: center; margin: 0 auto; font-family: sans-serif;
         }
@@ -226,7 +225,6 @@
         </div>
 
         <div class="main-content">
-            <!-- TOP BANNER & USER AVATAR -->
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
                     <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;" id="bannerShopTag">A. R v2.6 🌿</span>
@@ -239,12 +237,12 @@
 
                 <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;" id="headerActionRightBox">
                     <button class="btn-success" onclick="loadModule('sales_invoices')" style="padding:7px 12px; font-size:11.5px;" id="headerNewSaleBtn">+ New Sale</button>
-                    <!-- AVATAR BUTTON FOR EXACT DROPDOWN -->
+                    <!-- USER AVATAR BUTTON -->
                     <div onclick="toggleUserDropdown(event)" style="width:38px; height:38px; background:#0284c7; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; font-weight:900; box-shadow:0 3px 8px rgba(2,132,199,0.4);" id="topUserAvatarBtn">A</div>
                 </div>
             </div>
 
-            <!-- CORRECTLY POSITIONED USER PROFILE POPUP MODAL -->
+            <!-- USER PROFILE DROPDOWN MODAL -->
             <div id="userDropdownModal">
                 <div style="display:flex; align-items:center; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:10px;">
                     <div style="width:36px; height:36px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900;" id="modalUserInitial">A</div>
@@ -284,7 +282,7 @@
         </div>
     </div>
 
-    <!-- PREMIUM PRINT PREVIEW MODAL -->
+    <!-- PRINT PREVIEW MODAL -->
     <div id="printPreviewModal">
         <div class="print-modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:12px; margin-bottom:15px;">
@@ -401,11 +399,12 @@
                 `;
             }
 
-            if(isSuperAdmin || permissions.includes('all')) {
-                html += `
-                    <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
-                    <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
-                `;
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('parties')) {
+                html += `<li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>`;
+            }
+
+            if(isSuperAdmin || permissions.includes('all') || permissions.includes('expenses')) {
+                html += `<li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>`;
             }
 
             if(isSuperAdmin || permissions.includes('all') || permissions.includes('bme')) {
@@ -414,12 +413,13 @@
 
             html += `<li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>`;
 
-            // SEPARATED SETTINGS AND USERS PORTAL MENU
             if(isSuperAdmin || permissions.includes('all')) {
                 html += `
                     <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> System Settings</a></li>
                     <li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> Users & Admin Portal</a></li>
                 `;
+            } else {
+                html += `<li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> User Portal</a></li>`;
             }
 
             sList.innerHTML = html;
@@ -577,10 +577,14 @@
 
         function loadModule(m) {
             if (m === 'bme' && !checkPermission('bme')) { alert('Access Denied!'); return; }
+            if (m === 'parties' && !checkPermission('parties')) { alert('Access Denied!'); return; }
+            if (m === 'expenses' && !checkPermission('expenses')) { alert('Access Denied!'); return; }
             if (m === 'queries' && !checkPermission('queries')) { alert('Access Denied!'); return; }
-            if ((m === 'settings' || m === 'users_portal') && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) { alert('Access Denied! Only Super Admin can manage system.'); return; }
+            if ((m === 'settings' || m === 'users_portal') && currentUser && currentUser.username !== 'admin' && !checkPermission('all')) {
+                // If regular user accessing user portal, allow them to view their profile/settings
+                if(m !== 'users_portal') { alert('Access Denied!'); return; }
+            }
 
-            // HIDE "+ NEW SALE" BUTTON ON BME AND AR AI PORTALS PER REQUIREMENT
             let newSaleBtn = document.getElementById('headerNewSaleBtn');
             if(newSaleBtn) {
                 newSaleBtn.style.display = (m === 'bme' || m === 'ai') ? 'none' : 'block';
@@ -1010,11 +1014,142 @@
             `;
         }
 
-        function renderPartiesModule(container) { container.innerHTML = `<div class="light-card"><h2>👥 Customers & Vendors</h2></div>`; }
-        function renderExpensesModule(container) { container.innerHTML = `<div class="light-card"><h2>💸 Expenses</h2></div>`; }
-        function renderQueryPortalModule(container) { container.innerHTML = `<div class="light-card"><h2>💬 Enquiry Portal</h2></div>`; }
+        /* FULLY WORKING CUSTOMERS & VENDORS MODULE */
+        function renderPartiesModule(container) {
+            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
+                { name: 'Dr. Ramesh Kumar', type: 'Customer', phone: '9876543210', balance: 1500 },
+                { name: 'Aarzoo Surgicals', type: 'Vendor', phone: '9123456789', balance: 5000 }
+            ];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 Customers & Vendors Directory</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Add New Customer or Vendor</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Party Name *</label><input type="text" id="partyName" class="form-control" placeholder="Name"></div>
+                            <div class="form-group"><label>Party Type</label>
+                                <select id="partyType" class="form-control">
+                                    <option value="Customer">Customer</option>
+                                    <option value="Vendor">Vendor</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Mobile Number</label><input type="text" id="partyPhone" class="form-control" placeholder="10 Digit Mobile"></div>
+                            <div class="form-group"><label>Opening Balance (₹)</label><input type="number" id="partyBal" class="form-control" value="0"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveParty()" style="width:100%;">Save Party</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Party Name</th><th>Type</th><th>Mobile</th><th>Balance</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${parties.map((pt, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${pt.name}</b></td>
+                                    <td><span style="color:${pt.type === 'Customer' ? '#0284c7' : '#16a34a'}">${pt.type}</span></td>
+                                    <td>${pt.phone || '-'}</td>
+                                    <td>₹${parseFloat(pt.balance || 0).toFixed(2)}</td>
+                                    <td><button class="btn-danger" onclick="delParty(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.saveParty = function() {
+                let name = document.getElementById('partyName').value.trim();
+                let type = document.getElementById('partyType').value;
+                let phone = document.getElementById('partyPhone').value.trim();
+                let balance = parseFloat(document.getElementById('partyBal').value) || 0;
+                if(!name) { alert('Party name required!'); return; }
+                parties.unshift({ name, type, phone, balance });
+                localStorage.setItem('erp_parties', JSON.stringify(parties));
+                alert('Party saved successfully!');
+                renderPartiesModule(container);
+            };
+            window.delParty = function(idx) {
+                parties.splice(idx, 1);
+                localStorage.setItem('erp_parties', JSON.stringify(parties));
+                renderPartiesModule(container);
+            };
+        }
 
-        /* BME MASTER PORTAL WITH ALL NEW REGISTERS & FULL STORE DETAILS FORM */
+        /* FULLY WORKING EXPENSES MODULE */
+        function renderExpensesModule(container) {
+            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [
+                { title: 'Electricity Bill', cat: 'Utility', amt: 2400, date: '25/10/2026' }
+            ];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💸 Expenses Management</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Expense Title *</label><input type="text" id="expTitle" class="form-control" placeholder="Shop Rent / Electricity"></div>
+                            <div class="form-group"><label>Category</label><input type="text" id="expCat" class="form-control" value="Utility"></div>
+                            <div class="form-group"><label>Amount (₹) *</label><input type="number" id="expAmt" class="form-control" value="1000"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveExpenseRecord()" style="width:100%;">Add Expense</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Date</th><th>Title</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${expenses.map((e, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${e.date}</td>
+                                    <td><b>${e.title}</b></td>
+                                    <td>${e.cat}</td>
+                                    <td style="color:#ef4444;">₹${parseFloat(e.amt).toFixed(2)}</td>
+                                    <td><button class="btn-danger" onclick="delExpense(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.saveExpenseRecord = function() {
+                let title = document.getElementById('expTitle').value.trim();
+                let cat = document.getElementById('expCat').value.trim();
+                let amt = parseFloat(document.getElementById('expAmt').value) || 0;
+                if(!title || amt <= 0) { alert('Title and valid amount required!'); return; }
+                expenses.unshift({ title, cat, amt, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                alert('Expense added successfully!');
+                renderExpensesModule(container);
+            };
+            window.delExpense = function(idx) {
+                expenses.splice(idx, 1);
+                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+                renderExpensesModule(container);
+            };
+        }
+
+        /* FULLY WORKING ENQUIRY PORTAL MODULE */
+        function renderQueryPortalModule(container) {
+            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💬 Enquiry Portal & Support Tickets</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Sr</th><th>Date</th><th>Owner & Purpose</th><th>Contact</th><th>Location</th><th>Status</th></tr></thead>
+                        <tbody>
+                            ${queries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiries found.</td></tr>' :
+                            queries.map((q, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${q.date}</td>
+                                    <td><b>${q.ownerName}</b><br><small>${q.purpose}</small></td>
+                                    <td>${q.phone}</td>
+                                    <td>${q.location}</td>
+                                    <td><span style="color:#16a34a;">${q.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        /* BME MASTER PORTAL WITH ALL REGISTERS & FULL STORE DETAILS */
         function renderBmeModule(container) {
             let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             let incidents = JSON.parse(localStorage.getItem('erp_bme_incidents')) || [];
@@ -1032,7 +1167,6 @@
                 <div class="light-card">
                     <h2>🩺 BME Master Portal & Advanced Asset Tracking</h2>
                     
-                    <!-- SEPARATE FULL STORE / INSTITUTE DETAIL UPDATE FORM -->
                     <div style="background:#f1f5f9; padding:16px; border-radius:12px; border:1.5px solid #cbd5e1; margin-bottom:16px;">
                         <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🏥 Store / Institute Detailed Profile Settings</h3>
                         <div class="form-grid">
@@ -1044,7 +1178,6 @@
                         </div>
                     </div>
 
-                    <!-- TABS NAVIGATION -->
                     <div style="display:flex; gap:8px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; flex-wrap:wrap;">
                         <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Asset Stock</button>
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('incident')" id="btnTabIncident">Incident Form</button>
@@ -1055,7 +1188,6 @@
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('gatepass')" id="btnTabGatepass">Gate Pass Register</button>
                     </div>
 
-                    <!-- TAB 1: MASTER / ASSET INVENTORY -->
                     <div id="bmeTabMaster" class="bme-tab-content">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add New Instrument / Asset Entry</h3>
@@ -1098,7 +1230,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 2: INCIDENT FORM -->
                     <div id="bmeTabIncident" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#ef4444; margin-bottom:10px;">🚨 New Equipment Incident Form</h3>
@@ -1120,15 +1251,14 @@
                         </table>
                     </div>
 
-                    <!-- TAB 3: HAND OVER REGISTER -->
                     <div id="bmeTabHandover" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🔄 Shift / Shift Handover Register</h3>
                             <div class="form-grid">
                                 <div class="form-group"><label>Date & Time</label><input type="text" id="hoDate" class="form-control" value="${new Date().toLocaleString()}"></div>
                                 <div class="form-group"><label>Instrument Name *</label><input type="text" id="hoItem" class="form-control" placeholder="ECG Machine"></div>
-                                <div class="form-group"><label>Handover From (Staff/BME)</label><input type="text" id="hoFrom" class="form-control" placeholder="Er. Rahul"></div>
-                                <div class="form-group"><label>Handover To (Staff/BME)</label><input type="text" id="hoTo" class="form-control" placeholder="Er. Amit"></div>
+                                <div class="form-group"><label>Handover From</label><input type="text" id="hoFrom" class="form-control" placeholder="Er. Rahul"></div>
+                                <div class="form-group"><label>Handover To</label><input type="text" id="hoTo" class="form-control" placeholder="Er. Amit"></div>
                                 <div class="form-group"><label>Condition / Remarks</label><input type="text" id="hoRemarks" class="form-control" placeholder="Fully Working"></div>
                                 <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveHandoverRecord()" style="width:100%;">Save Handover Entry</button></div>
                             </div>
@@ -1141,7 +1271,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 4: PMS LOG SHEET -->
                     <div id="bmeTabPms" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#16a34a; margin-bottom:10px;">📝 Preventive Maintenance Schedule (PMS) Log Sheet</h3>
@@ -1162,7 +1291,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 5: AMC / CMC TRACKER -->
                     <div id="bmeTabAmc" class="bme-tab-content" style="display:none;">
                         <h3 style="font-size:14px; margin-bottom:10px;">📋 AMC / CMC Tracker & Validity Register</h3>
                         <table class="data-table">
@@ -1173,7 +1301,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 6: BREAKDOWN REGISTER -->
                     <div id="bmeTabBreakdown" class="bme-tab-content" style="display:none;">
                         <h3 style="font-size:14px; margin-bottom:10px;">🚨 Breakdown & Incident Register</h3>
                         <table class="data-table">
@@ -1184,7 +1311,6 @@
                         </table>
                     </div>
 
-                    <!-- TAB 7: GATE PASS REGISTER WITH RETURNABLE / NON-RETURNABLE OPTION -->
                     <div id="bmeTabGatepass" class="bme-tab-content" style="display:none;">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                             <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🎫 Gate Pass Entry Form (Returnable / Non-Returnable)</h3>
