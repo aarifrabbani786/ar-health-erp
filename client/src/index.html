@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Professional Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Analytics Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
 
         b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger, input, select { font-weight: 900 !important; font-size: 13px; }
         
-        /* 3D NEUMORPHIC LIGHT THEME LOGIN & ENQUIRY */
+        /* AUTH OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #e0e5ec;
@@ -102,14 +102,26 @@
         .data-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
         .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #0f172a; }
         .data-table th { color: #334155; font-size: 12px; text-transform: uppercase; background: #f1f5f9; }
+
+        /* CRM POWER BI STYLE METRIC CARDS */
+        .crm-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+        .crm-metric-card {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border-radius: 14px; padding: 20px;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25); position: relative; overflow: hidden;
+        }
+        .crm-metric-card.green { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25); }
+        .crm-metric-card.purple { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); box-shadow: 0 10px 25px rgba(124, 58, 237, 0.25); }
+        .crm-metric-card.orange { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); box-shadow: 0 10px 25px rgba(234, 88, 12, 0.25); }
+        .crm-metric-title { font-size: 11px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; }
+        .crm-metric-value { font-size: 26px; font-weight: 900; margin-top: 8px; }
+        .crm-metric-sub { font-size: 11px; opacity: 0.85; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- 3D NEUMORPHIC LIGHT THEME LOGIN & ENQUIRY PORTAL -->
+    <!-- LOGIN & ENQUIRY OVERLAY -->
     <div id="auth-overlay" style="display: none;">
         <div class="auth-container-grid">
-            <!-- Left Card: Login -->
             <div class="neumorphic-card">
                 <div>
                     <h2>A.R. ERP BILLING & COMPLETE INVENTORY SOFTWARE</h2>
@@ -134,7 +146,6 @@
                 </div>
             </div>
 
-            <!-- Right Card: Software Enquiry -->
             <div class="neumorphic-card">
                 <div>
                     <h2 style="color: #0284c7;">Software Enquiry</h2>
@@ -165,6 +176,25 @@
                 <div style="margin-top: 15px;">
                     <button onclick="submitSoftwareQuery()" class="neumorphic-btn" style="color: #16a34a;">Submit Query Request</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE & PASSWORD CHANGE MODAL -->
+    <div id="profileModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999999; justify-content:center; align-items:center;">
+        <div class="light-card" style="width:100%; max-width:420px; background:#ffffff;">
+            <h2>👤 User Profile & Security Settings</h2>
+            <div class="form-group" style="margin-top:12px;">
+                <label>Change Username</label>
+                <input type="text" id="modalUsername" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="modalNewPass" class="form-control" placeholder="Leave blank to keep current">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-success" onclick="saveProfileChanges()" style="flex:1;">Save Changes</button>
+                <button class="btn-danger" onclick="closeProfileModal()" style="flex:1;">Cancel</button>
             </div>
         </div>
     </div>
@@ -202,8 +232,9 @@
                     <p id="bannerAgencySub">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
                 </div>
 
-                <div style="width: 180px; text-align: right;">
-                    <button onclick="logoutUser()" class="btn-danger">Logout</button>
+                <div style="width: 240px; text-align: right; display:flex; gap:8px; justify-content:flex-end;">
+                    <button onclick="openProfileModal()" class="btn-primary" style="padding:7px 10px; font-size:11px;">⚙️ Profile</button>
+                    <button onclick="logoutUser()" class="btn-danger" style="padding:7px 10px; font-size:11px;">Logout</button>
                 </div>
             </div>
 
@@ -242,6 +273,35 @@
             passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
+        function openProfileModal() {
+            if(currentUser) {
+                document.getElementById('modalUsername').value = currentUser.username;
+                document.getElementById('modalNewPass').value = '';
+                document.getElementById('profileModal').style.display = 'flex';
+            }
+        }
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function saveProfileChanges() {
+            let newU = document.getElementById('modalUsername').value.trim();
+            let newP = document.getElementById('modalNewPass').value.trim();
+            if(!newU) { alert('Username cannot be empty!'); return; }
+
+            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let idx = users.findIndex(x => x.username === currentUser.username);
+            if(idx !== -1) {
+                users[idx].username = newU;
+                if(newP) users[idx].pass = newP;
+                currentUser = users[idx];
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                localStorage.setItem('erp_active_session', JSON.stringify(currentUser));
+                alert('Profile updated successfully!');
+                closeProfileModal();
+            }
+        }
+
         function sendAdminForgotRequest() {
             let uId = prompt('Enter your User ID or Registered Mobile No to send recovery request to Admin:');
             if(uId) {
@@ -260,7 +320,7 @@
                 });
                 localStorage.setItem('erp_software_queries', JSON.stringify(queries));
                 updateQueryBadge();
-                alert('Forgot Credentials request sent successfully to Super Admin! Admin will review and update your password.');
+                alert('Forgot Credentials request sent successfully to Super Admin!');
             }
         }
 
@@ -345,34 +405,36 @@
         function renderDashboardModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
+            let totalPurchases = purchases.reduce((a, b) => a + (b.amount || 0), 0);
             
             container.innerHTML = `
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; margin-bottom:16px;">
-                    <div class="light-card" style="margin-bottom:0;">
-                        <div style="font-size:11.5px; color:#64748b; margin-bottom:6px;">SALES</div>
-                        <div style="font-size:22px; color:#0f172a;" id="dashSalesVal">₹0.00</div>
-                        <div style="font-size:11px; color:#16a34a; margin-top:4px;" id="dashSalesCount">None Sales</div>
+                <div class="crm-metric-grid">
+                    <div class="crm-metric-card">
+                        <div class="crm-metric-title">TOTAL SALES (GROSS)</div>
+                        <div class="crm-metric-value" id="dashSalesVal">₹${totalSales.toFixed(2)}</div>
+                        <div class="crm-metric-sub" id="dashSalesCount">${invs.length} Invoices Recorded</div>
                     </div>
-                    <div class="light-card" style="margin-bottom:0;">
-                        <div style="font-size:11.5px; color:#64748b; margin-bottom:6px;">PURCHASES</div>
-                        <div style="font-size:22px; color:#0f172a;" id="dashPurVal">₹0.00</div>
-                        <div style="font-size:11px; color:#0284c7; margin-top:4px;" id="dashPurCount">None Purchases</div>
+                    <div class="crm-metric-card green">
+                        <div class="crm-metric-title">TOTAL PURCHASES</div>
+                        <div class="crm-metric-value" id="dashPurVal">₹${totalPurchases.toFixed(2)}</div>
+                        <div class="crm-metric-sub" id="dashPurCount">${purchases.length} Purchase Orders</div>
                     </div>
-                    <div class="light-card" style="margin-bottom:0;">
-                        <div style="font-size:11.5px; color:#64748b; margin-bottom:6px;">YOU WILL GET</div>
-                        <div style="font-size:22px; color:#0f172a;">₹0.00</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:4px;">None You Will Get</div>
+                    <div class="crm-metric-card purple">
+                        <div class="crm-metric-title">WIN / PROFIT MARGIN</div>
+                        <div class="crm-metric-value">₹${(totalSales * 0.25).toFixed(2)}</div>
+                        <div class="crm-metric-sub">Estimated 25% Margin</div>
                     </div>
-                    <div class="light-card" style="margin-bottom:0;">
-                        <div style="font-size:11.5px; color:#64748b; margin-bottom:6px;">INVENTORY VALUE</div>
-                        <div style="font-size:22px; color:#0f172a;">₹0.00</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:4px;">Total cost of current stock</div>
+                    <div class="crm-metric-card orange">
+                        <div class="crm-metric-title">PENDING QUERIES</div>
+                        <div class="crm-metric-value">${JSON.parse(localStorage.getItem('erp_software_queries') || '[]').filter(q => q.status === 'Pending').length}</div>
+                        <div class="crm-metric-sub">Active Support Tickets</div>
                     </div>
                 </div>
 
                 <div class="light-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h2 style="margin-bottom:0;">Sales & Purchases Overview</h2>
+                        <h2 style="margin-bottom:0;">Sales & Purchases Overview Analytics</h2>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <select id="dateFilterSelect" class="form-control" style="width:140px; padding:6px 10px;" onchange="filterDashboardData()">
                                 <option value="today">Today</option>
@@ -389,8 +451,9 @@
                             </div>
                         </div>
                     </div>
-                    <div style="height:240px; display:flex; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:12px; background:#f8fafc; color:#64748b; font-size:13px;">
-                        Graphical Analytics Chart (Filtered by <span id="activeFilterLabel" style="color:#0284c7; margin-left:4px;">Today</span>)
+                    <div style="height:260px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:12px; background:#f8fafc; color:#0f172a;">
+                        <div style="font-size:16px; margin-bottom:6px;">📈 CRM Analytics Chart (Filtered by <span id="activeFilterLabel" style="color:#0284c7;">Today</span>)</div>
+                        <div style="font-size:12px; color:#64748b;">Calculated Sales: ₹${totalSales.toFixed(2)} | Purchases: ₹${totalPurchases.toFixed(2)}</div>
                     </div>
                 </div>
             `;
@@ -402,13 +465,6 @@
             let labelMap = { today: 'Today', this_month: 'This Month', last_month: 'Last Month', this_quarter: 'This Quarter', this_year: 'This Year', last_year: 'Last Year' };
             let lbl = document.getElementById('activeFilterLabel');
             if(lbl) lbl.innerText = labelMap[filterVal] || 'Today';
-
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
-            let sVal = document.getElementById('dashSalesVal');
-            let sCount = document.getElementById('dashSalesCount');
-            if(sVal) sVal.innerText = '₹' + totalSales.toFixed(2);
-            if(sCount) sCount.innerText = invs.length > 0 ? invs.length + ' Invoices (' + labelMap[filterVal] + ')' : 'None Sales';
         }
 
         function renderQueryPortalModule(container) {
