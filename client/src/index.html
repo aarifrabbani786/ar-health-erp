@@ -305,8 +305,9 @@
         ];
 
         let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
-        if (!storedUsers) {
+        if (!storedUsers || !Array.isArray(storedUsers)) {
             localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
+            storedUsers = defaultUsers;
         } else {
             let adminIndex = storedUsers.findIndex(x => x.username === 'admin');
             if (adminIndex !== -1) {
@@ -327,17 +328,20 @@
             if (savedSession) {
                 try {
                     currentUser = JSON.parse(savedSession);
-                    if(currentUser.username !== 'admin' && currentUser.status !== 'Active') {
+                    if(currentUser && currentUser.username !== 'admin' && currentUser.status !== 'Active') {
                         alert('Your account is currently Deactivated by Admin!');
                         localStorage.removeItem('erp_active_session');
-                        location.reload();
+                        document.getElementById('auth-overlay').style.display = 'flex';
+                        document.getElementById('main-app-container').style.display = 'flex';
                         return;
                     }
-                    document.getElementById('auth-overlay').style.display = 'none';
-                    document.getElementById('main-app-container').style.display = 'flex';
-                    setupTopUserAvatar();
-                    loadModule(localStorage.getItem('erp_active_module') || 'dashboard');
-                    return;
+                    if(currentUser && currentUser.username) {
+                        document.getElementById('auth-overlay').style.display = 'none';
+                        document.getElementById('main-app-container').style.display = 'flex';
+                        setupTopUserAvatar();
+                        loadModule(localStorage.getItem('erp_active_module') || 'dashboard');
+                        return;
+                    }
                 } catch(e) {}
             }
             document.getElementById('auth-overlay').style.display = 'flex';
@@ -371,7 +375,8 @@
                 document.getElementById('modalUserInitial').innerText = initial;
                 document.getElementById('modalUserNameDisplay').innerText = currentUser.username;
                 document.getElementById('modalUserRoleDisplay').innerText = currentUser.role || 'ADMIN';
-                document.getElementById('changeUserBox').value = currentUser.username;
+                let changeBox = document.getElementById('changeUserBox');
+                if(changeBox) changeBox.value = currentUser.username;
 
                 if(currentUser.username === 'admin') {
                     document.getElementById('licenseStatusText').innerHTML = `<span>🌿</span> Lifetime Owner Access`;
@@ -451,7 +456,7 @@
         async function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let users = JSON.parse(localStorage.getItem('erp_users')) || defaultUsers;
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
@@ -461,7 +466,10 @@
                 }
                 currentUser = found;
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
-                location.reload();
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('main-app-container').style.display = 'flex';
+                setupTopUserAvatar();
+                loadModule('dashboard');
             } else { 
                 alert('Invalid Login Credentials! Use admin / admin123'); 
                 document.getElementById('loginPass').value = '';
@@ -1068,7 +1076,6 @@
                 invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable, type: sType });
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
 
-                // Auto-fetch stock update
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
                 meds.unshift({ name: item, serial: 'SN-' + Math.floor(1000+Math.random()*9000), dept: 'Sales', location: 'Counter', issueDate: new Date().toLocaleDateString('en-GB'), installReport: 'Sold OK', stock: qty });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
@@ -1114,7 +1121,6 @@
                 purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
 
-                // Auto-fetch stock update
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
                 meds.unshift({ name: item, serial: 'SN-' + Math.floor(1000+Math.random()*9000), dept: 'Purchase', location: 'Main Store', issueDate: new Date().toLocaleDateString('en-GB'), installReport: 'Purchased OK', stock: qty });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
