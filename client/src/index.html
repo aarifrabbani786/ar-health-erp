@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A. R ERP SOFTWARE - BME & CRM Suite</title>
+    <title>A. R ERP SOFTWARE - Enterprise Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -60,7 +60,6 @@
             background: rgba(15, 23, 42, 0.9); border: 2px solid #22c55e; border-radius: 14px;
         }
         
-        /* BLINKING MONEY PLANT LOGO ICON */
         @keyframes blinkPlant {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(1.1); }
@@ -81,7 +80,8 @@
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff;
         }
-        .sub-menu { padding-left: 28px; list-style: none; margin-top: 2px; margin-bottom: 4px; }
+        .sub-menu { padding-left: 28px; list-style: none; margin-top: 2px; margin-bottom: 4px; display: none; }
+        .sub-menu.open { display: block; }
         .sub-menu li a { padding: 6px 10px; font-size: 11px; color: #94a3b8; }
         .sub-menu li a:hover { color: #fff; background: rgba(255,255,255,0.05); }
 
@@ -244,30 +244,33 @@
             <ul class="sidebar-menu">
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
                 <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
-                <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
-                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
                 
-                <!-- SALES MENU -->
-                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-sales"><span>🛒</span> Sales & POS</a></li>
-                <ul class="sub-menu">
-                    <li><a onclick="loadModule('sales')">Sale Invoices</a></li>
-                    <li><a onclick="loadModule('sales')">Sale Quotation</a></li>
-                    <li><a onclick="loadModule('sales')">Proforma Invoice</a></li>
-                    <li><a onclick="loadModule('sales')">Sale Order</a></li>
-                    <li><a onclick="loadModule('sales')">Sale Return / Cr. Note</a></li>
+                <!-- SALES TOGGLE MENU -->
+                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="salesSubMenu">
+                    <li><a onclick="loadModule('sales_invoices')">Sale Invoices</a></li>
+                    <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
+                    <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
+                    <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
+                    <li><a onclick="loadModule('sales_return')">Sale Return / Cr. Note</a></li>
                 </ul>
 
-                <!-- PURCHASE MENU -->
-                <li><a class="menu-link" onclick="loadModule('purchase')" id="nav-purchase"><span>🛍️</span> Purchase</a></li>
-                <ul class="sub-menu">
-                    <li><a onclick="loadModule('purchase')">Purchase Bill</a></li>
-                    <li><a onclick="loadModule('purchase')">Purchase Order</a></li>
-                    <li><a onclick="loadModule('purchase')">Purchase Return / Dr. Note</a></li>
+                <!-- PURCHASE TOGGLE MENU -->
+                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="purchaseSubMenu">
+                    <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
+                    <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
+                    <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
                 </ul>
 
                 <li><a class="menu-link" onclick="loadModule('audit')" id="nav-audit"><span>📦</span> Items & Inventory</a></li>
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
                 <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
+                
+                <!-- BME & ENQUIRY AT BOTTOM -->
+                <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
+                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
+                
                 <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings & Users</a></li>
             </ul>
         </div>
@@ -275,7 +278,7 @@
         <div class="main-content">
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;">A. R v2.6 🌿</span>
+                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;" id="bannerShopTag">A. R v2.6 🌿</span>
                 </div>
                 
                 <div class="centered-agency-details">
@@ -284,7 +287,7 @@
                 </div>
 
                 <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;">
-                    <button class="btn-success" onclick="loadModule('sales')" style="padding:7px 12px; font-size:11.5px;">+ New Sale</button>
+                    <button class="btn-success" onclick="loadModule('sales_invoices')" style="padding:7px 12px; font-size:11.5px;">+ New Sale</button>
                     <div onclick="toggleUserDropdown(event)" style="width:36px; height:36px; background:#0284c7; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; font-weight:900;" id="topUserAvatarBtn">U</div>
                 </div>
             </div>
@@ -298,7 +301,7 @@
         let currentUser = null;
 
         let defaultUsers = [
-            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', planYears: 'Lifetime' }
+            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active', planYears: 'Lifetime', permissions: ['all'] }
         ];
 
         let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
@@ -310,6 +313,7 @@
                 storedUsers[adminIndex].status = 'Active';
                 storedUsers[adminIndex].role = 'Super Admin';
                 storedUsers[adminIndex].planYears = 'Lifetime';
+                storedUsers[adminIndex].permissions = ['all'];
             } else {
                 storedUsers.unshift(defaultUsers[0]);
             }
@@ -318,12 +322,13 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             updateQueryBadge();
+            applyAgencyHeaderSettings();
             let savedSession = localStorage.getItem('erp_active_session');
             if (savedSession) {
                 try {
                     currentUser = JSON.parse(savedSession);
                     if(currentUser.username !== 'admin' && currentUser.status !== 'Active') {
-                        alert('Your account is currently Deactivated by Admin! Please contact Super Admin to activate.');
+                        alert('Your account is currently Deactivated by Admin!');
                         localStorage.removeItem('erp_active_session');
                         location.reload();
                         return;
@@ -338,6 +343,26 @@
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-app-container').style.display = 'flex';
         });
+
+        function applyAgencyHeaderSettings() {
+            let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
+                shopName: 'A R PHARMA AND SURGICAL AGENCY',
+                tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)',
+                footerText: 'Thank you for your business!'
+            };
+            let hName = document.getElementById('bannerAgencyName');
+            let hSub = document.getElementById('bannerAgencySub');
+            if(hName) hName.innerText = settings.shopName;
+            if(hSub) hSub.innerText = settings.tagline;
+        }
+
+        function toggleSubMenu(menuId, e) {
+            e.stopPropagation();
+            let menu = document.getElementById(menuId);
+            if(menu) {
+                menu.classList.toggle('open');
+            }
+        }
 
         function setupTopUserAvatar() {
             if(currentUser) {
@@ -431,7 +456,7 @@
 
             if (found) {
                 if (found.username !== 'admin' && found.status !== 'Active') {
-                    alert('Access Denied! Your account status is Deactivated. Please ask Super Admin to activate your account.');
+                    alert('Access Denied! Your account status is Deactivated.');
                     return;
                 }
                 currentUser = found;
@@ -479,10 +504,27 @@
             location.reload();
         }
 
+        function checkPermission(moduleKey) {
+            if(!currentUser) return false;
+            if(currentUser.username === 'admin') return true;
+            if(currentUser.permissions && currentUser.permissions.includes('all')) return true;
+            if(currentUser.permissions && currentUser.permissions.includes(moduleKey)) return true;
+            return false;
+        }
+
         function loadModule(m) {
+            if (m === 'bme' && !checkPermission('bme')) {
+                alert('Access Denied! You do not have permission to access BME Master Portal.');
+                return;
+            }
+            if (m === 'queries' && !checkPermission('queries')) {
+                alert('Access Denied! You do not have permission to access Enquiry Portal.');
+                return;
+            }
+
             localStorage.setItem('erp_active_module', m);
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-            let activeElem = document.getElementById('nav-' + m);
+            let activeElem = document.getElementById('nav-' + (m.startsWith('sales') ? 'sales' : m.startsWith('purchase') ? 'purchase' : m));
             if (activeElem) activeElem.classList.add('active');
 
             const workspace = document.getElementById('module-workspace');
@@ -492,8 +534,8 @@
             else if (m === 'ai') renderAiModule(workspace);
             else if (m === 'bme') renderBmeModule(workspace);
             else if (m === 'queries') renderQueryPortalModule(workspace);
-            else if (m === 'sales') renderSalesModule(workspace);
-            else if (m === 'purchase') renderPurchaseModule(workspace);
+            else if (m.startsWith('sales')) renderSalesModule(workspace, m);
+            else if (m.startsWith('purchase')) renderPurchaseModule(workspace, m);
             else if (m === 'audit') renderStockAuditModule(workspace);
             else if (m === 'parties') renderPartiesModule(workspace);
             else if (m === 'expenses') renderExpensesModule(workspace);
@@ -592,21 +634,40 @@
         }
 
         function renderBmeModule(container) {
-            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-            let filterText = document.getElementById('bmeSearchBox')?.value?.toLowerCase() || '';
-            let filteredItems = bmeItems.filter(b => 
-                b.name.toLowerCase().includes(filterText) || 
-                b.serial.toLowerCase().includes(filterText) || 
-                b.dept.toLowerCase().includes(filterText)
-            );
-
+            let bmeTab = localStorage.getItem('erp_bme_tab') || 'quotation';
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🩺 BME Master Portal & Quotation Management</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Audit instruments, make new quotation, track department allocation, serial numbers, and operational status.</p>
-                    
+                    <h2>🩺 BME Master Portal & Hospital / Store Management</h2>
+                    <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
+                        <button class="btn-${bmeTab==='quotation'?'success':'primary'}" onclick="switchBmeTab('quotation')">New Quotation & Audit</button>
+                        <button class="btn-${bmeTab==='physical'?'success':'primary'}" onclick="switchBmeTab('physical')">Item Physical Audit</button>
+                        <button class="btn-${bmeTab==='store'?'success':'primary'}" onclick="switchBmeTab('store')">Store (Stock & Issue)</button>
+                        <button class="btn-${bmeTab==='demo'?'success':'primary'}" onclick="switchBmeTab('demo')">Demo Management</button>
+                    </div>
+                    <div id="bmeSubWorkspace"></div>
+                </div>
+            `;
+            renderBmeSubTab(bmeTab);
+        }
+
+        function switchBmeTab(tab) {
+            localStorage.setItem('erp_bme_tab', tab);
+            renderBmeSubTab(tab);
+        }
+
+        function renderBmeSubTab(tab) {
+            let subWs = document.getElementById('bmeSubWorkspace');
+            if(!subWs) return;
+            subWs.innerHTML = "";
+
+            if(tab === 'quotation') {
+                let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
+                let query = document.getElementById('bmeFindQ')?.value?.toLowerCase() || '';
+                let results = query ? bmeItems.filter(b => b.name.toLowerCase().includes(query) || b.serial.toLowerCase().includes(query) || b.dept.toLowerCase().includes(query)) : [];
+
+                subWs.innerHTML = `
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Make New Quotation / Add Instrument Audit</h3>
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Make New Quotation & Instrument Audit</h3>
                         <div class="form-grid">
                             <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="ICU Ventilator / ECG"></div>
                             <div class="form-group"><label>Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
@@ -622,20 +683,21 @@
                                     <option value="Repairing">Repairing</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addBmeItem()" style="width:100%;">Save Quotation & Audit</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveBmeAudit()" style="width:100%;">Save Quotation & Audit</button></div>
                         </div>
                     </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3 style="font-size:14px;">Audited Instruments & Quotations Log</h3>
-                        <input type="text" id="bmeSearchBox" class="form-control" style="width:250px; padding:6px 12px;" placeholder="🔍 Find by Name, Serial, Dept..." value="${filterText}" oninput="renderBmeModule(container)">
+                        <h3 style="font-size:14px;">Find Instrument / Quotation</h3>
+                        <input type="text" id="bmeFindQ" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Type name, serial or dept to find..." value="${query}" oninput="renderBmeSubTab('quotation')">
                     </div>
 
                     <table class="data-table">
-                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Dept & Qty</th><th>BME Engineer</th><th>Install Date</th><th>Quotation Ref</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>Dept & Qty</th><th>Engineer</th><th>Install Date</th><th>Quotation Ref</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${filteredItems.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No matching instruments or quotations found.</td></tr>' :
-                            filteredItems.map((b, idx) => `
+                            ${!query ? '<tr><td colspan="8" style="text-align:center; color:#64748b;">Please search / find an instrument above to display records.</td></tr>' :
+                            results.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No matching records found.</td></tr>' :
+                            results.map((b, idx) => `
                                 <tr>
                                     <td><b>${b.name}</b></td>
                                     <td>${b.serial}</td>
@@ -644,14 +706,161 @@
                                     <td>${b.date}</td>
                                     <td><b>${b.quote}</b></td>
                                     <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${b.status === 'Working' ? '#dcfce7; color:#16a34a;' : b.status === 'Repairing' ? '#fef3c7; color:#d97706;' : '#fee2e2; color:#ef4444;'}">${b.status}</span></td>
-                                    <td><button class="btn-danger" onclick="delBme(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                    <td><button class="btn-danger" onclick="delBmeItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
-                </div>
-            `;
-            window.addBmeItem = function() {
+                `;
+            } else if(tab === 'physical') {
+                let physicalList = JSON.parse(localStorage.getItem('erp_bme_physical')) || [];
+                let query = document.getElementById('physFindQ')?.value?.toLowerCase() || '';
+                let results = query ? physicalList.filter(p => p.name.toLowerCase().includes(query) || p.serial.toLowerCase().includes(query)) : [];
+
+                subWs.innerHTML = `
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">📋 System vs Physical Audit & Problem Remarks</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Instrument Name *</label><input type="text" id="phName" class="form-control" placeholder="Item Name"></div>
+                            <div class="form-group"><label>Serial No *</label><input type="text" id="phSerial" class="form-control" placeholder="Serial No"></div>
+                            <div class="form-group"><label>System Stock Qty</label><input type="number" id="phSysQty" class="form-control" value="1"></div>
+                            <div class="form-group"><label>Physical Audit Qty</label><input type="number" id="phPhysQty" class="form-control" value="1"></div>
+                            <div class="form-group"><label>Status</label>
+                                <select id="phStatus" class="form-control">
+                                    <option value="Matched OK">Matched OK</option>
+                                    <option value="Mismatch / Discrepancy">Mismatch / Discrepancy</option>
+                                    <option value="Damaged / Problem">Damaged / Problem</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Problem Remarks</label><input type="text" id="phRemarks" class="form-control" placeholder="Describe problem if any"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePhysicalAudit()" style="width:100%;">Save Audit Report</button></div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px;">Find Physical Audit Record</h3>
+                        <input type="text" id="physFindQ" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Type to find..." value="${query}" oninput="renderBmeSubTab('physical')">
+                    </div>
+
+                    <table class="data-table">
+                        <thead><tr><th>Instrument Name</th><th>Serial No</th><th>System Qty</th><th>Physical Qty</th><th>Status</th><th>Remarks</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${!query ? '<tr><td colspan="7" style="text-align:center; color:#64748b;">Please search / find an audit item above to display records.</td></tr>' :
+                            results.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No matching records found.</td></tr>' :
+                            results.map((p, idx) => `
+                                <tr>
+                                    <td><b>${p.name}</b></td>
+                                    <td>${p.serial}</td>
+                                    <td>${p.sysQty}</td>
+                                    <td><b>${p.physQty}</b></td>
+                                    <td><span style="color:${p.status==='Matched OK'?'#16a34a':'#ef4444'};">${p.status}</span></td>
+                                    <td>${p.remarks || 'None'}</td>
+                                    <td><button class="btn-danger" onclick="delPhysItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if(tab === 'store') {
+                let storeItems = JSON.parse(localStorage.getItem('erp_bme_store')) || [];
+                let query = document.getElementById('storeFindQ')?.value?.toLowerCase() || '';
+                let results = query ? storeItems.filter(s => s.item.toLowerCase().includes(query) || s.dept.toLowerCase().includes(query)) : [];
+
+                subWs.innerHTML = `
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🏬 Store Stock, Indent & Issue Management</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Item Name *</label><input type="text" id="stItem" class="form-control" placeholder="Consumable / Part"></div>
+                            <div class="form-group"><label>Stock Qty *</label><input type="number" id="stQty" class="form-control" value="50"></div>
+                            <div class="form-group"><label>Department</label><input type="text" id="stDept" class="form-control" placeholder="ICU / Ward"></div>
+                            <div class="form-group"><label>Action Type</label>
+                                <select id="stType" class="form-control">
+                                    <option value="Stock Entry">Stock Entry</option>
+                                    <option value="Issue Item">Issue Item</option>
+                                    <option value="Indent Request">Indent Request</option>
+                                    <option value="Purchase Return">Purchase Return</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveStoreEntry()" style="width:100%;">Save Store Log</button></div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px;">Find Store Stock / Log</h3>
+                        <input type="text" id="storeFindQ" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Type item or dept to find..." value="${query}" oninput="renderBmeSubTab('store')">
+                    </div>
+
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Item Name</th><th>Qty</th><th>Department</th><th>Type</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${!query ? '<tr><td colspan="6" style="text-align:center; color:#64748b;">Please search / find a store item above to display records.</td></tr>' :
+                            results.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No matching records found.</td></tr>' :
+                            results.map((s, idx) => `
+                                <tr>
+                                    <td>${s.date}</td>
+                                    <td><b>${s.item}</b></td>
+                                    <td>${s.qty}</td>
+                                    <td>${s.dept}</td>
+                                    <td><span style="color:#0284c7;">${s.type}</span></td>
+                                    <td><button class="btn-danger" onclick="delStoreItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if(tab === 'demo') {
+                let demoList = JSON.parse(localStorage.getItem('erp_bme_demo')) || [];
+                let query = document.getElementById('demoFindQ')?.value?.toLowerCase() || '';
+                let results = query ? demoList.filter(d => d.item.toLowerCase().includes(query) || d.company.toLowerCase().includes(query) || d.drName.toLowerCase().includes(query)) : [];
+
+                subWs.innerHTML = `
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🔬 Equipment Demo Management & Final Report</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Demo Item Name *</label><input type="text" id="dmItem" class="form-control" placeholder="Machine / Instrument"></div>
+                            <div class="form-group"><label>Company Name *</label><input type="text" id="dmComp" class="form-control" placeholder="Manufacturer Co."></div>
+                            <div class="form-group"><label>Requested By / Requester</label><input type="text" id="dmReq" class="form-control" placeholder="Staff Name"></div>
+                            <div class="form-group"><label>Dr. Name *</label><input type="text" id="dmDr" class="form-control" placeholder="Dr. Sharma"></div>
+                            <div class="form-group"><label>Demo Class / Dept</label><input type="text" id="dmClass" class="form-control" placeholder="ICU Training"></div>
+                            <div class="form-group"><label>Duration (Days)</label><input type="number" id="dmDays" class="form-control" value="7"></div>
+                            <div class="form-group"><label>Demo Status / Report</label>
+                                <select id="dmStatus" class="form-control">
+                                    <option value="Demo Ongoing">Demo Ongoing</option>
+                                    <option value="Demo Completed Successfully">Demo Completed Successfully</option>
+                                    <option value="Demo Rejected / Returned">Demo Rejected / Returned</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveDemoEntry()" style="width:100%;">Save Demo Report</button></div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px;">Find Demo Record</h3>
+                        <input type="text" id="demoFindQ" class="form-control" style="width:280px; padding:6px 12px;" placeholder="🔍 Type item, company or Dr. name..." value="${query}" oninput="renderBmeSubTab('demo')">
+                    </div>
+
+                    <table class="data-table">
+                        <thead><tr><th>Item & Company</th><th>Requester & Dr.</th><th>Class / Dept</th><th>Duration</th><th>Status / Report</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${!query ? '<tr><td colspan="6" style="text-align:center; color:#64748b;">Please search / find a demo record above to display results.</td></tr>' :
+                            results.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No matching demo records found.</td></tr>' :
+                            results.map((d, idx) => `
+                                <tr>
+                                    <td><b>${d.item}</b><br><small>${d.company}</small></td>
+                                    <td>Req: ${d.req}<br><b>Dr. ${d.drName}</b></td>
+                                    <td>${d.demoClass}</td>
+                                    <td>${d.days} Days</td>
+                                    <td><span style="color:${d.status.includes('Successfully')?'#16a34a':'#0284c7'};"><b>${d.status}</b></span></td>
+                                    <td><button class="btn-danger" onclick="delDemoItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Global BME handlers
+            window.saveBmeAudit = function() {
                 let name = document.getElementById('bmeName').value.trim();
                 let serial = document.getElementById('bmeSerial').value.trim();
                 let dept = document.getElementById('bmeDept').value.trim();
@@ -662,27 +871,94 @@
                 let status = document.getElementById('bmeStatus').value;
 
                 if(!name || !serial || !dept) { alert('Instrument Name, Serial No, and Department required!'); return; }
-                bmeItems.unshift({ name, serial, dept, qty, engineer, date, quote, status });
-                localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
-                alert('BME Quotation & Audit saved successfully!');
-                renderBmeModule(container);
+                let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
+                items.unshift({ name, serial, dept, qty, engineer, date, quote, status });
+                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
+                alert('Quotation & Audit saved successfully!');
+                renderBmeSubTab('quotation');
             };
-            window.delBme = function(idx) {
-                bmeItems.splice(idx, 1);
-                localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
-                renderBmeModule(container);
+            window.delBmeItem = function(idx) {
+                let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
+                items.splice(idx, 1);
+                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
+                renderBmeSubTab('quotation');
+            };
+
+            window.savePhysicalAudit = function() {
+                let name = document.getElementById('phName').value.trim();
+                let serial = document.getElementById('phSerial').value.trim();
+                let sysQty = parseInt(document.getElementById('phSysQty').value) || 1;
+                let physQty = parseInt(document.getElementById('phPhysQty').value) || 1;
+                let status = document.getElementById('phStatus').value;
+                let remarks = document.getElementById('phRemarks').value.trim();
+
+                if(!name || !serial) { alert('Name and Serial required!'); return; }
+                let list = JSON.parse(localStorage.getItem('erp_bme_physical')) || [];
+                list.unshift({ name, serial, sysQty, physQty, status, remarks });
+                localStorage.setItem('erp_bme_physical', JSON.stringify(list));
+                alert('Physical Audit Report saved!');
+                renderBmeSubTab('physical');
+            };
+            window.delPhysItem = function(idx) {
+                let list = JSON.parse(localStorage.getItem('erp_bme_physical')) || [];
+                list.splice(idx, 1);
+                localStorage.setItem('erp_bme_physical', JSON.stringify(list));
+                renderBmeSubTab('physical');
+            };
+
+            window.saveStoreEntry = function() {
+                let item = document.getElementById('stItem').value.trim();
+                let qty = parseInt(document.getElementById('stQty').value) || 1;
+                let dept = document.getElementById('stDept').value.trim() || 'General';
+                let type = document.getElementById('stType').value;
+
+                if(!item) { alert('Item name required!'); return; }
+                let store = JSON.parse(localStorage.getItem('erp_bme_store')) || [];
+                store.unshift({ item, qty, dept, type, date: new Date().toLocaleDateString('en-GB') });
+                localStorage.setItem('erp_bme_store', JSON.stringify(store));
+                alert('Store entry saved!');
+                renderBmeSubTab('store');
+            };
+            window.delStoreItem = function(idx) {
+                let store = JSON.parse(localStorage.getItem('erp_bme_store')) || [];
+                store.splice(idx, 1);
+                localStorage.setItem('erp_bme_store', JSON.stringify(store));
+                renderBmeSubTab('store');
+            };
+
+            window.saveDemoEntry = function() {
+                let item = document.getElementById('dmItem').value.trim();
+                let company = document.getElementById('dmComp').value.trim();
+                let req = document.getElementById('dmReq').value.trim() || 'Store';
+                let drName = document.getElementById('dmDr').value.trim();
+                let demoClass = document.getElementById('dmClass').value.trim() || 'General';
+                let days = parseInt(document.getElementById('dmDays').value) || 7;
+                let status = document.getElementById('dmStatus').value;
+
+                if(!item || !company || !drName) { alert('Item, Company and Dr. Name required!'); return; }
+                let demo = JSON.parse(localStorage.getItem('erp_bme_demo')) || [];
+                demo.unshift({ item, company, req, drName, demoClass, days, status });
+                localStorage.setItem('erp_bme_demo', JSON.stringify(demo));
+                alert('Demo report saved successfully!');
+                renderBmeSubTab('demo');
+            };
+            window.delDemoItem = function(idx) {
+                let demo = JSON.parse(localStorage.getItem('erp_bme_demo')) || [];
+                demo.splice(idx, 1);
+                localStorage.setItem('erp_bme_demo', JSON.stringify(demo));
+                renderBmeSubTab('demo');
             };
         }
 
         function renderStockAuditModule(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             let filterText = document.getElementById('stockSearchBox')?.value?.toLowerCase() || '';
-            let filteredMeds = meds.filter(m => 
+            let filteredMeds = filterText ? meds.filter(m => 
                 m.name.toLowerCase().includes(filterText) || 
                 (m.serial && m.serial.toLowerCase().includes(filterText)) || 
                 (m.dept && m.dept.toLowerCase().includes(filterText)) ||
                 (m.location && m.location.toLowerCase().includes(filterText))
-            );
+            ) : [];
 
             container.innerHTML = `
                 <div class="light-card">
@@ -710,7 +986,8 @@
                     <table class="data-table">
                         <thead><tr><th>Item Name</th><th>Serial No</th><th>Dept & Location</th><th>Issue Date</th><th>Installation Report</th><th>Stock</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${filteredMeds.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No inventory items found matching search.</td></tr>' :
+                            ${!filterText ? '<tr><td colspan="7" style="text-align:center; color:#64748b;">Please search / find an inventory item above to display results.</td></tr>' :
+                            filteredMeds.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No inventory items found matching search.</td></tr>' :
                             filteredMeds.map((m, idx) => `
                                 <tr>
                                     <td><b>${m.name}</b></td>
@@ -747,29 +1024,71 @@
             };
         }
 
-        function renderPurchaseModule(container) {
-            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+        function renderSalesModule(container, activeSub) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let subTitle = activeSub === 'sales_quotation' ? 'Sale Quotation' : activeSub === 'sales_proforma' ? 'Proforma Invoice' : activeSub === 'sales_order' ? 'Sale Order' : activeSub === 'sales_return' ? 'Sale Return / Cr. Note' : 'Sale Invoices';
+
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🛍️ Purchase Management (Bills, Orders & Returns)</h2>
+                    <h2>🛒 Sales & POS - ${subTitle}</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Customer / Patient *</label><input type="text" id="posPatient" class="form-control" placeholder="Customer Name"></div>
+                            <div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control"></div>
+                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="posItem" class="form-control" placeholder="Item Name"></div>
+                            <div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control"></div>
+                            <div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control" value="1"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generateSaleRecord('${activeSub}')" style="width:100%;">Create ${subTitle}</button></div>
+                        </div>
+                    </div>
+                    <h3 style="font-size:14px; margin-bottom:10px;">${subTitle} Log</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Ref No</th><th>Date</th><th>Customer</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No records found.</td></tr>' :
+                            invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>${i.batch}</td><td>${i.qty}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.generateSaleRecord = function(sType) {
+                let patientName = document.getElementById('posPatient').value.trim();
+                let mobile = document.getElementById('posMobile').value.trim();
+                let item = document.getElementById('posItem').value.trim();
+                let batch = document.getElementById('posBatch').value.trim();
+                let mrp = parseFloat(document.getElementById('posMrp').value) || 0;
+                let qty = parseInt(document.getElementById('posQty').value) || 1;
+
+                if(!patientName || !item || mrp <= 0) { alert('Customer name, Item, and MRP required!'); return; }
+                let netPayable = mrp * qty;
+                let invoiceNo = (sType.includes('quotation') ? 'QT-' : sType.includes('proforma') ? 'PRO-' : sType.includes('order') ? 'ORD-' : sType.includes('return') ? 'RET-' : 'INV-') + Math.floor(10000 + Math.random()*90000);
+
+                invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable, type: sType });
+                localStorage.setItem('erp_invoices', JSON.stringify(invs));
+                alert(subTitle + ' Created Successfully: ' + invoiceNo);
+                renderSalesModule(container, activeSub);
+            };
+        }
+
+        function renderPurchaseModule(container, activeSub) {
+            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            let subTitle = activeSub === 'purchase_order' ? 'Purchase Order' : activeSub === 'purchase_return' ? 'Purchase Return / Dr. Note' : 'Purchase Bill';
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛍️ Purchase Management - ${subTitle}</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Vendor Name *</label><input type="text" id="purVendor" class="form-control" placeholder="Supplier Name"></div>
                             <div class="form-group"><label>Item / Medicine *</label><input type="text" id="purItem" class="form-control" placeholder="Item Name"></div>
                             <div class="form-group"><label>Quantity</label><input type="number" id="purQty" class="form-control" value="10"></div>
                             <div class="form-group"><label>Total Amount (₹) *</label><input type="number" id="purAmt" class="form-control" placeholder="5000"></div>
-                            <div class="form-group"><label>Purchase Type</label>
-                                <select id="purType" class="form-control">
-                                    <option value="Purchase Bill">Purchase Bill</option>
-                                    <option value="Purchase Order">Purchase Order</option>
-                                    <option value="Purchase Return">Purchase Return / Dr. Note</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addPurchase()" style="width:100%;">Save Purchase Entry</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generatePurchaseRecord('${activeSub}')" style="width:100%;">Save ${subTitle}</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>PO / Bill No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
+                        <thead><tr><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
                         <tbody>
                             ${purchases.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No purchase records found.</td></tr>' :
                             purchases.map(p => `<tr><td><b>${p.poNo}</b></td><td>${p.date}</td><td>${p.vendor}</td><td>${p.item} (${p.qty})</td><td>${p.type}</td><td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td></tr>`).join('')}
@@ -777,19 +1096,18 @@
                     </table>
                 </div>
             `;
-            window.addPurchase = function() {
+            window.generatePurchaseRecord = function(pType) {
                 let vendor = document.getElementById('purVendor').value.trim();
                 let item = document.getElementById('purItem').value.trim();
                 let qty = parseInt(document.getElementById('purQty').value) || 1;
                 let amount = parseFloat(document.getElementById('purAmt').value) || 0;
-                let type = document.getElementById('purType').value;
 
                 if(!vendor || !item || amount <= 0) { alert('Vendor, Item and Amount required!'); return; }
-                let poNo = 'PO-' + Math.floor(10000 + Math.random()*90000);
-                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type });
+                let poNo = (pType.includes('order') ? 'PO-' : pType.includes('return') ? 'DR-' : 'PB-') + Math.floor(10000 + Math.random()*90000);
+                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                alert('Purchase Entry Saved Successfully!');
-                renderPurchaseModule(container);
+                alert(subTitle + ' Saved Successfully!');
+                renderPurchaseModule(container, activeSub);
             };
         }
 
@@ -881,51 +1199,6 @@
             };
         }
 
-        function renderSalesModule(container) {
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛒 Sales & POS Counter Billing System</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control"></div>
-                            <div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control"></div>
-                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="posItem" class="form-control"></div>
-                            <div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control" value="B-101"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control"></div>
-                            <div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control" value="1"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generateInvoice()" style="width:100%;">Create Invoice</button></div>
-                        </div>
-                    </div>
-                    <h3 style="font-size:14px; margin-bottom:10px;">Recent Invoices Log</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>
-                        <tbody>
-                            ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
-                            invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>${i.batch}</td><td>${i.qty}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.generateInvoice = function() {
-                let patientName = document.getElementById('posPatient').value.trim();
-                let mobile = document.getElementById('posMobile').value.trim();
-                let item = document.getElementById('posItem').value.trim();
-                let batch = document.getElementById('posBatch').value.trim();
-                let mrp = parseFloat(document.getElementById('posMrp').value) || 0;
-                let qty = parseInt(document.getElementById('posQty').value) || 1;
-
-                if(!patientName || !item || mrp <= 0) { alert('Patient name, Medicine, and MRP required!'); return; }
-                let netPayable = mrp * qty;
-                let invoiceNo = 'INV-' + Math.floor(10000 + Math.random()*90000);
-
-                invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable });
-                localStorage.setItem('erp_invoices', JSON.stringify(invs));
-                alert('Invoice Created Successfully: ' + invoiceNo);
-                renderSalesModule(container);
-            };
-        }
-
         function renderPartiesModule(container) {
             let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
             container.innerHTML = `
@@ -1004,12 +1277,27 @@
 
         function renderSettingsModule(container) {
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
+            let shopSet = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
+                shopName: 'A R PHARMA AND SURGICAL AGENCY',
+                tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)',
+                footerText: 'Thank you for your business!'
+            };
+
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ Store Settings & User Plan Management</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin (admin) is the permanent Owner with Lifetime access. Set validity plans for other users below.</p>
+                    <h2>⚙️ Super Admin - Header, Footer & Shop Customization</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:20px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Hospital / Medical / Shop Name *</label><input type="text" id="setShopName" class="form-control" value="${shopSet.shopName}"></div>
+                            <div class="form-group"><label>Header Tagline / Chairman *</label><input type="text" id="setTagline" class="form-control" value="${shopSet.tagline}"></div>
+                            <div class="form-group"><label>Footer Text</label><input type="text" id="setFooter" class="form-control" value="${shopSet.footerText}"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveShopSettings()" style="width:100%;">Update Header/Footer</button></div>
+                        </div>
+                    </div>
+
+                    <h2>👥 User Management, Plan Validity & Permissions</h2>
                     <table class="data-table">
-                        <thead><tr><th>Username</th><th>Role</th><th>Plan Validity</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Username</th><th>Role</th><th>Plan Validity</th><th>Modules Access</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
                             ${users.map((u, idx) => `
                                 <tr>
@@ -1022,6 +1310,15 @@
                                                 <option value="2 Years" ${u.planYears === '2 Years' ? 'selected' : ''}>2 Years</option>
                                                 <option value="3 Years" ${u.planYears === '3 Years' ? 'selected' : ''}>3 Years</option>
                                                 <option value="Lifetime" ${u.planYears === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
+                                            </select>
+                                        `}
+                                    </td>
+                                    <td>
+                                        ${u.username === 'admin' ? 'Full Access' : `
+                                            <select class="form-control" style="padding:4px; font-size:11px; width:130px;" onchange="updateUserPerm(${idx}, this.value)">
+                                                <option value="all" ${u.permissions?.includes('all') ? 'selected' : ''}>All Modules</option>
+                                                <option value="bme" ${!u.permissions?.includes('all') && u.permissions?.includes('bme') ? 'selected' : ''}>BME Portal Only</option>
+                                                <option value="sales" ${u.permissions?.includes('sales') ? 'selected' : ''}>Sales Only</option>
                                             </select>
                                         `}
                                     </td>
@@ -1039,10 +1336,24 @@
                     </table>
                 </div>
             `;
+            window.saveShopSettings = function() {
+                let shopName = document.getElementById('setShopName').value.trim();
+                let tagline = document.getElementById('setTagline').value.trim();
+                let footerText = document.getElementById('setFooter').value.trim();
+                if(!shopName) { alert('Shop/Hospital name required!'); return; }
+                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline, footerText }));
+                alert('Header and Footer settings updated successfully!');
+                applyAgencyHeaderSettings();
+            };
             window.updateUserPlan = function(idx, plan) {
                 users[idx].planYears = plan;
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 alert('User plan updated successfully to ' + plan + '!');
+            };
+            window.updateUserPerm = function(idx, perm) {
+                users[idx].permissions = [perm];
+                localStorage.setItem('erp_users', JSON.stringify(users));
+                alert('User permissions updated successfully!');
             };
             window.toggleUserStatus = function(idx) {
                 if (users[idx].username === 'admin') {
