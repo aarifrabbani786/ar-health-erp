@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R ERP SOFTWARE - Enterprise Suite</title>
+    <title>A. R ERP SOFTWARE - Enterprise Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -125,17 +125,17 @@
         .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
-        #userDropdownModal {
-            display: none; position: absolute; right: 24px; top: 75px; width: 280px; background: #ffffff;
-            border-radius: 12px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 14px;
+        #userDropdownModal, #printPreviewModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 999999; align-items: center; justify-content: center;
         }
+        #userDropdownModal { position: absolute; right: 24px; top: 75px; width: 280px; background: #ffffff; height: auto; border-radius: 12px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); padding: 14px; }
+        .print-modal-content { background: #ffffff; width: 90%; max-width: 850px; border-radius: 16px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 
         @media print {
             body { background: #fff !important; color: #000 !important; }
-            #sidebar-container, .top-banner, .btn-success, .btn-primary, .btn-danger, .form-grid, .light-card button { display: none !important; }
+            #sidebar-container, .top-banner, .btn-success, .btn-primary, .btn-danger, .form-grid, .light-card button, #printPreviewModal { display: none !important; }
             .main-content { padding: 0 !important; margin: 0 !important; }
-            .light-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
-            .print-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; display: block !important; }
+            .print-invoice-box { display: block !important; }
         }
     </style>
 </head>
@@ -237,6 +237,26 @@
         </div>
     </div>
 
+    <!-- PREMIUM PRINT PREVIEW MODAL -->
+    <div id="printPreviewModal">
+        <div class="print-modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:12px; margin-bottom:15px;">
+                <h3 style="font-size:16px; color:#0f172a;">🖨️ Premium Print Preview & Customization</h3>
+                <button class="btn-danger" onclick="closePrintModal()" style="padding:4px 10px;">✕ Close</button>
+            </div>
+            <div style="display:flex; gap:15px; margin-bottom:15px; font-size:12px; background:#f1f5f9; padding:12px; border-radius:10px;">
+                <label><input type="checkbox" id="prn_chk_header" checked> Header & Chairman</label>
+                <label><input type="checkbox" id="prn_chk_patient" checked> Patient & Doctor</label>
+                <label><input type="checkbox" id="prn_chk_hsn" checked> HSN & Batch</label>
+                <label><input type="checkbox" id="prn_chk_totals" checked> Totals & Payment Type</label>
+            </div>
+            <div id="printModalBody" style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:10px; margin-bottom:15px; max-height:400px; overflow-y:auto;"></div>
+            <div style="text-align:right;">
+                <button class="btn-primary" onclick="window.print()" style="padding:10px 24px;">🖨️ Print Final Bill</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN APP CONTAINER -->
     <div class="app-layout" id="main-app-container">
         
@@ -277,6 +297,7 @@
                     <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
                     <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
                     <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
+                    <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
                 </ul>
 
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
@@ -569,6 +590,7 @@
             else if (m === 'report_sales') renderMasterReportModule(workspace, 'sales');
             else if (m === 'report_sales_return') renderMasterReportModule(workspace, 'sales_return');
             else if (m === 'report_purchase') renderMasterReportModule(workspace, 'purchase');
+            else if (m === 'report_collection') renderCollectionReportModule(workspace);
             else if (m === 'parties') renderPartiesModule(workspace);
             else if (m === 'expenses') renderExpensesModule(workspace);
             else if (m === 'settings') renderSettingsModule(workspace);
@@ -698,6 +720,366 @@
             };
         }
 
+        function renderSalesInvoiceModule(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let todayStr = new Date().toISOString().split('T')[0];
+            let timeStr = new Date().toLocaleTimeString();
+
+            let d = new Date();
+            let dd = String(d.getDate()).padStart(2, '0');
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let yy = String(d.getFullYear()).slice(-2);
+            let dateCodeKey = dd + mm + yy;
+            
+            let dailyCounterKey = 'erp_counter_' + dateCodeKey;
+            let counter = parseInt(localStorage.getItem(dailyCounterKey)) || 1;
+            let generatedInvoiceNo = 'AR' + dateCodeKey + String(counter).padStart(2, '0');
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛒 Sale Bill & Invoice Generation</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Invoice No (Auto AR Format)</label>
+                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin') ? '' : 'readonly'} title="Admin can override invoice number">
+                            </div>
+                            <div class="form-group"><label>Patient Name * (Compulsory)</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Mobile No * (10 Digit Lock)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
+                            <div class="form-group"><label>Dr. Name *</label><input type="text" id="saleDr" class="form-control" placeholder="Dr. Name"></div>
+                            <div class="form-group"><label>Billing Date (Locked)</label><input type="date" id="saleDate" class="form-control" value="${todayStr}" readonly></div>
+                            <div class="form-group"><label>Billing Time (Locked)</label><input type="text" id="saleTime" class="form-control" value="${timeStr}" readonly></div>
+                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Batch</label><input type="text" id="saleBatch" class="form-control" value="B-2026"></div>
+                            <div class="form-group"><label>HSN Code</label><input type="text" id="saleHsn" class="form-control" value="3004"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="150" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Sale Quantity</label><input type="number" id="saleQty" class="form-control" value="2" oninput="calculateSaleTotals()"></div>
+                            <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="5" oninput="calculateSaleTotals()"></div>
+                        </div>
+
+                        <!-- BILL DETAILS SHIFTED TO RIGHT & BOTTOM WITH PAYMENT TYPE & TOTALS -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; padding:16px; border-radius:10px; margin-top:10px;">
+                            <div style="display:flex; gap:15px; align-items:center;">
+                                <div class="form-group" style="margin-bottom:0;">
+                                    <label>💳 Type of Payment</label>
+                                    <select id="paymentTypeSelect" class="form-control" style="width:180px;">
+                                        <option value="Cash">Cash payment</option>
+                                        <option value="UPI">UPI payments</option>
+                                        <option value="Card">Card payment</option>
+                                        <option value="Credit Card">Credit card payment</option>
+                                        <option value="Credit / Udhar">Credit ya udhar</option>
+                                        <option value="Bank Account">Bank account</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:25px; align-items:center; text-align:right;">
+                                <div><div style="font-size:11px; color:#64748b;">TOTAL MRP</div><div style="font-size:15px; font-weight:900;" id="lblTotalMrp">₹300.00</div></div>
+                                <div><div style="font-size:11px; color:#64748b;">TOTAL DISCOUNT</div><div style="font-size:15px; font-weight:900; color:#ef4444;" id="lblTotalDisc">₹15.00</div></div>
+                                <div><div style="font-size:11px; color:#64748b;">FINAL AMOUNT</div><div style="font-size:18px; font-weight:900; color:#16a34a;" id="lblFinalAmt">₹285.00</div></div>
+                                <button class="btn-success" onclick="saveAndOpenPrintModal()" style="padding:12px 24px; font-size:14px;">Bill Save & Print</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Bills & Invoices History</h3>
+                    <div style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr.No</th><th>Invoice No</th><th>Date & Time</th><th>Patient & Dr.</th><th>Mobile</th><th>Payment Type</th><th>Net Payable</th><th>Action</th></tr></thead>
+                            <tbody>
+                                ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No sale bills recorded.</td></tr>' :
+                                invs.map((i, idx) => `
+                                    <tr>
+                                        <td>${idx + 1}</td>
+                                        <td><b>${i.invoiceNo}</b></td>
+                                        <td>${i.date} ${i.time || ''}</td>
+                                        <td>${i.patientName}<br><small>Dr. ${i.drName}</small></td>
+                                        <td>${i.mobile}</td>
+                                        <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; font-size:11px;">${i.paymentType || 'Cash'}</span></td>
+                                        <td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td>
+                                        <td><button class="btn-primary" onclick="openPrintModalForInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Settings</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            window.calculateSaleTotals = function() {
+                let mrp = parseFloat(document.getElementById('saleMrp')?.value) || 0;
+                let qty = parseInt(document.getElementById('saleQty')?.value) || 1;
+                let disc = parseFloat(document.getElementById('saleDisc')?.value) || 0;
+                let totalMrp = mrp * qty;
+                let totalDisc = totalMrp * disc / 100;
+                let finalAmt = totalMrp - totalDisc;
+
+                let lMrp = document.getElementById('lblTotalMrp');
+                let lDisc = document.getElementById('lblTotalDisc');
+                let lFinal = document.getElementById('lblFinalAmt');
+                if(lMrp) lMrp.innerText = '₹' + totalMrp.toFixed(2);
+                if(lDisc) lDisc.innerText = '₹' + totalDisc.toFixed(2);
+                if(lFinal) lFinal.innerText = '₹' + finalAmt.toFixed(2);
+            };
+
+            window.saveAndOpenPrintModal = function() {
+                let customInvBox = document.getElementById('invNoDisplay').value.trim();
+                let patientName = document.getElementById('salePatient').value.trim();
+                let mobile = document.getElementById('saleMobile').value.trim();
+                let drName = document.getElementById('saleDr').value.trim();
+                let item = document.getElementById('saleItem').value.trim();
+                let batch = document.getElementById('saleBatch').value.trim();
+                let hsn = document.getElementById('saleHsn').value.trim();
+                let mrp = parseFloat(document.getElementById('saleMrp').value) || 0;
+                let qty = parseInt(document.getElementById('saleQty').value) || 1;
+                let disc = parseFloat(document.getElementById('saleDisc').value) || 0;
+                let paymentType = document.getElementById('paymentTypeSelect').value;
+
+                if(!patientName || !mobile || !drName || !item || mrp <= 0) {
+                    alert('Please fill Patient Name, 10 Digit Mobile, Dr. Name, Item and MRP!');
+                    return;
+                }
+                if(mobile.length !== 10 || isNaN(mobile)) {
+                    alert('Mobile number must be exactly 10 digits!');
+                    return;
+                }
+
+                let totalMrp = mrp * qty;
+                let totalDisc = totalMrp * disc / 100;
+                let netPayable = totalMrp - totalDisc;
+                let invoiceNo = customInvBox || generatedInvoiceNo;
+
+                localStorage.setItem(dailyCounterKey, counter + 1);
+
+                let newInv = {
+                    invoiceNo,
+                    date: todayStr,
+                    time: timeStr,
+                    patientName,
+                    mobile,
+                    drName,
+                    item,
+                    batch,
+                    hsn,
+                    mrp,
+                    qty,
+                    disc,
+                    totalMrp,
+                    totalDisc,
+                    netPayable,
+                    paymentType,
+                    userId: currentUser ? currentUser.username : 'admin'
+                };
+                invs.unshift(newInv);
+                localStorage.setItem('erp_invoices', JSON.stringify(invs));
+
+                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
+                let foundMed = meds.find(m => m.name.toLowerCase() === item.toLowerCase());
+                if(foundMed) { foundMed.stock = Math.max(0, (foundMed.stock || 0) - qty); }
+                localStorage.setItem('erp_medicines', JSON.stringify(meds));
+
+                alert('Sale Bill Saved Successfully!');
+                openPrintModalForInvoice(0);
+                renderSalesInvoiceModule(container);
+            };
+
+            window.openPrintModalForInvoice = function(idx) {
+                let inv = invs[idx];
+                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
+                
+                let modalBody = document.getElementById('printModalBody');
+                modalBody.innerHTML = `
+                    <div style="text-align:center;" id="prnContainer">
+                        <div id="prnHeader" style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+                            <h2 style="font-size:18px;">${settings.shopName}</h2>
+                            <p style="font-size:12px; color:#16a34a;">${settings.tagline}</p>
+                        </div>
+                        <h3>SALE BILL / TAX INVOICE</h3>
+                        <p style="text-align:left;"><b>Invoice No:</b> ${inv.invoiceNo} | <b>Date:</b> ${inv.date} ${inv.time || ''}</p>
+                        <div id="prnPatient" style="text-align:left;">
+                            <p><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
+                        </div>
+                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
+                            <tr><th>Item Name</th><th id="thBatch">Batch</th><th id="thHsn">HSN</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>Net Amount</th></tr>
+                            <tr><td>${inv.item}</td><td id="tdBatch">${inv.batch}</td><td id="tdHsn">${inv.hsn}</td><td>₹${inv.mrp}</td><td>${inv.qty}</td><td>${inv.disc}%</td><td><b>₹${inv.netPayable.toFixed(2)}</b></td></tr>
+                        </table>
+                        <div id="prnTotals" style="margin-top:15px; text-align:right; font-size:13px;">
+                            <p>Total MRP: ₹${inv.totalMrp?.toFixed(2) || inv.mrp * inv.qty}</p>
+                            <p>Total Discount: ₹${inv.totalDisc?.toFixed(2) || 0}</p>
+                            <p><b>Payment Type: ${inv.paymentType || 'Cash'}</b></p>
+                            <h3 style="color:#16a34a;">Final Amount: ₹${inv.netPayable.toFixed(2)}</h3>
+                        </div>
+                        <br><p>Thank you for your business!</p>
+                    </div>
+                `;
+                document.getElementById('printPreviewModal').style.display = 'flex';
+            };
+
+            window.closePrintModal = function() {
+                document.getElementById('printPreviewModal').style.display = 'none';
+            };
+        }
+
+        function renderCollectionReportModule(container) {
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+            let todayStr = new Date().toISOString().split('T')[0];
+            let startD = document.getElementById('colStart')?.value || todayStr;
+            let endD = document.getElementById('colEnd')?.value || todayStr;
+            let searchQ = document.getElementById('colSearch')?.value?.toLowerCase() || '';
+
+            let filtered = invs.filter(i => {
+                let matches = searchQ ? JSON.stringify(i).toLowerCase().includes(searchQ) : true;
+                return matches;
+            });
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💰 Collection Report (Payment Type & User Wise)</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>From Date</label><input type="date" id="colStart" class="form-control" value="${startD}"></div>
+                            <div class="form-group"><label>To Date</label><input type="date" id="colEnd" class="form-control" value="${endD}"></div>
+                            <div class="form-group"><label>Search Query</label><input type="text" id="colSearch" class="form-control" placeholder="Search patient, payment type..." value="${searchQ}"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end; gap:10px;">
+                                <button class="btn-success" onclick="renderCollectionReportModule(container)" style="width:100%;">Filter Collection</button>
+                                <button class="btn-primary" onclick="printCollectionReport()" style="width:100%;">🖨️ Print Collection</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="collectionPrintArea" style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient Name</th><th>User ID</th><th>Payment Type</th><th>Discount Given</th><th>Net Collection</th></tr></thead>
+                            <tbody>
+                                ${filtered.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No collection records found.</td></tr>' :
+                                filtered.map((i, idx) => `
+                                    <tr>
+                                        <td>${idx + 1}</td>
+                                        <td><b>${i.invoiceNo}</b></td>
+                                        <td>${i.date}</td>
+                                        <td>${i.patientName}</td>
+                                        <td><b>${i.userId || 'admin'}</b></td>
+                                        <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; font-size:11px;">${i.paymentType || 'Cash'}</span></td>
+                                        <td style="color:#ef4444;">₹${i.totalDisc?.toFixed(2) || 0}</td>
+                                        <td style="color:#16a34a;"><b>₹${i.netPayable.toFixed(2)}</b></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            window.printCollectionReport = function() {
+                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
+                let printWin = window.open('', '_blank');
+                printWin.document.write(`
+                    <html>
+                    <head><title>Collection Report</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
+                    <body>
+                        <h2>${settings.shopName}</h2>
+                        <p>${settings.tagline}</p>
+                        <h3>COLLECTION REPORT (PAYMENT TYPE & USER WISE)</h3>
+                        ${document.getElementById('collectionPrintArea').innerHTML}
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+                printWin.print();
+            };
+        }
+
+        function renderSalesReturnModule(container) {
+            let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🔄 Sale Return Bill & Dedicated Printing</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Enter Invoice No *</label><input type="text" id="retInvNo" class="form-control" placeholder="AR25102601" onblur="autofetchInvoiceForReturn(this.value)"></div>
+                            <div class="form-group"><label>Sale Date (Auto-fetched)</label><input type="text" id="retDate" class="form-control" readonly></div>
+                            <div class="form-group"><label>Patient Name (Auto-fetched)</label><input type="text" id="retPatient" class="form-control" readonly></div>
+                            <div class="form-group"><label>Item Name (Auto-fetched)</label><input type="text" id="retItem" class="form-control" readonly></div>
+                            <div class="form-group"><label>Max Sold Qty</label><input type="number" id="retMaxQty" class="form-control" readonly></div>
+                            <div class="form-group"><label>Return Qty * (Locked Max)</label><input type="number" id="retQty" class="form-control" value="1"></div>
+                            <div class="form-group"><label>Return Reason</label><input type="text" id="retReason" class="form-control" placeholder="Unused / Expired"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleReturn()" style="width:100%;">Process Sale Return</button></div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Return Bills History</h3>
+                    <div style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr.No</th><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Returned Qty</th><th>Reason</th><th>Action</th></tr></thead>
+                            <tbody>
+                                ${returns.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No sale returns recorded.</td></tr>' :
+                                returns.map((r, idx) => `<tr><td>${idx + 1}</td><td><b>${r.returnId}</b></td><td>${r.invoiceNo}</td><td>${r.date}</td><td>${r.patient}</td><td>${r.item}</td><td style="color:#ef4444;"><b>${r.qty}</b></td><td>${r.reason}</td><td><button class="btn-primary" onclick="printSaleReturnBill(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Return Bill</button></td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            window.autofetchInvoiceForReturn = function(invNo) {
+                let found = invs.find(i => i.invoiceNo.toLowerCase() === invNo.toLowerCase());
+                if(found) {
+                    document.getElementById('retDate').value = found.date;
+                    document.getElementById('retPatient').value = found.patientName;
+                    document.getElementById('retItem').value = found.item;
+                    document.getElementById('retMaxQty').value = found.qty;
+                    alert('Invoice Auto-Fetched Successfully!');
+                } else {
+                    alert('Invoice No not found!');
+                }
+            };
+
+            window.saveSaleReturn = function() {
+                let invoiceNo = document.getElementById('retInvNo').value.trim();
+                let date = document.getElementById('retDate').value;
+                let patient = document.getElementById('retPatient').value;
+                let item = document.getElementById('retItem').value;
+                let maxQty = parseInt(document.getElementById('retMaxQty').value) || 0;
+                let qty = parseInt(document.getElementById('retQty').value) || 1;
+                let reason = document.getElementById('retReason').value.trim() || 'Return';
+
+                if(!invoiceNo || !item) { alert('Please enter a valid invoice number first!'); return; }
+                if(qty > maxQty) {
+                    alert('Error: Return quantity cannot exceed sold quantity (' + maxQty + ')!');
+                    return;
+                }
+
+                let returnId = 'RET-' + Math.floor(1000 + Math.random()*9000);
+                returns.unshift({ returnId, invoiceNo, date, patient, item, qty, reason });
+                localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
+                alert('Sale Return processed successfully!');
+                renderSalesReturnModule(container);
+            };
+
+            window.printSaleReturnBill = function(idx) {
+                let ret = returns[idx];
+                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
+                let printWin = window.open('', '_blank');
+                printWin.document.write(`
+                    <html><head><title>Sale Return Bill ${ret.returnId}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}h2{color:#ef4444;}</style></head>
+                    <body>
+                        <h2>${settings.shopName}</h2>
+                        <p>${settings.tagline}</p>
+                        <h3>SALE RETURN CREDIT NOTE / BILL</h3>
+                        <p style="text-align:left;"><b>Return ID:</b> ${ret.returnId} | <b>Original Invoice No:</b> ${ret.invoiceNo} | <b>Date:</b> ${ret.date}</p>
+                        <p style="text-align:left;"><b>Patient Name:</b> ${ret.patient}</p>
+                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
+                            <tr><th>Item Name</th><th>Returned Qty</th><th>Reason</th></tr>
+                            <tr><td><b>${ret.item}</b></td><td style="color:red;"><b>${ret.qty}</b></td><td>${ret.reason}</td></tr>
+                        </table>
+                        <br><p>Thank you for your business!</p>
+                    </body></html>
+                `);
+                printWin.document.close();
+                printWin.print();
+            };
+        }
+
         function renderMasterReportModule(container, reportType) {
             let title = reportType === 'sales' ? 'Sale Report (Master)' : reportType === 'sales_return' ? 'Sale Return Report (Master)' : 'Purchase Report (Master)';
             let dataList = reportType === 'sales' ? (JSON.parse(localStorage.getItem('erp_invoices')) || []) :
@@ -731,11 +1113,6 @@
                     </div>
 
                     <div id="reportPrintArea" style="max-height: 450px; overflow-y: auto;">
-                        <div class="print-header" style="display:none; text-align:center;">
-                            <h2 style="font-size:18px; text-transform:uppercase;" id="printAgencyHeader">A R PHARMA AND SURGICAL AGENCY</h2>
-                            <p style="font-size:12px; color:#16a34a;" id="printAgencySubHeader">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
-                            <h3 style="font-size:14px; margin-top:6px;" id="printReportTitle">MASTER REPORT: ${title}</h3>
-                        </div>
                         <table class="data-table">
                             <thead>
                                 ${reportType === 'sales' ? '<tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient & Dr.</th><th>Mobile</th><th>Item</th><th>Qty</th><th>Net Payable</th></tr>' :
@@ -784,37 +1161,64 @@
             `;
 
             window.printMasterReport = function(copyType) {
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
-                    shopName: 'A R PHARMA AND SURGICAL AGENCY',
-                    tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)'
-                };
+                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
                 let printWin = window.open('', '_blank');
                 printWin.document.write(`
                     <html>
-                    <head>
-                        <title>${copyType} - ${title}</title>
-                        <style>
-                            body { font-family: sans-serif; padding: 20px; color: #000; }
-                            .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-                            .copy-badge { float: right; font-size: 14px; border: 1px solid #000; padding: 4px 10px; font-weight: bold; }
-                            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-                            th, td { border: 1px solid #000; padding: 8px 10px; font-size: 12px; text-align: left; }
-                            th { background: #f1f5f9; }
-                        </style>
-                    </head>
+                    <head><title>${copyType} - ${title}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
                     <body>
-                        <div class="copy-badge">${copyType.toUpperCase()} COPY</div>
-                        <div class="header">
-                            <h2>${settings.shopName}</h2>
-                            <p>${settings.tagline}</p>
-                            <h3>${title.toUpperCase()}</h3>
-                        </div>
+                        <div style="float:right; border:1px solid #000; padding:4px 10px; font-weight:bold;">${copyType.toUpperCase()} COPY</div>
+                        <h2>${settings.shopName}</h2>
+                        <p>${settings.tagline}</p>
+                        <h3>${title.toUpperCase()}</h3>
                         ${document.getElementById('reportPrintArea').innerHTML}
                     </body>
                     </html>
                 `);
                 printWin.document.close();
                 printWin.print();
+            };
+        }
+
+        function renderPurchaseModule(container, activeSub) {
+            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            let subTitle = activeSub === 'purchase_order' ? 'Purchase Order' : activeSub === 'purchase_return' ? 'Purchase Return / Dr. Note' : 'Purchase Bill';
+
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛍️ Purchase Management - ${subTitle}</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Vendor Name *</label><input type="text" id="purVendor" class="form-control" placeholder="Supplier Name"></div>
+                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="purItem" class="form-control" placeholder="Item Name"></div>
+                            <div class="form-group"><label>Quantity</label><input type="number" id="purQty" class="form-control" value="10"></div>
+                            <div class="form-group"><label>Total Amount (₹) *</label><input type="number" id="purAmt" class="form-control" placeholder="5000"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generatePurchaseRecord('${activeSub}')" style="width:100%;">Save ${subTitle}</button></div>
+                        </div>
+                    </div>
+                    <div style="max-height: 450px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Sr.No</th><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
+                            <tbody>
+                                ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
+                                purchases.map((p, idx) => `<tr><td>${idx+1}</td><td><b>${p.poNo}</b></td><td>${p.date}</td><td>${p.vendor}</td><td>${p.item} (${p.qty})</td><td>${p.type}</td><td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            window.generatePurchaseRecord = function(pType) {
+                let vendor = document.getElementById('purVendor').value.trim();
+                let item = document.getElementById('purItem').value.trim();
+                let qty = parseInt(document.getElementById('purQty').value) || 1;
+                let amount = parseFloat(document.getElementById('purAmt').value) || 0;
+
+                if(!vendor || !item || amount <= 0) { alert('Vendor, Item and Amount required!'); return; }
+                let poNo = (pType.includes('order') ? 'PO-' : pType.includes('return') ? 'DR-' : 'PB-') + Math.floor(10000 + Math.random()*90000);
+                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
+                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
+                alert(subTitle + ' Saved Successfully!');
+                renderPurchaseModule(container, activeSub);
             };
         }
 
@@ -959,29 +1363,15 @@
                 renderBmeSubTab('quotation');
             };
             window.printBmeCustomReport = function() {
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
-                    shopName: 'A R PHARMA AND SURGICAL AGENCY',
-                    tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)'
-                };
+                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
                 let printWin = window.open('', '_blank');
                 printWin.document.write(`
                     <html>
-                    <head>
-                        <title>BME Stock Report</title>
-                        <style>
-                            body { font-family: sans-serif; padding: 20px; color: #000; text-align: center; }
-                            .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-                            table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
-                            th, td { border: 1px solid #000; padding: 8px 10px; font-size: 12px; }
-                            th { background: #f1f5f9; }
-                        </style>
-                    </head>
+                    <head><title>BME Stock Report</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}table{width:100%;border-collapse:collapse;margin-top:15px;text-align:left;}th,td{border:1px solid #000;padding:8px;font-size:12px;}th{background:#f1f5f9;}</style></head>
                     <body>
-                        <div class="header">
-                            <h2>${settings.shopName}</h2>
-                            <p>${settings.tagline}</p>
-                            <h3>BME DEPARTMENT-WISE STOCK REPORT</h3>
-                        </div>
+                        <h2>${settings.shopName}</h2>
+                        <p>${settings.tagline}</p>
+                        <h3>BME DEPARTMENT-WISE STOCK REPORT</h3>
                         ${document.querySelector('#bmeSubWorkspace table').outerHTML}
                     </body>
                     </html>
@@ -991,285 +1381,10 @@
             };
         }
 
-        function renderSalesInvoiceModule(container) {
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let todayStr = new Date().toISOString().split('T')[0];
-            let timeStr = new Date().toLocaleTimeString();
-
-            let d = new Date();
-            let dd = String(d.getDate()).padStart(2, '0');
-            let mm = String(d.getMonth() + 1).padStart(2, '0');
-            let yy = String(d.getFullYear()).slice(-2);
-            let dateCodeKey = dd + mm + yy;
-            
-            let dailyCounterKey = 'erp_counter_' + dateCodeKey;
-            let counter = parseInt(localStorage.getItem(dailyCounterKey)) || 1;
-            let generatedInvoiceNo = 'AR' + dateCodeKey + String(counter).padStart(2, '0');
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛒 Sale Bill & Invoice Generation</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Invoice No (Auto AR Format)</label>
-                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin') ? '' : 'readonly'} title="Admin can override invoice number">
-                            </div>
-                            <div class="form-group"><label>Patient Name * (Compulsory)</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Mobile No * (10 Digit Lock)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
-                            <div class="form-group"><label>Dr. Name *</label><input type="text" id="saleDr" class="form-control" placeholder="Dr. Name"></div>
-                            <div class="form-group"><label>Billing Date (Locked)</label><input type="date" id="saleDate" class="form-control" value="${todayStr}" readonly></div>
-                            <div class="form-group"><label>Billing Time (Locked)</label><input type="text" id="saleTime" class="form-control" value="${timeStr}" readonly></div>
-                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name"></div>
-                            <div class="form-group"><label>Batch</label><input type="text" id="saleBatch" class="form-control" value="B-2026"></div>
-                            <div class="form-group"><label>HSN Code</label><input type="text" id="saleHsn" class="form-control" value="3004"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="150"></div>
-                            <div class="form-group"><label>Sale Quantity</label><input type="number" id="saleQty" class="form-control" value="2"></div>
-                            <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="5"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleInvoice()" style="width:100%;">Create & Print Sale Bill</button></div>
-                        </div>
-                    </div>
-
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Bills & Invoices History</h3>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Invoice No</th><th>Date & Time</th><th>Patient & Dr.</th><th>Mobile</th><th>Item & Batch</th><th>Qty</th><th>Net Payable</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${invs.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No sale bills recorded.</td></tr>' :
-                                invs.map((i, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td><b>${i.invoiceNo}</b></td>
-                                        <td>${i.date} ${i.time || ''}</td>
-                                        <td>${i.patientName}<br><small>Dr. ${i.drName}</small></td>
-                                        <td>${i.mobile}</td>
-                                        <td>${i.item} (HSN: ${i.hsn || 'N/A'})<br><small>Batch: ${i.batch}</small></td>
-                                        <td><b>${i.qty}</b></td>
-                                        <td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td>
-                                        <td><button class="btn-primary" onclick="printSingleSaleInvoice(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Sale Bill</button></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            window.saveSaleInvoice = function() {
-                let customInvBox = document.getElementById('invNoDisplay').value.trim();
-                let patientName = document.getElementById('salePatient').value.trim();
-                let mobile = document.getElementById('saleMobile').value.trim();
-                let drName = document.getElementById('saleDr').value.trim();
-                let item = document.getElementById('saleItem').value.trim();
-                let batch = document.getElementById('saleBatch').value.trim();
-                let hsn = document.getElementById('saleHsn').value.trim();
-                let mrp = parseFloat(document.getElementById('saleMrp').value) || 0;
-                let qty = parseInt(document.getElementById('saleQty').value) || 1;
-                let disc = parseFloat(document.getElementById('saleDisc').value) || 0;
-
-                if(!patientName || !mobile || !drName || !item || mrp <= 0) {
-                    alert('Please fill Patient Name, 10 Digit Mobile, Dr. Name, Item and MRP!');
-                    return;
-                }
-                if(mobile.length !== 10 || isNaN(mobile)) {
-                    alert('Mobile number must be exactly 10 digits!');
-                    return;
-                }
-
-                let totalAmt = mrp * qty;
-                let netPayable = totalAmt - (totalAmt * disc / 100);
-                let invoiceNo = customInvBox || generatedInvoiceNo;
-
-                localStorage.setItem(dailyCounterKey, counter + 1);
-
-                invs.unshift({ invoiceNo, date: todayStr, time: timeStr, patientName, mobile, drName, item, batch, hsn, mrp, qty, disc, netPayable });
-                localStorage.setItem('erp_invoices', JSON.stringify(invs));
-
-                let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                let foundMed = meds.find(m => m.name.toLowerCase() === item.toLowerCase());
-                if(foundMed) { foundMed.stock = Math.max(0, (foundMed.stock || 0) - qty); }
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
-                alert('Sale Bill Created Successfully! Invoice No: ' + invoiceNo);
-                renderSalesInvoiceModule(container);
-            };
-
-            window.printSingleSaleInvoice = function(idx) {
-                let inv = invs[idx];
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html><head><title>Sale Bill ${inv.invoiceNo}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}h2{color:#16a34a;}.header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:15px;}</style></head>
-                    <body>
-                        <div class="header">
-                            <h2>${settings.shopName}</h2>
-                            <p>${settings.tagline}</p>
-                        </div>
-                        <h3>SALE BILL / TAX INVOICE</h3>
-                        <p style="text-align:left;"><b>Invoice No:</b> ${inv.invoiceNo} | <b>Date:</b> ${inv.date} ${inv.time || ''}</p>
-                        <p style="text-align:left;"><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
-                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
-                            <tr><th>Item Name</th><th>Batch</th><th>HSN</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>Net Payable</th></tr>
-                            <tr><td>${inv.item}</td><td>${inv.batch}</td><td>${inv.hsn}</td><td>₹${inv.mrp}</td><td>${inv.qty}</td><td>${inv.disc}%</td><td><b>₹${inv.netPayable.toFixed(2)}</b></td></tr>
-                        </table>
-                        <br><p>Thank you for your business!</p>
-                    </body></html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
-        }
-
-        function renderSalesReturnModule(container) {
-            let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🔄 Sale Return Bill & Dedicated Printing</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Enter Invoice No *</label><input type="text" id="retInvNo" class="form-control" placeholder="AR25102601" onblur="autofetchInvoiceForReturn(this.value)"></div>
-                            <div class="form-group"><label>Sale Date (Auto-fetched)</label><input type="text" id="retDate" class="form-control" readonly></div>
-                            <div class="form-group"><label>Patient Name (Auto-fetched)</label><input type="text" id="retPatient" class="form-control" readonly></div>
-                            <div class="form-group"><label>Item Name (Auto-fetched)</label><input type="text" id="retItem" class="form-control" readonly></div>
-                            <div class="form-group"><label>Max Sold Qty</label><input type="number" id="retMaxQty" class="form-control" readonly></div>
-                            <div class="form-group"><label>Return Qty * (Locked Max)</label><input type="number" id="retQty" class="form-control" value="1"></div>
-                            <div class="form-group"><label>Return Reason</label><input type="text" id="retReason" class="form-control" placeholder="Unused / Expired"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleReturn()" style="width:100%;">Process Sale Return</button></div>
-                        </div>
-                    </div>
-
-                    <h3 style="font-size:14px; margin-bottom:10px;">Sale Return Bills History</h3>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Return ID</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Item</th><th>Returned Qty</th><th>Reason</th><th>Action</th></tr></thead>
-                            <tbody>
-                                ${returns.length === 0 ? '<tr><td colspan="9" style="text-align:center;">No sale returns recorded.</td></tr>' :
-                                returns.map((r, idx) => `<tr><td>${idx + 1}</td><td><b>${r.returnId}</b></td><td>${r.invoiceNo}</td><td>${r.date}</td><td>${r.patient}</td><td>${r.item}</td><td style="color:#ef4444;"><b>${r.qty}</b></td><td>${r.reason}</td><td><button class="btn-primary" onclick="printSaleReturnBill(${idx})" style="padding:4px 10px; font-size:11px;">🖨️ Print Return Bill</button></td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            window.autofetchInvoiceForReturn = function(invNo) {
-                let found = invs.find(i => i.invoiceNo.toLowerCase() === invNo.toLowerCase());
-                if(found) {
-                    document.getElementById('retDate').value = found.date;
-                    document.getElementById('retPatient').value = found.patientName;
-                    document.getElementById('retItem').value = found.item;
-                    document.getElementById('retMaxQty').value = found.qty;
-                    alert('Invoice Auto-Fetched Successfully!');
-                } else {
-                    alert('Invoice No not found!');
-                }
-            };
-
-            window.saveSaleReturn = function() {
-                let invoiceNo = document.getElementById('retInvNo').value.trim();
-                let date = document.getElementById('retDate').value;
-                let patient = document.getElementById('retPatient').value;
-                let item = document.getElementById('retItem').value;
-                let maxQty = parseInt(document.getElementById('retMaxQty').value) || 0;
-                let qty = parseInt(document.getElementById('retQty').value) || 1;
-                let reason = document.getElementById('retReason').value.trim() || 'Return';
-
-                if(!invoiceNo || !item) { alert('Please enter a valid invoice number first!'); return; }
-                if(qty > maxQty) {
-                    alert('Error: Return quantity cannot exceed sold quantity (' + maxQty + ')!');
-                    return;
-                }
-
-                let returnId = 'RET-' + Math.floor(1000 + Math.random()*9000);
-                returns.unshift({ returnId, invoiceNo, date, patient, item, qty, reason });
-                localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
-                alert('Sale Return processed successfully!');
-                renderSalesReturnModule(container);
-            };
-
-            window.printSaleReturnBill = function(idx) {
-                let ret = returns[idx];
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <html><head><title>Sale Return Bill ${ret.returnId}</title><style>body{font-family:sans-serif;padding:20px;text-align:center;}h2{color:#ef4444;}.header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:15px;}</style></head>
-                    <body>
-                        <div class="header">
-                            <h2>${settings.shopName}</h2>
-                            <p>${settings.tagline}</p>
-                        </div>
-                        <h3>SALE RETURN CREDIT NOTE / BILL</h3>
-                        <p style="text-align:left;"><b>Return ID:</b> ${ret.returnId} | <b>Original Invoice No:</b> ${ret.invoiceNo} | <b>Date:</b> ${ret.date}</p>
-                        <p style="text-align:left;"><b>Patient Name:</b> ${ret.patient}</p>
-                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
-                            <tr><th>Item Name</th><th>Returned Qty</th><th>Reason</th></tr>
-                            <tr><td><b>${ret.item}</b></td><td style="color:red;"><b>${ret.qty}</b></td><td>${ret.reason}</td></tr>
-                        </table>
-                        <br><p>Thank you for your business!</p>
-                    </body></html>
-                `);
-                printWin.document.close();
-                printWin.print();
-            };
-        }
-
-        function renderSalesModule(container, activeSub) {
-            if(activeSub === 'sales_quotation') {
-                container.innerHTML = `<div class="light-card"><h2>Sale Quotation</h2><p>Quotation module active.</p></div>`;
-            } else if(activeSub === 'sales_proforma') {
-                container.innerHTML = `<div class="light-card"><h2>Proforma Invoice</h2><p>Proforma module active.</p></div>`;
-            } else if(activeSub === 'sales_order') {
-                container.innerHTML = `<div class="light-card"><h2>Sale Order</h2><p>Sale Order module active.</p></div>`;
-            }
-        }
-
-        function renderPurchaseModule(container, activeSub) {
-            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-            let subTitle = activeSub === 'purchase_order' ? 'Purchase Order' : activeSub === 'purchase_return' ? 'Purchase Return / Dr. Note' : 'Purchase Bill';
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛍️ Purchase Management - ${subTitle}</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Vendor Name *</label><input type="text" id="purVendor" class="form-control" placeholder="Supplier Name"></div>
-                            <div class="form-group"><label>Item / Medicine *</label><input type="text" id="purItem" class="form-control" placeholder="Item Name"></div>
-                            <div class="form-group"><label>Quantity</label><input type="number" id="purQty" class="form-control" value="10"></div>
-                            <div class="form-group"><label>Total Amount (₹) *</label><input type="number" id="purAmt" class="form-control" placeholder="5000"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generatePurchaseRecord('${activeSub}')" style="width:100%;">Save ${subTitle}</button></div>
-                        </div>
-                    </div>
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <table class="data-table">
-                            <thead><tr><th>Sr.No</th><th>Ref No</th><th>Date</th><th>Vendor</th><th>Item & Qty</th><th>Type</th><th>Amount</th></tr></thead>
-                            <tbody>
-                                ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
-                                purchases.map((p, idx) => `<tr><td>${idx+1}</td><td><b>${p.poNo}</b></td><td>${p.date}</td><td>${p.vendor}</td><td>${p.item} (${p.qty})</td><td>${p.type}</td><td style="color:#0284c7;">₹${p.amount.toFixed(2)}</td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-            window.generatePurchaseRecord = function(pType) {
-                let vendor = document.getElementById('purVendor').value.trim();
-                let item = document.getElementById('purItem').value.trim();
-                let qty = parseInt(document.getElementById('purQty').value) || 1;
-                let amount = parseFloat(document.getElementById('purAmt').value) || 0;
-
-                if(!vendor || !item || amount <= 0) { alert('Vendor, Item and Amount required!'); return; }
-                let poNo = (pType.includes('order') ? 'PO-' : pType.includes('return') ? 'DR-' : 'PB-') + Math.floor(10000 + Math.random()*90000);
-                purchases.unshift({ poNo, date: new Date().toLocaleDateString('en-GB'), vendor, item, qty, amount, type: subTitle });
-                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                alert(subTitle + ' Saved Successfully!');
-                renderPurchaseModule(container, activeSub);
-            };
-        }
-
         function renderAiModule(container) {
             container.innerHTML = `
                 <div class="light-card" style="max-width:800px; margin: 0 auto;">
-                    <h2>🤖 AR AI Assistant & Business Intelligence <span class="lucky-emoji">🍀</span></h2>
+                    <h2>🤖 AR AI Assistant & Business Intelligence <span style="font-size:18px;">🍀</span></h2>
                     <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Ask AI regarding your pharmacy inventory, BME audit, or purchase orders.</p>
                     <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:15px; height:320px; overflow-y:auto; margin-bottom:15px;" id="aiChatBox">
                         <div style="background:#e0e5ec; padding:10px 14px; border-radius:10px; margin-bottom:10px; font-size:13px;">
