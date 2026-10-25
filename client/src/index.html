@@ -10,7 +10,6 @@
 
         b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger, input, select { font-weight: 900 !important; font-size: 13px; }
         
-        /* AUTH OVERLAY */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #e0e5ec;
@@ -50,7 +49,6 @@
         .forgot-link { display: block; text-align: right; font-size: 12px; color: #0284c7; margin-top: -6px; margin-bottom: 14px; text-decoration: none; cursor: pointer; }
         .forgot-link:hover { text-decoration: underline; }
 
-        /* APP LAYOUT & SIDEBAR */
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f8fafc; }
         #sidebar-container {
             width: 270px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
@@ -103,14 +101,12 @@
         .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #0f172a; }
         .data-table th { color: #334155; font-size: 12px; text-transform: uppercase; background: #f1f5f9; }
 
-        /* CRM DASHBOARD POWER BI CARDS */
         .crm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
         .crm-box { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .crm-title { font-size: 11.5px; color: #64748b; text-transform: uppercase; font-weight: 900; }
         .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
-        /* PROFILE DROPDOWN MODAL AS REQUESTED */
         #userDropdownModal {
             display: none; position: absolute; right: 24px; top: 75px; width: 310px; background: #ffffff;
             border-radius: 14px; border: 1.5px solid #cbd5e1; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 99999; padding: 18px;
@@ -180,7 +176,7 @@
         </div>
     </div>
 
-    <!-- USER PROFILE MODAL (EXACTLY AS REQUESTED IMAGE) -->
+    <!-- USER PROFILE MODAL -->
     <div id="userDropdownModal">
         <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px;">
             <div style="width:38px; height:38px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900;" id="modalUserInitial">U</div>
@@ -262,10 +258,24 @@
     <script>
         let currentUser = null;
 
-        if (!localStorage.getItem('erp_users')) {
-            localStorage.setItem('erp_users', JSON.stringify([
-                { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
-            ]));
+        // Ensure default Super Admin user 'admin' is always active and protected
+        let defaultUsers = [
+            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin', status: 'Active' }
+        ];
+
+        let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
+        if (!storedUsers) {
+            localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
+        } else {
+            // Force ensure 'admin' is always Active and Super Admin
+            let adminIndex = storedUsers.findIndex(x => x.username === 'admin');
+            if (adminIndex !== -1) {
+                storedUsers[adminIndex].status = 'Active';
+                storedUsers[adminIndex].role = 'Super Admin';
+            } else {
+                storedUsers.unshift(defaultUsers[0]);
+            }
+            localStorage.setItem('erp_users', JSON.stringify(storedUsers));
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -274,7 +284,7 @@
             if (savedSession) {
                 try {
                     currentUser = JSON.parse(savedSession);
-                    if(currentUser.status !== 'Active') {
+                    if(currentUser.username !== 'admin' && currentUser.status !== 'Active') {
                         alert('Your account is currently Deactivated by Admin! Please contact Super Admin to activate.');
                         localStorage.removeItem('erp_active_session');
                         location.reload();
@@ -373,8 +383,8 @@
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
-                if (found.status !== 'Active') {
-                    alert('Access Denied! Your account status is Deactivated. Please ask Super Admin or Admin to activate your account.');
+                if (found.username !== 'admin' && found.status !== 'Active') {
+                    alert('Access Denied! Your account status is Deactivated. Please ask Super Admin to activate your account.');
                     return;
                 }
                 currentUser = found;
@@ -735,19 +745,21 @@
             container.innerHTML = `
                 <div class="light-card">
                     <h2>⚙️ Store Settings & User Status Management</h2>
-                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin / Admin can activate or deactivate user accounts here.</p>
+                    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Super Admin (admin) account is permanently protected and active. Other users can be managed here.</p>
                     <table class="data-table">
                         <thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
                             ${users.map((u, idx) => `
                                 <tr>
-                                    <td><b>${u.username}</b></td>
+                                    <td><b>${u.username}</b> ${u.username === 'admin' ? '👑 (Owner)' : ''}</td>
                                     <td>${u.role || 'Staff'}</td>
                                     <td><span style="padding:4px 10px; border-radius:6px; font-size:11px; background:${u.status === 'Active' ? '#dcfce7; color:#16a34a;' : '#fee2e2; color:#ef4444;'}">${u.status || 'Active'}</span></td>
                                     <td>
-                                        <button class="${u.status === 'Active' ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus(${idx})" style="padding:5px 12px; font-size:11px;">
-                                            ${u.status === 'Active' ? 'Deactivate' : 'Activate'}
-                                        </button>
+                                        ${u.username === 'admin' ? '<span style="color:#64748b; font-size:11px;">Protected Owner</span>' : `
+                                            <button class="${u.status === 'Active' ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus(${idx})" style="padding:5px 12px; font-size:11px;">
+                                                ${u.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                            </button>
+                                        `}
                                     </td>
                                 </tr>
                             `).join('')}
@@ -756,6 +768,10 @@
                 </div>
             `;
             window.toggleUserStatus = function(idx) {
+                if (users[idx].username === 'admin') {
+                    alert('Super Admin account cannot be deactivated!');
+                    return;
+                }
                 users[idx].status = users[idx].status === 'Active' ? 'Deactivated' : 'Active';
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 alert('User status updated successfully!');
