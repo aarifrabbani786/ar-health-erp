@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.R. ERP BILLING SOFTWARE - Enterprise Medical Suite</title>
+    <title>A.R. ERP BILLING SOFTWARE - Modular Medical Suite</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 700; }
         body { background: #f8fafc; color: #0f172a; min-height: 100vh; overflow-x: hidden; }
 
-        /* BOLD TYPOGRAPHY & FORM STYLING */
+        /* BOLD TYPOGRAPHY */
         b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger { font-weight: 900 !important; }
         
-        /* LUXURY LOGIN OVERLAY WITH ENQUIRY FORM */
+        /* LOGIN & ENQUIRY MODULE */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(2,132,199,0.90) 100%),
@@ -20,35 +20,27 @@
         }
         .luxury-login-card {
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(30px); padding: 35px; border-radius: 28px; width: 100%; max-width: 480px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.3); border: 2px solid rgba(56, 189, 248, 0.4);
-            animation: slideInLogin 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes slideInLogin {
-            from { opacity: 0; transform: translateX(-90px); }
-            to { opacity: 1; transform: translateX(0); }
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5); border: 2px solid rgba(56, 189, 248, 0.4);
         }
         .luxury-login-card h2 { font-size: 22px; color: #0f172a; margin-bottom: 4px; text-align: center; }
         .luxury-login-card .subtitle { font-size: 12.5px; color: #0284c7; text-align: center; margin-bottom: 20px; }
         
         .input-group-lux { position: relative; margin-bottom: 14px; }
         .input-group-lux label { display: block; font-size: 11px; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
-        .input-group-lux input, .input-group-lux textarea {
-            width: 100%; padding: 11px 14px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 13px; color: #0f172a; outline: none; transition: all 0.25s; font-weight: 800;
+        .input-group-lux input {
+            width: 100%; padding: 11px 14px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 13px; color: #0f172a; outline: none; font-weight: 800;
         }
-        .input-group-lux input:focus, .input-group-lux textarea:focus {
-            border-color: #0284c7; background: #ffffff; box-shadow: 0 0 15px rgba(2, 132, 199, 0.25);
-        }
+        .input-group-lux input:focus { border-color: #0284c7; background: #ffffff; box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); }
         .eye-toggle-btn { position: absolute; right: 14px; top: 30px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
         
         .enquiry-card-section { margin-top: 20px; padding-top: 18px; border-top: 2px dashed #cbd5e1; }
         .enquiry-card-section h3 { font-size: 13.5px; color: #0284c7; margin-bottom: 12px; text-align: center; }
 
-        /* APP LAYOUT & SIDEBAR */
+        /* APP LAYOUT & SIDEBAR MODULE */
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f1f5f9; }
         #sidebar-container {
             width: 270px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
-            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; height: 100vh;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1); overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;
         }
         .sidebar-brand { padding: 18px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
         .brand-border-logo {
@@ -74,14 +66,13 @@
 
         .main-content { flex: 1; padding: 16px; overflow-y: auto; background: #ffffff; height: 100vh; display: flex; flex-direction: column; }
         
-        /* PREMIUM HEADER BANNER */
+        /* HEADER MODULE */
         .top-banner {
             background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 14px 24px; border-radius: 16px; border: 1.5px solid #bbf7d0;
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 6px 20px rgba(22, 163, 74, 0.08);
-            position: relative; z-index: 1000;
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 17px; color: #0f172a; letter-spacing: 0.6px; text-transform: uppercase; }
+        .centered-agency-details h1 { font-size: 17px; color: #0f172a; text-transform: uppercase; }
         .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; }
 
         .light-card { 
@@ -93,16 +84,16 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
         .form-group { margin-bottom: 6px; }
         .form-group label { display: block; font-size: 10.5px; color: #475569; margin-bottom: 3px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; transition: all 0.2s; font-weight: 800; }
+        .form-control { width: 100%; padding: 9px 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; font-size: 12px; outline: none; font-weight: 800; }
         .form-control:focus { border-color: #16a34a; background: #fff; box-shadow: 0 0 10px rgba(22, 163, 74, 0.2); }
         
-        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
-        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; }
         .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
 
         .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
         .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; font-weight: 800; }
-        .data-table th { color: #475569; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; position: sticky; top: 0; }
+        .data-table th { color: #475569; font-size: 10.5px; text-transform: uppercase; background: #f1f5f9; }
         .data-table tr:hover td { background: #f0fdf4; }
 
         .user-dropdown-menu {
@@ -115,54 +106,42 @@
 </head>
 <body>
 
-    <!-- LUXURY LOGIN & ENQUIRY OVERLAY -->
+    <!-- AUTHENTICATION & ENQUIRY OVERLAY MODULE -->
     <div id="auth-overlay" style="display: none;">
         <div class="luxury-login-card">
             <h2>A.R. ERP BILLING SOFTWARE</h2>
             <div class="subtitle">Medical Enterprise Management Suite</div>
             
-            <!-- LOGIN SECTION -->
             <div class="input-group-lux">
                 <label>USER ID *</label>
-                <input type="text" id="loginUser" class="nav-focusable" placeholder="Enter USER ID (e.g. admin)" autofocus>
+                <input type="text" id="loginUser" placeholder="Enter USER ID (admin)" autofocus>
             </div>
 
             <div class="input-group-lux">
                 <label>Password *</label>
-                <input type="password" id="loginPass" class="nav-focusable" placeholder="••••••••">
+                <input type="password" id="loginPass" placeholder="••••••••">
                 <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
             </div>
 
-            <button onclick="handleLogin()" class="btn-success nav-focusable" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 5px;">🔒 Secure Login</button>
+            <button onclick="handleLogin()" class="btn-success" style="width: 100%; padding: 12px; font-size: 13.5px; margin-top: 5px;">🔒 Secure Login</button>
             
-            <!-- ENQUIRY REQUEST FORM -->
             <div class="enquiry-card-section">
                 <h3>📝 Submit License / Support Enquiry Request</h3>
-                <div class="input-group-lux">
-                    <label>Owner Name *</label>
-                    <input type="text" id="eqOwner" placeholder="Enter Owner Name">
-                </div>
-                <div class="input-group-lux">
-                    <label>Shop / Agency Name *</label>
-                    <input type="text" id="eqShop" placeholder="Enter Shop Name">
-                </div>
+                <div class="input-group-lux"><label>Owner Name *</label><input type="text" id="eqOwner" placeholder="Enter Owner Name"></div>
+                <div class="input-group-lux"><label>Shop / Agency Name *</label><input type="text" id="eqShop" placeholder="Enter Shop Name"></div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div class="input-group-lux">
-                        <label>Contact Mobile *</label>
-                        <input type="text" id="eqPhone" placeholder="Mobile Number">
-                    </div>
-                    <div class="input-group-lux">
-                        <label>City / Location *</label>
-                        <input type="text" id="eqLoc" placeholder="Location">
-                    </div>
+                    <div class="input-group-lux"><label>Contact Mobile *</label><input type="text" id="eqPhone" placeholder="Mobile Number"></div>
+                    <div class="input-group-lux"><label>City / Location *</label><input type="text" id="eqLoc" placeholder="Location"></div>
                 </div>
                 <button onclick="submitEnquiryForm()" class="btn-primary" style="width: 100%; padding: 10px; font-size: 12.5px;">📩 Submit Enquiry Request</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT -->
+    <!-- MAIN APP CONTAINER -->
     <div class="app-layout" id="main-app-container">
+        
+        <!-- SIDEBAR NAVIGATION MODULE -->
         <div id="sidebar-container">
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
@@ -171,56 +150,53 @@
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li><a class="menu-link nav-focusable" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('ar_ai')" id="nav-ar_ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:6px; margin-left:auto;">NEW</span></a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('audit')" id="nav-items"><span>📦</span> Items <span style="margin-left:auto;">+</span></a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors <span style="margin-left:auto;">+</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
+                <li><a class="menu-link" onclick="loadModule('ar_ai')" id="nav-ar_ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:6px; margin-left:auto;">NEW</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('audit')" id="nav-items"><span>📦</span> Items <span style="margin-left:auto;">+</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors <span style="margin-left:auto;">+</span></a></li>
                 
-                <!-- Sales Dropdown -->
                 <li>
-                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('salesSub')"><span>🛒</span> Sales <span style="margin-left:auto;">▼</span></button>
+                    <button class="menu-dropdown-toggle" onclick="toggleSubmenu('salesSub')"><span>🛒</span> Sales <span style="margin-left:auto;">▼</span></button>
                     <ul class="submenu-list" id="salesSub">
-                        <li><a onclick="loadModule('sales')" class="nav-focusable">Sale Invoices (POS)</a></li>
-                        <li><a onclick="loadModule('reports')" class="nav-focusable">Sale Quotation</a></li>
-                        <li><a onclick="loadModule('reports')" class="nav-focusable">Proforma Invoice</a></li>
-                        <li><a onclick="loadModule('reports')" class="nav-focusable">Sale Order</a></li>
-                        <li><a onclick="loadModule('returns')" class="nav-focusable">Sale Return / Cr. Note</a></li>
+                        <li><a onclick="loadModule('sales')">Sale Invoices (POS)</a></li>
+                        <li><a onclick="loadModule('reports')">Sale Quotation</a></li>
+                        <li><a onclick="loadModule('reports')">Proforma Invoice</a></li>
+                        <li><a onclick="loadModule('reports')">Sale Order</a></li>
+                        <li><a onclick="loadModule('returns')">Sale Return / Cr. Note</a></li>
                     </ul>
                 </li>
 
-                <li><a class="menu-link nav-focusable" onclick="loadModule('sales')" id="nav-pos"><span>💻</span> POS Counter</a></li>
+                <li><a class="menu-link" onclick="loadModule('sales')" id="nav-pos"><span>💻</span> POS Counter</a></li>
 
-                <!-- Purchase Dropdown -->
                 <li>
-                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('purchaseSub')"><span>🛍️</span> Purchase <span style="margin-left:auto;">▼</span></button>
+                    <button class="menu-dropdown-toggle" onclick="toggleSubmenu('purchaseSub')"><span>🛍️</span> Purchase <span style="margin-left:auto;">▼</span></button>
                     <ul class="submenu-list" id="purchaseSub">
-                        <li><a onclick="loadModule('purchase')" class="nav-focusable">Purchase Bill</a></li>
-                        <li><a onclick="loadModule('purchase')" class="nav-focusable">Purchase Order</a></li>
-                        <li><a onclick="loadModule('purchase_return')" class="nav-focusable">Purchase Return / Dr. Note</a></li>
+                        <li><a onclick="loadModule('purchase')">Purchase Bill</a></li>
+                        <li><a onclick="loadModule('purchase')">Purchase Order</a></li>
+                        <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
                     </ul>
                 </li>
 
-                <li><a class="menu-link nav-focusable" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses <span style="margin-left:auto;">+</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses <span style="margin-left:auto;">+</span></a></li>
                 
-                <!-- Fund Flow Dropdown -->
                 <li>
-                    <button class="menu-dropdown-toggle nav-focusable" onclick="toggleSubmenu('fundSub')"><span>📈</span> Fund Flow <span style="margin-left:auto;">▼</span></button>
+                    <button class="menu-dropdown-toggle" onclick="toggleSubmenu('fundSub')"><span>📈</span> Fund Flow <span style="margin-left:auto;">▼</span></button>
                     <ul class="submenu-list" id="fundSub">
-                        <li><a onclick="loadModule('udhar')" class="nav-focusable">Payment In</a></li>
-                        <li><a onclick="loadModule('udhar')" class="nav-focusable">Payment Out</a></li>
+                        <li><a onclick="loadModule('udhar')">Payment In</a></li>
+                        <li><a onclick="loadModule('udhar')">Payment Out</a></li>
                     </ul>
                 </li>
 
-                <li><a class="menu-link nav-focusable" onclick="loadModule('reports')" id="nav-reports"><span>📈</span> Reports & Analysis</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('enquiries')" id="nav-enquiries"><span>📋</span> Enquiries Received</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('backup')" id="nav-backup"><span>💾</span> Backup & Restore</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('referral')" id="nav-referral"><span>🎁</span> Referral & Offers</a></li>
-                <li><a class="menu-link nav-focusable" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings</a></li>
+                <li><a class="menu-link" onclick="loadModule('reports')" id="nav-reports"><span>📈</span> Reports & Analysis</a></li>
+                <li><a class="menu-link" onclick="loadModule('enquiries')" id="nav-enquiries"><span>📋</span> Enquiries Received</a></li>
+                <li><a class="menu-link" onclick="loadModule('backup')" id="nav-backup"><span>💾</span> Backup & Restore</a></li>
+                <li><a class="menu-link" onclick="loadModule('referral')" id="nav-referral"><span>🎁</span> Referral & Offers</a></li>
+                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> Settings</a></li>
             </ul>
         </div>
 
         <div class="main-content">
-            <!-- PREMIUM HEADER BANNER -->
+            <!-- TOP BANNER MODULE -->
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
                     <img id="headerLogoImg" src="" style="height:38px; display:none; border-radius:8px; object-fit:contain;">
@@ -233,17 +209,17 @@
                 </div>
 
                 <div style="position:relative; width: 180px; text-align: right;">
-                    <div style="background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; padding: 7px 16px; border-radius: 20px; font-size: 11.5px; cursor:pointer; display:inline-block; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);" id="logged-user-badge" onclick="toggleUserDropdown()" class="nav-focusable">● Active: User ▼</div>
+                    <div style="background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; padding: 7px 16px; border-radius: 20px; font-size: 11.5px; cursor:pointer; display:inline-block;" id="logged-user-badge" onclick="toggleUserDropdown()">● Active: User ▼</div>
                     
                     <div class="user-dropdown-menu" id="userMenuDropdown">
                         <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; font-size:11px; color:#64748b;" id="dropdownUserRole">Role: Staff</div>
-                        <a onclick="openChangePassModal()" class="nav-focusable">🔑 Change Password</a>
-                        <a onclick="logoutUser()" style="color:#ef4444;" class="nav-focusable">🚪 Side Logout</a>
+                        <a onclick="openChangePassModal()">🔑 Change Password</a>
+                        <a onclick="logoutUser()" style="color:#ef4444;">🚪 Side Logout</a>
                     </div>
                 </div>
             </div>
 
-            <!-- DYNAMIC WORKSPACE -->
+            <!-- SEPARATE MODULAR WORKSPACE CONTAINER -->
             <div id="module-workspace" style="flex:1; overflow-y:auto;"></div>
         </div>
     </div>
@@ -252,11 +228,11 @@
     <div id="changePassModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999999; justify-content:center; align-items:center;">
         <div style="background:#fff; border:1.5px solid #cbd5e1; padding:25px; border-radius:18px; width:100%; max-width:400px; box-shadow: 0 20px 25px rgba(0,0,0,0.1);">
             <h3 style="margin-bottom:15px; color:#0f172a;">🔑 Change Account Password</h3>
-            <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control nav-focusable"></div>
-            <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control nav-focusable"></div>
+            <div class="form-group"><label>Old Password</label><input type="password" id="oldPass" class="form-control"></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="newPass" class="form-control"></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-                <button class="btn-danger nav-focusable" onclick="closeChangePassModal()">Cancel</button>
-                <button class="btn-primary nav-focusable" onclick="saveNewPassword()">Update Password</button>
+                <button class="btn-danger" onclick="closeChangePassModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveNewPassword()">Update Password</button>
             </div>
         </div>
     </div>
@@ -298,13 +274,11 @@
 
                     let activeTab = localStorage.getItem('erp_active_module') || 'dashboard';
                     loadModule(activeTab);
-                    setupKeyboardNavigation();
                     return;
                 } catch(e) {}
             }
             document.getElementById('auth-overlay').style.display = 'flex';
             document.getElementById('main-app-container').style.display = 'flex';
-            setupKeyboardNavigation();
         });
 
         function applyBrandingSettings() {
@@ -315,19 +289,11 @@
                 let imgLogo = document.getElementById('headerLogoImg');
 
                 if(bName) bName.innerText = s.agencyName;
-                
                 let subStr = 'Chairman: ' + s.chairman;
-                if(s.showDlGst) {
-                    subStr += ' | DL: ' + (s.dlNo || 'UP-2026-MED-000000') + ' | GSTIN: ' + (s.gstin || '09AAAAA0000A1Z5');
-                }
+                if(s.showDlGst) { subStr += ' | DL: ' + s.dlNo + ' | GSTIN: ' + s.gstin; }
                 if(bSub) bSub.innerText = subStr;
-                
-                if(s.logoUrl && imgLogo) {
-                    imgLogo.src = s.logoUrl;
-                    imgLogo.style.display = 'inline-block';
-                } else if(imgLogo) {
-                    imgLogo.style.display = 'none';
-                }
+                if(s.logoUrl && imgLogo) { imgLogo.src = s.logoUrl; imgLogo.style.display = 'inline-block'; }
+                else if(imgLogo) { imgLogo.style.display = 'none'; }
             }
         }
 
@@ -365,7 +331,7 @@
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
                 location.reload();
             } else { 
-                alert('Invalid Login Credentials!'); 
+                alert('Invalid Login Credentials! Use admin / admin123'); 
                 document.getElementById('loginPass').value = '';
                 document.getElementById('loginUser').focus();
             }
@@ -377,20 +343,10 @@
             let phone = document.getElementById('eqPhone').value.trim();
             let location = document.getElementById('eqLoc').value.trim();
 
-            if(!ownerName || !shopName || !phone) {
-                alert('Owner Name, Shop Name and Contact Phone required!');
-                return;
-            }
+            if(!ownerName || !shopName || !phone) { alert('Owner Name, Shop Name and Contact Phone required!'); return; }
 
             let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
-            enquiries.unshift({
-                id: Date.now(),
-                date: new Date().toLocaleString('en-GB'),
-                ownerName,
-                shopName,
-                phone,
-                location
-            });
+            enquiries.unshift({ id: Date.now(), date: new Date().toLocaleString('en-GB'), ownerName, shopName, phone, location });
             localStorage.setItem('erp_enquiries', JSON.stringify(enquiries));
 
             alert('Enquiry Request Submitted Successfully!');
@@ -405,19 +361,7 @@
             location.reload();
         }
 
-        function setupKeyboardNavigation() {
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    let focusables = Array.from(document.querySelectorAll('input, select, button, .nav-focusable'));
-                    let index = focusables.indexOf(document.activeElement);
-                    if (index > -1 && index + 1 < focusables.length) {
-                        e.preventDefault();
-                        focusables[index + 1].focus();
-                    }
-                }
-            });
-        }
-
+        /* --- SEPARATE INDEPENDENT MODULE ROUTER --- */
         function loadModule(m) {
             localStorage.setItem('erp_active_module', m);
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -427,27 +371,23 @@
             const workspace = document.getElementById('module-workspace');
             workspace.innerHTML = ""; 
 
-            if (m === 'sales') renderSales(workspace);
-            else if (m === 'ar_ai') renderARAI(workspace);
-            else if (m === 'returns') renderReturns(workspace);
-            else if (m === 'reports') renderReports(workspace);
-            else if (m === 'dashboard') renderDashboard(workspace);
-            else if (m === 'audit') renderStockAudit(workspace);
-            else if (m === 'purchase') renderPurchase(workspace);
-            else if (m === 'purchase_return') renderPurchaseReturn(workspace);
-            else if (m === 'parties') renderParties(workspace);
-            else if (m === 'udhar') renderUdhar(workspace);
-            else if (m === 'referral') renderReferralOffers(workspace);
-            else if (m === 'expenses') renderExpenses(workspace);
-            else if (m === 'enquiries') renderEnquiriesModule(workspace);
-            else if (m === 'settings') renderSettingsModule(workspace);
+            if (m === 'dashboard') renderDashboardModule(workspace);
+            else if (m === 'sales') renderSalesModule(workspace);
+            else if (m === 'audit') renderStockAuditModule(workspace);
+            else if (m === 'parties') renderPartiesModule(workspace);
+            else if (m === 'expenses') renderExpensesModule(workspace);
+            else if (m === 'purchase') renderPurchaseModule(workspace);
+            else if (m === 'udhar') renderUdharModule(workspace);
+            else if (m === 'enquiries') renderEnquiriesDirectoryModule(workspace);
+            else if (m === 'referral') renderReferralOffersModule(workspace);
             else if (m === 'backup') renderBackupModule(workspace);
-            else renderDashboard(workspace);
-            setupKeyboardNavigation();
+            else if (m === 'settings') renderSettingsModule(workspace);
+            else if (m === 'reports') renderReportsModule(workspace);
+            else renderDashboardModule(workspace);
         }
 
-        /* --- 1. DASHBOARD --- */
-        function renderDashboard(container) {
+        /* --- 1. SEPARATE DASHBOARD MODULE --- */
+        function renderDashboardModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let returns = JSON.parse(localStorage.getItem('erp_returns_list')) || [];
             let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
@@ -455,90 +395,90 @@
             let totalReturnAmt = returns.reduce((a, b) => a + (b.refundTotal || 0), 0);
             let netRevenue = totalGrossSales - totalReturnAmt;
 
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📊 Business Analytics Dashboard - A.R. ERP BILLING SOFTWARE</h2>',
-                '<div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">',
-                '<div style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#0284c7;">TOTAL GROSS SALES</div>',
-                '<div style="font-size:24px; color:#0f172a; margin-top:6px;">₹' + totalGrossSales.toFixed(2) + '</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Invoices: ' + invs.length + '</div>',
-                '</div>',
-                '<div style="background:#fef2f2; border:1.5px solid #fecaca; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#ef4444;">RETURNS DEDUCTED</div>',
-                '<div style="font-size:24px; color:#ef4444; margin-top:6px;">- ₹' + totalReturnAmt.toFixed(2) + '</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Returns Count: ' + returns.length + '</div>',
-                '</div>',
-                '<div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#16a34a;">NET REVENUE</div>',
-                '<div style="font-size:24px; color:#16a34a; margin-top:6px;">₹' + netRevenue.toFixed(2) + '</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Realtime Data</div>',
-                '</div>',
-                '<div style="background:#faf5ff; border:1.5px solid #e9d5ff; padding:18px; border-radius:14px;">',
-                '<div style="font-size:11.5px; color:#9333ea;">ENQUIRIES RECEIVED</div>',
-                '<div style="font-size:24px; color:#0f172a; margin-top:6px;">' + enquiries.length + '</div>',
-                '<div style="font-size:10.5px; color:#64748b; margin-top:3px;">Pending Leads</div>',
-                '</div>',
-                '</div>',
-                '</div>'
-            ].join('');
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📊 Business Analytics Dashboard</h2>
+                    <div class="form-grid" style="margin-top:15px; grid-template-columns: repeat(4, 1fr);">
+                        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#0284c7;">TOTAL GROSS SALES</div>
+                            <div style="font-size:24px; color:#0f172a; margin-top:6px;">₹${totalGrossSales.toFixed(2)}</div>
+                        </div>
+                        <div style="background:#fef2f2; border:1.5px solid #fecaca; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#ef4444;">RETURNS DEDUCTED</div>
+                            <div style="font-size:24px; color:#ef4444; margin-top:6px;">- ₹${totalReturnAmt.toFixed(2)}</div>
+                        </div>
+                        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#16a34a;">NET REVENUE</div>
+                            <div style="font-size:24px; color:#16a34a; margin-top:6px;">₹${netRevenue.toFixed(2)}</div>
+                        </div>
+                        <div style="background:#faf5ff; border:1.5px solid #e9d5ff; padding:18px; border-radius:14px;">
+                            <div style="font-size:11.5px; color:#9333ea;">ENQUIRIES RECEIVED</div>
+                            <div style="font-size:24px; color:#0f172a; margin-top:6px;">${enquiries.length}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        /* --- 2. ENQUIRIES DIRECTORY MODULE --- */
-        function renderEnquiriesModule(container) {
+        /* --- 2. SEPARATE ENQUIRIES DIRECTORY MODULE --- */
+        function renderEnquiriesDirectoryModule(container) {
             let enquiries = JSON.parse(localStorage.getItem('erp_enquiries')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📋 Enquiries Received & Leads Directory</h2>',
-                '<table class="data-table"><thead><tr><th>Date & Time</th><th>Owner Name</th><th>Shop / Agency</th><th>Contact Phone</th><th>Location</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                enquiries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiry requests received yet.</td></tr>' :
-                enquiries.map((eq, idx) => '<tr>' +
-                    '<td>' + eq.date + '</td>' +
-                    '<td><b>' + eq.ownerName + '</b></td>' +
-                    '<td>' + eq.shopName + '</td>' +
-                    '<td><a href="tel:' + eq.phone + '" style="color:#0284c7;">' + eq.phone + '</a></td>' +
-                    '<td>' + eq.location + '</td>' +
-                    '<td><button class="btn-danger nav-focusable" onclick="deleteEnquiryRecord(' + idx + ')">Delete</button></td>' +
-                '</tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📋 Enquiries Received & Leads Directory</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Date & Time</th><th>Owner Name</th><th>Shop / Agency</th><th>Contact Phone</th><th>Location</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${enquiries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiry requests received yet.</td></tr>' :
+                            enquiries.map((eq, idx) => `
+                                <tr>
+                                    <td>${eq.date}</td>
+                                    <td><b>${eq.ownerName}</b></td>
+                                    <td>${eq.shopName}</td>
+                                    <td><a href="tel:${eq.phone}" style="color:#0284c7;">${eq.phone}</a></td>
+                                    <td>${eq.location}</td>
+                                    <td><button class="btn-danger" onclick="deleteEnquiryRecord(${idx})">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.deleteEnquiryRecord = function(idx) {
                 enquiries.splice(idx, 1);
                 localStorage.setItem('erp_enquiries', JSON.stringify(enquiries));
-                renderEnquiriesModule(container);
+                renderEnquiriesDirectoryModule(container);
             };
         }
 
-        /* --- 3. POS SALES MODULE --- */
-        function renderSales(container) {
+        /* --- 3. SEPARATE SALES POS MODULE --- */
+        function renderSalesModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>🛒 POS Counter Billing System</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Doctor Name</label><input type="text" id="posDoc" class="form-control nav-focusable" value="Self"></div>',
-                '<div class="form-group"><label>Medicine Name *</label><input type="text" id="posItem" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control nav-focusable" value="B-101"></div>',
-                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control nav-focusable" value="1"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="generateInvoice()" style="width:100%;">Create Invoice</button></div>',
-                '</div>',
-                '</div>',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:8px;">Recent Invoices Log</h3>',
-                '<table class="data-table"><thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>',
-                '<tbody>',
-                invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
-                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td>' + (i.item || 'Medicine') + '</td><td>' + (i.batch || '-') + '</td><td>' + (i.qty || 1) + '</td><td style="color:#16a34a;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛒 POS Counter Billing System</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="posPatient" class="form-control"></div>
+                            <div class="form-group"><label>Mobile No</label><input type="text" id="posMobile" class="form-control"></div>
+                            <div class="form-group"><label>Doctor Name</label><input type="text" id="posDoc" class="form-control" value="Self"></div>
+                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="posItem" class="form-control"></div>
+                            <div class="form-group"><label>Batch</label><input type="text" id="posBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="posMrp" class="form-control"></div>
+                            <div class="form-group"><label>Qty</label><input type="number" id="posQty" class="form-control" value="1"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="generateInvoice()" style="width:100%;">Create Invoice</button></div>
+                        </div>
+                    </div>
+                    <h3 style="font-size:13px; margin-bottom:8px;">Recent Invoices Log</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Inv No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${invs.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No billing records found.</td></tr>' :
+                            invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>${i.batch}</td><td>${i.qty}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.generateInvoice = function() {
                 let patientName = document.getElementById('posPatient').value.trim();
                 let mobile = document.getElementById('posMobile').value.trim();
@@ -554,35 +494,36 @@
                 invs.unshift({ invoiceNo, date: new Date().toLocaleDateString('en-GB'), patientName, mobile, item, batch, qty, netPayable });
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
                 alert('Invoice Created Successfully: ' + invoiceNo);
-                renderSales(container);
+                renderSalesModule(container);
             };
         }
 
-        /* --- 4. ITEMS & INVENTORY MODULE --- */
-        function renderStockAudit(container) {
+        /* --- 4. SEPARATE ITEMS & INVENTORY MODULE --- */
+        function renderStockAuditModule(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📦 Items Master & Stock Inventory</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Add New Medicine Stock Item</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control nav-focusable" value="B-101"></div>',
-                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="itPrice" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Opening Stock</label><input type="number" id="itStock" class="form-control nav-focusable" value="100"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addInventoryItem()" style="width:100%;">Add Item</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                meds.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No stock items added yet.</td></tr>' :
-                meds.map((m, idx) => '<tr><td><b>' + m.name + '</b></td><td>' + m.batch + '</td><td>₹' + m.mrp + '</td><td>₹' + m.price + '</td><td><b>' + m.stock + '</b></td><td><button class="btn-danger nav-focusable" onclick="deleteStockItem(' + idx + ')">Delete</button></td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📦 Items Master & Stock Inventory</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#0284c7; font-size:13px; margin-bottom:10px;">+ Add New Medicine Stock Item</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="itName" class="form-control"></div>
+                            <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="itMrp" class="form-control"></div>
+                            <div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="itPrice" class="form-control"></div>
+                            <div class="form-group"><label>Opening Stock</label><input type="number" id="itStock" class="form-control" value="100"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addInventoryItem()" style="width:100%;">Add Item</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Medicine Name</th><th>Batch</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${meds.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No stock items added yet.</td></tr>' :
+                            meds.map((m, idx) => `<tr><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td>₹${m.price}</td><td><b>${m.stock}</b></td><td><button class="btn-danger" onclick="deleteStockItem(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.addInventoryItem = function() {
                 let name = document.getElementById('itName').value.trim();
                 let batch = document.getElementById('itBatch').value.trim();
@@ -593,132 +534,124 @@
                 if(!name || mrp <= 0) { alert('Medicine Name and MRP required!'); return; }
                 meds.push({ name, batch, mrp, price, stock });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockAudit(container);
+                renderStockAuditModule(container);
             };
-
             window.deleteStockItem = function(idx) {
                 meds.splice(idx, 1);
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockAudit(container);
+                renderStockAuditModule(container);
             };
         }
 
-        /* --- 5. CUSTOMERS & VENDORS --- */
-        function renderParties(container) {
+        /* --- 5. SEPARATE CUSTOMERS & VENDORS MODULE --- */
+        function renderPartiesModule(container) {
             let parties = JSON.parse(localStorage.getItem('erp_vendors')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>👥 Customers & Vendor Ledgers</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Register New Party / Vendor</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Party / Vendor Name *</label><input type="text" id="ptName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>GSTIN</label><input type="text" id="ptGst" class="form-control nav-focusable" value="09AAAAA0000A1Z5"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addPartyRecord()" style="width:100%;">Save Party</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Party Name</th><th>Phone</th><th>GSTIN</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                parties.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No parties registered.</td></tr>' :
-                parties.map((p, idx) => '<tr><td><b>' + p.name + '</b></td><td>' + p.phone + '</td><td>' + p.gstin + '</td><td><button class="btn-danger nav-focusable" onclick="deletePartyRecord(' + idx + ')">Delete</button></td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>👥 Customers & Vendor Ledgers</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Register New Party / Vendor</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Party Name *</label><input type="text" id="ptName" class="form-control"></div>
+                            <div class="form-group"><label>Mobile Phone</label><input type="text" id="ptPhone" class="form-control"></div>
+                            <div class="form-group"><label>GSTIN</label><input type="text" id="ptGst" class="form-control" value="09AAAAA0000A1Z5"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addPartyRecord()" style="width:100%;">Save Party</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Party Name</th><th>Phone</th><th>GSTIN</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${parties.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No parties registered.</td></tr>' :
+                            parties.map((p, idx) => `<tr><td><b>${p.name}</b></td><td>${p.phone}</td><td>${p.gstin}</td><td><button class="btn-danger" onclick="deletePartyRecord(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.addPartyRecord = function() {
                 let name = document.getElementById('ptName').value.trim();
                 let phone = document.getElementById('ptPhone').value.trim();
                 let gstin = document.getElementById('ptGst').value.trim();
-
                 if(!name) { alert('Party name required!'); return; }
                 parties.push({ name, phone, gstin });
                 localStorage.setItem('erp_vendors', JSON.stringify(parties));
-                renderParties(container);
+                renderPartiesModule(container);
             };
-
             window.deletePartyRecord = function(idx) {
                 parties.splice(idx, 1);
                 localStorage.setItem('erp_vendors', JSON.stringify(parties));
-                renderParties(container);
+                renderPartiesModule(container);
             };
         }
 
-        /* --- 6. EXPENSES --- */
-        function renderExpenses(container) {
+        /* --- 6. SEPARATE EXPENSES MODULE --- */
+        function renderExpensesModule(container) {
             let expCats = ['Office Rent', 'Electricity Bill', 'Travel Expense', 'Tea & Snacks', 'Repair & Maint.', 'Other Expense'];
             let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [];
-            let totalSpending = expenses.reduce((a, b) => a + b.amount, 0);
-
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>💸 Expenses & Overhead Management</h2>',
-                '<div style="background:#f8fafc; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:12px;">',
-                '<h3 style="font-size:12px; color:#0284c7; margin-bottom:8px;">+ Record New Expense</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Category</label><select id="exCatSelect" class="form-control nav-focusable">' + expCats.map(c => '<option value="' + c + '">' + c + '</option>').join('') + '</select></div>',
-                '<div class="form-group"><label>Description</label><input type="text" id="exTitleInput" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmtInput" class="form-control nav-focusable"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addExpenseRecord()" style="width:100%;">+ Save Expense</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
-                expenses.map((e, idx) => '<tr>' +
-                    '<td>' + e.date + '</td><td><b>' + e.title + '</b></td><td>' + e.category + '</td><td>₹' + e.amount.toFixed(2) + '</td>' +
-                    '<td><button class="btn-danger nav-focusable" onclick="deleteExpenseRecord(' + idx + ')">Delete</button></td>' +
-                '</tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💸 Expenses & Overhead Management</h2>
+                    <div style="background:#f8fafc; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:12px;">
+                        <h3 style="font-size:12px; color:#0284c7; margin-bottom:8px;">+ Record New Expense</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Category</label><select id="exCatSelect" class="form-control">${expCats.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+                            <div class="form-group"><label>Description</label><input type="text" id="exTitleInput" class="form-control"></div>
+                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="exAmtInput" class="form-control"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addExpenseRecord()" style="width:100%;">+ Save Expense</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${expenses.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No expenses recorded.</td></tr>' :
+                            expenses.map((e, idx) => `<tr><td>${e.date}</td><td><b>${e.title}</b></td><td>${e.category}</td><td>₹${e.amount.toFixed(2)}</td><td><button class="btn-danger" onclick="deleteExpenseRecord(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.addExpenseRecord = function() {
                 let category = document.getElementById('exCatSelect').value;
                 let title = document.getElementById('exTitleInput').value.trim();
                 let amount = parseFloat(document.getElementById('exAmtInput').value) || 0;
                 if(!title || amount <= 0) { alert('Valid Description and Amount required!'); return; }
-
                 expenses.unshift({ id: Date.now(), category, title, amount, date: new Date().toLocaleDateString('en-GB') });
                 localStorage.setItem('erp_expenses', JSON.stringify(expenses));
-                renderExpenses(container);
+                renderExpensesModule(container);
             };
-
             window.deleteExpenseRecord = function(idx) {
                 expenses.splice(idx, 1);
                 localStorage.setItem('erp_expenses', JSON.stringify(expenses));
-                renderExpenses(container);
+                renderExpensesModule(container);
             };
         }
 
-        /* --- 7. PURCHASE --- */
-        window.renderPurchase = function(container) {
+        /* --- 7. SEPARATE PURCHASE MODULE --- */
+        function renderPurchaseModule(container) {
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
             let vendors = JSON.parse(localStorage.getItem('erp_vendors')) || [{ name: 'A R PHARMA AGENCY', phone: '9005554424', gstin: '09AAAAA0000A1Z5' }];
-
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>🛍️ Vendor Purchase Invoices Entry</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Vendor Supplier *</label><select id="pVendor" class="form-control nav-focusable">' + vendors.map(v => '<option value="' + v.name + '">' + v.name + '</option>').join('') + '</select></div>',
-                '<div class="form-group"><label>Invoice No *</label><input type="text" id="pBillNo" class="form-control nav-focusable" value="PUR-' + Math.floor(1000 + Math.random()*9000) + '"></div>',
-                '<div class="form-group"><label>Medicine Name *</label><input type="text" id="pItem" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Batch No</label><input type="text" id="pBatch" class="form-control nav-focusable" value="B-101"></div>',
-                '<div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="pPrice" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>MRP (₹)</label><input type="number" id="pMrp" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Purchase Qty</label><input type="number" id="pQty" class="form-control nav-focusable" value="100"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePurchaseInvoice()" style="width:100%;">Save Purchase Entry</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Vendor</th><th>Bill Invoice No</th><th>Item</th><th>Batch</th><th>Price</th><th>MRP</th><th>Qty</th></tr></thead>',
-                '<tbody>',
-                purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
-                purchases.map(p => '<tr><td><b>' + p.vendor + '</b></td><td>' + p.billNo + '</td><td>' + p.item + '</td><td>' + p.batch + '</td><td>₹' + p.price + '</td><td>₹' + p.mrp + '</td><td>' + p.qty + '</td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛍️ Vendor Purchase Invoices Entry</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Vendor Supplier *</label><select id="pVendor" class="form-control">${vendors.map(v => `<option value="${v.name}">${v.name}</option>`).join('')}</select></div>
+                            <div class="form-group"><label>Invoice No *</label><input type="text" id="pBillNo" class="form-control" value="PUR-${Math.floor(1000 + Math.random()*9000)}"></div>
+                            <div class="form-group"><label>Medicine Name *</label><input type="text" id="pItem" class="form-control"></div>
+                            <div class="form-group"><label>Batch No</label><input type="text" id="pBatch" class="form-control" value="B-101"></div>
+                            <div class="form-group"><label>Purchase Price (₹)</label><input type="number" id="pPrice" class="form-control"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="pMrp" class="form-control"></div>
+                            <div class="form-group"><label>Purchase Qty</label><input type="number" id="pQty" class="form-control" value="100"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchaseInvoice()" style="width:100%;">Save Purchase Entry</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Vendor</th><th>Bill Invoice No</th><th>Item</th><th>Batch</th><th>Price</th><th>MRP</th><th>Qty</th></tr></thead>
+                        <tbody>
+                            ${purchases.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No purchase records found.</td></tr>' :
+                            purchases.map(p => `<tr><td><b>${p.vendor}</b></td><td>${p.billNo}</td><td>${p.item}</td><td>${p.batch}</td><td>₹${p.price}</td><td>₹${p.mrp}</td><td>${p.qty}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.savePurchaseInvoice = function() {
                 let vendor = document.getElementById('pVendor').value;
                 let billNo = document.getElementById('pBillNo').value.trim();
@@ -727,117 +660,110 @@
                 let price = parseFloat(document.getElementById('pPrice').value) || 0;
                 let mrp = parseFloat(document.getElementById('pMrp').value) || 0;
                 let qty = parseInt(document.getElementById('pQty').value) || 0;
-
                 if(!billNo || !item || qty <= 0) { alert('Fill invoice number, medicine name, and quantity!'); return; }
-
                 purchases.unshift({ vendor, billNo, item, batch, price, mrp, qty });
                 localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-
                 let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                meds.push({ name: item, batch, mrp, price, stock: qty, unit: 'STRP', gst: 12 });
+                meds.push({ name: item, batch, mrp, price, stock: qty });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
-
                 alert('Purchase Entry Saved & Stock Updated!');
-                renderPurchase(container);
+                renderPurchaseModule(container);
             };
-        };
+        }
 
-        /* --- 8. FUND FLOW --- */
-        function renderUdhar(container) {
+        /* --- 8. SEPARATE FUND FLOW MODULE --- */
+        function renderUdharModule(container) {
             let udharList = JSON.parse(localStorage.getItem('erp_udhar_entries')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📈 Fund Flow & Payment Ledger</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Party Name *</label><input type="text" id="udName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Type</label><select id="udType" class="form-control nav-focusable"><option value="Payment In">Payment In (Received)</option><option value="Payment Out">Payment Out (Given)</option></select></div>',
-                '<div class="form-group"><label>Amount (₹)</label><input type="number" id="udAmt" class="form-control nav-focusable"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="addUdharEntry()" style="width:100%;">Record Payment</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Date</th><th>Party Name</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                udharList.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No payment records found.</td></tr>' :
-                udharList.map((u, idx) => '<tr><td>' + u.date + '</td><td><b>' + u.name + '</b></td><td>' + u.type + '</td><td>₹' + u.amt.toFixed(2) + '</td><td><button class="btn-danger nav-focusable" onclick="deleteUdharEntry(' + idx + ')">Delete</button></td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📈 Fund Flow & Payment Ledger</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Party Name *</label><input type="text" id="udName" class="form-control"></div>
+                            <div class="form-group"><label>Type</label><select id="udType" class="form-control"><option value="Payment In">Payment In (Received)</option><option value="Payment Out">Payment Out (Given)</option></select></div>
+                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="udAmt" class="form-control"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addUdharEntry()" style="width:100%;">Record Payment</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Party Name</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${udharList.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No payment records found.</td></tr>' :
+                            udharList.map((u, idx) => `<tr><td>${u.date}</td><td><b>${u.name}</b></td><td>${u.type}</td><td>₹${u.amt.toFixed(2)}</td><td><button class="btn-danger" onclick="deleteUdharEntry(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.addUdharEntry = function() {
                 let name = document.getElementById('udName').value.trim();
                 let type = document.getElementById('udType').value;
                 let amt = parseFloat(document.getElementById('udAmt').value) || 0;
-
                 if(!name || amt <= 0) { alert('Party Name and Amount required!'); return; }
                 udharList.unshift({ date: new Date().toLocaleDateString('en-GB'), name, type, amt });
                 localStorage.setItem('erp_udhar_entries', JSON.stringify(udharList));
-                renderUdhar(container);
+                renderUdharModule(container);
             };
-
             window.deleteUdharEntry = function(idx) {
                 udharList.splice(idx, 1);
                 localStorage.setItem('erp_udhar_entries', JSON.stringify(udharList));
-                renderUdhar(container);
+                renderUdharModule(container);
             };
         }
 
-        /* --- 9. REFERRAL OFFERS --- */
-        function renderReferralOffers(container) {
+        /* --- 9. SEPARATE REFERRAL OFFERS MODULE --- */
+        function renderReferralOffersModule(container) {
             let offers = JSON.parse(localStorage.getItem('erp_offers')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>🎁 Referral & Discount Offers</h2>',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Campaign Title</label><input type="text" id="offTitle" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Promo Code</label><input type="text" id="offCode" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Offer Benefit</label><input type="text" id="offBenefit" class="form-control nav-focusable" placeholder="e.g. 10% OFF"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="savePromoOffer()" style="width:100%;">Save Offer</button></div>',
-                '</div>',
-                '</div>',
-                '<table class="data-table"><thead><tr><th>Campaign</th><th>Code</th><th>Benefit</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No active offers configured.</td></tr>' :
-                offers.map((o, idx) => '<tr><td><b>' + o.title + '</b></td><td><code>' + o.code + '</code></td><td>' + o.offer + '</td><td><button class="btn-danger nav-focusable" onclick="deleteOffer(' + idx + ')">Delete</button></td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🎁 Referral & Discount Offers</h2>
+                    <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Campaign Title</label><input type="text" id="offTitle" class="form-control"></div>
+                            <div class="form-group"><label>Promo Code</label><input type="text" id="offCode" class="form-control"></div>
+                            <div class="form-group"><label>Offer Benefit</label><input type="text" id="offBenefit" class="form-control" placeholder="e.g. 10% OFF"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePromoOffer()" style="width:100%;">Save Offer</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Campaign</th><th>Code</th><th>Benefit</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${offers.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No active offers configured.</td></tr>' :
+                            offers.map((o, idx) => `<tr><td><b>${o.title}</b></td><td><code>${o.code}</code></td><td>${o.offer}</td><td><button class="btn-danger" onclick="deleteOffer(${idx})">Delete</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             window.savePromoOffer = function() {
                 let title = document.getElementById('offTitle').value.trim();
                 let code = document.getElementById('offCode').value.trim();
                 let offer = document.getElementById('offBenefit').value.trim();
-
                 if(!title || !code) { alert('Title and Code required!'); return; }
                 offers.push({ id: Date.now(), title, code, offer });
                 localStorage.setItem('erp_offers', JSON.stringify(offers));
-                renderReferralOffers(container);
+                renderReferralOffersModule(container);
             };
-
             window.deleteOffer = function(idx) {
                 offers.splice(idx, 1);
                 localStorage.setItem('erp_offers', JSON.stringify(offers));
-                renderReferralOffers(container);
+                renderReferralOffersModule(container);
             };
         }
 
-        /* --- 10. BACKUP & RESTORE --- */
+        /* --- 10. SEPARATE BACKUP & RESTORE MODULE --- */
         function renderBackupModule(container) {
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>💾 Database Backup & Cloud Restore Center</h2>',
-                '<div style="background:#f8fafc; padding:20px; border-radius:14px; border:1.5px solid #e2e8f0;">',
-                '<p style="font-size:12.5px; color:#475569; margin-bottom:15px;">Export or restore complete store data (Invoices, Medicines, Purchases, Users & Settings).</p>',
-                '<div style="display:flex; gap:12px;">',
-                '<button class="btn-primary nav-focusable" onclick="exportDataBackup()">📥 Export Full Backup JSON</button>',
-                '<button class="btn-success nav-focusable" onclick="triggerRestoreUpload()">📤 Restore Database</button>',
-                '<input type="file" id="restoreFileInput" style="display:none;" onchange="importDataBackup(event)">',
-                '</div>',
-                '</div>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>💾 Database Backup & Cloud Restore Center</h2>
+                    <div style="background:#f8fafc; padding:20px; border-radius:14px; border:1.5px solid #e2e8f0;">
+                        <p style="font-size:12.5px; color:#475569; margin-bottom:15px;">Export or restore complete store data.</p>
+                        <div style="display:flex; gap:12px;">
+                            <button class="btn-primary" onclick="exportDataBackup()">📥 Export Full Backup JSON</button>
+                            <button class="btn-success" onclick="triggerRestoreUpload()">📤 Restore Database</button>
+                            <input type="file" id="restoreFileInput" style="display:none;" onchange="importDataBackup(event)">
+                        </div>
+                    </div>
+                </div>
+            `;
             window.exportDataBackup = function() {
                 let backupObj = {
                     settings: JSON.parse(localStorage.getItem('erp_settings')),
@@ -856,9 +782,7 @@
                 dlAnchor.click();
                 dlAnchor.remove();
             };
-
             window.triggerRestoreUpload = function() { document.getElementById('restoreFileInput').click(); };
-
             window.importDataBackup = function(event) {
                 let file = event.target.files[0];
                 if (!file) return;
@@ -881,133 +805,87 @@
             };
         }
 
-        /* --- 11. SETTINGS & USER ROLES --- */
+        /* --- 11. SEPARATE SETTINGS & USER ROLES MODULE --- */
         function renderSettingsModule(container) {
             let s = JSON.parse(localStorage.getItem('erp_settings')) || {};
             let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>⚙️ Complete Store Settings & Control Center</h2>',
-                '<div style="display:flex; gap:20px; border-bottom:1.5px solid #e2e8f0; margin-bottom:15px; padding-bottom:8px;">',
-                '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabStore\')">Store Branding & Logo</button>',
-                '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabPrint\')">Thermal Print Settings</button>',
-                '<button class="btn-primary nav-focusable" onclick="showSetTab(\'tabUsers\')">Users & Role Permissions</button>',
-                '</div>',
-                '<div id="tabStore">',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Store Profile & App Lock Passcode</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control nav-focusable" value="' + (s.agencyName || '') + '"></div>',
-                '<div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control nav-focusable" value="' + (s.chairman || '') + '"></div>',
-                '<div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control nav-focusable" value="' + (s.dlNo || 'UP-2026-MED-000000') + '"></div>',
-                '<div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control nav-focusable" value="' + (s.gstin || '09AAAAA0000A1Z5') + '"></div>',
-                '<div class="form-group"><label>App Lock Passcode</label><input type="password" id="stPasscode" class="form-control nav-focusable" value="' + (s.lockPasscode || '1234') + '"></div>',
-                '<div class="form-group"><label>Shop Logo Image URL</label><input type="text" id="stLogo" class="form-control nav-focusable" value="' + (s.logoUrl || '') + '"></div>',
-                '</div>',
-                '<button class="btn-success nav-focusable" onclick="saveStoreBranding()">Save Store Branding</button>',
-                '</div>',
-                '<div id="tabPrint" style="display:none;">',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Print Invoice Template Configuration</h3>',
-                '<div class="form-group"><label>Invoice Header Title</label><input type="text" id="prHeader" class="form-control nav-focusable" value="' + (s.printHeader || '') + '"></div>',
-                '<div class="form-group"><label>Invoice Footer Greeting</label><input type="text" id="prFooter" class="form-control nav-focusable" value="' + (s.printFooter || '') + '"></div>',
-                '<div class="form-group"><label>Terms & Conditions Declaration</label><textarea id="prTerms" class="form-control nav-focusable" rows="3">' + (s.terms || '') + '</textarea></div>',
-                '<button class="btn-success nav-focusable" onclick="savePrintSettings()">Save Print Configuration</button>',
-                '</div>',
-                '<div id="tabUsers" style="display:none;">',
-                '<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:15px;">',
-                '<h3 style="color:#16a34a; font-size:13px; margin-bottom:10px;">+ Create Custom Role & User Account</h3>',
-                '<div class="form-grid">',
-                '<div class="form-group"><label>User ID *</label><input type="text" id="nuId" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Full Name *</label><input type="text" id="nuName" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Password *</label><input type="password" id="nuPass" class="form-control nav-focusable"></div>',
-                '<div class="form-group"><label>Custom Role Name *</label><input type="text" id="nuRole" class="form-control nav-focusable" placeholder="e.g. Biller, Accountant"></div>',
-                '<div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success nav-focusable" onclick="createNewUserRole()" style="width:100%;">Create Role & User</button></div>',
-                '</div>',
-                '</div>',
-                '<h3 style="color:#0f172a; font-size:13px; margin-bottom:10px;">Registered System Users & Editing Rights</h3>',
-                '<table class="data-table"><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Edit Access</th><th>Action</th></tr></thead>',
-                '<tbody>',
-                users.map((u, idx) => '<tr>' +
-                    '<td><b>' + u.username + '</b></td><td>' + u.name + '</td><td>' + u.role + '</td><td><span style="color:#16a34a;">' + u.status + '</span></td>' +
-                    '<td>' + (u.role === 'Super Admin' ? '<span style="color:#0284c7;">Full Power (Locked)</span>' : '<input type="checkbox" ' + (u.canEdit ? 'checked' : '') + ' onchange="toggleUserEditPerm(' + idx + ', this.checked)"> Enable Edit') + '</td>' +
-                    '<td>' + (u.role === 'Super Admin' ? '<span style="color:#64748b; font-size:10px;">Protected</span>' : '<button class="btn-danger nav-focusable" onclick="deleteUserAccount(' + idx + ')">Delete User</button>') + '</td>' +
-                '</tr>').join(''),
-                '</tbody></table>',
-                '</div>',
-                '</div>'
-            ].join('');
-
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>⚙️ Complete Store Settings & Control Center</h2>
+                    <div style="display:flex; gap:20px; border-bottom:1.5px solid #e2e8f0; margin-bottom:15px; padding-bottom:8px;">
+                        <button class="btn-primary" onclick="showSetTab('tabStore')">Store Branding & Logo</button>
+                        <button class="btn-primary" onclick="showSetTab('tabPrint')">Thermal Print Settings</button>
+                        <button class="btn-primary" onclick="showSetTab('tabUsers')">Users & Role Permissions</button>
+                    </div>
+                    <div id="tabStore">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Agency Store Name</label><input type="text" id="stAgency" class="form-control" value="${s.agencyName || ''}"></div>
+                            <div class="form-group"><label>Chairman</label><input type="text" id="stChairman" class="form-control" value="${s.chairman || ''}"></div>
+                            <div class="form-group"><label>DL No</label><input type="text" id="stDl" class="form-control" value="${s.dlNo || ''}"></div>
+                            <div class="form-group"><label>GSTIN</label><input type="text" id="stGstin" class="form-control" value="${s.gstin || ''}"></div>
+                        </div>
+                        <button class="btn-success" onclick="saveStoreBranding()">Save Store Branding</button>
+                    </div>
+                    <div id="tabPrint" style="display:none;">
+                        <div class="form-group"><label>Invoice Header Title</label><input type="text" id="prHeader" class="form-control" value="${s.printHeader || ''}"></div>
+                        <div class="form-group"><label>Invoice Footer Greeting</label><input type="text" id="prFooter" class="form-control" value="${s.printFooter || ''}"></div>
+                        <button class="btn-success" onclick="savePrintSettings()">Save Print Configuration</button>
+                    </div>
+                    <div id="tabUsers" style="display:none;">
+                        <table class="data-table">
+                            <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody>
+                                ${users.map((u, idx) => `<tr><td><b>${u.username}</b></td><td>${u.name}</td><td>${u.role}</td><td><span style="color:#16a34a;">${u.status}</span></td><td>${u.role === 'Super Admin' ? 'Protected' : `<button class="btn-danger" onclick="deleteUserAccount(${idx})">Delete</button>`}</td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
             window.showSetTab = function(tabId) {
                 document.getElementById('tabStore').style.display = tabId === 'tabStore' ? 'block' : 'none';
                 document.getElementById('tabPrint').style.display = tabId === 'tabPrint' ? 'block' : 'none';
                 document.getElementById('tabUsers').style.display = tabId === 'tabUsers' ? 'block' : 'none';
             };
-
             window.saveStoreBranding = function() {
                 s.agencyName = document.getElementById('stAgency').value;
                 s.chairman = document.getElementById('stChairman').value;
                 s.dlNo = document.getElementById('stDl').value;
                 s.gstin = document.getElementById('stGstin').value;
-                s.lockPasscode = document.getElementById('stPasscode').value;
-                s.logoUrl = document.getElementById('stLogo').value;
-
                 localStorage.setItem('erp_settings', JSON.stringify(s));
                 applyBrandingSettings();
-                alert('Store Branding & Lock Settings Saved!');
+                alert('Store Branding Saved!');
             };
-
             window.savePrintSettings = function() {
                 s.printHeader = document.getElementById('prHeader').value;
                 s.printFooter = document.getElementById('prFooter').value;
-                s.terms = document.getElementById('prTerms').value;
-
                 localStorage.setItem('erp_settings', JSON.stringify(s));
                 alert('Print Settings Updated!');
             };
-
-            window.createNewUserRole = function() {
-                let username = document.getElementById('nuId').value.trim();
-                let name = document.getElementById('nuName').value.trim();
-                let pass = document.getElementById('nuPass').value.trim();
-                let role = document.getElementById('nuRole').value.trim() || 'Staff';
-
-                if(!username || !name || !pass) { alert('Fill required user details!'); return; }
-                users.push({ username, name, pass, role, status: 'Active', canEdit: true });
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('Role & User Created Successfully!');
-                renderSettingsModule(container);
-            };
-
-            window.toggleUserEditPerm = function(idx, checked) {
-                users[idx].canEdit = checked;
-                localStorage.setItem('erp_users', JSON.stringify(users));
-            };
-
             window.deleteUserAccount = function(idx) {
-                if(users[idx].role === 'Super Admin') { alert('Super Admin cannot be deleted!'); return; }
                 users.splice(idx, 1);
                 localStorage.setItem('erp_users', JSON.stringify(users));
                 renderSettingsModule(container);
             };
         }
 
-        /* --- 12. REPORTS MODULE --- */
-        function renderReports(container) {
+        /* --- 12. SEPARATE REPORTS MODULE --- */
+        function renderReportsModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = [
-                '<div class="light-card">',
-                '<h2>📈 Comprehensive Business Reports & Analytics</h2>',
-                '<table class="data-table"><thead><tr><th>Invoice No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>',
-                '<tbody>',
-                invs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No fresh invoice records found.</td></tr>' :
-                invs.map(i => '<tr><td><b>' + i.invoiceNo + '</b></td><td>' + i.date + '</td><td>' + i.patientName + '</td><td>' + i.mobile + '</td><td style="color:#16a34a;">₹' + i.netPayable.toFixed(2) + '</td></tr>').join(''),
-                '</tbody></table>',
-                '</div>'
-            ].join('');
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📈 Comprehensive Business Reports & Analytics</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Invoice No</th><th>Date</th><th>Patient</th><th>Mobile</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${invs.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>' :
+                            invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>${i.mobile}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
-        /* --- OTHER SUBMODULES --- */
-        window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Pharmacy Assistant</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Smart AI Medicine Search & Prescription Assistant Active.</p></div>'; };
+        window.renderARAI = function(container) { container.innerHTML = '<div class="light-card"><h2>🤖 AR AI Pharmacy Assistant</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Smart AI Medicine Search Active.</p></div>'; };
         window.renderReturns = function(container) { container.innerHTML = '<div class="light-card"><h2>🔄 Sale Returns & Credit Notes</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Sale Return Invoice System Active.</p></div>'; };
         window.renderPurchaseReturn = function(container) { container.innerHTML = '<div class="light-card"><h2>📦 Purchase Returns & Debit Notes</h2><p style="margin-top:10px; font-size:12.5px; color:#475569;">Vendor Debit Note Manager Active.</p></div>'; };
     </script>
