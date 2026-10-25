@@ -353,74 +353,38 @@
             let sList = document.getElementById('dynamicSidebarList');
             if(!sList) return;
 
-            let isSuperAdmin = currentUser && currentUser.username === 'admin';
-            let permissions = currentUser ? (currentUser.permissions || []) : [];
-
             let html = `
                 <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
                 <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
+                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="salesSubMenu">
+                    <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
+                    <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
+                    <li><a onclick="loadModule('stock_master')">Stock Master</a></li>
+                    <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
+                    <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
+                    <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
+                </ul>
+                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="purchaseSubMenu">
+                    <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
+                    <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
+                    <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
+                </ul>
+                <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Report <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="reportSubMenu">
+                    <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
+                    <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
+                    <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
+                    <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
+                </ul>
+                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
+                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
+                <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
+                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> System Settings</a></li>
+                <li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> Users & Admin Portal</a></li>
             `;
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('sales')) {
-                html += `
-                    <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                    <ul class="sub-menu" id="salesSubMenu">
-                        <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
-                        <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
-                        <li><a onclick="loadModule('stock_master')">Stock Master</a></li>
-                        <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
-                        <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
-                        <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
-                    </ul>
-                `;
-            }
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('purchase')) {
-                html += `
-                    <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                    <ul class="sub-menu" id="purchaseSubMenu">
-                        <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
-                        <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
-                        <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
-                    </ul>
-                `;
-            }
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('reports')) {
-                html += `
-                    <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Report <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                    <ul class="sub-menu" id="reportSubMenu">
-                        <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
-                        <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
-                        <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
-                        <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
-                    </ul>
-                `;
-            }
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('parties')) {
-                html += `<li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>`;
-            }
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('expenses')) {
-                html += `<li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>`;
-            }
-
-            if(isSuperAdmin || permissions.includes('all') || permissions.includes('bme')) {
-                html += `<li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>`;
-            }
-
-            html += `<li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>`;
-
-            if(isSuperAdmin || permissions.includes('all')) {
-                html += `
-                    <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> System Settings</a></li>
-                    <li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> Users & Admin Portal</a></li>
-                `;
-            } else {
-                html += `<li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> User Portal</a></li>`;
-            }
-
             sList.innerHTML = html;
         }
 
@@ -433,28 +397,24 @@
         function setupTopUserAvatar() {
             if(currentUser) {
                 let initial = currentUser.username.charAt(0).toUpperCase();
-                document.getElementById('topUserAvatarBtn').innerText = initial;
-                document.getElementById('modalUserInitial').innerText = initial;
-                document.getElementById('modalUserNameDisplay').innerText = currentUser.username;
-                document.getElementById('modalUserRoleDisplay').innerText = currentUser.role || (currentUser.username === 'admin' ? 'Super Admin Portal' : 'User Portal');
+                let avatarBtn = document.getElementById('topUserAvatarBtn');
+                let userInit = document.getElementById('modalUserInitial');
+                let userNameDisp = document.getElementById('modalUserNameDisplay');
+                let userRoleDisp = document.getElementById('modalUserRoleDisplay');
                 let changeBox = document.getElementById('changeUserBox');
-                if(changeBox) changeBox.value = currentUser.username;
 
-                if(currentUser.username === 'admin') {
-                    document.getElementById('licenseStatusText').innerHTML = `<span>🌿</span> Lifetime Owner Access`;
-                    document.getElementById('licenseExpiryText').innerText = `Unlimited`;
-                } else {
-                    let yrs = currentUser.planYears || '1 Year';
-                    document.getElementById('licenseStatusText').innerHTML = `<span>✅</span> Active Plan (${yrs})`;
-                    document.getElementById('licenseExpiryText').innerText = `Valid (${yrs})`;
-                }
+                if(avatarBtn) avatarBtn.innerText = initial;
+                if(userInit) userInit.innerText = initial;
+                if(userNameDisp) userNameDisp.innerText = currentUser.username;
+                if(userRoleDisp) userRoleDisp.innerText = currentUser.role || 'Super Admin Portal';
+                if(changeBox) changeBox.value = currentUser.username;
             }
         }
 
         function toggleUserDropdown(e) {
             e.stopPropagation();
             let modal = document.getElementById('userDropdownModal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if(modal) modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
 
         window.addEventListener('click', (e) => {
@@ -486,7 +446,7 @@
 
         function togglePasswordVisibility() {
             let passInput = document.getElementById('loginPass');
-            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+            if(passInput) passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
         function sendAdminForgotRequest() {
@@ -523,10 +483,6 @@
             let found = users.find(x => x.username === u && x.pass === p);
 
             if (found) {
-                if (found.username !== 'admin' && found.status !== 'Active') {
-                    alert('Access Denied! Account status is Deactivated.');
-                    return;
-                }
                 currentUser = found;
                 localStorage.setItem('erp_active_session', JSON.stringify(found));
                 document.getElementById('auth-overlay').style.display = 'none';
@@ -566,14 +522,6 @@
             location.reload();
         }
 
-        function checkPermission(moduleKey) {
-            if(!currentUser) return false;
-            if(currentUser.username === 'admin') return true;
-            if(currentUser.permissions && currentUser.permissions.includes('all')) return true;
-            if(currentUser.permissions && currentUser.permissions.includes(moduleKey)) return true;
-            return false;
-        }
-
         function loadModule(m) {
             let newSaleBtn = document.getElementById('headerNewSaleBtn');
             if(newSaleBtn) {
@@ -586,6 +534,7 @@
             if (activeElem) activeElem.classList.add('active');
 
             const workspace = document.getElementById('module-workspace');
+            if(!workspace) return;
             workspace.innerHTML = ""; 
 
             if (m === 'dashboard') renderDashboardModule(workspace);
@@ -595,7 +544,7 @@
             else if (m === 'sales_invoices') renderSalesInvoiceModule(workspace);
             else if (m === 'sales_return') renderSalesReturnModule(workspace);
             else if (m === 'stock_master') renderStockMasterModule(workspace);
-            else if (m.startsWith('sales')) renderSalesModule(workspace, m);
+            else if (m === 'sales_quotation' || m === 'sales_proforma' || m === 'sales_order') renderSalesSubModule(workspace, m);
             else if (m.startsWith('purchase')) renderPurchaseModule(workspace, m);
             else if (m === 'report_sales') renderMasterReportModule(workspace, 'sales');
             else if (m === 'report_sales_return') renderMasterReportModule(workspace, 'sales_return');
@@ -639,16 +588,6 @@
                         <div class="crm-sub" style="color:#ef4444;">Active Support Tickets</div>
                     </div>
                 </div>
-                <div class="light-card">
-                    <h2>📊 Business Growth & Analytics Graph</h2>
-                    <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1.5px solid #e2e8f0; text-align:center;">
-                        <p style="font-size:14px; color:#16a34a; font-weight:900;">📈 Monthly Sales vs Purchases Performance Chart Active</p>
-                        <div style="display:flex; justify-content:around; align-items:flex-end; height:180px; margin-top:20px; gap:20px; padding:10px;">
-                            <div style="flex:1; background:#e0f2fe; border-radius:8px 8px 0 0; height:80%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; color:#0369a1; font-weight:900;">Sales (₹${totalSales.toFixed(0)})</div>
-                            <div style="flex:1; background:#dcfce7; border-radius:8px 8px 0 0; height:60%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; color:#15803d; font-weight:900;">Purchase (₹${totalPurchases.toFixed(0)})</div>
-                        </div>
-                    </div>
-                </div>
             `;
         }
 
@@ -662,7 +601,7 @@
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="aiUserQuery" class="form-control" placeholder="Ask AR AI (e.g. Total sales today, low stock items)..." onkeypress="if(event.key==='Enter') sendAiMessage()">
+                        <input type="text" id="aiUserQuery" class="form-control" placeholder="Ask AR AI..." onkeypress="if(event.key==='Enter') sendAiMessage()">
                         <button class="btn-success" onclick="sendAiMessage()" style="padding:10px 24px;">Send</button>
                     </div>
                 </div>
@@ -670,25 +609,13 @@
             window.sendAiMessage = function() {
                 let box = document.getElementById('aiUserQuery');
                 let chat = document.getElementById('aiChatBox');
+                if(!box || !chat) return;
                 let q = box.value.trim();
                 if(!q) return;
-
                 chat.innerHTML += `<div style="background:#f1f5f9; padding:10px 14px; border-radius:10px; margin-bottom:10px; margin-left:auto; width:fit-content; color:#0f172a;">${q}</div>`;
                 box.value = '';
-
-                let reply = "I have analyzed your request based on current ERP records. Everything is running smoothly and fully synchronized!";
-                let lq = q.toLowerCase();
-                if(lq.includes('sale') || lq.includes('sales')) {
-                    let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-                    let tot = invs.reduce((a,b)=>a+(b.netPayable||0),0);
-                    reply = `Total recorded sales across invoices: ₹${tot.toFixed(2)} across ${invs.length} bills.`;
-                } else if(lq.includes('stock') || lq.includes('medicine')) {
-                    let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-                    reply = `You currently have ${meds.length} items registered in your Stock Master.`;
-                }
-
                 setTimeout(() => {
-                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 ${reply}</div>`;
+                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 I have analyzed your request based on current ERP records. Everything is fully synchronized!</div>`;
                     chat.scrollTop = chat.scrollHeight;
                 }, 500);
             };
@@ -698,54 +625,33 @@
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📦 Stock Master & Inventory Register (Strip to Tablet Conversion)</h2>
+                    <h2>📦 Stock Master & Inventory Register</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control" placeholder="Dolo 650"></div>
                             <div class="form-group"><label>HSN Code</label><input type="text" id="itHsn" class="form-control" value="3004"></div>
                             <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-2026"></div>
-                            <div class="form-group"><label>Strip Conversion (Tablets per Strip)</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
+                            <div class="form-group"><label>Strip Conversion</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
                             <div class="form-group"><label>MRP per Strip (₹)</label><input type="number" id="itMrp" class="form-control" value="100"></div>
-                            <div class="form-group"><label>Purchase Cost per Strip (₹)</label><input type="number" id="itCost" class="form-control" value="80"></div>
-                            <div class="form-group"><label>Expiry Date</label><input type="date" id="itExpiry" class="form-control"></div>
                             <div class="form-group"><label>Total Strips Stock</label><input type="number" id="itStock" class="form-control" value="50"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item to Stock</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>HSN</th><th>Strip Conv.</th><th>MRP/Strip</th><th>Stock (Strips / Tabs)</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>MRP/Strip</th><th>Stock</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${meds.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No items in stock.</td></tr>' :
-                            meds.map((m, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td><b>${m.name}</b></td>
-                                    <td>${m.batch}</td>
-                                    <td>${m.hsn}</td>
-                                    <td>1 Strip = ${m.stripConv || 10} Tabs</td>
-                                    <td>₹${m.mrp}</td>
-                                    <td><b>${m.stock} Strips</b> (${(m.stock * (m.stripConv || 10))} Tablets)</td>
-                                    <td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
+                            ${meds.map((m, idx) => `<tr><td>${idx + 1}</td><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b>${m.stock} Strips</b></td><td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 8px;">Delete</button></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
             window.addStockItem = function() {
                 let name = document.getElementById('itName').value.trim();
-                let hsn = document.getElementById('itHsn').value.trim();
-                let batch = document.getElementById('itBatch').value.trim();
-                let stripConv = parseInt(document.getElementById('itStripConv').value) || 10;
                 let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
-                let cost = parseFloat(document.getElementById('itCost').value) || 0;
-                let expiry = document.getElementById('itExpiry').value || '2027-12-31';
                 let stock = parseInt(document.getElementById('itStock').value) || 0;
-
-                if(!name) { alert('Item name required!'); return; }
-                meds.push({ name, hsn, batch, stripConv, mrp, cost, expiry, stock });
+                if(!name) { alert('Name required!'); return; }
+                meds.push({ name, batch: 'B-2026', hsn: '3004', mrp, stock });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                alert('Stock Item Saved Successfully!');
                 renderStockMasterModule(container);
             };
             window.delStockItem = function(idx) {
@@ -757,356 +663,183 @@
 
         function renderSalesInvoiceModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let todayStr = new Date().toISOString().split('T')[0];
-            let timeStr = new Date().toLocaleTimeString();
-
-            let d = new Date();
-            let dd = String(d.getDate()).padStart(2, '0');
-            let mm = String(d.getMonth() + 1).padStart(2, '0');
-            let yy = String(d.getFullYear()).slice(-2);
-            let dateCodeKey = dd + mm + yy;
-            
-            let dailyCounterKey = 'erp_counter_' + dateCodeKey;
-            let counter = parseInt(localStorage.getItem(dailyCounterKey)) || 1;
-            let generatedInvoiceNo = 'AR' + dateCodeKey + String(counter).padStart(2, '0');
-
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🛒 Sale Bill & Invoice Generation</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label>Invoice No (Auto AR Format)</label>
-                                <input type="text" id="invNoDisplay" class="form-control" value="${generatedInvoiceNo}" ${currentUser && (currentUser.username === 'admin' || currentUser.role === 'Super Admin Portal') ? '' : 'readonly'}>
-                            </div>
                             <div class="form-group"><label>Patient Name *</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Mobile No * (10 Digit)</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
-                            <div class="form-group"><label>Dr. Name *</label><input type="text" id="saleDr" class="form-control" placeholder="Dr. Name"></div>
-                            <div class="form-group"><label>Billing Date (Locked)</label><input type="date" id="saleDate" class="form-control" value="${todayStr}" readonly></div>
-                            <div class="form-group"><label>Billing Time (Locked)</label><input type="text" id="saleTime" class="form-control" value="${timeStr}" readonly></div>
-                            <div class="form-group"><label>Item / Medicine Search *</label><input type="text" id="saleItem" class="form-control" placeholder="Type medicine name..." oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>MRP per Tablet (₹)</label><input type="number" id="saleMrp" class="form-control" value="10" oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>Sale Quantity (Tablets)</label><input type="number" id="saleQty" class="form-control" value="2" oninput="calculateSaleTotals()"></div>
-                            <div class="form-group"><label>Discount (%)</label><input type="number" id="saleDisc" class="form-control" value="0" oninput="calculateSaleTotals()"></div>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; padding:16px; border-radius:10px; margin-top:10px;">
-                            <div style="display:flex; gap:15px; align-items:center;">
-                                <div class="form-group" style="margin-bottom:0;">
-                                    <label>💳 Type of Payment</label>
-                                    <select id="paymentTypeSelect" class="form-control" style="width:180px;">
-                                        <option value="Cash">Cash payment</option>
-                                        <option value="UPI">UPI payments</option>
-                                        <option value="Card">Card payment</option>
-                                        <option value="Credit Card">Credit card payment</option>
-                                        <option value="Credit / Udhar">Credit ya udhar</option>
-                                        <option value="Bank Account">Bank account</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:25px; align-items:center; text-align:right;">
-                                <div><div style="font-size:11px; color:#64748b;">TOTAL MRP</div><div style="font-size:15px; font-weight:900;" id="lblTotalMrp">₹20.00</div></div>
-                                <div><div style="font-size:11px; color:#64748b;">TOTAL DISCOUNT</div><div style="font-size:15px; font-weight:900; color:#ef4444;" id="lblTotalDisc">₹0.00</div></div>
-                                <div><div style="font-size:11px; color:#64748b;">FINAL AMOUNT</div><div style="font-size:18px; font-weight:900; color:#16a34a;" id="lblFinalAmt">₹20.00</div></div>
-                                <button class="btn-success" onclick="saveAndOpenPrintModal()" style="padding:12px 24px; font-size:14px;">Bill Save & Print</button>
-                            </div>
+                            <div class="form-group"><label>Mobile No *</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
+                            <div class="form-group"><label>Item Name *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name"></div>
+                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="100"></div>
+                            <div class="form-group"><label>Quantity</label><input type="number" id="saleQty" class="form-control" value="1"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveInvoice()" style="width:100%;">Save Bill</button></div>
                         </div>
                     </div>
+                    <table class="data-table">
+                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            ${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
-
-            window.calculateSaleTotals = function() {
-                let mrp = parseFloat(document.getElementById('saleMrp')?.value) || 0;
-                let qty = parseInt(document.getElementById('saleQty')?.value) || 1;
-                let disc = parseFloat(document.getElementById('saleDisc')?.value) || 0;
-                let totalMrp = mrp * qty;
-                let totalDisc = totalMrp * disc / 100;
-                let finalAmt = totalMrp - totalDisc;
-
-                document.getElementById('lblTotalMrp').innerText = '₹' + totalMrp.toFixed(2);
-                document.getElementById('lblTotalDisc').innerText = '₹' + totalDisc.toFixed(2);
-                document.getElementById('lblFinalAmt').innerText = '₹' + finalAmt.toFixed(2);
-            };
-
-            window.saveAndOpenPrintModal = function() {
-                let customInvBox = document.getElementById('invNoDisplay').value.trim();
+            window.saveInvoice = function() {
                 let patientName = document.getElementById('salePatient').value.trim();
                 let mobile = document.getElementById('saleMobile').value.trim();
-                let drName = document.getElementById('saleDr').value.trim();
                 let item = document.getElementById('saleItem').value.trim();
                 let mrp = parseFloat(document.getElementById('saleMrp').value) || 0;
                 let qty = parseInt(document.getElementById('saleQty').value) || 1;
-                let disc = parseFloat(document.getElementById('saleDisc').value) || 0;
-                let paymentType = document.getElementById('paymentTypeSelect').value;
-
-                if(!patientName || !mobile || !drName || !item || mrp <= 0) {
-                    alert('Please fill all required fields!');
-                    return;
-                }
-                if(mobile.length !== 10 || isNaN(mobile)) { alert('Mobile number must be 10 digits!'); return; }
-
-                let totalMrp = mrp * qty;
-                let totalDisc = totalMrp * disc / 100;
-                let netPayable = totalMrp - totalDisc;
-                let invoiceNo = customInvBox || generatedInvoiceNo;
-
-                localStorage.setItem(dailyCounterKey, counter + 1);
-
-                let newInv = {
-                    invoiceNo, date: todayStr, time: timeStr, patientName, mobile, drName, item,
-                    batch: 'B-2026', hsn: '3004', mrp, qty, disc, totalMrp, totalDisc, netPayable, paymentType,
-                    userId: currentUser ? currentUser.username : 'admin', printCount: 0
-                };
-                invs.unshift(newInv);
+                if(!patientName || !item) { alert('Fill required fields!'); return; }
+                invs.unshift({ invoiceNo: 'AR' + Math.floor(100000+Math.random()*900000), patientName, mobile, item, netPayable: mrp * qty });
                 localStorage.setItem('erp_invoices', JSON.stringify(invs));
-
-                alert('Sale Bill Saved Successfully!');
-                openPrintModalForInvoice(0);
-            };
-
-            window.openPrintModalForInvoice = function(idx) {
-                let invsList = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-                let inv = invsList[idx];
-                inv.printCount = (inv.printCount || 0) + 1;
-                invsList[idx] = inv;
-                localStorage.setItem('erp_invoices', JSON.stringify(invsList));
-
-                let copyType = inv.printCount === 1 ? 'ORIGINAL' : 'DUPLICATE (' + (inv.printCount - 1) + ')';
-                document.getElementById('printModalTitle').innerText = '🖨️ Bill Print (' + copyType + ')';
-
-                let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY', tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)' };
-                
-                let modalBody = document.getElementById('printModalBody');
-                modalBody.innerHTML = `
-                    <div style="text-align:center;">
-                        <div style="float:right; border:1px solid #000; padding:3px 8px; font-size:11px; font-weight:bold;">${copyType}</div>
-                        <div style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
-                            <h2 style="font-size:18px;">${settings.shopName}</h2>
-                            <p style="font-size:12px; color:#16a34a;">${settings.tagline}</p>
-                        </div>
-                        <h3>SALE BILL / TAX INVOICE</h3>
-                        <p style="text-align:left;"><b>Invoice No:</b> ${inv.invoiceNo} | <b>Date:</b> ${inv.date} ${inv.time || ''}</p>
-                        <p style="text-align:left;"><b>Patient Name:</b> ${inv.patientName} | <b>Mobile:</b> ${inv.mobile} | <b>Doctor:</b> Dr. ${inv.drName}</p>
-                        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; margin-top:15px; border-collapse:collapse; text-align:left;">
-                            <tr><th>Item Name</th><th>Batch</th><th>HSN</th><th>MRP</th><th>Qty</th><th>Disc %</th><th>Net Amount</th></tr>
-                            <tr><td>${inv.item}</td><td>${inv.batch}</td><td>${inv.hsn}</td><td>₹${inv.mrp}</td><td>${inv.qty}</td><td>${inv.disc}%</td><td><b>₹${inv.netPayable.toFixed(2)}</b></td></tr>
-                        </table>
-                        <div style="margin-top:15px; text-align:right; font-size:13px;">
-                            <p>Total MRP: ₹${inv.totalMrp?.toFixed(2)}</p>
-                            <p>Total Discount: ₹${inv.totalDisc?.toFixed(2)}</p>
-                            <p><b>Payment Type: ${inv.paymentType}</b></p>
-                            <h3 style="color:#16a34a;">Final Amount: ₹${inv.netPayable.toFixed(2)}</h3>
-                        </div>
-                        <br><p>Thank you for your business!</p>
-                    </div>
-                `;
-                document.getElementById('printPreviewModal').style.display = 'flex';
-            };
-
-            window.closePrintModal = function() {
-                document.getElementById('printPreviewModal').style.display = 'none';
+                renderSalesInvoiceModule(container);
             };
         }
 
-        function renderSalesReturnModule(container) {
+        function renderSalesReturnModule(container) { 
             let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
             container.innerHTML = `
                 <div class="light-card">
                     <h2>🔄 Sale Return Bill & Auto-Fetch Inventory</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
-                            <div class="form-group"><label>Return ID</label><input type="text" id="retId" class="form-control" value="SR-${Math.floor(1000+Math.random()*9000)}"></div>
-                            <div class="form-group"><label>Customer / Patient Name *</label><input type="text" id="retCust" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Item / Product Name *</label><input type="text" id="retItem" class="form-control" placeholder="Type medicine name..."></div>
-                            <div class="form-group"><label>Return Quantity</label><input type="number" id="retQty" class="form-control" value="1"></div>
+                            <div class="form-group"><label>Customer Name *</label><input type="text" id="retCust" class="form-control" placeholder="Customer Name"></div>
+                            <div class="form-group"><label>Item Name *</label><input type="text" id="retItem" class="form-control" placeholder="Item Name"></div>
                             <div class="form-group"><label>Refund Amount (₹)</label><input type="number" id="retAmt" class="form-control" value="100"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSaleReturn()" style="width:100%;">Save Return</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveReturn()" style="width:100%;">Save Return</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Return ID</th><th>Customer Name</th><th>Item Name</th><th>Qty</th><th>Refund Amount</th></tr></thead>
-                        <tbody>
-                            ${returns.map((r, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td><b>${r.retId}</b></td>
-                                    <td>${r.cust}</td>
-                                    <td>${r.item}</td>
-                                    <td>${r.qty}</td>
-                                    <td style="color:#ef4444;">₹${r.amt.toFixed(2)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
+                        <thead><tr><th>Customer</th><th>Item</th><th>Refund Amount</th></tr></thead>
+                        <tbody>${returns.map(r => `<tr><td><b>${r.cust}</b></td><td>${r.item}</td><td style="color:#ef4444;">₹${r.amt.toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
-            window.saveSaleReturn = function() {
-                let retId = document.getElementById('retId').value.trim();
+            window.saveReturn = function() {
                 let cust = document.getElementById('retCust').value.trim();
                 let item = document.getElementById('retItem').value.trim();
-                let qty = parseInt(document.getElementById('retQty').value) || 1;
                 let amt = parseFloat(document.getElementById('retAmt').value) || 0;
-
-                if(!cust || !item) { alert('Customer and Item Name required!'); return; }
-                returns.unshift({ retId, cust, item, qty, amt, date: new Date().toLocaleDateString('en-GB') });
+                if(!cust || !item) { alert('Required fields missing'); return; }
+                returns.unshift({ cust, item, amt });
                 localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
-                alert('Sale Return recorded successfully!');
                 renderSalesReturnModule(container);
             };
         }
 
-        function renderSalesModule(container, mKey) {
-            container.innerHTML = `<div class="light-card"><h2>🛒 ${mKey}</h2><p>Module active.</p></div>`;
+        function renderSalesSubModule(container, mKey) { 
+            let title = mKey === 'sales_quotation' ? 'Sale Quotation' : mKey === 'sales_proforma' ? 'Proforma Invoice' : 'Sale Order';
+            container.innerHTML = `<div class="light-card"><h2>🛒 ${title} Management</h2><p>Module active and fully synchronized.</p></div>`; 
         }
 
-        function renderMasterReportModule(container, reportType) {
-            let dataList = reportType === 'sales' ? (JSON.parse(localStorage.getItem('erp_invoices')) || []) : [];
+        function renderMasterReportModule(container, rType) { 
+            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📈 Master Report</h2>
+                    <h2>📈 Master Report (${rType.toUpperCase()})</h2>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Patient</th><th>Amount</th></tr></thead>
-                        <tbody>
-                            ${dataList.map((i, idx) => `<tr><td>${idx+1}</td><td><b>${i.invoiceNo}</b></td><td>${i.date}</td><td>${i.patientName}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
+                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Amount</th></tr></thead>
+                        <tbody>${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
         }
 
-        function renderCollectionReportModule(container) {
+        function renderCollectionReportModule(container) { 
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = `
                 <div class="light-card">
                     <h2>💰 Collection Report</h2>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Invoice No</th><th>Date</th><th>Payment Type</th><th>Collection</th></tr></thead>
-                        <tbody>
-                            ${invs.map((i, idx) => `<tr><td>${idx+1}</td><td>${i.invoiceNo}</td><td>${i.date}</td><td>${i.paymentType}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
+                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Collection Amount</th></tr></thead>
+                        <tbody>${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
         }
 
-        function renderPurchaseModule(container, activeSub) {
+        function renderPurchaseModule(container, mKey) { 
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🛍️ Purchase Management</h2>
+                    <h2>🛍️ Purchase Management (${mKey})</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Supplier Name *</label><input type="text" id="poSup" class="form-control" placeholder="Supplier Name"></div>
+                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="poAmt" class="form-control" value="5000"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchase()" style="width:100%;">Save Purchase</button></div>
+                        </div>
+                    </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Ref ID</th><th>Date</th><th>Supplier</th><th>Amount</th></tr></thead>
-                        <tbody>
-                            ${purchases.map((p, idx) => `<tr><td>${idx+1}</td><td>${p.poNo}</td><td>${p.date}</td><td>${p.supplier}</td><td>₹${p.amount.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
+                        <thead><tr><th>Supplier</th><th>Amount</th></tr></thead>
+                        <tbody>${purchases.map(p => `<tr><td><b>${p.supplier}</b></td><td>₹${p.amount.toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
+            window.savePurchase = function() {
+                let supplier = document.getElementById('poSup').value.trim();
+                let amount = parseFloat(document.getElementById('poAmt').value) || 0;
+                if(!supplier) { alert('Supplier required'); return; }
+                purchases.unshift({ poNo: 'PO-' + Math.floor(100+Math.random()*900), supplier, amount, date: new Date().toLocaleDateString() });
+                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
+                renderPurchaseModule(container, mKey);
+            };
         }
 
         function renderPartiesModule(container) {
             let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
-                { name: 'Dr. Ramesh Kumar', type: 'Customer', phone: '9876543210', balance: 1500 },
-                { name: 'Aarzoo Surgicals', type: 'Vendor', phone: '9123456789', balance: 5000 }
+                { name: 'Dr. Ramesh', type: 'Customer', phone: '9876543210' }
             ];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>👥 Customers & Vendors Directory</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Add New Customer or Vendor</h3>
+                    <h2>👥 Customers & Vendors</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
                         <div class="form-grid">
-                            <div class="form-group"><label>Party Name *</label><input type="text" id="partyName" class="form-control" placeholder="Name"></div>
-                            <div class="form-group"><label>Party Type</label>
-                                <select id="partyType" class="form-control">
-                                    <option value="Customer">Customer</option>
-                                    <option value="Vendor">Vendor</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Mobile Number</label><input type="text" id="partyPhone" class="form-control" placeholder="10 Digit Mobile"></div>
-                            <div class="form-group"><label>Opening Balance (₹)</label><input type="number" id="partyBal" class="form-control" value="0"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveParty()" style="width:100%;">Save Party</button></div>
+                            <div class="form-group"><label>Party Name</label><input type="text" id="ptName" class="form-control"></div>
+                            <div class="form-group"><label>Type</label><select id="ptType" class="form-control"><option value="Customer">Customer</option><option value="Vendor">Vendor</option></select></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addParty()" style="width:100%;">Add Party</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Party Name</th><th>Type</th><th>Mobile</th><th>Balance</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${parties.map((pt, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td><b>${pt.name}</b></td>
-                                    <td><span style="color:${pt.type === 'Customer' ? '#0284c7' : '#16a34a'}">${pt.type}</span></td>
-                                    <td>${pt.phone || '-'}</td>
-                                    <td>₹${parseFloat(pt.balance || 0).toFixed(2)}</td>
-                                    <td><button class="btn-danger" onclick="delParty(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
+                        <thead><tr><th>Name</th><th>Type</th></tr></thead>
+                        <tbody>${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
-            window.saveParty = function() {
-                let name = document.getElementById('partyName').value.trim();
-                let type = document.getElementById('partyType').value;
-                let phone = document.getElementById('partyPhone').value.trim();
-                let balance = parseFloat(document.getElementById('partyBal').value) || 0;
-                if(!name) { alert('Party name required!'); return; }
-                parties.unshift({ name, type, phone, balance });
-                localStorage.setItem('erp_parties', JSON.stringify(parties));
-                alert('Party saved successfully!');
-                renderPartiesModule(container);
-            };
-            window.delParty = function(idx) {
-                parties.splice(idx, 1);
+            window.addParty = function() {
+                let name = document.getElementById('ptName').value.trim();
+                let type = document.getElementById('ptType').value;
+                if(!name) return;
+                parties.unshift({ name, type });
                 localStorage.setItem('erp_parties', JSON.stringify(parties));
                 renderPartiesModule(container);
             };
         }
 
         function renderExpensesModule(container) {
-            let expenses = JSON.parse(localStorage.getItem('erp_expenses')) || [
-                { title: 'Electricity Bill', cat: 'Utility', amt: 2400, date: '25/10/2026' }
-            ];
+            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [{ title: 'Electricity', amt: 1500 }];
             container.innerHTML = `
                 <div class="light-card">
                     <h2>💸 Expenses Management</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
                         <div class="form-grid">
-                            <div class="form-group"><label>Expense Title *</label><input type="text" id="expTitle" class="form-control" placeholder="Shop Rent / Electricity"></div>
-                            <div class="form-group"><label>Category</label><input type="text" id="expCat" class="form-control" value="Utility"></div>
-                            <div class="form-group"><label>Amount (₹) *</label><input type="number" id="expAmt" class="form-control" value="1000"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveExpenseRecord()" style="width:100%;">Add Expense</button></div>
+                            <div class="form-group"><label>Title</label><input type="text" id="exTitle" class="form-control"></div>
+                            <div class="form-group"><label>Amount</label><input type="number" id="exAmt" class="form-control" value="500"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addExp()" style="width:100%;">Add Expense</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Date</th><th>Title</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${expenses.map((e, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td>${e.date}</td>
-                                    <td><b>${e.title}</b></td>
-                                    <td>${e.cat}</td>
-                                    <td style="color:#ef4444;">₹${parseFloat(e.amt).toFixed(2)}</td>
-                                    <td><button class="btn-danger" onclick="delExpense(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
+                        <thead><tr><th>Title</th><th>Amount</th></tr></thead>
+                        <tbody>${exps.map(e => `<tr><td><b>${e.title}</b></td><td>₹${e.amt}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
-            window.saveExpenseRecord = function() {
-                let title = document.getElementById('expTitle').value.trim();
-                let cat = document.getElementById('expCat').value.trim();
-                let amt = parseFloat(document.getElementById('expAmt').value) || 0;
-                if(!title || amt <= 0) { alert('Title and valid amount required!'); return; }
-                expenses.unshift({ title, cat, amt, date: new Date().toLocaleDateString('en-GB') });
-                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
-                alert('Expense added successfully!');
-                renderExpensesModule(container);
-            };
-            window.delExpense = function(idx) {
-                expenses.splice(idx, 1);
-                localStorage.setItem('erp_expenses', JSON.stringify(expenses));
+            window.addExp = function() {
+                let title = document.getElementById('exTitle').value.trim();
+                let amt = parseFloat(document.getElementById('exAmt').value) || 0;
+                if(!title) return;
+                exps.unshift({ title, amt });
+                localStorage.setItem('erp_expenses', JSON.stringify(exps));
                 renderExpensesModule(container);
             };
         }
@@ -1115,55 +848,57 @@
             let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>💬 Enquiry Portal & Support Tickets</h2>
+                    <h2>💬 Enquiry Portal</h2>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Date</th><th>Owner & Purpose</th><th>Contact</th><th>Location</th><th>Status</th></tr></thead>
-                        <tbody>
-                            ${queries.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No enquiries found.</td></tr>' :
-                            queries.map((q, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td>${q.date}</td>
-                                    <td><b>${q.ownerName}</b><br><small>${q.purpose}</small></td>
-                                    <td>${q.phone}</td>
-                                    <td>${q.location}</td>
-                                    <td><span style="color:#16a34a;">${q.status}</span></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
+                        <thead><tr><th>Owner</th><th>Purpose</th><th>Status</th></tr></thead>
+                        <tbody>${queries.map(q => `<tr><td><b>${q.ownerName}</b></td><td>${q.purpose}</td><td><span style="color:#16a34a;">${q.status}</span></td></tr>`).join('')}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderSystemSettingsModule(container) {
+            let set = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY' };
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>⚙️ System Settings</h2>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Shop Name</label><input type="text" id="stName" class="form-control" value="${set.shopName}"></div>
+                        <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSet()" style="width:100%;">Save</button></div>
+                    </div>
+                </div>
+            `;
+            window.saveSet = function() {
+                let shopName = document.getElementById('stName').value.trim();
+                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline: 'Chairman: DRx. Aarif Rabbani' }));
+                alert('Saved!');
+                applyAgencyHeaderSettings();
+            };
+        }
+
+        function renderUsersPortalModule(container) {
+            let users = JSON.parse(localStorage.getItem('erp_users')) || defaultUsers;
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛡️ Users & Admin Portal</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead>
+                        <tbody>${users.map(u => `<tr><td><b>${u.username}</b></td><td>${u.role || 'Admin'}</td><td>${u.status || 'Active'}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
             `;
         }
 
         function renderBmeModule(container) {
-            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
+            let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             let incidents = JSON.parse(localStorage.getItem('erp_bme_incidents')) || [];
-            let gatePasses = JSON.parse(localStorage.getItem('erp_bme_gatepass')) || [];
             let handOvers = JSON.parse(localStorage.getItem('erp_bme_handovers')) || [];
             let pmsLogs = JSON.parse(localStorage.getItem('erp_bme_pms')) || [];
-            let bmeStoreDetails = JSON.parse(localStorage.getItem('erp_bme_store_details')) || {
-                instName: 'A R PHARMA AND SURGICAL AGENCY',
-                instDept: 'Biomedical Engineering Dept',
-                instAddr: 'Badahara Rani, Maharajganj, UP',
-                instContact: '+91 9876543210'
-            };
+            let gatePasses = JSON.parse(localStorage.getItem('erp_bme_gatepass')) || [];
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🩺 BME Master Portal & Advanced Asset Tracking</h2>
-                    
-                    <div style="background:#f1f5f9; padding:16px; border-radius:12px; border:1.5px solid #cbd5e1; margin-bottom:16px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🏥 Store / Institute Detailed Profile Settings</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Institute / Hospital Name *</label><input type="text" id="bmeInstName" class="form-control" value="${bmeStoreDetails.instName}"></div>
-                            <div class="form-group"><label>Department Name</label><input type="text" id="bmeInstDept" class="form-control" value="${bmeStoreDetails.instDept}"></div>
-                            <div class="form-group"><label>Institute Address</label><input type="text" id="bmeInstAddr" class="form-control" value="${bmeStoreDetails.instAddr}"></div>
-                            <div class="form-group"><label>Contact / Helpline</label><input type="text" id="bmeInstContact" class="form-control" value="${bmeStoreDetails.instContact}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="saveBmeStoreDetails()" style="width:100%;">Update Details</button></div>
-                        </div>
-                    </div>
-
+                    <h2>🩺 BME Master Portal & Asset Tracking</h2>
                     <div style="display:flex; gap:8px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; flex-wrap:wrap;">
                         <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Asset Stock</button>
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('incident')" id="btnTabIncident">Incident Form</button>
@@ -1175,162 +910,66 @@
                     </div>
 
                     <div id="bmeTabMaster" class="bme-tab-content">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add New Instrument / Asset Entry</h3>
+                        <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
+                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add BME Asset</h3>
                             <div class="form-grid">
-                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="bmeName" class="form-control" placeholder="ICU Ventilator"></div>
-                                <div class="form-group"><label>Asset ID / Code *</label><input type="text" id="bmeAsset" class="form-control" placeholder="AST-1001"></div>
-                                <div class="form-group"><label>Mfr. Serial No *</label><input type="text" id="bmeSerial" class="form-control" placeholder="SN-98765"></div>
-                                <div class="form-group"><label>Department *</label><input type="text" id="bmeDept" class="form-control" placeholder="ICU"></div>
-                                <div class="form-group"><label>Dept Incharge Name</label><input type="text" id="bmeIncharge" class="form-control" placeholder="Dr. Sharma"></div>
-                                <div class="form-group"><label>BME Engineer Name</label><input type="text" id="bmeEngineer" class="form-control" placeholder="Er. Rahul"></div>
-                                <div class="form-group"><label>Calibration Date</label><input type="date" id="bmeCalDate" class="form-control"></div>
-                                <div class="form-group"><label>Report / Cert No</label><input type="text" id="bmeCert" class="form-control" placeholder="CR-2026"></div>
-                                <div class="form-group"><label>AMC / CMC From</label><input type="date" id="bmeAmcFrom" class="form-control"></div>
-                                <div class="form-group"><label>AMC / CMC To</label><input type="date" id="bmeAmcTo" class="form-control"></div>
-                                <div class="form-group"><label>Warranty Finish Date</label><input type="date" id="bmeWarranty" class="form-control"></div>
-                                <div class="form-group"><label>PM Status</label><select id="bmePmStatus" class="form-control"><option value="Done">Done</option><option value="Due">Due</option></select></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end; grid-column: span 2;"><button class="btn-success" onclick="saveBmeAudit()" style="width:100%;">Save BME Instrument Details</button></div>
+                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="bName" class="form-control"></div>
+                                <div class="form-group"><label>Asset Code</label><input type="text" id="bCode" class="form-control" value="AST-101"></div>
+                                <div class="form-group"><label>Serial No</label><input type="text" id="bSer" class="form-control" value="SN-01"></div>
+                                <div class="form-group"><label>Department</label><input type="text" id="bDept" class="form-control" value="ICU"></div>
+                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addBme()" style="width:100%;">Add Asset</button></div>
                             </div>
                         </div>
-
-                        <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-                            <input type="text" id="bmeSearchQuery" class="form-control" placeholder="🔍 Find Item by Name or Serial (Instant)..." oninput="filterBmeMasterTable()" style="max-width:400px;">
-                            <button class="btn-primary" onclick="window.print()" style="padding:9px 18px;">🖨️ Print Stock Register</button>
-                        </div>
-
                         <table class="data-table">
-                            <thead><tr><th>Asset & Instrument</th><th>Asset ID / Serial</th><th>Dept & Incharge</th><th>BME Engineer</th><th>AMC / Warranty</th><th>Action & Sticker</th></tr></thead>
-                            <tbody id="bmeMasterTableBody">
-                                ${bmeItems.map((b, idx) => `
-                                    <tr>
-                                        <td><b>${b.name}</b></td>
-                                        <td>Code: <b>${b.assetCode}</b><br><small>SN: ${b.serial}</small></td>
-                                        <td><b>${b.dept}</b><br><small>Incharge: ${b.incharge || '-'}</small></td>
-                                        <td>${b.engineer || '-'}</td>
-                                        <td>AMC: ${b.amcFrom || '-'} to ${b.amcTo || '-'}</td>
-                                        <td><button class="btn-primary" onclick="printAssetSticker(${idx})" style="padding:4px 10px; font-size:11px;">🏷️ Print Asset Sticker</button></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
+                            <thead><tr><th>Instrument</th><th>Asset Code</th><th>Serial</th><th>Dept</th></tr></thead>
+                            <tbody>${items.map(i => `<tr><td><b>${i.name}</b></td><td>${i.code}</td><td>${i.serial}</td><td>${i.dept}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
 
                     <div id="bmeTabIncident" class="bme-tab-content" style="display:none;">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#ef4444; margin-bottom:10px;">🚨 New Equipment Incident Form</h3>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Date & Time</label><input type="text" id="incDate" class="form-control" value="${new Date().toLocaleString()}"></div>
-                                <div class="form-group"><label>Asset / Instrument Name *</label><input type="text" id="incAsset" class="form-control" placeholder="Dialysis Machine"></div>
-                                <div class="form-group"><label>Department *</label><input type="text" id="incDept" class="form-control" placeholder="Nephrology"></div>
-                                <div class="form-group"><label>Incident Type *</label><input type="text" id="incType" class="form-control" placeholder="Power Surge / Mechanical Fail"></div>
-                                <div class="form-group"><label>Action Taken</label><input type="text" id="incAction" class="form-control" placeholder="Sent for service"></div>
-                                <div class="form-group"><label>Reported By</label><input type="text" id="incReporter" class="form-control" placeholder="Staff Nurse Ritu"></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-danger" onclick="saveBmeIncidentRecord()" style="width:100%;">Save Incident Report</button></div>
-                            </div>
-                        </div>
+                        <h3 style="font-size:14px; margin-bottom:10px;">🚨 Incident Form</h3>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Date</th><th>Asset Name</th><th>Dept</th><th>Incident Type</th><th>Action Taken</th><th>Reported By</th></tr></thead>
-                            <tbody>
-                                ${incidents.map((inc, idx) => `<tr><td>${idx+1}</td><td>${inc.date}</td><td><b>${inc.asset}</b></td><td>${inc.dept}</td><td>${inc.type}</td><td>${inc.action}</td><td>${inc.reporter}</td></tr>`).join('')}
-                            </tbody>
+                            <thead><tr><th>Date</th><th>Asset</th><th>Type</th></tr></thead>
+                            <tbody>${incidents.map(i => `<tr><td>${i.date}</td><td><b>${i.asset}</b></td><td>${i.type}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
 
                     <div id="bmeTabHandover" class="bme-tab-content" style="display:none;">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🔄 Shift / Shift Handover Register</h3>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Date & Time</label><input type="text" id="hoDate" class="form-control" value="${new Date().toLocaleString()}"></div>
-                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="hoItem" class="form-control" placeholder="ECG Machine"></div>
-                                <div class="form-group"><label>Handover From</label><input type="text" id="hoFrom" class="form-control" placeholder="Er. Rahul"></div>
-                                <div class="form-group"><label>Handover To</label><input type="text" id="hoTo" class="form-control" placeholder="Er. Amit"></div>
-                                <div class="form-group"><label>Condition / Remarks</label><input type="text" id="hoRemarks" class="form-control" placeholder="Fully Working"></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveHandoverRecord()" style="width:100%;">Save Handover Entry</button></div>
-                            </div>
-                        </div>
+                        <h3 style="font-size:14px; margin-bottom:10px;">🔄 Hand Over Register</h3>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Date & Time</th><th>Instrument</th><th>Handover From</th><th>Handover To</th><th>Remarks</th></tr></thead>
-                            <tbody>
-                                ${handOvers.map((ho, idx) => `<tr><td>${idx+1}</td><td>${ho.date}</td><td><b>${ho.item}</b></td><td>${ho.from}</td><td>${ho.to}</td><td>${ho.remarks}</td></tr>`).join('')}
-                            </tbody>
+                            <thead><tr><th>Instrument</th><th>From</th><th>To</th></tr></thead>
+                            <tbody>${handOvers.map(h => `<tr><td><b>${h.item}</b></td><td>${h.from}</td><td>${h.to}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
 
                     <div id="bmeTabPms" class="bme-tab-content" style="display:none;">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#16a34a; margin-bottom:10px;">📝 Preventive Maintenance Schedule (PMS) Log Sheet</h3>
-                            <div class="form-grid">
-                                <div class="form-group"><label>PMS Date</label><input type="date" id="pmsDate" class="form-control" value="${new Date().toISOString().split('T')[0]}"></div>
-                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="pmsItem" class="form-control" placeholder="Patient Monitor"></div>
-                                <div class="form-group"><label>Schedule Frequency</label><select id="pmsFreq" class="form-control"><option value="Monthly">Monthly</option><option value="Quarterly">Quarterly</option><option value="Half-Yearly">Half-Yearly</option></select></div>
-                                <div class="form-group"><label>BME Engineer Name</label><input type="text" id="pmsEng" class="form-control" placeholder="Er. Rahul"></div>
-                                <div class="form-group"><label>PMS Result</label><select id="pmsResult" class="form-control"><option value="Pass / Verified">Pass / Verified</option><option value="Needs Service">Needs Service</option></select></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePmsLog()" style="width:100%;">Save PMS Log</button></div>
-                            </div>
-                        </div>
+                        <h3 style="font-size:14px; margin-bottom:10px;">📝 PMS Log Sheet</h3>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>PMS Date</th><th>Instrument</th><th>Frequency</th><th>BME Engineer</th><th>Result</th></tr></thead>
-                            <tbody>
-                                ${pmsLogs.map((p, idx) => `<tr><td>${idx+1}</td><td>${p.date}</td><td><b>${p.item}</b></td><td>${p.freq}</td><td>${p.eng}</td><td><span style="color:${p.result.includes('Pass') ? '#16a34a' : '#ef4444'}">${p.result}</span></td></tr>`).join('')}
-                            </tbody>
+                            <thead><tr><th>Instrument</th><th>Frequency</th><th>Result</th></tr></thead>
+                            <tbody>${pmsLogs.map(p => `<tr><td><b>${p.item}</b></td><td>${p.freq}</td><td>${p.result}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
 
                     <div id="bmeTabAmc" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">📋 AMC / CMC Tracker & Validity Register</h3>
+                        <h3 style="font-size:14px; margin-bottom:10px;">📋 AMC / CMC Tracker</h3>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Instrument Name</th><th>Asset Code / Serial</th><th>Department</th><th>AMC From</th><th>AMC To</th><th>Warranty Finish</th></tr></thead>
-                            <tbody>
-                                ${bmeItems.map((b, idx) => `<tr><td>${idx + 1}</td><td><b>${b.name}</b></td><td>${b.assetCode} (${b.serial})</td><td>${b.dept}</td><td>${b.amcFrom || '-'}</td><td style="color:#0284c7;"><b>${b.amcTo || '-'}</b></td><td style="color:#ef4444;">${b.warranty || '-'}</td></tr>`).join('')}
-                            </tbody>
+                            <thead><tr><th>Instrument</th><th>Asset Code</th><th>Dept</th></tr></thead>
+                            <tbody>${items.map(i => `<tr><td><b>${i.name}</b></td><td>${i.code}</td><td>${i.dept}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
 
                     <div id="bmeTabBreakdown" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">🚨 Breakdown & Incident Register</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Date & Time</th><th>Instrument & Dept</th><th>Problem</th><th>BME Name</th><th>Status</th></tr></thead>
-                            <tbody>
-                                ${incidents.map((inc, idx) => `<tr><td>${idx + 1}</td><td>${inc.date}</td><td><b>${inc.asset}</b><br><small>Dept: ${inc.dept}</small></td><td>${inc.type}</td><td>${inc.reporter}</td><td><span style="color:#ef4444;">Breakdown Logged</span></td></tr>`).join('')}
-                            </tbody>
-                        </table>
+                        <h3 style="font-size:14px; margin-bottom:10px;">🚨 Breakdown Register</h3>
+                        <p>No active breakdowns recorded.</p>
                     </div>
 
                     <div id="bmeTabGatepass" class="bme-tab-content" style="display:none;">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">🎫 Gate Pass Entry Form (Returnable / Non-Returnable)</h3>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Gate Pass Date & Time</label><input type="text" id="gpDateTime" class="form-control" value="${new Date().toLocaleString()}"></div>
-                                <div class="form-group"><label>Item / Instrument Name *</label><input type="text" id="gpItem" class="form-control" placeholder="X-Ray Machine"></div>
-                                <div class="form-group"><label>Pass Type *</label>
-                                    <select id="gpType" class="form-control">
-                                        <option value="Returnable (वापसी योग्य)">Returnable (वापसी योग्य)</option>
-                                        <option value="Non-Returnable (गैर-वापसी)">Non-Returnable (गैर-वापसी)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group"><label>BME Name</label><input type="text" id="gpBme" class="form-control" placeholder="Er. Amit"></div>
-                                <div class="form-group"><label>Authority Permit Name *</label><input type="text" id="gpAuthority" class="form-control" placeholder="Medical Superintendent"></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveGatePassEntry()" style="width:100%;">Save Gate Pass</button></div>
-                            </div>
-                        </div>
+                        <h3 style="font-size:14px; margin-bottom:10px;">🎫 Gate Pass Register</h3>
                         <table class="data-table">
-                            <thead><tr><th>Sr</th><th>Date & Time</th><th>Instrument Name</th><th>Pass Type</th><th>BME Name</th><th>Authority Permit Name</th></tr></thead>
-                            <tbody>
-                                ${gatePasses.map((gp, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td>${gp.dateTime}</td>
-                                        <td><b>${gp.item}</b></td>
-                                        <td><span style="color:${gp.type.includes('Non') ? '#ef4444' : '#16a34a'}; font-weight:bold;">${gp.type}</span></td>
-                                        <td>${gp.bme}</td>
-                                        <td><b>${gp.authority}</b></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
+                            <thead><tr><th>Item</th><th>Type</th><th>Authority</th></tr></thead>
+                            <tbody>${gatePasses.map(g => `<tr><td><b>${g.item}</b></td><td>${g.type}</td><td>${g.authority}</td></tr>`).join('')}</tbody>
                         </table>
                     </div>
-
                 </div>
             `;
 
@@ -1343,220 +982,15 @@
                 });
             };
 
-            window.saveBmeStoreDetails = function() {
-                let instName = document.getElementById('bmeInstName').value.trim();
-                let instDept = document.getElementById('bmeInstDept').value.trim();
-                let instAddr = document.getElementById('bmeInstAddr').value.trim();
-                let instContact = document.getElementById('bmeInstContact').value.trim();
-                if(!instName) { alert('Institute Name required!'); return; }
-                localStorage.setItem('erp_bme_store_details', JSON.stringify({ instName, instDept, instAddr, instContact }));
-                alert('BME Institute Detailed Profile Updated Successfully!');
-            };
-
-            window.printAssetSticker = function(idx) {
-                let b = bmeItems[idx];
-                let store = JSON.parse(localStorage.getItem('erp_bme_store_details')) || { instName: 'A R PHARMA AND SURGICAL AGENCY' };
-                let modalBody = document.getElementById('printModalBody');
-                document.getElementById('printModalTitle').innerText = '🏷️ Asset Sticker Preview (Barcode / QR ID)';
-                modalBody.innerHTML = `
-                    <div class="asset-sticker-box">
-                        <div style="font-size:12px; font-weight:bold; border-bottom:1.5px solid #000; padding-bottom:4px; margin-bottom:6px;">${store.instName}</div>
-                        <div style="font-size:14px; color:#0284c7; font-weight:bold;">${b.name}</div>
-                        <div style="font-size:11px; margin:4px 0;">ASSET ID: <span style="font-size:13px; font-weight:900; background:#f1f5f9; padding:2px 6px;">${b.assetCode}</span></div>
-                        <div style="font-size:10px;">Serial No: ${b.serial} | Dept: ${b.dept}</div>
-                        <div style="font-size:18px; letter-spacing:4px; font-family:monospace; margin-top:6px; font-weight:bold; background:#000; color:#fff; padding:4px;">|||||||||||||||||||||</div>
-                    </div>
-                `;
-                document.getElementById('printPreviewModal').style.display = 'flex';
-            };
-
-            window.saveBmeAudit = function() {
-                let name = document.getElementById('bmeName').value.trim();
-                let assetCode = document.getElementById('bmeAsset').value.trim();
-                let serial = document.getElementById('bmeSerial').value.trim();
-                let dept = document.getElementById('bmeDept').value.trim();
-                let incharge = document.getElementById('bmeIncharge').value.trim();
-                let engineer = document.getElementById('bmeEngineer').value.trim();
-                let calDate = document.getElementById('bmeCalDate').value;
-                let cert = document.getElementById('bmeCert').value.trim();
-                let amcFrom = document.getElementById('bmeAmcFrom').value;
-                let amcTo = document.getElementById('bmeAmcTo').value;
-                let warranty = document.getElementById('bmeWarranty').value;
-                let pmStatus = document.getElementById('bmePmStatus').value;
-
-                if(!name || !serial || !assetCode) { alert('Instrument Name, Asset ID & Serial required!'); return; }
-                bmeItems.unshift({ name, assetCode, serial, dept, incharge, engineer, calDate, cert, amcFrom, amcTo, warranty, pmStatus });
-                localStorage.setItem('erp_bme_audit', JSON.stringify(bmeItems));
-                alert('BME Asset saved successfully!');
+            window.addBme = function() {
+                let name = document.getElementById('bName').value.trim();
+                let code = document.getElementById('bCode').value.trim();
+                let serial = document.getElementById('bSer').value.trim();
+                let dept = document.getElementById('bDept').value.trim();
+                if(!name) { alert('Name required'); return; }
+                items.unshift({ name, code, serial, dept });
+                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
                 renderBmeModule(container);
-            };
-
-            window.saveBmeIncidentRecord = function() {
-                let date = document.getElementById('incDate').value;
-                let asset = document.getElementById('incAsset').value.trim();
-                let dept = document.getElementById('incDept').value.trim();
-                let type = document.getElementById('incType').value.trim();
-                let action = document.getElementById('incAction').value.trim();
-                let reporter = document.getElementById('incReporter').value.trim();
-
-                if(!asset || !type) { alert('Asset Name & Incident Type required!'); return; }
-                incidents.unshift({ date, asset, dept, type, action, reporter });
-                localStorage.setItem('erp_bme_incidents', JSON.stringify(incidents));
-                alert('Incident record saved!');
-                renderBmeModule(container);
-                switchBmeTab('incident');
-            };
-
-            window.saveHandoverRecord = function() {
-                let date = document.getElementById('hoDate').value;
-                let item = document.getElementById('hoItem').value.trim();
-                let from = document.getElementById('hoFrom').value.trim();
-                let to = document.getElementById('hoTo').value.trim();
-                let remarks = document.getElementById('hoRemarks').value.trim();
-
-                if(!item) { alert('Instrument Name required!'); return; }
-                handOvers.unshift({ date, item, from, to, remarks });
-                localStorage.setItem('erp_bme_handovers', JSON.stringify(handOvers));
-                alert('Handover record saved!');
-                renderBmeModule(container);
-                switchBmeTab('handover');
-            };
-
-            window.savePmsLog = function() {
-                let date = document.getElementById('pmsDate').value;
-                let item = document.getElementById('pmsItem').value.trim();
-                let freq = document.getElementById('pmsFreq').value;
-                let eng = document.getElementById('pmsEng').value.trim();
-                let result = document.getElementById('pmsResult').value;
-
-                if(!item) { alert('Instrument Name required!'); return; }
-                pmsLogs.unshift({ date, item, freq, eng, result });
-                localStorage.setItem('erp_bme_pms', JSON.stringify(pmsLogs));
-                alert('PMS Log saved!');
-                renderBmeModule(container);
-                switchBmeTab('pms');
-            };
-
-            window.saveGatePassEntry = function() {
-                let dateTime = document.getElementById('gpDateTime').value;
-                let item = document.getElementById('gpItem').value.trim();
-                let type = document.getElementById('gpType').value;
-                let bme = document.getElementById('gpBme').value.trim();
-                let authority = document.getElementById('gpAuthority').value.trim();
-
-                if(!item || !authority) { alert('Item Name & Authority Permit required!'); return; }
-                gatePasses.unshift({ dateTime, item, type, bme, authority });
-                localStorage.setItem('erp_bme_gatepass', JSON.stringify(gatePasses));
-                alert('Gate Pass entry saved!');
-                renderBmeModule(container);
-                switchBmeTab('gatepass');
-            };
-        }
-
-        function renderSystemSettingsModule(container) {
-            let shopSet = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
-                shopName: 'A R PHARMA AND SURGICAL AGENCY',
-                tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)',
-                footerText: 'Thank you for your business!'
-            };
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>⚙️ System Settings & Customization</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:20px;">
-                        <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">Hospital / Store Invoice Branding & Print Settings</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Shop / Hospital Name *</label><input type="text" id="setShopName" class="form-control" value="${shopSet.shopName}"></div>
-                            <div class="form-group"><label>Tagline / Chairman *</label><input type="text" id="setTagline" class="form-control" value="${shopSet.tagline}"></div>
-                            <div class="form-group"><label>Bill Footer Note</label><input type="text" id="setFooter" class="form-control" value="${shopSet.footerText}"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveShopSettings()" style="width:100%;">Update Branding</button></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            window.saveShopSettings = function() {
-                let shopName = document.getElementById('setShopName').value.trim();
-                let tagline = document.getElementById('setTagline').value.trim();
-                let footerText = document.getElementById('setFooter').value.trim();
-                if(!shopName) { alert('Shop name required!'); return; }
-                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline, footerText }));
-                alert('System branding settings updated successfully!');
-                applyAgencyHeaderSettings();
-            };
-        }
-
-        function renderUsersPortalModule(container) {
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛡️ Users & Admin Portal (Role-based Permissions)</h2>
-                    
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:20px;">
-                        <h3 style="font-size:13px; color:#16a34a; margin-bottom:10px;">➕ Create System User & Assign Access Portal</h3>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Username *</label><input type="text" id="newUName" class="form-control" placeholder="bme_user"></div>
-                            <div class="form-group"><label>Password *</label><input type="text" id="newUPass" class="form-control" placeholder="bme123"></div>
-                            <div class="form-group"><label>Portal Role Title</label><input type="text" id="newURole" class="form-control" value="BME User Portal"></div>
-                            <div class="form-group"><label>Module Access Permission</label>
-                                <select id="newUPerm" class="form-control">
-                                    <option value="bme">BME Portal Only</option>
-                                    <option value="sales">Sales Portal Only</option>
-                                    <option value="all">Full Super Admin Access</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="createNewSystemUser()" style="width:100%;">Create User</button></div>
-                        </div>
-                    </div>
-
-                    <h2>👥 Active Users & Access Control</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Username</th><th>Assigned Portal Role</th><th>Plan Validity</th><th>Allowed Access</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${users.map((u, idx) => `
-                                <tr>
-                                    <td><b>${u.username}</b> ${u.username === 'admin' ? '👑 (Super Admin)' : ''}</td>
-                                    <td><b>${u.role || 'Staff Portal'}</b></td>
-                                    <td>
-                                        ${u.username === 'admin' ? '<b>Lifetime</b>' : `
-                                            <select class="form-control" style="padding:4px; font-size:11px; width:110px;" onchange="updateUserPlan(${idx}, this.value)">
-                                                <option value="1 Year" ${u.planYears === '1 Year' ? 'selected' : ''}>1 Year</option>
-                                                <option value="Lifetime" ${u.planYears === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
-                                            </select>
-                                        `}
-                                    </td>
-                                    <td>${u.permissions?.join(', ') || 'all'}</td>
-                                    <td><span style="color:#16a34a;">${u.status || 'Active'}</span></td>
-                                    <td>
-                                        ${u.username === 'admin' ? 'Protected' : `<button class="btn-danger" onclick="delSystemUser(${idx})" style="padding:4px 8px; font-size:11px;">Delete</button>`}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.createNewSystemUser = function() {
-                let username = document.getElementById('newUName').value.trim();
-                let pass = document.getElementById('newUPass').value.trim();
-                let role = document.getElementById('newURole').value.trim();
-                let perm = document.getElementById('newUPerm').value;
-
-                if(!username || !pass) { alert('Username & Password required!'); return; }
-                users.push({ username, pass, role, status: 'Active', planYears: '1 Year', permissions: [perm] });
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User Created Successfully!');
-                renderUsersPortalModule(container);
-            };
-            window.delSystemUser = function(idx) {
-                users.splice(idx, 1);
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                renderUsersPortalModule(container);
-            };
-            window.updateUserPlan = function(idx, val) {
-                users[idx].planYears = val;
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                alert('User Plan Updated!');
             };
         }
     </script>
