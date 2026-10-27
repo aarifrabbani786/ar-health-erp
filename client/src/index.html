@@ -83,7 +83,7 @@ tbody tr:hover{background:#f0f9ff}
 .field label{font-size:10.5px;font-weight:900!important;color:#334155;text-transform:uppercase}
 .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-backdrop.show{display:flex}
-.modal{background:#fff;border-radius:20px;width:min(680px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
+.modal{background:#fff;border-radius:20px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
 .modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--line)}
 .modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:var(--navy)}
 .modal-body{padding:22px}
@@ -99,7 +99,6 @@ tbody tr:hover{background:#f0f9ff}
 .autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
 .autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
-/* LOGIN SCREENSHOT 14 STYLE BORDER GLOW */
 #loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#090d16,#1e293b);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
 .animated-login-wrapper{display:flex;width:100%;max-width:760px;min-height:390px;background:#111827;border-radius:22px;overflow:hidden;box-shadow:0 0 45px rgba(234,88,12,0.35);border:2.5px solid #ea580c;position:relative}
 .login-form-side{flex:1;padding:35px 28px;display:flex;flex-direction:column;justify-content:center;background:#111827}
@@ -119,11 +118,11 @@ tbody tr:hover{background:#f0f9ff}
 @keyframes blinkBorder{0%{border-color:#fed7aa}50%{border-color:#38bdf8}100%{border-color:#fed7aa}}
 @media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
 
-/* PRINT STYLING */
+/* A4 EXACT PRINT STYLING FOR OPD & BILLING */
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
-  #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 15px; }
+  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; }
 }
 </style>
 </head>
@@ -149,7 +148,7 @@ tbody tr:hover{background:#f0f9ff}
     </div>
     <div class="welcome-side-glow">
       <h2>WELCOME BACK!</h2>
-      <p><b id="loginFirmTitle">A R ERP SOFTWARE</b><br>COMPLETE DIGITAL DATA & BILLING WORKSPACE.</p>
+      <p><b id="loginHeaderTitle">A R ERP SOFTWARE</b><br><span id="loginSubTitle">COMPLETE DIGITAL DATA & BILLING WORKSPACE</span></p>
       <div class="blink-menu-card" id="sliderMenuCard">⚡ Loading Modules...</div>
     </div>
   </div>
@@ -158,8 +157,8 @@ tbody tr:hover{background:#f0f9ff}
 <div class="app">
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="logo" id="firmLogoText">AR</div>
-    <div><strong id="sidebarFirmName">A R ERP SOFTWARE</strong><small id="firmTagline">COMPLETE DIGITAL DATA & BILLING</small></div>
+    <div class="logo">AR</div>
+    <div><strong>A R ERP SOFTWARE</strong><small id="firmTagline">ENTERPRISE SYSTEM</small></div>
   </div>
   <nav class="nav" id="nav"></nav>
 </aside>
@@ -212,11 +211,12 @@ const state = {
   role: "Super Admin",
   name: "Aarif",
   isLoggedIn: false,
-  firmName: localStorage.getItem("ar_firm_name") || "SKS HOSPITAL MEDICAL COLLEGE AND RESEARCH CENTRE",
-  firmAddress: localStorage.getItem("ar_firm_address") || "NH 2, Village & Post - Chaumuhan, Mathura, Uttar Pradesh 281406",
-  firmGstin: localStorage.getItem("ar_firm_gstin") || "09AAAAA0000A1Z5",
+  hospitalName: localStorage.getItem("ar_hospital_name") || "AR PHARMA AND SURGICAL AGENCY",
+  hospitalAddress: localStorage.getItem("ar_hospital_address") || "Maharajganj, Uttar Pradesh",
+  hospitalGstin: localStorage.getItem("ar_hospital_gstin") || "09AAAAA0000A1Z5",
   records: loadRecords(),
-  users: loadUsers()
+  users: loadUsers(),
+  editingIdx: null
 };
 
 function loadRecords(){try{return JSON.parse(localStorage.getItem("ar_erp_records")||"{}")}catch{return {}}}
@@ -227,7 +227,10 @@ function loadUsers(){
     const u = JSON.parse(localStorage.getItem("ar_erp_users")||"null");
     if(Array.isArray(u) && u.length) return u;
   }catch{}
-  return [{id:"USR-001", name:"Aarif", username:"Aarif", pass:"7860", role:"Super Admin", department:"Administration", status:"Active", isLocked:true}];
+  return [
+    {id:"USR-001", name:"Aarif", username:"Aarif", pass:"7860", role:"Super Admin", department:"Administration", status:"Active", isLocked:true},
+    {id:"USR-002", name:"Biomedical Engineer", username:"Bme", pass:"1234", role:"Biomedical Engineer", department:"Biomedical Engineering", status:"Active", isLocked:false}
+  ];
 }
 function saveUsers(){try{localStorage.setItem("ar_erp_users",JSON.stringify(state.users))}catch{}}
 
@@ -276,6 +279,7 @@ function logoutUser(){
 
 function openChangePasswordModal(){
   $("modalTitle").textContent = "🔑 Change Password";
+  state.editingIdx = null;
   $("modalBody").innerHTML = `
     <div class="field" style="margin-bottom:12px;"><label>Current Password</label><input type="password" id="oldPass" required></div>
     <div class="field" style="margin-bottom:12px;"><label>New Password</label><input type="password" id="newPass" required></div>
@@ -291,7 +295,7 @@ function openChangePasswordModal(){
       closeModal();
       toast("Password Updated Successfully!");
     } else {
-      toast("Incorrect Old Password!");
+      alert("Incorrect Old Password!");
     }
   };
   $("modalBackdrop").classList.add("show");
@@ -330,7 +334,7 @@ $("loginForm").addEventListener("submit", e => {
     state.isLoggedIn = true; state.name = "Aarif"; state.role = "Super Admin";
     $("loginOverlay").style.display = "none"; toast("Welcome Super Admin Aarif!"); render(); return;
   }
-  const found = state.users.find(x => x.username.toLowerCase() === u.toLowerCase() && (x.pass || "7860") === p);
+  const found = state.users.find(x => x.username.toLowerCase() === u.toLowerCase() && (x.pass || "1234") === p);
   if(found){
     if(found.status !== "Active"){ alert("Error: Account Deactivated!"); return; }
     state.isLoggedIn = true; state.name = found.name; state.role = found.role;
@@ -342,16 +346,17 @@ $("loginForm").addEventListener("submit", e => {
 
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
 
-// COLLAPSIBLE SIDEBAR GROUPS WITH PERMISSION FILTER
+// COLLAPSIBLE SIDEBAR MENU GROUPS WITH ROLE RESTRICTION FOR BME
 function renderNav(filter=""){
   let out="";
   groups.forEach((g, idx)=>{
-    // Check if user has permission for this group items
-    const allowedItems = g.items.filter(x => {
-      if(state.role === "Super Admin" || state.role === "Administrator") return true;
-      // Normal role permissions check (simplified to match role/department)
-      return true; 
-    });
+    let allowedItems = g.items;
+    
+    // RESTRICT BME USER TO ONLY BIOMEDICAL ENGINEERING MODULES
+    if(state.role === "Biomedical Engineer"){
+      allowedItems = g.items.filter(x => g.label === "BIOMEDICAL ENGINEERING" || x[1] === "dashboard");
+    }
+
     const items=allowedItems.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));
     if(!items.length)return;
 
@@ -380,10 +385,10 @@ function dashboard(){
 
   setTimeout(renderDashboardChart, 100);
 
-  return `<div class="welcome"><div><div class="eyebrow">${escapeHTML(state.firmName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
+  return `<div class="welcome"><div><div class="eyebrow">A R ERP SOFTWARE • ${escapeHTML(state.hospitalName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
 <div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated from Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Auto-fetched from Register")}${card("MEDICINE ITEMS",medicinesCount,"✚","Auto-fetched from Master")}${card("BIOMEDICAL ASSETS",assetsCount,"⌘","Auto-fetched from Assets")}</div>
 <div class="panel"><div class="panel-head"><h3>📈 Revenue & OPD Analytics Chart</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
-<div class="footer">${escapeHTML(state.firmName)} • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
+<div class="footer">A R ERP SOFTWARE • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
 }
 
 function renderDashboardChart(){
@@ -417,7 +422,18 @@ const fieldMap={
  laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["department","Department Name","text",true],["testName","Lab Test Name","text",true],["resultValue","Test Result Value","text",true],["normalRange","Normal Reference Range","text",true],["price","Test Price (₹)","number",true]],
  radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["scanName","Procedure Name","text",true],["findings","Radiology Findings & Report","textarea",true],["price","Scan Price (₹)","number",true]],
  discharge:[["dischargeNo","Discharge ID (Auto)","text",true,"DIS"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["diagnosis","Final Diagnosis","textarea",true],["treatmentGiven","Treatment & Course in Hospital","textarea",true],["status","Discharge Status","select",true,["Discharged Stable","Referral","LAMA"]]],
- "hospital-billing":[["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["advancePaid","Advance Paid (₹)","number",true],["totalBill","Total Bill Amount (₹)","number",true],["dueAmount","Due Balance (₹)","number",true],["status","Final Discharge Status","select",true,["Paid & Discharged","Due Pending"]]],
+ "hospital-billing":[
+   ["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],
+   ["serviceName","Service Name / Procedures Charge","text",true],
+   ["investigationCharge","Investigation Charge (₹)","number",false],
+   ["totalBill","Total Bill Amount (₹)","number",true],
+   ["advancePaid","Advance Paid (₹)","number",true],
+   ["discount","Discount Amount (₹)","number",false],
+   ["dueAmount","Due Balance (₹) (Auto Calculated)","number",true],
+   ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Bank Transfer","Credit (Udhar)"]],
+   ["status","Final Discharge Status","select",true,["Paid & Discharged","Credit / Due Pending"]]
+ ],
  "medical-records":[["mrdNo","MRD File No (Auto)","text",true,"MRD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["summary","MRD Clinical Notes & Archival","textarea",true]],
  medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["hsn","HSN Code","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock (Strips)","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
  "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
@@ -437,9 +453,10 @@ function renderRows(rows){
     const isLockedSuperAdmin = (datasetKey()==="users" && r.isLocked);
     return `<tr>
       ${vals.map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}
-      <td><span class="status ${/suspend|repair|critical|expired|open|pending|occupied|inactive/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td>
+      <td><span class="status ${/suspend|repair|critical|expired|open|pending|occupied|inactive|credit/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td>
       <td>
         <button class="btn success" onclick="printRecordRow('${datasetKey()}', ${i})">🖨️ Print</button>
+        <button class="btn primary" onclick="editRecordRow('${datasetKey()}', ${i})">✏️ Edit</button>
         ${isLockedSuperAdmin ? '<span class="pill">Protected</span>' : (canManage() ? `<button class="btn danger" data-delete="${i}">Delete</button>` : 'Protected')}
       </td>
     </tr>`
@@ -450,20 +467,21 @@ function genericModule(){
   const k=datasetKey();
   if(k === "settings"){
     return `
-      <div class="module-title"><div><h1>Firm Settings & Auto Backup</h1><p>Full control over Firm Details, Logos and Backups</p></div></div>
+      <div class="module-title"><div><h1>Hospital / Agency Identity & System Settings</h1><p>Update Header Name, Address and Backup Settings</p></div></div>
       <div class="panel" style="max-width:650px;">
-        <div class="panel-head"><h3>🏥 Firm Identity & Header Details</h3></div>
+        <div class="panel-head"><h3>🏥 Header Identity Details (A R ERP SOFTWARE Locked)</h3></div>
         <div class="panel-body">
-          <div class="field" style="margin-bottom:12px;"><label>Firm / Hospital / Pharmacy Name</label><input type="text" id="setFirmName" value="${escapeHTML(state.firmName)}"></div>
-          <div class="field" style="margin-bottom:12px;"><label>Full Address Details</label><input type="text" id="setAddress" value="${escapeHTML(state.firmAddress)}"></div>
-          <div class="field" style="margin-bottom:12px;"><label>GSTIN Number</label><input type="text" id="setGstin" value="${escapeHTML(state.firmGstin)}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>Software Brand Name (Fixed)</label><input type="text" value="A R ERP SOFTWARE" disabled style="background:#e2e8f0;"></div>
+          <div class="field" style="margin-bottom:12px;"><label>Hospital / Pharmacy / Agency Name</label><input type="text" id="setHospitalName" value="${escapeHTML(state.hospitalName)}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>Full Address & Location Details</label><input type="text" id="setAddress" value="${escapeHTML(state.hospitalAddress)}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>GSTIN Number</label><input type="text" id="setGstin" value="${escapeHTML(state.hospitalGstin)}"></div>
           <button class="btn primary" onclick="saveSettings()">Save Identity Settings</button>
         </div>
       </div>
       <div class="panel" style="max-width:650px;">
         <div class="panel-head"><h3>💾 Database Backup & Export</h3></div>
         <div class="panel-body">
-          <p style="font-size:11.5px; color:var(--muted); margin-bottom:14px;">Download daily, monthly, or yearly backup files of your entire software data.</p>
+          <p style="font-size:11.5px; color:var(--muted); margin-bottom:14px;">Download complete JSON backup of system database.</p>
           <button class="btn success" onclick="exportFullBackup()">📥 Download Complete Backup (.json)</button>
         </div>
       </div>
@@ -473,23 +491,23 @@ function genericModule(){
   let fields=fieldMap[k] || [["refId","Ref ID (Auto)","text",true,"AR"],["name","Record Name","text",true],["details","Details","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
   const rows=recordsFor();
   const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
-  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>${escapeHTML(state.firmName)}:</b> Real-time synchronization & Auto-Fetch active.</div><div class="filters"><input id="tableSearch" placeholder="Search Mobile, UHID, Name..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Paid</option><option>Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
+  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>A R ERP SOFTWARE • ${escapeHTML(state.hospitalName)}:</b> Synchronized Database Active.</div><div class="filters"><input id="tableSearch" placeholder="Search Mobile, UHID, Name..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Paid & Discharged</option><option>Credit / Due Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
 }
 
 window.saveSettings = function(){
-  state.firmName = $("setFirmName").value.trim();
-  state.firmAddress = $("setAddress").value.trim();
-  state.firmGstin = $("setGstin").value.trim();
-  localStorage.setItem("ar_firm_name", state.firmName);
-  localStorage.setItem("ar_firm_address", state.firmAddress);
-  localStorage.setItem("ar_firm_gstin", state.firmGstin);
-  $("sidebarFirmName").innerText = state.firmName;
-  toast("Settings Saved Successfully!");
+  state.hospitalName = $("setHospitalName").value.trim();
+  state.hospitalAddress = $("setAddress").value.trim();
+  state.hospitalGstin = $("setGstin").value.trim();
+  localStorage.setItem("ar_hospital_name", state.hospitalName);
+  localStorage.setItem("ar_hospital_address", state.hospitalAddress);
+  localStorage.setItem("ar_hospital_gstin", state.hospitalGstin);
+  $("loginHeaderTitle").innerText = state.hospitalName;
+  toast("Identity Settings Saved Successfully!");
   render();
 };
 
 window.exportFullBackup = function(){
-  const backupData = { records: state.records, users: state.users, firmName: state.firmName };
+  const backupData = { records: state.records, users: state.users, hospitalName: state.hospitalName };
   const blob = new Blob([JSON.stringify(backupData, null, 2)], {type: "application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -503,12 +521,12 @@ function render(){
   $("profileName").textContent=state.name;
   $("profileRole").textContent=state.role;
   $("avatar").textContent=state.name.slice(0,2).toUpperCase();
-  $("sidebarFirmName").innerText = state.firmName;
   $("content").innerHTML=state.page==="dashboard"?dashboard():genericModule();
   $("sidebar").classList.remove("open");
 }
 
 function openModal(){
+  state.editingIdx = null;
   const k=datasetKey();
   let fields=fieldMap[k] || [["refId","Ref ID (Auto)","text",true,"AR"],["name","Record Name","text",true],["details","Details","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
   
@@ -530,13 +548,54 @@ function openModal(){
     }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
-    else control=`<input name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[0]==="mobile"?'maxlength="10" pattern="[0-9]{10}"':""} ${f[2]==="number"?'min="0" step="any"':""}>`;
+    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[0]==="mobile"?'maxlength="10" pattern="[0-9]{10}"':""} ${f[2]==="number"?'min="0" step="any"':""} oninput="calculateBillingDue()">`;
     
     return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`
   }).join("")}</div>`;
   
   $("modalBackdrop").classList.add("show");
 }
+
+window.editRecordRow = function(mod, idx){
+  state.editingIdx = idx;
+  const records = mod === "users" ? state.users : (state.records[mod] || []);
+  const item = records[idx];
+  if(!item) return;
+
+  const k = mod;
+  let fields=fieldMap[k] || [["refId","Ref ID","text",true],["name","Record Name","text",true]];
+  $("modalTitle").textContent="Edit "+pageTitle()+" Record";
+  $("recordForm").onsubmit = saveForm;
+
+  $("modalBody").innerHTML=`<div class="form-grid">${fields.map((f)=>{
+    let control="";
+    let val = item[f[0]] || "";
+
+    if(f[2]==="select") control=`<select name="${f[0]}">${f[4].map(v=>`<option ${v===val?'selected':''}>${escapeHTML(v)}</option>`).join("")}</select>`;
+    else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3">${escapeHTML(val)}</textarea>`;
+    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${escapeHTML(val)}" oninput="calculateBillingDue()">`;
+
+    return `<div class="field"><label>${escapeHTML(f[1])}</label>${control}</div>`
+  }).join("")}</div>`;
+
+  $("modalBackdrop").classList.add("show");
+};
+
+// REAL-TIME AUTO DUE CALCULATION FOR HOSPITAL BILLING
+window.calculateBillingDue = function(){
+  const totEl = $("field_totalBill");
+  const advEl = $("field_advancePaid");
+  const discEl = $("field_discount");
+  const dueEl = $("field_dueAmount");
+
+  if(totEl && dueEl){
+    const tot = Number(totEl.value || 0);
+    const adv = Number(advEl?.value || 0);
+    const disc = Number(discEl?.value || 0);
+    const due = tot - adv - disc;
+    dueEl.value = Math.max(0, due);
+  }
+};
 
 function handlePatientAutoFetch(val){
   const drop = $("patientDropdown");
@@ -576,27 +635,33 @@ function saveForm(e){
   e.preventDefault();
   const k=datasetKey(),form=new FormData($("recordForm")),record={};
   for(const [key,val] of form.entries())record[key]=String(val).trim();
-  
-  // Mobile 10-digit validation
+
   if(record.mobile && record.mobile.length !== 10){
     alert("Error: Mobile number must be exactly 10 digits.");
     return;
   }
 
-  record._id="LOCAL-"+Date.now();
-  record._createdAt=new Date().toISOString();
-
-  if(k==="users"){
-    if(state.users.some(u=>u.username.toLowerCase()===record.username.toLowerCase())){ toast("User ID exists!"); return; }
-    state.users.push(record); saveUsers();
+  if(state.editingIdx !== null){
+    if(k==="users"){ state.users[state.editingIdx] = {...state.users[state.editingIdx], ...record}; saveUsers(); }
+    else { state.records[k][state.editingIdx] = {...state.records[k][state.editingIdx], ...record}; saveRecords(); }
+    toast("Record Updated Successfully!");
   } else {
-    state.records[k]=state.records[k]||[];
-    state.records[k].push(record); saveRecords();
+    record._id="LOCAL-"+Date.now();
+    record._createdAt=new Date().toISOString();
+    if(k==="users"){
+      if(state.users.some(u=>u.username.toLowerCase()===record.username.toLowerCase())){ toast("User ID exists!"); return; }
+      state.users.push(record); saveUsers();
+    } else {
+      state.records[k]=state.records[k]||[];
+      state.records[k].push(record); saveRecords();
+    }
+    toast("Record Saved!");
   }
-  closeModal(); render(); toast("Record Saved!");
+
+  closeModal(); render();
 }
 
-// EXACT OPD PRESCRIPTION SHEET PRINT & LAB / BILLING PRINT FORMAT
+// EXACT A4 SIZE OPD PRESCRIPTION & FINAL BILLING PRINT FORMAT
 window.printRecordRow = function(mod, idx){
   const records = mod === "users" ? state.users : (state.records[mod] || []);
   const item = records[idx];
@@ -607,42 +672,74 @@ window.printRecordRow = function(mod, idx){
 
   if(mod === "opd"){
     area.innerHTML = `
-      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:15px; max-width:800px; margin:auto; background:#fff;">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:10px;">
-          <h2 style="margin:0; font-size:20px; color:#0f172a;">${escapeHTML(state.firmName)}</h2>
-          <p style="margin:2px 0; font-size:10.5px;">${escapeHTML(state.firmAddress)}</p>
-          <h4 style="margin:4px 0 0; text-transform:uppercase; font-size:13px; text-decoration:underline;">OPD Prescription Sheet</h4>
+      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
+          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
+          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">OPD Prescription Sheet</h4>
         </div>
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:10px; border:1px solid #000;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:14px; border:1px solid #000;">
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>C.R. No / UHID:</b> ${escapeHTML(item.token || 'AR281026074')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>C.R. No / Token:</b> ${escapeHTML(item.token || 'OPD-001')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Date:</b> ${new Date().toLocaleDateString()}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Patient Search / Name:</b> ${escapeHTML(item.patientSearch || 'Patient')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>Patient Details:</b> ${escapeHTML(item.patientSearch || 'Patient')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Department:</b> ${escapeHTML(item.department || 'General Medicine')}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Authorized')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Consultant')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Consultation Fee:</b> ₹${escapeHTML(item.fee || '0')}</td>
           </tr>
         </table>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-          <div style="flex:1; border:1px solid #000; padding:8px; min-height:180px;">
-            <b style="font-size:11px; text-decoration:underline; display:block; margin-bottom:6px;">Assessment / Clinical Notes:</b>
-            <p style="font-size:11px; white-space:pre-wrap;">${escapeHTML(item.assessment || 'Patient stable. Routine checkup done.')}</p>
+        <div style="display:flex; gap:12px; margin-bottom:20px;">
+          <div style="flex:1; border:1px solid #000; padding:10px; min-height:260px;">
+            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Assessment / Clinical Notes:</b>
+            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.assessment || 'Patient stable.')}</p>
+            <br>
+            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Investigations Required:</b>
+            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.investigation || 'CBC, LFT, KFT')}</p>
           </div>
-          <div style="flex:2; border:1px solid #000; padding:8px; min-height:180px;">
-            <b style="font-size:11px; text-decoration:underline; display:block; margin-bottom:6px;">Advice & Plan of Treatment (Rx):</b>
-            <p style="font-size:11px; white-space:pre-wrap;">${escapeHTML(item.advice || '1. Tab Paracetamol 650mg 1-1-1 x 5 days\n2. Tab Pantocid 40mg 1-0-0 x 5 days')}</p>
+          <div style="flex:2; border:1px solid #000; padding:10px; min-height:260px;">
+            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Advice & Plan of Treatment (Rx):</b>
+            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.advice || '1. Tab Paracetamol 650mg 1-1-1 x 5 days\n2. Tab Pantocid 40mg 1-0-0 x 5 days')}</p>
           </div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:40px; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px; font-size:11.5px;">
           <p><b>Next Follow-up on:</b> ____________________</p>
           <div style="text-align:right;">
-            <p style="margin-bottom:25px;"><b>Doctor's Signature:</b> ____________________</p>
-            <p><b>${escapeHTML(state.firmName)}</b></p>
+            <p style="margin-bottom:30px;"><b>Doctor's Signature:</b> ____________________</p>
+            <p><b>A R ERP SOFTWARE</b></p>
           </div>
+        </div>
+      </div>
+    `;
+  } else if(mod === "hospital-billing"){
+    area.innerHTML = `
+      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
+          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
+          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">FINAL HOSPITAL BILL & DISCHARGE RECEIPT</h4>
+        </div>
+        <div style="font-size:12px; line-height:1.8; margin-bottom:15px;">
+          <p><b>Invoice Bill No:</b> ${escapeHTML(item.billNo)} | <b>Date:</b> ${new Date().toLocaleDateString()}</p>
+          <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
+          <p><b>Service / Procedure Name:</b> ${escapeHTML(item.serviceName)}</p>
+          <p><b>Payment Mode:</b> ${escapeHTML(item.paymentMode || 'Cash')}</p>
+          <hr style="border:0.5px solid #000; margin:10px 0;">
+          <table style="width:100%; font-size:12px; text-align:left;">
+            <tr><td>Total Bill Amount:</td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
+            <tr><td>Advance Paid:</td><td>₹${escapeHTML(item.advancePaid || 0)}</td></tr>
+            <tr><td>Discount Amount:</td><td>₹${escapeHTML(item.discount || 0)}</td></tr>
+            <tr style="font-size:14px;"><td><b>Final Due Balance:</b></td><td><b style="color:${item.dueAmount > 0 ? 'red':'green'};">₹${escapeHTML(item.dueAmount || 0)}</b></td></tr>
+          </table>
+          <p><b>Status:</b> ${escapeHTML(item.status)}</p>
+        </div>
+        <br><br>
+        <div style="display:flex; justify-content:space-between; margin-top:40px;">
+          <p>Billing Clerk Signature: ________________</p>
+          <p>Authorized Signatory: ________________</p>
         </div>
       </div>
     `;
@@ -650,8 +747,8 @@ window.printRecordRow = function(mod, idx){
     area.innerHTML = `
       <div style="font-family:sans-serif; border:2px solid #000; padding:20px; border-radius:10px; max-width:800px; margin:auto;">
         <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
-          <h1 style="margin:0; font-size:22px;">${escapeHTML(state.firmName)}</h1>
-          <p style="margin:3px 0; font-size:12px;">${escapeHTML(state.firmAddress)} | GSTIN: ${escapeHTML(state.firmGstin)}</p>
+          <h1 style="margin:0; font-size:22px;">${escapeHTML(state.hospitalName)}</h1>
+          <p style="margin:3px 0; font-size:12px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
           <h3 style="margin:5px 0 0; text-transform:uppercase; text-decoration:underline;">${mod.toUpperCase()} REPORT / BILL</h3>
         </div>
         <div style="font-size:12px; line-height:1.8;">
