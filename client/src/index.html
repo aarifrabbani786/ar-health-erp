@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A R ERP SOFTWARE | Complete Digital Data & Billing Software</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--navy:#0f172a;--navy2:#1e293b;--blue:#0284c7;--cyan:#06b6d4;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#475569;--line:#cbd5e1;--green:#16a34a;--orange:#ea580c;--red:#dc2626;--shadow:0 10px 30px rgba(0,0,0,0.06)}
 *{box-sizing:border-box;font-weight:700!important}
@@ -29,17 +30,20 @@ button,input,select,textarea{font:inherit;font-weight:700!important}button{curso
 .search span{position:absolute;left:13px;top:10px;color:#64748b}
 .icon-btn{width:38px;height:38px;border:1.5px solid var(--line);border-radius:10px;background:#fff;position:relative}
 .dot{position:absolute;right:7px;top:6px;width:7px;height:7px;background:#ef4444;border-radius:50%}
-.profile{display:flex;align-items:center;gap:10px;border-left:1.5px solid var(--line);padding-left:14px}
+.profile{display:flex;align-items:center;gap:10px;border-left:1.5px solid var(--line);padding-left:14px;position:relative;cursor:pointer}
 .avatar{width:38px;height:38px;border-radius:12px;background:#e0f2fe;color:#0284c7;display:grid;place-items:center;font-weight:900!important}
 .profile strong{font-size:12px;display:block}
 .profile small{font-size:10px;color:var(--muted)}
+.profile-dropdown{position:absolute;right:0;top:110%;background:#fff;border:1.5px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.15);width:180px;display:none;flex-direction:column;z-index:100}
+.profile-dropdown button{padding:12px;border:none;background:none;text-align:left;font-size:12px;border-bottom:1px solid #f1f5f9;color:var(--navy)}
+.profile-dropdown button:hover{background:#f0f9ff;color:var(--blue)}
 .content{padding:27px 28px 40px;max-width:1700px;margin:auto}
 .welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:23px}
 .eyebrow{color:var(--blue);font-size:10px;font-weight:900!important;letter-spacing:1.5px;text-transform:uppercase}
 .welcome h1{font-size:25px;letter-spacing:-.6px;margin:7px 0 7px;font-weight:900!important;color:var(--navy)}
 .welcome p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{border:none;background:#e2e8f0;color:var(--text);border-radius:9px;padding:10px 14px;font-size:11.5px;font-weight:800!important;transition:all 0.15s}
+.btn{border:none;background:#e2e8f0;color:var(--text);border-radius:9px;padding:8px 14px;font-size:11.5px;font-weight:800!important;transition:all 0.15s}
 .btn.primary{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;box-shadow:0 4px 12px rgba(2,132,199,0.3)}
 .btn.success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 12px rgba(22,163,74,0.3)}
 .btn.danger{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,0.3)}
@@ -58,7 +62,7 @@ button,input,select,textarea{font:inherit;font-weight:700!important}button{curso
 .table-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse;white-space:nowrap}
 th{text-align:left;background:#f8fafc;color:#475569;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:900!important;border-bottom:1.5px solid var(--line)}
-td{padding:13px 16px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700!important;color:#1e293b}
+td{padding:12px 16px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700!important;color:#1e293b;vertical-align:middle}
 tbody tr:hover{background:#f0f9ff}
 .status{display:inline-block;border-radius:6px;padding:4px 8px;background:#dcfce7;color:#15803d;font-size:9.5px;font-weight:900!important}
 .status.pending{background:#fef9c3;color:#a16207}
@@ -87,37 +91,40 @@ tbody tr:hover{background:#f0f9ff}
 .notice{padding:12px 16px;border-radius:12px;background:#e0f2fe;color:#0369a1;font-size:11.5px;line-height:1.6;margin-bottom:18px;border:1.5px solid #bae6fd}
 .footer{padding:20px 0 0;color:#64748b;font-size:10px;text-align:center}
 
-/* AUTO-COMPLETE DROPDOWN */
 .autocomplete-box{position:relative}
 .autocomplete-items{position:absolute;border:1.5px solid #0284c7;border-top:none;z-index:99;top:100%;left:0;right:0;background:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);max-height:180px;overflow-y:auto}
 .autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
 .autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
-/* REFINED COMPACT ANIMATED LOGIN (SCREENSHOT 2 STYLE) */
-#loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#090d16,#1e293b);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-.animated-login-wrapper{display:flex;width:100%;max-width:750px;min-height:380px;background:#111827;border-radius:20px;overflow:hidden;box-shadow:0 0 40px rgba(2,132,199,0.35);border:2px solid #0284c7;position:relative}
-.login-form-side{flex:1;padding:35px 28px;display:flex;flex-direction:column;justify-content:center;background:#111827}
-.login-form-side h2{font-size:20px;color:#fff;margin:0 0 16px;font-weight:900!important}
+#loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,rgba(15,23,42,0.92),rgba(2,132,199,0.85)),url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+.animated-login-wrapper{display:flex;width:100%;max-width:760px;min-height:390px;background:rgba(17,24,39,0.95);backdrop-filter:blur(12px);border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.4);border:2px solid #38bdf8;position:relative}
+.login-form-side{flex:1;padding:35px 28px;display:flex;flex-direction:column;justify-content:center;background:transparent}
+.login-form-side h2{font-size:22px;color:#fff;margin:0 0 16px;font-weight:900!important}
 .login-field-glow{margin-bottom:14px;position:relative}
 .login-field-glow label{display:block;font-size:10px;color:#9ca3af;margin-bottom:5px;text-transform:uppercase}
 .login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:9px;background:#1f2937;color:#fff;outline:none;font-size:12px}
-.login-field-glow input:focus{border-color:#0284c7;box-shadow:0 0 12px rgba(2,132,199,0.4)}
+.login-field-glow input:focus{border-color:#38bdf8;box-shadow:0 0 12px rgba(56,189,248,0.4)}
 .eye-btn-glow{position:absolute;right:12px;top:29px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:15px}
 .glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-weight:900!important;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(2,132,199,0.5);transition:all 0.2s;margin-top:6px}
 .glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(2,132,199,0.7)}
 
-/* AUTO SLIDING / BLINKING MENU CARD ON LOGIN RIGHT SIDE */
 .welcome-side-glow{flex:1;background:linear-gradient(135deg,#0284c7 0%,#0f172a 100%);padding:35px 28px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
 .welcome-side-glow h2{font-size:20px;margin:0 0 8px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px;color:#38bdf8}
 .welcome-side-glow p{font-size:11.5px;line-height:1.6;color:#e0f2fe;margin:0 0 16px}
 .blink-menu-card{background:rgba(255,255,255,0.1);border:1.5px dashed #38bdf8;padding:12px;border-radius:12px;font-size:12px;font-weight:900!important;text-align:center;animation:blinkBorder 2s infinite}
 @keyframes blinkBorder{0%{border-color:#38bdf8}50%{border-color:#fb923c}100%{border-color:#38bdf8}}
 @media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
+
+/* PRINT STYLING */
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+}
 </style>
 </head>
 <body>
 
-<!-- REFINED ANIMATED SPLIT LOGIN OVERLAY WITH AUTO SLIDING MENU CARD -->
 <div id="loginOverlay">
   <div class="animated-login-wrapper">
     <div class="login-form-side">
@@ -137,7 +144,7 @@ tbody tr:hover{background:#f0f9ff}
     </div>
     <div class="welcome-side-glow">
       <h2>WELCOME BACK!</h2>
-      <p><b>A R ERP SOFTWARE</b><br>COMPLETE DIGITAL DATA & BILLING WORKSPACE.</p>
+      <p><b id="loginFirmTitle">A R ERP SOFTWARE</b><br>COMPLETE DIGITAL DATA & BILLING WORKSPACE.</p>
       <div class="blink-menu-card" id="sliderMenuCard">⚡ Loading Modules...</div>
     </div>
   </div>
@@ -146,19 +153,27 @@ tbody tr:hover{background:#f0f9ff}
 <div class="app">
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="logo">AR</div>
-    <div><strong>A R ERP SOFTWARE</strong><small id="firmTagline">COMPLETE DIGITAL DATA & BILLING</small></div>
+    <div class="logo" id="firmLogoText">AR</div>
+    <div><strong id="sidebarFirmName">A R ERP SOFTWARE</strong><small id="firmTagline">COMPLETE DIGITAL DATA & BILLING</small></div>
   </div>
   <nav class="nav" id="nav"></nav>
 </aside>
 <main class="main">
 <header class="topbar">
-  <div class="top-left"><button class="hamb" id="hamb">☰</button><div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search modules..." autocomplete="off"></div></div>
+  <div class="top-left"><button class="hamb" id="hamb">☰</button><div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search Mobile, UHID, Name..." autocomplete="off"></div></div>
   <div class="top-right">
-    <div style="font-size:11px; font-weight:900!important; color:var(--navy); background:#f1f5f9; padding:6px 12px; border-radius:8px;" id="liveClockDisplay"></div>
+    <div style="font-size:11px; font-weight:900!important; color:var(--navy); background:#f1f5f9; padding:6px 12px; border-radius:8px;" id="liveClockDisplay">⏰ Loading time...</div>
     <button class="icon-btn" id="themeBtn" title="Theme">◐</button>
     <button class="icon-btn" id="notificationBtn" title="Alerts">♧<i class="dot"></i></button>
-    <div class="profile"><div class="avatar" id="avatar">SA</div><div class="profile-text"><strong id="profileName">Aarif</strong><small id="profileRole">Super Admin</small></div><button class="btn" id="profileMenu">⌄</button></div>
+    <div class="profile" onclick="toggleProfileDropdown()">
+      <div class="avatar" id="avatar">SA</div>
+      <div class="profile-text"><strong id="profileName">Aarif</strong><small id="profileRole">Super Admin</small></div>
+      <button class="btn" style="padding:4px 6px;">⌄</button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <button onclick="openChangePasswordModal()">🔑 Change Password</button>
+        <button onclick="logoutUser()" style="color:var(--red);">🚪 Logout</button>
+      </div>
+    </div>
   </div>
 </header>
 <section class="content" id="content"></section>
@@ -168,6 +183,8 @@ tbody tr:hover{background:#f0f9ff}
 <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
   <div class="modal"><div class="modal-head"><h3 id="modalTitle">Add Record</h3><button class="close" id="modalClose">✕</button></div><form id="recordForm"><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button type="button" class="btn" id="modalCancel">Cancel</button><button type="submit" class="btn primary">Save Record</button></div></form></div>
 </div>
+
+<div id="printArea" style="display:none;"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -190,7 +207,9 @@ const state = {
   role: "Super Admin",
   name: "Aarif",
   isLoggedIn: false,
-  firmName: "A R ERP SOFTWARE",
+  firmName: localStorage.getItem("ar_firm_name") || "A R ERP SOFTWARE",
+  firmAddress: localStorage.getItem("ar_firm_address") || "Maharajganj, Uttar Pradesh",
+  firmGstin: localStorage.getItem("ar_firm_gstin") || "09AAAAA0000A1Z5",
   records: loadRecords(),
   users: loadUsers()
 };
@@ -211,15 +230,14 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
 
-// AUTO SLIDING MENU CARDS ON LOGIN PAGE
 const sliderModules = [
-  "🏥 Complete Hospital Master & OPD/IPD",
-  "⚗️ Advanced Laboratory & Pathology",
-  "📡 Digital Radiology & Scans",
-  "💊 Pharmacy & HSN Inventory Management",
-  "💼 HRM, Payroll & Employee Directory",
-  "🛡️ Full Control Admin & Role Permissions",
-  "⚙️ BME Master & Equipment Maintenance"
+  "🏥 Hospital Master & OPD/IPD",
+  "⚗️ Pathology & Lab Reports",
+  "📡 Radiology & Scans",
+  "💊 Pharmacy Billing & HSN",
+  "💼 HRM & Employee Directory",
+  "🛡️ Role Permissions & Admin",
+  "⚙️ BME Asset & Maintenance"
 ];
 let currentSliderIdx = 0;
 setInterval(() => {
@@ -230,15 +248,50 @@ setInterval(() => {
   }
 }, 2200);
 
-// REAL TIME LIVE CLOCK
-setInterval(() => {
+function updateLiveClock() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString();
   const dateStr = now.toLocaleDateString();
-  if($("liveClockDisplay")) $("liveClockDisplay.innerHTML") = `${dateStr} | ⏰ ${timeStr}`;
-}, 1000);
+  const clockEl = $("liveClockDisplay");
+  if(clockEl) clockEl.innerText = `${dateStr} | ⏰ ${timeStr}`;
+}
+setInterval(updateLiveClock, 1000);
+updateLiveClock();
 
-// DATE-WISE UHID GENERATOR
+function toggleProfileDropdown(){
+  const drop = $("profileDropdown");
+  drop.style.display = (drop.style.display === "flex") ? "none" : "flex";
+}
+
+function logoutUser(){
+  state.isLoggedIn = false;
+  $("loginOverlay").style.display = "flex";
+  toast("Logged out successfully.");
+}
+
+function openChangePasswordModal(){
+  $("modalTitle").textContent = "🔑 Change Password";
+  $("modalBody").innerHTML = `
+    <div class="field" style="margin-bottom:12px;"><label>Current Password</label><input type="password" id="oldPass" required></div>
+    <div class="field" style="margin-bottom:12px;"><label>New Password</label><input type="password" id="newPass" required></div>
+  `;
+  $("recordForm").onsubmit = (e) => {
+    e.preventDefault();
+    const oldP = $("oldPass").value;
+    const newP = $("newPass").value;
+    const user = state.users.find(u => u.username.toLowerCase() === state.name.toLowerCase());
+    if(user && (user.pass || "7860") === oldP){
+      user.pass = newP;
+      saveUsers();
+      closeModal();
+      toast("Password Updated Successfully!");
+    } else {
+      toast("Incorrect Old Password!");
+    }
+  };
+  $("modalBackdrop").classList.add("show");
+}
+
 function generatePatientUHID(){
   const now = new Date();
   const dd = String(now.getDate()).padStart(2,'0');
@@ -269,15 +322,9 @@ $("loginForm").addEventListener("submit", e => {
   const p = $("loginPass").value.trim();
 
   if(u.toLowerCase() === "aarif" && p === "7860"){
-    state.isLoggedIn = true;
-    state.name = "Aarif";
-    state.role = "Super Admin";
-    $("loginOverlay").style.display = "none";
-    toast("Welcome Super Admin Aarif!");
-    render();
-    return;
+    state.isLoggedIn = true; state.name = "Aarif"; state.role = "Super Admin";
+    $("loginOverlay").style.display = "none"; toast("Welcome Super Admin Aarif!"); render(); return;
   }
-
   const found = state.users.find(x => x.username.toLowerCase() === u.toLowerCase() && (x.pass || "7860") === p);
   if(found){
     if(found.status !== "Active"){ toast("Account Deactivated!"); return; }
@@ -309,146 +356,91 @@ function dashboard(){
   const sales = state.records["pharmacy-sales"]||[];
   const totalRev = sales.reduce((a,b)=>a+Number(b.total||b.amount||0), 0);
 
+  setTimeout(renderDashboardChart, 100);
+
   return `<div class="welcome"><div><div class="eyebrow">${escapeHTML(state.firmName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
-<div class="notice"><b>SYSTEM ACTIVE:</b> Real-time patient auto-fetch, HSN/GST pharmacy sales, return locks, and profile history active.</div>
 <div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated from Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Auto-fetched from Register")}${card("MEDICINE ITEMS",medicinesCount,"✚","Auto-fetched from Master")}${card("BIOMEDICAL ASSETS",assetsCount,"⌘","Auto-fetched from Assets")}</div>
+<div class="panel"><div class="panel-head"><h3>📈 Revenue & OPD Analytics Chart</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
 <div class="footer">${escapeHTML(state.firmName)} • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
 }
 
-// MODULE SPECIFIC FIELD MAPPING (WITH PATIENT AUTO-FETCH & PHARMACY HSN/GST)
+function renderDashboardChart(){
+  const ctx = document.getElementById('dashChart');
+  if(!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'OPD Admissions',
+        data: [12, 19, 15, 25, 22, 30, 18],
+        backgroundColor: '#0284c7'
+      },{
+        label: 'Pharmacy Sales (₹ in 100s)',
+        data: [20, 35, 28, 45, 40, 60, 50],
+        backgroundColor: '#16a34a'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+}
+
 const fieldMap={
- users:[["name","Full Name","text",true],["username","User ID / Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["status","Status","select",true,["Active","Suspended"]]],
- patients:[["uhid","Patient UHID (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
+ users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
+ patients:[["uhid","Patient UHID (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
- opd:[["token","Token No (Auto)","text",true,"OPD"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["doctor","Consultant Doctor","text",true],["department","Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology"]],["fee","OPD Consultation Fee (₹)","number",true]],
- admissions:[["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["wardBed","Ward / Bed Assigned","text",true],["doctor","Consultant Doctor","text",true],["advance","Advance Amount Paid (₹)","number",true]],
+ opd:[["token","Token No (Auto)","text",true,"OPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["doctor","Consultant Doctor","text",true],["department","Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology"]],["fee","OPD Consultation Fee (₹)","number",true]],
+ admissions:[["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["wardBed","Ward / Bed Assigned","text",true],["doctor","Consultant Doctor","text",true],["advance","Advance Amount Paid (₹)","number",true]],
  doctors:[["docId","Doctor ID (Auto)","text",true,"DOC"],["name","Doctor Name","text",true],["specialization","Specialization","text",true],["department","Department","text",true],["opdFee","OPD Charge (₹)","number",true]],
- laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["testName","Lab Test Name","text",true],["price","Test Price (₹)","number",true]],
- radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["scanName","Radiology Procedure Name","text",true],["price","Scan Price (₹)","number",true]],
- "hospital-billing":[["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["serviceName","Service / Treatment Name","text",true],["amount","Total Bill Amount (₹)","number",true],["status","Payment Status","select",true,["Paid","Pending","Partial"]]],
+ laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["testName","Lab Test Name","text",true],["resultValue","Test Result Value","text",true],["normalRange","Normal Range","text",true],["price","Test Price (₹)","number",true]],
+ radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["scanName","Procedure Name","text",true],["findings","Radiology Findings","textarea",true],["price","Scan Price (₹)","number",true]],
+ "hospital-billing":[["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["serviceName","Service / Treatment Name","text",true],["amount","Total Bill Amount (₹)","number",true],["status","Payment Status","select",true,["Paid","Pending","Partial"]]],
  medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["hsn","HSN Code","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock (Strips)","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
- "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
+ "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
  "sales-return":[["returnNo","Return No (Auto)","text",true,"RET"],["invoiceNo","Original Invoice No (Locked)","text",true],["reason","Return Reason","text",true],["refundAmount","Refund Amount (₹)","number",true],["status","Status","select",true,["Processed"]]],
- "pharmacy-purchase":[["poNo","PO No (Auto)","text",true,"PO"],["vendor","Vendor Name & Details","text",true],["item","Item Name & HSN","text",true],["strips","Purchase Strips","number",true],["rate","Purchase Rate/Strip","number",true],["gst","GST %","number",true],["total","Total Purchase Amount (₹)","number",true],["status","Status","select",true,["Received"]]],
- assets:[["assetId","Asset ID (Auto)","text",true,"AST"],["name","Equipment Instrument Name","text",true],["serial","Serial Number","text",true],["department","Department / Location","text",true],["pmDue","Next Maintenance Date","date",true],["status","Asset Status","select",true,["Operational","Under Repair","Out of Service"]]],
- items:[["code","Item Code (Auto)","text",true,"ITM"],["name","Store Item Name","text",true],["category","Category","text",true],["quantity","Stock Quantity","number",true]],
- suppliers:[["supplierId","Supplier ID (Auto)","text",true,"SUP"],["name","Supplier Name","text",true],["mobile","Mobile Number","tel",true],["email","Email ID","text",false]],
- employees:[["employeeId","Employee ID (Auto)","text",true,"EMP"],["name","Employee Name","text",true],["designation","Designation","text",true],["department","Department","text",true],["status","Status","select",true,["Active","Inactive"]]],
- expenses:[["expId","Expense Ref ID (Auto)","text",true,"EXP"],["title","Expense Description","text",true],["amount","Amount (₹)","number",true],["date","Expense Date","date",true],["status","Status","select",true,["Paid","Pending"]]],
- settings:[["firmName","Firm / Software Name","text",true],["tagline","Firm Tagline / Header","text",true],["gstin","GSTIN Number","text",false]]
+ "pharmacy-purchase":[["poNo","PO No (Auto)","text",true,"PO"],["vendor","Vendor Name & Details","text",true],["item","Item Name & HSN","text",true],["strips","Purchase Strips","number",true],["rate","Purchase Rate/Strip","number",true],["gst","GST %","number",true],["total","Total Purchase Amount (₹)","number",true],["status","Status","select",true,["Received"]]]
 };
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses","settings":"settings"};
+const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
 
 function renderRows(rows){
-  if(!rows.length)return `<tr><td colspan="10"><div class="empty"><strong>No records found in ${pageTitle()}</strong>Click '＋ Add Record' above to populate.</div></td></tr>`;
+  if(!rows.length)return `<tr><td colspan="12"><div class="empty"><strong>No records found in ${pageTitle()}</strong>Click '＋ Add Record' above to populate.</div></td></tr>`;
   return rows.map((r,i)=>{
-    const vals=Object.entries(r).filter(([k])=>k!=="_createdAt"&&k!=="_id"&&k!=="pass");
+    const vals=Object.entries(r).filter(([k])=>k!=="_createdAt"&&k!=="_id"&&k!=="pass"&&k!=="status"&&k!=="isLocked");
     const isLockedSuperAdmin = (datasetKey()==="users" && r.isLocked);
-    return `<tr>${vals.map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}<td><span class="status ${/suspend|repair|critical|expired|open|pending|occupied|inactive/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td><td>${isLockedSuperAdmin ? '<span class="pill">Protected</span>' : (canManage() ? `<button class="btn danger" data-delete="${i}">Delete</button>` : 'Protected')}</td></tr>`
+    return `<tr>
+      ${vals.map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}
+      <td><span class="status ${/suspend|repair|critical|expired|open|pending|occupied|inactive/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td>
+      <td>
+        <button class="btn success" onclick="printRecordRow('${datasetKey()}', ${i})">🖨️ Print</button>
+        ${isLockedSuperAdmin ? '<span class="pill">Protected</span>' : (canManage() ? `<button class="btn danger" data-delete="${i}">Delete</button>` : 'Protected')}
+      </td>
+    </tr>`
   }).join("");
 }
 
-// PATIENT PROFILE & COMPLETE HISTORY MODULE
-function renderPatientProfileModule(ws){
-  ws.innerHTML = `
-    <div class="module-title">
-      <div><h1>Patient Profile & Complete History</h1><p>Search by UHID, Mobile Number, Aadhaar or Name to view all past records.</p></div>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h3>🔍 Global Patient Search</h3></div>
-      <div class="panel-body">
-        <div class="field" style="max-width:450px; margin-bottom:20px;">
-          <label>Type Patient Mobile / UHID / Aadhaar / Name</label>
-          <input type="text" id="globalPatientQuery" placeholder="Type to search..." onkeyup="searchPatientHistory(this.value)">
-        </div>
-        <div id="patientHistoryResult">
-          <p style="color:var(--muted);">Enter search keyword above to inspect patient's complete history across OPD, IPD, Billing, and Pharmacy.</p>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-window.searchPatientHistory = function(query){
-  const container = $("patientHistoryResult");
-  if(!query || query.trim() === ""){
-    container.innerHTML = `<p style="color:var(--muted);">Enter search keyword above to inspect patient's complete history.</p>`;
-    return;
-  }
-  const q = query.toLowerCase();
-  const patients = state.records["patients"] || [];
-  const matched = patients.filter(p => (p.uhid + " " + p.name + " " + p.mobile + " " + (p.aadhaar||"")).toLowerCase().includes(q));
-
-  if(matched.length === 0){
-    container.innerHTML = `<p style="color:var(--red);">No patient found matching "${query}".</p>`;
-    return;
-  }
-
-  let html = "";
-  matched.forEach(p => {
-    const opd = (state.records["opd"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-    const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-    const billing = (state.records["hospital-billing"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-    const pharmacy = (state.records["pharmacy-sales"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-
-    html += `
-      <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
-          <div>
-            <h3 style="font-size:16px; color:var(--navy); margin:0 0 4px;">👤 ${escapeHTML(p.name)}</h3>
-            <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:900;">UHID: ${escapeHTML(p.uhid)}</span>
-            <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; font-weight:900;">Mobile: ${escapeHTML(p.mobile)}</span>
-            <span style="font-size:11px; background:#fef9c3; color:#a16207; padding:3px 8px; border-radius:6px; font-weight:900;">Aadhaar: ${escapeHTML(p.aadhaar||'N/A')}</span>
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn primary" onclick="jumpToModule('opd')">+ New OPD</button>
-            <button class="btn success" onclick="jumpToModule('hospital-billing')">+ New Bill</button>
-            <button class="btn" onclick="jumpToModule('pharmacy-sales')">+ Pharmacy Sale</button>
-          </div>
-        </div>
-
-        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">OPD History (${opd.length})</h4>
-        ${opd.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>Token</th><th>Doctor</th><th>Department</th><th>Fee</th></tr></thead><tbody>` + opd.map(o=>`<tr><td><b>${o.token}</b></td><td>${o.doctor}</td><td>${o.department}</td><td>₹${o.fee}</td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No OPD visits recorded.</p>'}
-
-        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">IPD Admissions (${ipd.length})</h4>
-        ${ipd.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>IPD No</th><th>Ward/Bed</th><th>Doctor</th><th>Advance</th></tr></thead><tbody>` + ipd.map(i=>`<tr><td><b>${i.ipdNo}</b></td><td>${i.wardBed}</td><td>${i.doctor}</td><td>₹${i.advance}</td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No IPD admissions recorded.</p>'}
-
-        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Hospital Billing & Invoices (${billing.length})</h4>
-        ${billing.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>Bill No</th><th>Service</th><th>Amount</th><th>Status</th></tr></thead><tbody>` + billing.map(b=>`<tr><td><b>${b.billNo}</b></td><td>${b.serviceName}</td><td>₹${b.amount}</td><td><span class="status">${b.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No hospital billing records.</p>'}
-
-        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Pharmacy Sales Dispensed (${pharmacy.length})</h4>
-        ${pharmacy.length ? `<table class="data-table"><thead><tr><th>Invoice</th><th>Medicine</th><th>Total</th><th>Status</th></tr></thead><tbody>` + pharmacy.map(s=>`<tr><td><b>${s.invoiceNo}</b></td><td>${s.medicine}</td><td>₹${s.total}</td><td><span class="status">${s.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted);">No pharmacy dispensary records.</p>'}
-      </div>
-    `;
-  });
-  container.innerHTML = html;
-};
-
-window.jumpToModule = function(mod){
-  state.page = mod;
-  render();
-};
-
 function genericModule(){
   const k=datasetKey();
-  if(k === "patient-profile"){
-    let ws = document.createElement("div");
-    renderPatientProfileModule(ws);
-    return ws.innerHTML;
-  }
   if(k === "settings"){
     return `
-      <div class="module-title"><div><h1>Firm & Software Settings</h1><p>Change software name, firm title and logo</p></div></div>
-      <div class="panel" style="max-width:550px;">
-        <div class="panel-head"><h3>Update Software Identity</h3></div>
+      <div class="module-title"><div><h1>Firm Settings & Auto Backup</h1><p>Full control over Firm Details, Logos and Backups</p></div></div>
+      <div class="panel" style="max-width:650px;">
+        <div class="panel-head"><h3>🏥 Firm Identity & Header Details</h3></div>
         <div class="panel-body">
-          <div class="field" style="margin-bottom:14px;"><label>Firm / Software Name</label><input type="text" id="setFirmName" value="${escapeHTML(state.firmName)}"></div>
-          <div class="field" style="margin-bottom:14px;"><label>Header Tagline</label><input type="text" id="setTagline" value="COMPLETE DIGITAL DATA & BILLING"></div>
-          <button class="btn primary" onclick="saveSettings()">Save Settings</button>
+          <div class="field" style="margin-bottom:12px;"><label>Firm / Hospital / Pharmacy Name</label><input type="text" id="setFirmName" value="${escapeHTML(state.firmName)}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>Full Address Details</label><input type="text" id="setAddress" value="${escapeHTML(state.firmAddress)}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>GSTIN Number</label><input type="text" id="setGstin" value="${escapeHTML(state.firmGstin)}"></div>
+          <button class="btn primary" onclick="saveSettings()">Save Identity Settings</button>
+        </div>
+      </div>
+      <div class="panel" style="max-width:650px;">
+        <div class="panel-head"><h3>💾 Database Backup & Export</h3></div>
+        <div class="panel-body">
+          <p style="font-size:11.5px; color:var(--muted); margin-bottom:14px;">Download daily, monthly, or yearly backup files of your entire software data.</p>
+          <button class="btn success" onclick="exportFullBackup()">📥 Download Complete Backup (.json)</button>
         </div>
       </div>
     `;
@@ -457,12 +449,29 @@ function genericModule(){
   let fields=fieldMap[k] || [["refId","Ref ID (Auto)","text",true,"AR"],["name","Record Name","text",true],["details","Details","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
   const rows=recordsFor();
   const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
-  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>${escapeHTML(state.firmName)}:</b> Records saved in ${pageTitle()} are auto-synchronized and accessible for Billing and Auto-Fetch.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Operational</option><option>Available</option><option>Occupied</option><option>Paid</option><option>Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
+  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>${escapeHTML(state.firmName)}:</b> Real-time synchronization & Auto-Fetch active.</div><div class="filters"><input id="tableSearch" placeholder="Search Mobile, UHID, Name..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Paid</option><option>Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
 }
 
 window.saveSettings = function(){
-  const f = $("setFirmName").value.trim();
-  if(f){ state.firmName = f; $("firmTagline").innerText = $("setTagline").value.trim(); toast("Settings Saved!"); render(); }
+  state.firmName = $("setFirmName").value.trim();
+  state.firmAddress = $("setAddress").value.trim();
+  state.firmGstin = $("setGstin").value.trim();
+  localStorage.setItem("ar_firm_name", state.firmName);
+  localStorage.setItem("ar_firm_address", state.firmAddress);
+  localStorage.setItem("ar_firm_gstin", state.firmGstin);
+  $("sidebarFirmName").innerText = state.firmName;
+  toast("Settings Saved Successfully!");
+  render();
+};
+
+window.exportFullBackup = function(){
+  const backupData = { records: state.records, users: state.users, firmName: state.firmName };
+  const blob = new Blob([JSON.stringify(backupData, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `AR_ERP_Backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast("Backup File Downloaded!");
 };
 
 function render(){
@@ -470,6 +479,7 @@ function render(){
   $("profileName").textContent=state.name;
   $("profileRole").textContent=state.role;
   $("avatar").textContent=state.name.slice(0,2).toUpperCase();
+  $("sidebarFirmName").innerText = state.firmName;
   $("content").innerHTML=state.page==="dashboard"?dashboard():genericModule();
   $("sidebar").classList.remove("open");
 }
@@ -479,6 +489,7 @@ function openModal(){
   let fields=fieldMap[k] || [["refId","Ref ID (Auto)","text",true,"AR"],["name","Record Name","text",true],["details","Details","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
   
   $("modalTitle").textContent="Add "+pageTitle()+" Record";
+  $("recordForm").onsubmit = saveForm;
   
   $("modalBody").innerHTML=`<div class="form-grid">${fields.map((f,idx)=>{
     let control="";
@@ -488,14 +499,14 @@ function openModal(){
     const readOnly = (idx===0 && f[4]) ? 'readonly style="background:#f1f5f9;"' : '';
 
     if(f[2]==="autocomplete"){
-      control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Patient Name / UHID / Aadhaar..." onkeyup="handlePatientAutoFetch(this.value)"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+      control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Mobile / UHID / Name..." onkeyup="handlePatientAutoFetch(this.value)"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="autocomplete-med"){
       control=`<div class="autocomplete-box"><input type="text" id="mSearchInput" name="${f[0]}" placeholder="Type 2-3 letters of medicine..." onkeyup="handleMedAutoFetch(this.value)"><div id="medDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
-    else control=`<input name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[2]==="number"?'min="0" step="any"':""}>`;
+    else control=`<input name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[0]==="mobile"?'maxlength="10" pattern="[0-9]{10}"':""} ${f[2]==="number"?'min="0" step="any"':""}>`;
     
     return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`
   }).join("")}</div>`;
@@ -507,15 +518,15 @@ function handlePatientAutoFetch(val){
   const drop = $("patientDropdown");
   if(!val){ drop.style.display="none"; return; }
   const patients = state.records["patients"] || [];
-  const matches = patients.filter(p => (p.name+" "+p.uhid+" "+(p.aadhaar||"")).toLowerCase().includes(val.toLowerCase()));
+  const matches = patients.filter(p => (p.name+" "+p.uhid+" "+p.mobile+" "+(p.aadhaar||"")).toLowerCase().includes(val.toLowerCase()));
   if(matches.length > 0){
-    drop.innerHTML = matches.map(p => `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.aadhaar||''}')">${p.name} | UHID: <b>${p.uhid}</b> | Aadhaar: ${p.aadhaar||'N/A'}</div>`).join('');
+    drop.innerHTML = matches.map(p => `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.mobile}')">${p.name} | Mob: <b>${p.mobile}</b> | UHID: ${p.uhid}</div>`).join('');
     drop.style.display = "block";
   } else { drop.style.display = "none"; }
 }
 
-function selectAutoPatient(uhid, name, aadhaar){
-  $("pSearchInput").value = `${name} (UHID: ${uhid}${aadhaar ? ' | Aadhaar: ' + aadhaar : ''})`;
+function selectAutoPatient(uhid, name, mobile){
+  $("pSearchInput").value = `${name} (Mob: ${mobile} | UHID: ${uhid})`;
   $("patientDropdown").style.display = "none";
 }
 
@@ -551,8 +562,39 @@ function saveForm(e){
     state.records[k]=state.records[k]||[];
     state.records[k].push(record); saveRecords();
   }
-  closeModal(); render(); toast("Record Saved & Calculated!");
+  closeModal(); render(); toast("Record Saved!");
 }
+
+window.printRecordRow = function(mod, idx){
+  const records = mod === "users" ? state.users : (state.records[mod] || []);
+  const item = records[idx];
+  if(!item) return;
+
+  const area = $("printArea");
+  area.style.display = "block";
+  area.innerHTML = `
+    <div style="font-family:sans-serif; border:2px solid #000; padding:20px; border-radius:10px;">
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+        <h1 style="margin:0; font-size:22px;">${escapeHTML(state.firmName)}</h1>
+        <p style="margin:3px 0; font-size:12px;">${escapeHTML(state.firmAddress)} | GSTIN: ${escapeHTML(state.firmGstin)}</p>
+        <h3 style="margin:5px 0 0; text-transform:uppercase; text-decoration:underline;">${mod.toUpperCase()} RECEIPT / REPORT</h3>
+      </div>
+      <div style="font-size:12px; line-height:1.8;">
+        <p><b>Date:</b> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+        <p><b>Operator:</b> ${escapeHTML(state.name)} (${escapeHTML(state.role)})</p>
+        <hr>
+        ${Object.entries(item).filter(([k])=>!k.startsWith('_')).map(([k,v])=>`<p><b>${k.toUpperCase()}:</b> ${escapeHTML(v)}</p>`).join('')}
+      </div>
+      <br><br>
+      <div style="display:flex; justify-content:space-between; margin-top:30px;">
+        <p>Prepared By: ________________</p>
+        <p>Doctor / Authorized Sign: ________________</p>
+      </div>
+    </div>
+  `;
+  window.print();
+  area.style.display = "none";
+};
 
 function exportCSV(){
   const rows=recordsFor();
@@ -574,6 +616,7 @@ function refreshTable(){
 }
 
 document.addEventListener("click",e=>{
+  if(!e.target.closest(".profile")) $("profileDropdown").style.display = "none";
   const nav=e.target.closest("[data-page]");
   if(nav){state.page=nav.dataset.page;render();return}
   const action=e.target.closest("[data-action]")?.dataset.action;
@@ -584,12 +627,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#hamb")){$("sidebar").classList.toggle("open");return}
   if(e.target.closest("#themeBtn")){document.body.classList.toggle("dark");toast("Theme toggled.");return}
   if(e.target.closest("#notificationBtn")){state.page="notifications";render();return}
-  if(e.target.closest("#profileMenu")){
-    if(confirm("Action: Click OK to Logout.")){
-      state.isLoggedIn = false; $("loginOverlay").style.display = "flex"; toast("Logged out.");
-    }
-    return;
-  }
+  
   const del=e.target.closest("[data-delete]");
   if(del){
     const k=datasetKey(),idx=Number(del.dataset.delete);
@@ -602,7 +640,6 @@ document.addEventListener("click",e=>{
   }
 });
 
-$("recordForm").addEventListener("submit",saveForm);
 $("globalSearch").addEventListener("input",e=>renderNav(e.target.value.trim()));
 $("content").addEventListener("input",e=>{if(e.target.id==="tableSearch"||e.target.id==="statusFilter")refreshTable()});
 $("content").addEventListener("change",e=>{if(e.target.id==="statusFilter")refreshTable()});
