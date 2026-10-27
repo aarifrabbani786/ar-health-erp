@@ -204,7 +204,7 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
 
-// SMART DATE-WISE UHID GENERATOR (Format: ARDDMMYY + Serial)
+// DATE-WISE UNIQUE UHID GENERATOR (Format: ARDDMMYY + Serial)
 function generatePatientUHID(){
   const now = new Date();
   const dd = String(now.getDate()).padStart(2,'0');
@@ -318,7 +318,6 @@ function renderRows(rows){
 
 // DEDICATED PATIENT PROFILE & HISTORY MODULE VIEW
 function renderPatientProfileModule(ws){
-  const patients = state.records["patients"] || [];
   ws.innerHTML = `
     <div class="module-title">
       <div><h1>Patient Profile & Complete History</h1><p>Search by UHID, Mobile Number, Aadhaar or Name to view all past records.</p></div>
@@ -355,7 +354,6 @@ window.searchPatientHistory = function(query){
 
   let html = "";
   matched.forEach(p => {
-    // Gather all records related to this patient UHID or Name
     const opd = (state.records["opd"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
     const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
     const billing = (state.records["hospital-billing"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
