@@ -80,36 +80,36 @@ tbody tr:hover{background:#f0f9ff}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field{display:grid;gap:6px}
 .field label{font-size:10.5px;font-weight:900!important;color:#334155;text-transform:uppercase}
-.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(6px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-backdrop.show{display:flex}
-.modal{background:#fff;border-radius:20px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
-.modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--line)}
-.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:var(--navy)}
+.modal{background:#111827;color:#fff;border-radius:24px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 0 50px rgba(234,88,12,0.3);border:2px solid #ea580c}
+.modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #374151}
+.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:#fff}
 .modal-body{padding:22px}
-.modal-foot{border-top:1.5px solid var(--line);border-bottom:0;justify-content:flex-end;gap:10px}
-.close{border:0;background:#e2e8f0;border-radius:8px;width:32px;height:32px;cursor:pointer}
+.modal-foot{border-top:1.5px solid #374151;border-bottom:0;justify-content:flex-end;gap:10px}
+.close{border:0;background:#374151;color:#fff;border-radius:8px;width:32px;height:32px;cursor:pointer}
 .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:#fff;padding:13px 18px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:100;display:none}
 .toast.show{display:block}
 .footer{padding:20px 0 0;color:#64748b;font-size:10px;text-align:center}
 
 .autocomplete-box{position:relative}
-.autocomplete-items{position:absolute;border:1.5px solid #0284c7;border-top:none;z-index:99;top:100%;left:0;right:0;background:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);max-height:180px;overflow-y:auto}
-.autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
-.autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
+.autocomplete-items{position:absolute;border:1.5px solid #ea580c;border-top:none;z-index:99;top:100%;left:0;right:0;background:#1f2937;color:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.3);max-height:180px;overflow-y:auto}
+.autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #374151;color:#fff}
+.autocomplete-items div:hover{background:#ea580c;color:#fff}
 
-#loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#090d16,#1e293b);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-.animated-login-wrapper{display:flex;width:100%;max-width:760px;min-height:390px;background:#111827;border-radius:22px;overflow:hidden;box-shadow:0 0 45px rgba(234,88,12,0.35);border:2.5px solid #ea580c;position:relative}
-.login-form-side{flex:1;padding:35px 28px;display:flex;flex-direction:column;justify-content:center;background:#111827}
-.login-form-side h2{font-size:22px;color:#fff;margin:0 0 16px;font-weight:900!important}
+#loginOverlay{position:fixed;inset:0;background:radial-gradient(circle at center,#1e293b 0%,#090d16 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+.animated-login-wrapper{display:flex;width:100%;max-width:780px;min-height:410px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(234,88,12,0.4);border:2.5px solid #ea580c;position:relative}
+.login-form-side{flex:1;padding:35px 30px;display:flex;flex-direction:column;justify-content:center;background:#111827}
+.login-form-side h2{font-size:24px;color:#fff;margin:0 0 16px;font-weight:900!important}
 .login-field-glow{margin-bottom:14px;position:relative}
 .login-field-glow label{display:block;font-size:10px;color:#9ca3af;margin-bottom:5px;text-transform:uppercase}
-.login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:9px;background:#1f2937;color:#fff;outline:none;font-size:12px}
-.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 12px rgba(234,88,12,0.4)}
+.login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:10px;background:#1f2937;color:#fff;outline:none;font-size:12px}
+.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 15px rgba(234,88,12,0.5)}
 .eye-btn-glow{position:absolute;right:12px;top:29px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:15px}
-.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-weight:900!important;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(234,88,12,0.5);transition:all 0.2s;margin-top:6px}
-.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(234,88,12,0.7)}
+.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-weight:900!important;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(234,88,12,0.6);transition:all 0.2s;margin-top:6px}
+.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(234,88,12,0.8)}
 
-.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#0f172a 100%);padding:35px 28px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
+.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#0f172a 100%);padding:35px 30px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
 .welcome-side-glow h2{font-size:20px;margin:0 0 8px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px;color:#fed7aa}
 .welcome-side-glow p{font-size:11.5px;line-height:1.6;color:#ffedd5;margin:0 0 16px}
 .blink-menu-card{background:rgba(255,255,255,0.1);border:1.5px dashed #fed7aa;padding:12px;border-radius:12px;font-size:12px;font-weight:900!important;text-align:center;animation:blinkBorder 2s infinite}
@@ -119,7 +119,7 @@ tbody tr:hover{background:#f0f9ff}
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
-  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; }
+  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; color: #000; }
 }
 </style>
 </head>
@@ -128,7 +128,7 @@ tbody tr:hover{background:#f0f9ff}
 <div id="loginOverlay">
   <div class="animated-login-wrapper">
     <div class="login-form-side">
-      <h2>Login</h2>
+      <h2>Neon Login</h2>
       <form id="loginForm">
         <div class="login-field-glow">
           <label>Username *</label>
@@ -139,7 +139,7 @@ tbody tr:hover{background:#f0f9ff}
           <input type="password" id="loginPass" value="7860" placeholder="Enter Password" required>
           <button type="button" class="eye-btn-glow" onclick="togglePasswordVis()">👁️</button>
         </div>
-        <button type="submit" class="glow-login-btn">Login</button>
+        <button type="submit" class="glow-login-btn">Secure Login</button>
       </form>
     </div>
     <div class="welcome-side-glow">
@@ -204,10 +204,10 @@ const groups = [
 const allItems = groups.flatMap(g=>g.items.map(x=>({title:x[0],key:x[1],icon:x[2],group:g.label})));
 
 const state = {
-  page: "dashboard",
-  role: "Super Admin",
-  name: "Aarif",
-  isLoggedIn: false,
+  page: localStorage.getItem("ar_erp_active_page") || "dashboard",
+  role: localStorage.getItem("ar_erp_role") || "Super Admin",
+  name: localStorage.getItem("ar_erp_username") || "Aarif",
+  isLoggedIn: localStorage.getItem("ar_erp_logged") === "true",
   hospitalName: localStorage.getItem("ar_hospital_name") || "AR PHARMA AND SURGICAL AGENCY",
   hospitalAddress: localStorage.getItem("ar_hospital_address") || "Maharajganj, Uttar Pradesh",
   hospitalGstin: localStorage.getItem("ar_hospital_gstin") || "09AAAAA0000A1Z5",
@@ -269,7 +269,9 @@ function toggleProfileDropdown(){
 }
 
 function logoutUser(){
+  if(!confirm("Confirm logout?")) return;
   state.isLoggedIn = false;
+  localStorage.setItem("ar_erp_logged", "false");
   $("loginOverlay").style.display = "flex";
   toast("Logged out successfully.");
 }
@@ -331,12 +333,18 @@ $("loginForm").addEventListener("submit", e => {
 
   if(u.toLowerCase() === "aarif" && p === "7860"){
     state.isLoggedIn = true; state.name = "Aarif"; state.role = "Super Admin";
+    localStorage.setItem("ar_erp_logged", "true");
+    localStorage.setItem("ar_erp_username", "Aarif");
+    localStorage.setItem("ar_erp_role", "Super Admin");
     $("loginOverlay").style.display = "none"; toast("Welcome Super Admin Aarif!"); render(); return;
   }
   const found = state.users.find(x => x.username.toLowerCase() === u.toLowerCase() && (x.pass || "1234") === p);
   if(found){
     if(found.status !== "Active"){ alert("Error: Account Deactivated!"); return; }
     state.isLoggedIn = true; state.name = found.name; state.role = found.role;
+    localStorage.setItem("ar_erp_logged", "true");
+    localStorage.setItem("ar_erp_username", found.name);
+    localStorage.setItem("ar_erp_role", found.role);
     $("loginOverlay").style.display = "none"; toast("Login Successful!"); render();
   } else {
     alert("Alert: Invalid Username or Password!");
@@ -413,15 +421,63 @@ function renderDashboardChart(){
 
 const fieldMap={
  users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
+ permissions:[["role","User Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["modules","Allowed Modules (Comma Separated)","text",true],["status","Access Status","select",true,["Active","Restricted"]]],
  patients:[["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
- opd:[["token","Token No (Auto)","text",true,"OPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["doctor","Consultant Doctor (Auto)","text",true],["department","Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology"]],["assessment","Clinical Assessment / Notes","textarea",true],["investigation","Required Investigations","textarea",false],["advice","Advice & Treatment Plan","textarea",true],["fee","OPD Consultation Fee (₹)","number",true]],
- admissions:[["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["admissionDate","Date & Time of Admission","datetime-local",true],["wardBed","Ward / Bed Assigned","text",true],["doctor","Primary Consultant Doctor","text",true],["advance","Advance Amount Paid (₹)","number",true],["status","Admission Status","select",true,["Admitted","Discharged"]]],
- transfers:[["transferNo","Transfer Ref No (Auto)","text",true,"TRN"],["patientSearch","Search Admitted Patient (UHID / IP)","autocomplete-patient",true],["fromBed","Current Ward / Bed","text",true],["toBed","New Assigned Ward / Bed","text",true],["doctorAdvice","Doctor Transfer Advice / Reason","textarea",true]],
- "service-master":[["serviceCode","Service Code (Auto)","text",true,"SRV"],["serviceName","Service / Procedure Name","text",true],["category","Category","select",true,["Bed Charge ICU","Bed Charge HDU","Bed Charge General Ward","Operation Charge","Oxygen Charge","Ventilator Charge","BIPAP Machine Charge","Catheterization Charge","Consultation"]],["price","Standard Price (₹)","number",true],["discount","Allowed Discount %","number",false]],
- "test-master":[["testCode","Test Code (Auto)","text",true,"TST"],["testName","Test / Scan Name","text",true],["type","Test Type","select",true,["Pathology Laboratory","Radiology Scan"]],["price","Price (₹)","number",true]],
- laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["department","Department Name","text",true],["testName","Lab Test Name","autocomplete-test",true],["resultValue","Test Result Value","text",true],["normalRange","Normal Reference Range","text",true],["price","Test Price (₹)","number",true]],
- radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["scanName","Procedure Name","autocomplete-test",true],["findings","Radiology Findings & Report","textarea",true],["price","Scan Price (₹)","number",true]],
+ opd:[
+   ["uhidNo","Patient UHID / IP (Auto or Search)","autocomplete-patient",true],
+   ["doctor","Consultant Doctor (Auto)","autocomplete-doctor",true],
+   ["department","Department (Auto)","text",true],
+   ["assessment","Clinical Assessment / Notes","textarea",true],
+   ["investigation","Required Investigations","textarea",false],
+   ["advice","Advice & Treatment Plan","textarea",true],
+   ["fee","OPD Consultation Fee (₹)","number",true]
+ ],
+ admissions:[
+   ["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["admissionDate","Date & Time of Admission (Auto)","datetime-local",true],
+   ["wardBed","Ward / Bed Assigned","text",true],
+   ["doctor","Primary Consultant Doctor","text",true],
+   ["advance","Advance Amount Paid (₹)","number",true],
+   ["status","Admission Status","select",true,["Admitted","Discharged"]]
+ ],
+ transfers:[
+   ["transferNo","Transfer Ref No (Auto)","text",true,"TRN"],
+   ["patientSearch","Search Admitted Patient (UHID / IP)","autocomplete-patient",true],
+   ["fromBed","Current Ward / Bed","text",true],
+   ["toBed","New Assigned Ward / Bed","text",true],
+   ["doctorAdvice","Doctor Transfer Advice / Reason","textarea",true]
+ ],
+ "service-master":[
+   ["serviceCode","Service Code (Auto)","text",true,"SRV"],
+   ["serviceName","Service / Procedure Name","text",true],
+   ["category","Category","select",true,["Bed Charge ICU","Bed Charge HDU","Bed Charge General Ward","Operation Charge","Oxygen Charge","Ventilator Charge","BIPAP Machine Charge","Catheterization Charge","Consultation"]],
+   ["price","Standard Price (₹)","number",true],
+   ["discount","Allowed Discount %","number",false]
+ ],
+ "test-master":[
+   ["testCode","Test Code (Auto)","text",true,"TST"],
+   ["testName","Test / Scan Name","text",true],
+   ["type","Test Type","select",true,["Pathology Laboratory","Radiology Scan"]],
+   ["price","Price (₹)","number",true]
+ ],
+ laboratory:[
+   ["testCode","Test Code (Auto)","text",true,"LAB"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["department","Department Name","text",true],
+   ["testName","Lab Test Name","autocomplete-test",true],
+   ["resultValue","Test Result Value","text",true],
+   ["normalRange","Normal Reference Range","text",true],
+   ["price","Test Price (₹)","number",true]
+ ],
+ radiology:[
+   ["scanCode","Scan Code (Auto)","text",true,"RAD"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["scanName","Procedure Name","autocomplete-test",true],
+   ["findings","Radiology Findings & Report","textarea",true],
+   ["price","Scan Price (₹)","number",true]
+ ],
  "provisional-bill":[
    ["provNo","Provisional Bill No (Auto)","text",true,"PROV"],
    ["patientSearch","Search Admitted Patient (UHID / IP)","autocomplete-patient",true],
@@ -438,9 +494,11 @@ const fieldMap={
    ["admissionDate","Date & Time of Admission","datetime-local",true],
    ["dischargeDate","Date & Time of Discharge","datetime-local",true],
    ["serviceName","Services Rendered (Autocomplete)","autocomplete-service",true],
+   ["qty","Quantity / Duration (Days/Hours)","number",true],
    ["totalBill","Total Final Bill Amount (₹)","number",true],
    ["advancePaid","Advance Paid (Auto Minus)","number",true],
    ["discount","Discount Amount (₹)","number",false],
+   ["authority","Discount By Authority Name","text",false],
    ["dueAmount","Due Balance (₹) (Auto Calculated)","number",true],
    ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Bank Transfer","Credit (Udhar)"]],
    ["dischargeType","Type of Discharge","select",true,["Normal Discharge","LAMA","Reffer","DAMA","Death","Absconded"]],
@@ -456,12 +514,21 @@ const fieldMap={
    ["treatmentGiven","Treatment & Course in Hospital","textarea",true],
    ["adviceDischarge","Advice on Discharge","textarea",true]
  ],
- "medical-records":[["mrdNo","MRD File No (Auto)","text",true,"MRD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["summary","MRD Clinical Notes & Archival","textarea",true]],
+ "medical-records":[
+   ["mrdNo","MRD File No (Auto)","text",true,"MRD"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["submitDate","Date & Time of Submit","datetime-local",true],
+   ["staffName","MRD Incharge / Staff Name","text",true],
+   ["department","Department Name","text",true],
+   ["rackNo","File Rack No","text",true],
+   ["reportType","Report Category","select",true,["General Record","Death Report","Birth Report","Emergency Summary"]],
+   ["summary","MRD Clinical Notes & Archival","textarea",true]
+ ],
  medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["hsn","HSN Code","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock (Strips)","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
  "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
+const keyToData={"users":"users","permissions":"permissions","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
@@ -558,6 +625,7 @@ window.searchPatientHistory = function(query){
 
 window.jumpToModule = function(mod){
   state.page = mod;
+  localStorage.setItem("ar_erp_active_page", mod);
   render();
 };
 
@@ -654,6 +722,7 @@ window.importFullBackup = function(event){
 };
 
 function render(){
+  localStorage.setItem("ar_erp_active_page", state.page);
   renderNav($("globalSearch").value.trim());
   $("profileName").textContent=state.name;
   $("profileRole").textContent=state.role;
@@ -679,19 +748,22 @@ function openModal(){
     else if(idx===0 && f[4]){ val = generateSmartID(f[4]); }
     else if(f[2]==="datetime-local"){ val = nowISO; }
 
-    const readOnly = (idx===0 && f[4]) ? 'readonly style="background:#f1f5f9;"' : '';
+    const readOnly = (idx===0 && f[4]) ? 'readonly style="background:#374151; color:#fff;"' : '';
 
     if(f[2]==="autocomplete-patient"){
-      control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Mobile / UHID / Name..." onkeyup="handlePatientAutoFetch(this.value)"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+      control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Mobile / UHID / Name..." onkeyup="handlePatientAutoFetch(this.value)" autocomplete="off"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
+    else if(f[2]==="autocomplete-doctor"){
+      control=`<div class="autocomplete-box"><input type="text" id="dSearchInput" name="${f[0]}" placeholder="Type Doctor Name..." onkeyup="handleDoctorAutoFetch(this.value)" autocomplete="off"><div id="doctorDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="autocomplete-med"){
-      control=`<div class="autocomplete-box"><input type="text" id="mSearchInput" name="${f[0]}" placeholder="Type 2-3 letters of medicine..." onkeyup="handleMedAutoFetch(this.value)"><div id="medDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+      control=`<div class="autocomplete-box"><input type="text" id="mSearchInput" name="${f[0]}" placeholder="Type 2-3 letters of medicine..." onkeyup="handleMedAutoFetch(this.value)" autocomplete="off"><div id="medDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="autocomplete-service"){
-      control=`<div class="autocomplete-box"><input type="text" id="sSearchInput" name="${f[0]}" placeholder="Type service name (Bed, ICU, Operation)..." onkeyup="handleServiceAutoFetch(this.value)"><div id="serviceDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+      control=`<div class="autocomplete-box"><input type="text" id="sSearchInput" name="${f[0]}" placeholder="Type service name (Bed, ICU, Operation)..." onkeyup="handleServiceAutoFetch(this.value)" autocomplete="off"><div id="serviceDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="autocomplete-test"){
-      control=`<div class="autocomplete-box"><input type="text" id="tSearchInput" name="${f[0]}" placeholder="Type test name..." onkeyup="handleTestAutoFetch(this.value)"><div id="testDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+      control=`<div class="autocomplete-box"><input type="text" id="tSearchInput" name="${f[0]}" placeholder="Type test name..." onkeyup="handleTestAutoFetch(this.value)" autocomplete="off"><div id="testDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
@@ -728,18 +800,22 @@ window.editRecordRow = function(mod, idx){
   $("modalBackdrop").classList.add("show");
 };
 
-// AUTO-CALCULATE ADVANCE MINUS & DUE BALANCE
+// AUTO-CALCULATE ADVANCE MINUS & DUE BALANCE WITH MULTIPLE SERVICES
 window.calculateBillingDue = function(){
   const totEl = $("field_totalBill");
+  const qtyEl = $("field_qty");
   const advEl = $("field_advancePaid");
   const discEl = $("field_discount");
   const dueEl = $("field_dueAmount");
 
   if(totEl && dueEl){
-    const tot = Number(totEl.value || 0);
+    const baseTot = Number(totEl.dataset.basePrice || totEl.value || 0);
+    const qty = Number(qtyEl?.value || 1);
+    const calculatedTot = baseTot * (qty > 0 ? qty : 1);
+    
     const adv = Number(advEl?.value || 0);
     const disc = Number(discEl?.value || 0);
-    const due = tot - adv - disc;
+    const due = calculatedTot - adv - disc;
     dueEl.value = Math.max(0, due);
   }
 };
@@ -751,24 +827,45 @@ function handlePatientAutoFetch(val){
   const matches = patients.filter(p => (p.name+" "+p.uhid+" "+p.mobile+" "+(p.aadhaar||"")).toLowerCase().includes(val.toLowerCase()));
   if(matches.length > 0){
     drop.innerHTML = matches.map(p => {
-      // Auto-fetch advance deposit from admissions if available
       const adm = (state.records["admissions"] || []).find(a => (a.patientSearch||"").toLowerCase().includes(p.uhid.toLowerCase()));
       const adv = adm ? (adm.advance || 0) : 0;
-      const dr = adm ? (adm.doctor || 'Dr. Authorized') : 'Dr. Consultant';
-      return `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.mobile}', ${adv}, '${dr}')">${p.name} | Mob: <b>${p.mobile}</b> | UHID: ${p.uhid} | Adv: ₹${adv}</div>`;
+      return `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.mobile}', ${adv})">${p.name} | Mob: <b>${p.mobile}</b> | UHID: ${p.uhid} | Adv: ₹${adv}</div>`;
     }).join('');
     drop.style.display = "block";
   } else { drop.style.display = "none"; }
 }
 
-function selectAutoPatient(uhid, name, mobile, advance, doctor){
+function selectAutoPatient(uhid, name, mobile, advance){
   $("pSearchInput").value = `${name} (Mob: ${mobile} | UHID: ${uhid})`;
   const advField = $("field_advancePaid");
   if(advField) advField.value = advance;
-  const docField = $("field_doctor");
-  if(docField) docField.value = doctor;
   $("patientDropdown").style.display = "none";
   calculateBillingDue();
+}
+
+function handleDoctorAutoFetch(val){
+  const drop = $("doctorDropdown");
+  if(!val){ drop.style.display="none"; return; }
+  const docs = [
+    {name:"Dr. R. K. Sharma", dept:"General Medicine", fee:300},
+    {name:"Dr. A. Rabbani", dept:"Cardiology", fee:500},
+    {name:"Dr. Priya Singh", dept:"Pediatrics", fee:350},
+    {name:"Dr. Manish Gupta", dept:"Orthopedics", fee:400}
+  ];
+  const matches = docs.filter(d => d.name.toLowerCase().includes(val.toLowerCase()) || d.dept.toLowerCase().includes(val.toLowerCase()));
+  if(matches.length > 0){
+    drop.innerHTML = matches.map(d => `<div onclick="selectAutoDoctor('${d.name}', '${d.dept}', ${d.fee})">${d.name} (${d.dept}) - Fee: ₹${d.fee}</div>`).join('');
+    drop.style.display = "block";
+  } else { drop.style.display = "none"; }
+}
+
+function selectAutoDoctor(name, dept, fee){
+  $("dSearchInput").value = name;
+  const deptInput = document.querySelector("input[name='department'], select[name='department']");
+  if(deptInput) deptInput.value = dept;
+  const feeInput = $("field_fee");
+  if(feeInput) feeInput.value = fee;
+  $("doctorDropdown").style.display = "none";
 }
 
 function handleServiceAutoFetch(val){
@@ -794,7 +891,10 @@ function handleServiceAutoFetch(val){
 function selectAutoService(name, price){
   $("sSearchInput").value = name;
   const totField = $("field_totalBill");
-  if(totField) totField.value = price;
+  if(totField){
+    totField.dataset.basePrice = price;
+    totField.value = price;
+  }
   $("serviceDropdown").style.display = "none";
   calculateBillingDue();
 }
@@ -833,11 +933,13 @@ function saveForm(e){
   const k=datasetKey(),form=new FormData($("recordForm")),record={};
   for(const [key,val] of form.entries())record[key]=String(val).trim();
 
-  if(k === "provisional-bill" || k === "hospital-billing"){
+  // STRICT ONE-TIME FINAL BILLING LOCK CHECK
+  if(k === "hospital-billing"){
     const pStr = (record.patientSearch || "").toLowerCase();
-    const isAdmitted = (state.records["admissions"] || []).some(a => pStr.includes((a.ipdNo||"").toLowerCase()) || pStr.includes((a.patientSearch||"").toLowerCase()) || pStr.includes((a.uhid||"").toLowerCase()));
-    if(!isAdmitted && k === "provisional-bill"){
-      alert("Error: IPD Provisional Bill bina Admission ke nahi ban sakta.");
+    const existingBills = state.records["hospital-billing"] || [];
+    const alreadyBilled = existingBills.some(b => (b.patientSearch||"").toLowerCase() === pStr && b.status === "Paid & Discharged");
+    if(alreadyBilled && state.editingIdx === null){
+      alert("Error: Es IP No / Patient ka final bill pehle hi close ho chuka hai. Dubara billing nahi ho sakti.");
       return;
     }
   }
@@ -907,16 +1009,15 @@ window.printRecordRow = function(mod, idx){
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:14px; border:1px solid #000;">
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Token No / C.R.:</b> ${escapeHTML(item.token || 'OPD-001')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>Patient UHID / IP:</b> ${escapeHTML(item.uhidNo || 'AR281026')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Date:</b> ${new Date().toLocaleDateString()}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Patient Details:</b> ${escapeHTML(item.patientSearch || 'Patient')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Consultant')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Department:</b> ${escapeHTML(item.department || 'General Medicine')}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Consultant')}</td>
-            <td style="border:1px solid #000; padding:6px;"><b>Consultation Fee:</b> ₹${escapeHTML(item.fee || '0')}</td>
+            <td colspan="2" style="border:1px solid #000; padding:6px;"><b>Consultation Fee:</b> ₹${escapeHTML(item.fee || '0')}</td>
           </tr>
         </table>
         <div style="display:flex; gap:12px; margin-bottom:20px;">
@@ -941,34 +1042,6 @@ window.printRecordRow = function(mod, idx){
         </div>
       </div>
     `;
-  } else if(mod === "provisional-bill"){
-    area.innerHTML = `
-      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
-          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
-          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)}</p>
-          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">PROVISIONAL IPD BILL STATEMENT</h4>
-        </div>
-        <div style="font-size:12px; line-height:1.8;">
-          <p><b>Provisional Ref No:</b> ${escapeHTML(item.provNo)} | <b>Date:</b> ${new Date().toLocaleDateString()}</p>
-          <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
-          <hr style="border:0.5px solid #000; margin:10px 0;">
-          <table style="width:100%; font-size:12px; text-align:left;">
-            <tr><td>Total Bed Charges:</td><td>₹${escapeHTML(item.bedCharges || 0)}</td></tr>
-            <tr><td>Services & Doctor Charges:</td><td>₹${escapeHTML(item.serviceCharges || 0)}</td></tr>
-            <tr><td>Lab & Radiology Charges:</td><td>₹${escapeHTML(item.labCharges || 0)}</td></tr>
-            <tr><td><b>Total Provisional Bill:</b></td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
-            <tr><td>Advance Paid:</td><td>₹${escapeHTML(item.advancePaid || 0)}</td></tr>
-            <tr style="font-size:14px;"><td><b>Estimated Net Due Balance:</b></td><td><b style="color:red;">₹${escapeHTML(item.netDue || 0)}</b></td></tr>
-          </table>
-        </div>
-        <br><br>
-        <div style="display:flex; justify-content:space-between; margin-top:40px;">
-          <p>Prepared By: ________________</p>
-          <p>Patient / Guardian Sign: ________________</p>
-        </div>
-      </div>
-    `;
   } else if(mod === "hospital-billing"){
     area.innerHTML = `
       <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
@@ -981,8 +1054,9 @@ window.printRecordRow = function(mod, idx){
           <p><b>Invoice Bill No:</b> ${escapeHTML(item.billNo)} | <b>Bill Date:</b> ${new Date().toLocaleDateString()}</p>
           <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
           <p><b>Date of Admission:</b> ${escapeHTML(item.admissionDate || '—')} | <b>Date of Discharge:</b> ${escapeHTML(item.dischargeDate || '—')}</p>
-          <p><b>Services Rendered:</b> ${escapeHTML(item.serviceName)}</p>
+          <p><b>Services Rendered:</b> ${escapeHTML(item.serviceName)} (Qty: ${escapeHTML(item.qty || 1)})</p>
           <p><b>Payment Mode:</b> ${escapeHTML(item.paymentMode || 'Cash')} | <b>Type of Discharge:</b> ${escapeHTML(item.dischargeType || 'Normal Discharge')}</p>
+          <p><b>Discount Authority:</b> ${escapeHTML(item.authority || 'N/A')}</p>
           <hr style="border:0.5px solid #000; margin:10px 0;">
           <table style="width:100%; font-size:12px; text-align:left;">
             <tr><td>Total Bill Amount:</td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
@@ -1053,15 +1127,20 @@ function refreshTable(){
 document.addEventListener("click",e=>{
   if(!e.target.closest(".profile")) $("profileDropdown").style.display = "none";
   const nav=e.target.closest("[data-page]");
-  if(nav){state.page=nav.dataset.page;render();return}
+  if(nav){
+    state.page=nav.dataset.page;
+    localStorage.setItem("ar_erp_active_page", state.page);
+    render();
+    return;
+  }
   const action=e.target.closest("[data-action]")?.dataset.action;
   if(action==="add"){openModal();return}
   if(action==="export"){exportCSV();return}
-  if(action==="quick-add"){ state.page="patients"; render(); openModal(); return; }
+  if(action==="quick-add"){ state.page="patients"; localStorage.setItem("ar_erp_active_page", "patients"); render(); openModal(); return; }
   if(e.target.closest("#modalClose")||e.target.closest("#modalCancel")){closeModal();return}
   if(e.target.closest("#hamb")){$("sidebar").classList.toggle("open");return}
   if(e.target.closest("#themeBtn")){document.body.classList.toggle("dark");toast("Theme toggled.");return}
-  if(e.target.closest("#notificationBtn")){state.page="notifications";render();return}
+  if(e.target.closest("#notificationBtn")){state.page="notifications"; localStorage.setItem("ar_erp_active_page", "notifications"); render();return}
   
   const del=e.target.closest("[data-delete]");
   if(del){
@@ -1080,6 +1159,10 @@ $("content").addEventListener("input",e=>{if(e.target.id==="tableSearch"||e.targ
 $("content").addEventListener("change",e=>{if(e.target.id==="statusFilter"||e.target.id==="dateFilter")refreshTable()});
 $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+if(state.isLoggedIn){
+  $("loginOverlay").style.display = "none";
+}
 
 render();
 </script>
