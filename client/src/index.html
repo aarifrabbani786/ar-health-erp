@@ -80,25 +80,26 @@ tbody tr:hover{background:#f0f9ff}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field{display:grid;gap:6px}
 .field label{font-size:10.5px;font-weight:900!important;color:#334155;text-transform:uppercase}
-.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(6px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-backdrop.show{display:flex}
-.modal{background:#111827;color:#fff;border-radius:24px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 0 50px rgba(234,88,12,0.3);border:2px solid #ea580c}
-.modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #374151}
-.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:#fff}
+.modal{background:#fff;border-radius:20px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
+.modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--line)}
+.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:var(--navy)}
 .modal-body{padding:22px}
-.modal-foot{border-top:1.5px solid #374151;border-bottom:0;justify-content:flex-end;gap:10px}
-.close{border:0;background:#374151;color:#fff;border-radius:8px;width:32px;height:32px;cursor:pointer}
+.modal-foot{border-top:1.5px solid var(--line);border-bottom:0;justify-content:flex-end;gap:10px}
+.close{border:0;background:#e2e8f0;border-radius:8px;width:32px;height:32px;cursor:pointer}
 .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:#fff;padding:13px 18px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:100;display:none}
 .toast.show{display:block}
 .footer{padding:20px 0 0;color:#64748b;font-size:10px;text-align:center}
 
 .autocomplete-box{position:relative}
-.autocomplete-items{position:absolute;border:1.5px solid #ea580c;border-top:none;z-index:99;top:100%;left:0;right:0;background:#1f2937;color:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.3);max-height:180px;overflow-y:auto}
-.autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #374151;color:#fff}
-.autocomplete-items div:hover{background:#ea580c;color:#fff}
+.autocomplete-items{position:absolute;border:1.5px solid #0284c7;border-top:none;z-index:99;top:100%;left:0;right:0;background:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);max-height:180px;overflow-y:auto}
+.autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
+.autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
+/* NEON LAMP LOGIN OVERLAY */
 #loginOverlay{position:fixed;inset:0;background:radial-gradient(circle at center,#1e293b 0%,#090d16 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-.animated-login-wrapper{display:flex;width:100%;max-width:780px;min-height:410px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(234,88,12,0.4);border:2.5px solid #ea580c;position:relative}
+.animated-login-wrapper{display:flex;width:100%;max-width:800px;min-height:420px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(234,88,12,0.45);border:2.5px solid #ea580c;position:relative}
 .login-form-side{flex:1;padding:35px 30px;display:flex;flex-direction:column;justify-content:center;background:#111827}
 .login-form-side h2{font-size:24px;color:#fff;margin:0 0 16px;font-weight:900!important}
 .login-field-glow{margin-bottom:14px;position:relative}
@@ -119,7 +120,7 @@ tbody tr:hover{background:#f0f9ff}
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
-  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; color: #000; }
+  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; }
 }
 </style>
 </head>
@@ -197,7 +198,7 @@ const groups = [
  {label:"PHARMACY",items:[["Pharmacy Dashboard","pharmacy","✚"],["Medicine Master","medicines","▤"],["Batch & Strip Stock","batches","▦"],["Purchase Entry","pharmacy-purchase","＋"],["Sales Billing","pharmacy-sales","₹"],["Sales Return","sales-return","↩"],["Customers","customers","♙"],["Suppliers","suppliers","▣"],["Barcode & Labels","barcode","▥"],["Stock Transfer","stock-transfer","⇄"],["Expiry & Low Stock","stock-alerts","⚠"],["Pharmacy Reports","pharmacy-reports","▥"]]},
  {label:"CENTRAL STORE & PURCHASE",items:[["Inventory Dashboard","inventory","▦"],["Item Master","items","▤"],["Warehouses & Stores","warehouses","▣"],["Requisitions","requisitions","☷"],["Goods Receipt (GRN)","grn","⇩"],["Stock Issue / Return","stock-issue","⇄"],["Stock Ledger","stock-ledger","▤"],["Purchase Orders","purchase-orders","▧"],["Vendor Quotations","quotations","▤"],["Supplier Payments","supplier-payments","₹"]]},
  {label:"BIOMEDICAL ENGINEERING",items:[["Biomedical Dashboard","biomedical","⌘"],["Equipment Assets","assets","▣"],["Equipment Complaints","complaints","⚠"],["Work Orders & Repairs","work-orders","🔧"],["Preventive Maintenance","maintenance","◷"],["Calibration Register","calibration","✓"],["AMC / CMC Contracts","contracts","▧"],["Service Vendors","service-vendors","♙"],["Equipment Handover","handover","⇄"],["Equipment Reports","biomed-reports","▥"]]},
- {label:"FINANCE & HRMS",items:[["Accounts Dashboard","accounts","₹"],["Income & Expenses","expenses","⇅"],["Cash & Bank","cash-bank","▤"],["Receivables / Payables","receivables","₹"],["Employee Directory","employees","♙"],["Attendance & Shifts","attendance","◷"],["Leave & Duty Roster","leave","☷"],["Payroll","payroll","₹"]]},
+ {label:"FINANCE & HRMS",items:[["Accounts Dashboard","accounts","₹"],["Income & Expenses","expenses","⇅"],["Cash & Bank","cash-bank","▤"],["Receivables / Payables","receivables","₹"],["Employee Directory","employees","♙"],["Attendance & Shifts","attendance","◷"],["Leave & Duty Roster","leave","☷"],["Payroll","payroll","₹"],["Collection Reports","collection-reports","📊"]]},
  {label:"REPORTS & ADMINISTRATION",items:[["Reports & Analytics","reports","▥"],["Quality & Compliance","quality","✓"],["Document Register","documents","▧"],["User & Role Management","users","♙"],["Role Permissions","permissions","⚿"],["Audit Logs","audit-logs","☷"],["Branch & Department Setup","organization","▦"],["Settings & Backup","settings","⚙"]]}
 ];
 
@@ -421,7 +422,8 @@ function renderDashboardChart(){
 
 const fieldMap={
  users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
- permissions:[["role","User Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["modules","Allowed Modules (Comma Separated)","text",true],["status","Access Status","select",true,["Active","Restricted"]]],
+ permissions:[["role","User Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["allowedModules","Select Allowed Modules (Checklist below)","modules-checkbox",true],["status","Access Status","select",true,["Active","Restricted"]]],
+ organization:[["branchCode","Branch Code (Auto)","text",true,"BR"],["branchName","Branch / Unit Name","text",true],["branchType","Department Scope","select",true,["Full Hospital & Pharmacy","Pharmacy Only","Diagnostic Lab Only","Biomedical Wing"]],["location","Location / Address","text",true],["status","Status","select",true,["Active","Inactive"]]],
  patients:[["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
  opd:[
@@ -437,8 +439,10 @@ const fieldMap={
    ["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],
    ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
    ["admissionDate","Date & Time of Admission (Auto)","datetime-local",true],
-   ["wardBed","Ward / Bed Assigned","text",true],
-   ["doctor","Primary Consultant Doctor","text",true],
+   ["wardBed","Ward / Bed Assigned (Auto-Fetch)","autocomplete-bed",true],
+   ["doctor","Primary Consultant Doctor (Auto)","autocomplete-doctor",true],
+   ["attendantName","Attendant Name","text",true],
+   ["attendantMobile","Attendant Mobile","tel",true],
    ["advance","Advance Amount Paid (₹)","number",true],
    ["status","Admission Status","select",true,["Admitted","Discharged"]]
  ],
@@ -528,7 +532,7 @@ const fieldMap={
  "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","permissions":"permissions","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
+const keyToData={"users":"users","permissions":"permissions","organization":"organization","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
@@ -550,21 +554,21 @@ function renderRows(rows){
   }).join("");
 }
 
-// 360° SINGLE PAGE PATIENT PROFILE & COMPLETE HISTORY
+// 360° SINGLE PAGE PATIENT PROFILE & COMPLETE HISTORY WITH ACTION BUTTONS
 function renderPatientProfileModule(ws){
   ws.innerHTML = `
     <div class="module-title">
-      <div><h1>Patient Profile & Complete History (360° Single Page)</h1><p>Search by UHID / IP No, Mobile Number, Aadhaar or Name to view all past records.</p></div>
+      <div><h1>Patient Profile & Complete History (360° Single Page)</h1><p>Search by UHID / IP No, Mobile Number, Aadhaar or Name to perform actions and view full history.</p></div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h3>🔍 Global Patient Search</h3></div>
+      <div class="panel-head"><h3>🔍 Global Patient Search & Action Hub</h3></div>
       <div class="panel-body">
         <div class="field" style="max-width:480px; margin-bottom:20px;">
           <label>Type Patient Mobile / UHID / IP No / Aadhaar / Name</label>
           <input type="text" id="globalPatientQuery" placeholder="Type to search..." onkeyup="searchPatientHistory(this.value)">
         </div>
         <div id="patientHistoryResult">
-          <p style="color:var(--muted);">Enter search keyword above to inspect patient's complete single-page history across OPD, IPD, Transfers, Billing, and Pharmacy.</p>
+          <p style="color:var(--muted);">Enter search keyword above to inspect patient's complete history and quick-action menu.</p>
         </div>
       </div>
     </div>
@@ -596,16 +600,19 @@ window.searchPatientHistory = function(query){
 
     html += `
       <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
           <div>
             <h3 style="font-size:16px; color:var(--navy); margin:0 0 4px;">👤 ${escapeHTML(p.name)}</h3>
-            <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:900;">UHID / IP No: ${escapeHTML(p.uhid)}</span>
+            <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:900;">UHID: ${escapeHTML(p.uhid)}</span>
             <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; font-weight:900;">Mobile: ${escapeHTML(p.mobile)}</span>
             <span style="font-size:11px; background:#fef9c3; color:#a16207; padding:3px 8px; border-radius:6px; font-weight:900;">Aadhaar: ${escapeHTML(p.aadhaar||'N/A')}</span>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn primary" onclick="jumpToModule('opd')">+ New OPD</button>
-            <button class="btn success" onclick="jumpToModule('hospital-billing')">+ Final Bill</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn primary" onclick="jumpToModule('opd')">＋ OPD Prescription</button>
+            <button class="btn success" onclick="jumpToModule('admissions')">＋ IPD Admission</button>
+            <button class="btn" style="background:#0284c7; color:#fff;" onclick="jumpToModule('hospital-billing')">₹ Final IPD Billing</button>
+            <button class="btn danger" onclick="jumpToModule('discharge')">⇥ Discharge Patient</button>
+            <button class="btn" style="background:#7c3aed; color:#fff;" onclick="jumpToModule('pharmacy-sales')">💊 Pharmacy Sale</button>
           </div>
         </div>
 
@@ -629,11 +636,46 @@ window.jumpToModule = function(mod){
   render();
 };
 
+function renderCollectionReportsModule(ws){
+  const sales = state.records["pharmacy-sales"] || [];
+  const bills = state.records["hospital-billing"] || [];
+  const opd = state.records["opd"] || [];
+
+  ws.innerHTML = `
+    <div class="module-title"><div><h1>Collection Reports & Financial Analytics</h1><p>Date-wise, User-wise, Patient-wise, and Service-wise financial collection register.</p></div></div>
+    <div class="filters">
+      <input type="date" id="reportDateFilter" onchange="filterCollections()" />
+      <select id="reportUserFilter" onchange="filterCollections()"><option value="">All Users / Operators</option><option>Aarif</option><option>Bme</option></select>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source / Module</th><th>Ref No / Bill ID</th><th>Patient Details</th><th>Payment Mode</th><th>Amount Collected (₹)</th><th>Date & Time</th></tr></thead>
+          <tbody id="collectionRows">
+            ${sales.map(s=>`<tr><td>Pharmacy Sales</td><td>${s.invoiceNo}</td><td>${s.patientSearch||'Walk-in'}</td><td>${s.status||'Paid'}</td><td><b>₹${s.total||s.amount||0}</b></td><td>${s._createdAt?.slice(0,10)||'Today'}</td></tr>`).join('')}
+            ${bills.map(b=>`<tr><td>IPD Final Bill</td><td>${b.billNo}</td><td>${b.patientSearch}</td><td>${b.paymentMode||'Cash'}</td><td><b>₹${b.totalBill||0}</b></td><td>${b.admissionDate||'Today'}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+window.filterCollections = function(){
+  // Filter logic can be extended as per date input
+  toast("Collection Report Filtered.");
+};
+
 function genericModule(){
   const k=datasetKey();
   if(k === "patient-profile"){
     let ws = document.createElement("div");
     renderPatientProfileModule(ws);
+    return ws.innerHTML;
+  }
+  if(k === "collection-reports"){
+    let ws = document.createElement("div");
+    renderCollectionReportsModule(ws);
     return ws.innerHTML;
   }
   if(k === "settings"){
@@ -748,13 +790,20 @@ function openModal(){
     else if(idx===0 && f[4]){ val = generateSmartID(f[4]); }
     else if(f[2]==="datetime-local"){ val = nowISO; }
 
-    const readOnly = (idx===0 && f[4]) ? 'readonly style="background:#374151; color:#fff;"' : '';
+    const readOnly = (idx===0 && f[4]) ? 'readonly style="background:#f1f5f9;"' : '';
 
     if(f[2]==="autocomplete-patient"){
       control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Mobile / UHID / Name..." onkeyup="handlePatientAutoFetch(this.value)" autocomplete="off"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
     else if(f[2]==="autocomplete-doctor"){
       control=`<div class="autocomplete-box"><input type="text" id="dSearchInput" name="${f[0]}" placeholder="Type Doctor Name..." onkeyup="handleDoctorAutoFetch(this.value)" autocomplete="off"><div id="doctorDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
+    else if(f[2]==="autocomplete-bed"){
+      control=`<div class="autocomplete-box"><input type="text" id="bSearchInput" name="${f[0]}" placeholder="Type Bed No or Ward (e.g. ICU-1)..." onkeyup="handleBedAutoFetch(this.value)" autocomplete="off"><div id="bedDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
+    else if(f[2]==="modules-checkbox"){
+      const allMods = ["Dashboard","OPD Prescription","IPD Admissions","Laboratory","Radiology","Final Billing","Pharmacy Sales","Biomedical","Accounts"];
+      control = `<div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px; max-height:160px; overflow-y:auto; background:#f8fafc; padding:10px; border-radius:8px; border:1.5px solid var(--line);">${allMods.map(m=>`<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" name="module_chk" value="${m}"> ${m}</label>`).join('')}</div>`;
     }
     else if(f[2]==="autocomplete-med"){
       control=`<div class="autocomplete-box"><input type="text" id="mSearchInput" name="${f[0]}" placeholder="Type 2-3 letters of medicine..." onkeyup="handleMedAutoFetch(this.value)" autocomplete="off"><div id="medDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
@@ -800,7 +849,7 @@ window.editRecordRow = function(mod, idx){
   $("modalBackdrop").classList.add("show");
 };
 
-// AUTO-CALCULATE ADVANCE MINUS & DUE BALANCE WITH MULTIPLE SERVICES
+// AUTO-CALCULATE ADVANCE MINUS & DUE BALANCE
 window.calculateBillingDue = function(){
   const totEl = $("field_totalBill");
   const qtyEl = $("field_qty");
@@ -868,6 +917,37 @@ function selectAutoDoctor(name, dept, fee){
   $("doctorDropdown").style.display = "none";
 }
 
+function handleBedAutoFetch(val){
+  const drop = $("bedDropdown");
+  if(!val){ drop.style.display="none"; return; }
+  const bedsMaster = state.records["beds"] || [
+    {bedNo:"ICU-01", wardName:"ICU Ward", status:"Available"},
+    {bedNo:"HDU-01", wardName:"HDU Ward", status:"Available"},
+    {bedNo:"GEN-01", wardName:"General Ward", status:"Available"}
+  ];
+  const admissions = state.records["admissions"] || [];
+  const matches = bedsMaster.filter(b => (b.bedNo + " " + b.wardName).toLowerCase().includes(val.toLowerCase()));
+
+  if(matches.length > 0){
+    drop.innerHTML = matches.map(b => {
+      const isOccupied = admissions.some(a => (a.wardBed||"").toLowerCase().includes(b.bedNo.toLowerCase()) && a.status === "Admitted");
+      const statusColor = isOccupied ? "red" : (b.status === "Maintenance" ? "orange" : "green");
+      const statusText = isOccupied ? "Occupied (Locked)" : b.status;
+      return `<div onclick="selectAutoBed('${b.bedNo} (${b.wardName})', ${isOccupied})"><b>${b.bedNo}</b> - ${b.wardName} [<span style="color:${statusColor};">${statusText}</span>]</div>`;
+    }).join('');
+    drop.style.display = "block";
+  } else { drop.style.display = "none"; }
+}
+
+function selectAutoBed(bedStr, isOccupied){
+  if(isOccupied){
+    alert("Error: Yeh bed already occupied hai! Jab tak discharge ya transfer na ho, dusra patient allocate nahi ho sakta.");
+    return;
+  }
+  $("bSearchInput").value = bedStr;
+  $("bedDropdown").style.display = "none";
+}
+
 function handleServiceAutoFetch(val){
   const drop = $("serviceDropdown");
   if(!val || val.length < 1){ drop.style.display="none"; return; }
@@ -931,9 +1011,16 @@ function saveForm(e){
   if(!confirm("Confirm save record?")) return;
 
   const k=datasetKey(),form=new FormData($("recordForm")),record={};
-  for(const [key,val] of form.entries())record[key]=String(val).trim();
+  for(const [key,val] of form.entries()){
+    if(key === "module_chk") continue;
+    record[key]=String(val).trim();
+  }
 
-  // STRICT ONE-TIME FINAL BILLING LOCK CHECK
+  if(k === "permissions"){
+    const checkedMods = Array.from(document.querySelectorAll("input[name='module_chk']:checked")).map(el => el.value);
+    record.allowedModules = checkedMods.join(", ");
+  }
+
   if(k === "hospital-billing"){
     const pStr = (record.patientSearch || "").toLowerCase();
     const existingBills = state.records["hospital-billing"] || [];
