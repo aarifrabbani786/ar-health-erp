@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR Healthcare ERP | Enterprise 3D Suite</title>
+<title>AR Healthcare ERP | Enterprise Suite</title>
 <style>
 :root {
     --navy: #0f172a;
@@ -15,30 +15,29 @@
     --bg-3d: #e2e8f0;
     --card-3d: #e2e8f0;
     --text: #0f172a;
-    --muted: #475569;
-    --shadow-out: 8px 8px 16px #b8c2cc, -8px -8px 16px #ffffff;
-    --shadow-in: inset 4px 4px 8px #b8c2cc, inset -4px -4px 8px #ffffff;
+    --muted: #334155;
+    --shadow-out: 6px 6px 14px #b8c2cc, -6px -6px 14px #ffffff;
+    --shadow-in: inset 3px 3px 6px #b8c2cc, inset -3px -3px 6px #ffffff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 900 !important; }
-body { background: var(--bg-3d); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+body { background: var(--bg-3d); color: var(--text); min-height: 100vh; overflow-x: hidden; font-size: 12.5px; }
 
-/* 3D Glass & Neumorphic Buttons & Inputs */
 input, select, textarea {
-    background: var(--card-3d); border: none; outline: none; padding: 11px 14px;
-    border-radius: 10px; box-shadow: var(--shadow-in); color: var(--text); font-size: 12.5px; width: 100%; transition: all 0.2s;
+    background: #f8fafc; border: 1.5px solid #cbd5e1; outline: none; padding: 11px 14px;
+    border-radius: 10px; color: var(--text); font-size: 12.5px; width: 100%; transition: all 0.2s;
 }
-input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3b8, inset -6px -6px 10px #ffffff; }
+input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
 
 .btn {
     border: none; outline: none; padding: 10px 16px; border-radius: 10px; cursor: pointer;
-    box-shadow: 5px 5px 10px #b8c2cc, -5px -5px 10px #ffffff; color: var(--text); background: var(--card-3d);
+    box-shadow: 4px 4px 10px #b8c2cc, -4px -4px 10px #ffffff; color: var(--text); background: var(--card-3d);
     font-size: 12px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; justify-content: center;
 }
 .btn:active { box-shadow: var(--shadow-in); transform: translateY(1px); }
-.btn.primary { background: var(--blue-gradient); color: white; box-shadow: 4px 6px 15px rgba(2, 132, 199, 0.4); }
-.btn.success { background: var(--green-gradient); color: white; box-shadow: 4px 6px 15px rgba(22, 163, 74, 0.4); }
-.btn.danger { background: var(--red-gradient); color: white; box-shadow: 4px 6px 15px rgba(239, 68, 68, 0.4); }
+.btn.primary { background: var(--blue-gradient); color: white; box-shadow: 3px 5px 12px rgba(2, 132, 199, 0.4); }
+.btn.success { background: var(--green-gradient); color: white; box-shadow: 3px 5px 12px rgba(22, 163, 74, 0.4); }
+.btn.danger { background: var(--red-gradient); color: white; box-shadow: 3px 5px 12px rgba(239, 68, 68, 0.4); }
 
 /* AUTH OVERLAY */
 #auth-overlay {
@@ -47,7 +46,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 }
 .login-card-3d {
     width: 100%; max-width: 440px; background: var(--card-3d); border-radius: 24px; padding: 35px;
-    box-shadow: 14px 14px 28px #b8c2cc, -14px -14px 28px #ffffff; border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: 14px 14px 28px #b8c2cc, -14px -14px 28px #ffffff; border: 1.5px solid rgba(255,255,255,0.8);
 }
 .login-card-3d h2 { text-align: center; font-size: 18px; color: var(--navy); margin-bottom: 4px; text-transform: uppercase; }
 .login-card-3d .sub { text-align: center; font-size: 11px; color: var(--blue); margin-bottom: 22px; }
@@ -56,7 +55,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 .input-group-3d label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
 .eye-btn { position: absolute; right: 12px; top: 32px; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--muted); }
 
-/* MAIN APP LAYOUT */
+/* APP LAYOUT */
 .app { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
 .sidebar {
     width: 280px; background: var(--navy); color: #cbd5e1; flex-shrink: 0;
@@ -65,8 +64,8 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 .brand { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
 .brand-box {
     display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px;
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4), inset 0 2px 4px rgba(255,255,255,0.4); color: white;
+    background: var(--blue-gradient); border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4); color: white;
 }
 .nav-list { list-style: none; padding: 10px; flex: 1; }
 .nav-group-label { font-size: 10px; color: #64748b; padding: 14px 10px 4px; text-transform: uppercase; letter-spacing: 1px; }
@@ -78,8 +77,8 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 20px; background: #f8fafc; }
 .topbar {
-    background: var(--card-3d); padding: 12px 20px; border-radius: 16px;
-    box-shadow: var(--shadow-out); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    background: #ffffff; padding: 12px 20px; border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1.5px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
 }
 .search-box { width: 320px; position: relative; }
 
@@ -103,12 +102,11 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
 .crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
 .crm-card {
-    background: var(--card-3d); padding: 18px; border-radius: 16px; box-shadow: var(--shadow-out);
+    background: #ffffff; padding: 18px; border-radius: 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 .crm-title { font-size: 11px; color: var(--muted); text-transform: uppercase; }
 .crm-val { font-size: 24px; color: var(--navy); margin-top: 6px; }
 
-/* AUTO-COMPLETE DROPDOWN */
 .autocomplete-items {
     position: absolute; border: 1.5px solid #cbd5e1; border-top: none; z-index: 99;
     top: 100%; left: 0; right: 0; background-color: #ffffff; border-radius: 0 0 10px 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); max-height: 160px; overflow-y: auto;
@@ -152,7 +150,6 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
     <!-- MAIN APP STRUCTURE -->
     <div class="app">
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="brand">
                 <div class="brand-box">
@@ -162,23 +159,22 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
             <div class="nav-list" id="sidebarMenu"></div>
         </div>
 
-        <!-- CONTENT -->
         <div class="main-content">
             <div class="topbar">
                 <div class="search-box">
-                    <input type="text" id="globalModuleSearch" placeholder="🔍 Search modules or data..." onkeyup="filterGlobalData()">
+                    <input type="text" id="globalModuleSearch" placeholder="🔍 Search modules..." onkeyup="filterSidebar(this.value)">
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="text-align: right;">
                         <div style="font-size: 12.5px; color: var(--navy);" id="topUserName">Aarif</div>
-                        <div style="font-size: 10px; color: var(--blue);" id="topUserRole">Super Admin (Locked)</div>
+                        <div style="font-size: 10px; color: var(--blue);" id="topUserRole">Super Admin</div>
                     </div>
                     <div onclick="toggleProfileModal()" style="width: 40px; height: 40px; background: var(--blue-gradient); color: white; border-radius: 50%; display: grid; place-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);" id="userAvatar">A</div>
                 </div>
             </div>
 
-            <!-- PROFILE & SECURITY MODAL -->
+            <!-- PROFILE MODAL -->
             <div id="profileModal">
                 <h3 style="font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Profile & Security</h3>
                 <div class="field" style="margin-bottom: 8px;">
@@ -199,52 +195,59 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
     </div>
 
     <script>
-        // MASTER STATE MANAGEMENT
         let currentUser = null;
 
-        // DEFAULT USERS (Super Admin Locked)
         let defaultUsers = [
-            { id: 'USR-001', name: 'DRx. Aarif Rabbani', username: 'Aarif', pass: '7860', role: 'Super Admin', status: 'Active', isLocked: true, permissions: ['all'] },
-            { id: 'USR-002', name: 'Pharmacist User', username: 'pharma', pass: '1234', role: 'Pharmacist', status: 'Active', isLocked: false, permissions: ['medicines', 'sales', 'stock'] },
-            { id: 'USR-003', name: 'BME Engineer', username: 'bme', pass: '1234', role: 'Biomedical Engineer', status: 'Active', isLocked: false, permissions: ['assets', 'bme'] }
+            { id: 'USR-001', name: 'DRx. Aarif Rabbani', username: 'Aarif', pass: '7860', role: 'Super Admin', status: 'Active', isLocked: true },
+            { id: 'USR-002', name: 'Pharmacist Staff', username: 'pharma', pass: '1234', role: 'Pharmacist', status: 'Active', isLocked: false },
+            { id: 'USR-003', name: 'BME Engineer', username: 'bme', pass: '1234', role: 'Biomedical Engineer', status: 'Active', isLocked: false }
         ];
 
         let usersList = JSON.parse(localStorage.getItem('ar_erp_users')) || defaultUsers;
         if (!localStorage.getItem('ar_erp_users')) localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
 
-        // MASTER MEDICINES & TESTS DATABASE FOR AUTO-FETCH
         let masterItems = [
-            { name: "Paracetamol 650mg", category: "Tablet", price: 30, hsn: "3004" },
-            { name: "Amoxicillin 500mg", category: "Capsule", price: 85, hsn: "3004" },
-            { name: "Dolo 650", category: "Tablet", price: 32, hsn: "3004" },
-            { name: "Azithromycin 500mg", category: "Tablet", price: 120, hsn: "3004" },
-            { name: "Complete Blood Count (CBC)", category: "Lab Test", price: 350, hsn: "9993" },
-            { name: "Chest X-Ray Digital", category: "Radiology", price: 500, hsn: "9993" },
-            { name: "USG Abdomen", category: "Ultrasound", price: 800, hsn: "9993" },
-            { name: "ECG 12 Lead", category: "Cardiology", price: 250, hsn: "9993" }
+            { name: "Paracetamol 650mg", category: "Tablet", price: 30 },
+            { name: "Amoxicillin 500mg", category: "Capsule", price: 85 },
+            { name: "Dolo 650", category: "Tablet", price: 32 },
+            { name: "Azithromycin 500mg", category: "Tablet", price: 120 },
+            { name: "Complete Blood Count (CBC)", category: "Lab Test", price: 350 },
+            { name: "Chest X-Ray Digital", category: "Radiology", price: 500 },
+            { name: "USG Abdomen", category: "Ultrasound", price: 800 },
+            { name: "ECG 12 Lead", category: "Cardiology", price: 250 }
         ];
 
-        // SIDEBAR NAVIGATION CONFIGURATION
         const navMenu = [
             { group: "OVERVIEW", items: [ { id: "dashboard", label: "Dashboard", icon: "📊" } ] },
             { group: "HOSPITAL MANAGEMENT", items: [
-                { id: "patient_reg", label: "Patient Registration / UHID", icon: "🏥" },
+                { id: "patients", label: "Patient Registration / UHID", icon: "🏥" },
                 { id: "opd", label: "OPD Appointments", icon: "🩺" },
-                { id: "ipd", label: "IPD Admissions & Beds", icon: "🛏️" }
+                { id: "ipd", label: "IPD Admissions & Beds", icon: "🛏️" },
+                { id: "laboratory", label: "Laboratory Orders", icon: "⚗️" },
+                { id: "radiology", label: "Radiology & Imaging", icon: "📡" }
             ]},
             { group: "PHARMACY MANAGEMENT", items: [
                 { id: "medicines", label: "Medicine Master & Stock", icon: "📦" },
-                { id: "sales", label: "Sales Billing & Dispensing", icon: "🛒" }
+                { id: "sales", label: "Sales Billing & Dispensing", icon: "🛒" },
+                { id: "purchase", label: "Purchase Entry", icon: "🛍️" }
+            ]},
+            { group: "CENTRAL STORE", items: [
+                { id: "store_items", label: "Central Store Items", icon: "📋" },
+                { id: "grn", label: "Goods Receipt (GRN)", icon: "📥" }
             ]},
             { group: "BIOMEDICAL ENGINEERING", items: [
-                { id: "assets", label: "Biomedical Asset Master", icon: "⚙️" }
+                { id: "assets", label: "Biomedical Asset Master", icon: "⚙️" },
+                { id: "complaints", label: "Equipment Complaints", icon: "⚠️" }
+            ]},
+            { group: "ACCOUNTS & HR", items: [
+                { id: "expenses", label: "Income & Expenses", icon: "💸" },
+                { id: "employees", label: "Employee Directory", icon: "👥" }
             ]},
             { group: "ADMINISTRATION", items: [
                 { id: "users_admin", label: "User & Role Management", icon: "🛡️" }
             ]}
         ];
 
-        // AUTO SMART ID GENERATOR (Format: AR + Month/Day/Year + Counter)
         function generateSmartID(prefix) {
             let today = new Date();
             let dd = String(today.getDate()).padStart(2, '0');
@@ -273,7 +276,6 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
         function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
-
             let found = usersList.find(x => x.username.toLowerCase() === u.toLowerCase() && x.pass === p);
             if (found) {
                 if (found.status !== 'Active') {
@@ -291,9 +293,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
         function forgotPassword() {
             let u = prompt('Enter your User ID for password recovery:');
-            if (u) {
-                alert('Password reset request logged for Super Admin Aarif!');
-            }
+            if (u) alert('Password reset request sent to Super Admin Aarif!');
         }
 
         function handleLogout() {
@@ -303,25 +303,29 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
         function initApp() {
             document.getElementById('topUserName').innerText = currentUser.name;
-            document.getElementById('topUserRole').innerText = currentUser.role + (currentUser.isLocked ? ' (Locked)' : '');
+            document.getElementById('topUserRole').innerText = currentUser.role + (currentUser.isLocked ? ' (Protected)' : '');
             document.getElementById('userAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
             document.getElementById('profUsername').value = currentUser.username;
-
             renderSidebar();
             loadModule(localStorage.getItem('ar_active_module') || 'dashboard');
         }
 
-        function renderSidebar() {
+        function renderSidebar(filter = "") {
             let container = document.getElementById('sidebarMenu');
             let html = '';
             navMenu.forEach(g => {
-                html += `<div class="nav-group-label">${g.group}</div>`;
-                g.items.forEach(i => {
-                    html += `<a class="nav-item" onclick="loadModule('${i.id}')" id="nav-${i.id}"><span>${i.icon}</span> ${i.label}</a>`;
-                });
+                let items = g.items.filter(i => !filter || i.label.toLowerCase().includes(filter.toLowerCase()));
+                if (items.length > 0) {
+                    html += `<div class="nav-group-label">${g.group}</div>`;
+                    items.forEach(i => {
+                        html += `<a class="nav-item" onclick="loadModule('${i.id}')" id="nav-${i.id}"><span>${i.icon}</span> ${i.label}</a>`;
+                    });
+                }
             });
             container.innerHTML = html;
         }
+
+        function filterSidebar(val) { renderSidebar(val); }
 
         function toggleProfileModal() {
             let m = document.getElementById('profileModal');
@@ -331,7 +335,6 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
         function updateProfile() {
             let newU = document.getElementById('profUsername').value.trim();
             let newP = document.getElementById('profNewPass').value.trim();
-
             if (!newU) return alert('Username required');
             let idx = usersList.findIndex(x => x.username === currentUser.username);
             if (idx !== -1) {
@@ -356,16 +359,16 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
             ws.innerHTML = '';
 
             if (modId === 'dashboard') renderDashboard(ws);
-            else if (modId === 'patient_reg') renderPatients(ws);
-            else if (modId === 'opd') renderOPD(ws);
-            else if (modId === 'medicines') renderMedicines(ws);
+            else if (modId === 'patients') renderGenericTable(ws, 'patients', 'Patient Registration', ['UHID', 'Patient Name', 'Mobile', 'Gender'], ['uhid', 'name', 'mobile', 'gender'], 'AR');
+            else if (modId === 'opd') renderGenericTable(ws, 'opd', 'OPD Appointments', ['Token No', 'Patient Name', 'Department', 'Doctor'], ['token', 'name', 'dept', 'doctor'], 'OPD');
+            else if (modId === 'ipd') renderGenericTable(ws, 'ipd', 'IPD Admissions', ['IPD No', 'Patient Name', 'Ward/Bed', 'Doctor'], ['ipdNo', 'name', 'ward', 'doctor'], 'IPD');
+            else if (modId === 'medicines') renderGenericTable(ws, 'medicines', 'Medicine Master', ['Item Name', 'Category', 'Batch', 'MRP'], ['name', 'category', 'batch', 'mrp'], 'MED');
             else if (modId === 'sales') renderSales(ws);
-            else if (modId === 'assets') renderAssets(ws);
+            else if (modId === 'assets') renderGenericTable(ws, 'assets', 'Biomedical Assets', ['Asset ID', 'Instrument', 'Department', 'Status'], ['assetId', 'name', 'dept', 'status'], 'AST');
             else if (modId === 'users_admin') renderUserManagement(ws);
-            else renderDashboard(ws);
+            else renderGenericTable(ws, modId, modId.toUpperCase(), ['Ref ID', 'Title', 'Description', 'Status'], ['refId', 'title', 'desc', 'status'], 'AR');
         }
 
-        // DASHBOARD MODULE WITH AUTO-CALCULATED STATS
         function renderDashboard(ws) {
             let patients = JSON.parse(localStorage.getItem('ar_patients')) || [];
             let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
@@ -374,92 +377,96 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
 
             ws.innerHTML = `
                 <div class="crm-grid">
-                    <div class="crm-card">
-                        <div class="crm-title">Total Revenue</div>
-                        <div class="crm-val" style="color:#16a34a;">₹${totalRev.toFixed(2)}</div>
-                    </div>
-                    <div class="crm-card">
-                        <div class="crm-title">Registered Patients</div>
-                        <div class="crm-val" style="color:#0284c7;">${patients.length}</div>
-                    </div>
-                    <div class="crm-card">
-                        <div class="crm-title">Medicine Items</div>
-                        <div class="crm-val">${medicines.length}</div>
-                    </div>
-                    <div class="crm-card">
-                        <div class="crm-title">Total Staff Users</div>
-                        <div class="crm-val">${usersList.length}</div>
-                    </div>
+                    <div class="crm-card"><div class="crm-title">Total Revenue</div><div class="crm-val" style="color:#16a34a;">₹${totalRev.toFixed(2)}</div></div>
+                    <div class="crm-card"><div class="crm-title">Patients Registered</div><div class="crm-val" style="color:#0284c7;">${patients.length}</div></div>
+                    <div class="crm-card"><div class="crm-title">Medicine Stock</div><div class="crm-val">${medicines.length}</div></div>
+                    <div class="crm-card"><div class="crm-title">System Users</div><div class="crm-val">${usersList.length}</div></div>
                 </div>
-
                 <div class="panel-3d">
                     <h2>📊 System Status & Automatic Sync</h2>
-                    <p style="font-size:13px; color:var(--muted);">All modules connected. Smart ID generation and auto-fetch enabled.</p>
+                    <p style="font-size:12.5px; color:var(--muted);">All sidebar modules are fully functional with auto IDs and auto-fetch data sync.</p>
                 </div>
             `;
         }
 
-        // PATIENT REGISTRATION MODULE WITH AUTO SMART UHID
-        function renderPatients(ws) {
-            let patients = JSON.parse(localStorage.getItem('ar_patients')) || [];
+        // GENERIC WORKING TABLE BUILDER FOR ALL MODULES
+        function renderGenericTable(ws, storageKey, title, headers, keys, idPrefix) {
+            let data = JSON.parse(localStorage.getItem('ar_' + storageKey)) || [];
             ws.innerHTML = `
                 <div class="panel-3d">
-                    <h2>🏥 Patient Registration & UHID Auto Generator</h2>
-                    <div class="form-grid">
-                        <div class="field"><label>Patient Name *</label><input type="text" id="pName" placeholder="Full Name"></div>
-                        <div class="field"><label>Mobile No *</label><input type="text" id="pMobile" placeholder="10 Digit Mobile"></div>
-                        <div class="field"><label>Gender</label><select id="pGender"><option>Male</option><option>Female</option></select></div>
-                        <div class="field" style="justify-content:flex-end;"><button class="btn success" onclick="addPatient()">Save & Generate UHID</button></div>
-                    </div>
-                </div>
-
-                <div class="panel-3d">
-                    <h2>Registered Patients List</h2>
+                    <h2><span>${title}</span> <button class="btn primary" onclick="openAddModal('${storageKey}', '${title}', ${JSON.stringify(keys)}, '${idPrefix}')">＋ Add New Record</button></h2>
                     <table class="data-table">
-                        <thead><tr><th>UHID No</th><th>Name</th><th>Mobile</th><th>Gender</th><th>Actions</th></tr></thead>
+                        <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}<th>Action</th></tr></thead>
                         <tbody>
-                            ${patients.map((p, idx) => `
+                            ${data.length === 0 ? `<tr><td colspan="${headers.length + 1}" style="text-align:center; color:var(--muted);">No records found. Click 'Add New Record' above.</td></tr>` :
+                            data.map((row, idx) => `
                                 <tr>
-                                    <td><b>${p.uhid}</b></td>
-                                    <td>${p.name}</td>
-                                    <td>${p.mobile}</td>
-                                    <td>${p.gender}</td>
-                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deletePatient(${idx})">Delete</button>` : 'Protected'}</td>
+                                    ${keys.map(k => `<td><b>${row[k] || '—'}</b></td>`).join('')}
+                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deleteRecord('${storageKey}', ${idx})">Delete</button>` : 'Protected'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
-
-            window.addPatient = function() {
-                let name = document.getElementById('pName').value.trim();
-                let mobile = document.getElementById('pMobile').value.trim();
-                let gender = document.getElementById('pGender').value;
-
-                if (!name || !mobile) return alert('Name and Mobile Required!');
-                let uhid = generateSmartID('AR');
-                patients.unshift({ uhid, name, mobile, gender });
-                localStorage.setItem('ar_patients', JSON.stringify(patients));
-                renderPatients(ws);
-            };
-
-            window.deletePatient = function(idx) {
-                if (confirm('Delete patient record?')) {
-                    patients.splice(idx, 1);
-                    localStorage.setItem('ar_patients', JSON.stringify(patients));
-                    renderPatients(ws);
-                }
-            };
         }
 
-        // SALES & BILLING WITH AUTO-FETCH AUTO-COMPLETE
+        function openAddModal(storageKey, title, keys, prefix) {
+            let generatedID = generateSmartID(prefix);
+            let formFields = keys.map((k, i) => {
+                let label = k.toUpperCase();
+                let val = (i === 0) ? generatedID : '';
+                let read = (i === 0) ? 'readonly style="background:#e2e8f0;"' : '';
+                return `<div class="field"><label>${label}</label><input type="text" id="modal_${k}" value="${val}" ${read} placeholder="Enter ${k}"></div>`;
+            }).join('');
+
+            let modalHTML = `
+                <div id="dynamicModal" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;">
+                    <div style="background:white; padding:25px; border-radius:18px; width:100%; max-width:450px; box-shadow:0 15px 35px rgba(0,0,0,0.2);">
+                        <h3 style="margin-bottom:15px; font-size:15px; color:var(--navy);">Add ${title}</h3>
+                        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                            ${formFields}
+                        </div>
+                        <div style="text-align:right; display:flex; gap:10px; justify-content:flex-end;">
+                            <button class="btn" onclick="document.getElementById('dynamicModal').remove()">Cancel</button>
+                            <button class="btn success" onclick="saveRecordModal('${storageKey}', ${JSON.stringify(keys)})">Save Record</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        function saveRecordModal(storageKey, keys) {
+            let record = {};
+            keys.forEach(k => {
+                record[k] = document.getElementById('modal_' + k).value.trim();
+            });
+            let data = JSON.parse(localStorage.getItem('ar_' + storageKey)) || [];
+            data.unshift(record);
+            localStorage.setItem('ar_' + storageKey, JSON.stringify(data));
+            document.getElementById('dynamicModal').remove();
+            loadModule(storageKey);
+        }
+
+        function deleteRecord(storageKey, idx) {
+            if (confirm('Delete this record?')) {
+                let data = JSON.parse(localStorage.getItem('ar_' + storageKey)) || [];
+                data.splice(idx, 1);
+                localStorage.setItem('ar_' + storageKey, JSON.stringify(data));
+                loadModule(storageKey);
+            }
+        }
+
+        // SALES BILLING WITH AUTO-FETCH
         function renderSales(ws) {
             let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
+            let invID = generateSmartID('ARINV');
             ws.innerHTML = `
                 <div class="panel-3d">
-                    <h2>🛒 Pharmacy Sales & Billing (Auto-Fetch Enabled)</h2>
+                    <h2>🛒 Sales Billing & Auto-Fetch</h2>
                     <div class="form-grid">
+                        <div class="field"><label>Invoice No</label><input type="text" id="sInv" value="${invID}" readonly style="background:#e2e8f0;"></div>
                         <div class="field"><label>Customer Name *</label><input type="text" id="sCust" placeholder="Customer Name"></div>
                         <div class="field" style="position:relative;">
                             <label>Item Name (Type to Auto-Fetch) *</label>
@@ -470,7 +477,6 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                         <div class="field" style="justify-content:flex-end;"><button class="btn success" onclick="addSale()">Generate Bill</button></div>
                     </div>
                 </div>
-
                 <div class="panel-3d">
                     <h2>Sales History</h2>
                     <table class="data-table">
@@ -478,10 +484,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                         <tbody>
                             ${sales.map((s, idx) => `
                                 <tr>
-                                    <td><b>${s.invNo}</b></td>
-                                    <td>${s.cust}</td>
-                                    <td>${s.item}</td>
-                                    <td>₹${s.amount}</td>
+                                    <td><b>${s.invNo}</b></td><td>${s.cust}</td><td>${s.item}</td><td>₹${s.amount}</td>
                                     <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deleteSale(${idx})">Delete</button>` : 'Protected'}</td>
                                 </tr>
                             `).join('')}
@@ -507,18 +510,18 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
             };
 
             window.addSale = function() {
+                let invNo = document.getElementById('sInv').value;
                 let cust = document.getElementById('sCust').value.trim();
                 let item = document.getElementById('sItem').value.trim();
                 let amount = document.getElementById('sAmt').value;
                 if (!cust || !item) return alert('Customer and Item Required!');
-                let invNo = generateSmartID('ARINV');
                 sales.unshift({ invNo, cust, item, amount });
                 localStorage.setItem('ar_sales', JSON.stringify(sales));
                 renderSales(ws);
             };
 
             window.deleteSale = function(idx) {
-                if (confirm('Delete Sale Record?')) {
+                if (confirm('Delete Sale?')) {
                     sales.splice(idx, 1);
                     localStorage.setItem('ar_sales', JSON.stringify(sales));
                     renderSales(ws);
@@ -526,7 +529,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
             };
         }
 
-        // USER & ROLE MANAGEMENT (SUPER ADMIN CONTROLLED)
+        // USER MANAGEMENT (SUPER ADMIN CONTROLLED)
         function renderUserManagement(ws) {
             ws.innerHTML = `
                 <div class="panel-3d">
@@ -545,7 +548,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                 <div class="panel-3d">
                     <h2>All Staff Accounts</h2>
                     <table class="data-table">
-                        <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Actions & Permissions</th></tr></thead>
+                        <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody>
                             ${usersList.map((u, idx) => `
                                 <tr>
@@ -557,7 +560,7 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                                         ${currentUser.role === 'Super Admin' && !u.isLocked ? `
                                             <button class="btn success" onclick="toggleUserStatus(${idx})">${u.status === 'Active' ? 'Deactivate' : 'Activate'}</button>
                                             <button class="btn danger" onclick="deleteUser(${idx})">Delete</button>
-                                        ` : (u.isLocked ? 'Protected (Super Admin)' : 'No Access')}
+                                        ` : (u.isLocked ? 'Protected' : 'No Access')}
                                     </td>
                                 </tr>
                             `).join('')}
@@ -571,10 +574,8 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                 let username = document.getElementById('uId').value.trim();
                 let pass = document.getElementById('uPass').value.trim();
                 let role = document.getElementById('uRole').value;
-
                 if (!name || !username || !pass) return alert('Fill all required fields!');
                 if (usersList.some(x => x.username.toLowerCase() === username.toLowerCase())) return alert('User ID already exists!');
-
                 usersList.push({ id: 'USR-' + Date.now(), name, username, pass, role, status: 'Active', isLocked: false });
                 localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
                 renderUserManagement(ws);
@@ -594,11 +595,6 @@ input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3
                 }
             };
         }
-
-        function renderOPD(ws) { ws.innerHTML = `<div class="panel-3d"><h2>🩺 OPD Appointments</h2><p>Module Active.</p></div>`; }
-        function renderMedicines(ws) { ws.innerHTML = `<div class="panel-3d"><h2>📦 Medicine Master</h2><p>Module Active.</p></div>`; }
-        function renderAssets(ws) { ws.innerHTML = `<div class="panel-3d"><h2>⚙️ Biomedical Assets</h2><p>Module Active.</p></div>`; }
-        function filterGlobalData() { /* Instant Search Implementation */ }
     </script>
 </body>
 </html>
