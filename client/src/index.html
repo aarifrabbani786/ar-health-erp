@@ -80,7 +80,7 @@ tbody tr:hover{background:#f0f9ff}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field{display:grid;gap:6px}
 .field label{font-size:10.5px;color:#334155;text-transform:uppercase}
-.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:999999;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-backdrop.show{display:flex}
 .modal{background:#fff;border-radius:20px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
 .modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--line)}
@@ -88,7 +88,7 @@ tbody tr:hover{background:#f0f9ff}
 .modal-body{padding:22px}
 .modal-foot{border-top:1.5px solid var(--line);border-bottom:0;justify-content:flex-end;gap:10px}
 .close{border:0;background:#e2e8f0;border-radius:8px;width:32px;height:32px;cursor:pointer}
-.toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:#fff;padding:13px 18px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:100;display:none}
+.toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:#fff;padding:13px 18px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:1000000;display:none}
 .toast.show{display:block}
 .footer{padding:20px 0 0;color:#64748b;font-size:10px;text-align:center}
 
@@ -242,6 +242,15 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){const t=$("toast");if(t){t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}}
 
+function generateSmartID(prefix){
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const yy = String(now.getFullYear()).slice(-2);
+  const rand = Math.floor(10 + Math.random() * 90);
+  return `${prefix}${dd}${mm}${yy}${rand}`;
+}
+
 const sliderModules = [
   "🏥 Hospital Master & OPD/IPD",
   "👥 Complete HRMS & Staff Directory",
@@ -288,7 +297,6 @@ function togglePasswordVis(){
   inp.type = inp.type === "password" ? "text" : "password";
 }
 
-// LOGIN SUBMIT WITH DEMO USER & WRONG PASSWORD CLEAR
 $("loginForm").addEventListener("submit", e => {
   e.preventDefault();
   const u = $("loginUser").value.trim();
@@ -325,7 +333,7 @@ $("loginForm").addEventListener("submit", e => {
   }
 });
 
-// PUBLIC ENQUIRY MODAL ON LOGIN PAGE
+// PUBLIC ENQUIRY MODAL ON LOGIN PAGE ONLY
 function openPublicEnquiryModal(){
   const backdrop = $("modalBackdrop");
   $("modalTitle").textContent = "📝 Public Enquiry & Software Interest Form";
@@ -363,7 +371,7 @@ function openPublicEnquiryModal(){
 }
 
 function openForgotModal(){
-  alert("Forgot Password / User Assistance:\nPlease contact Super Admin (Aarif) at the central desk to reset your credentials.");
+  alert("Forgot Password / User Assistance:\nPlease contact Super Admin (Aarif) at central desk to reset credentials.");
 }
 
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
@@ -635,6 +643,61 @@ function renderRows(rows){
   }).join("");
 }
 
+// AUTOCOMPLETE HANDLERS
+window.handlePatientAutoFetch = function(q){
+  const drop = $("patientDropdown");
+  if(!drop) return;
+  if(!q.trim()){ drop.style.display="none"; return; }
+  const patients = state.records["patients"] || [];
+  const matched = patients.filter(p => (p.uhid+" "+p.name+" "+p.mobile).toLowerCase().includes(q.toLowerCase()));
+  if(!matched.length){ drop.style.display="none"; return; }
+  drop.innerHTML = matched.map(p=>`<div onclick="selectPatientItem('${escapeHTML(p.uhid)} - ${escapeHTML(p.name)}')"><b>${escapeHTML(p.uhid)}</b> - ${escapeHTML(p.name)} (${escapeHTML(p.mobile)})</div>`).join('');
+  drop.style.display = "block";
+};
+
+window.selectPatientItem = function(val){
+  const inp = $("pSearchInput");
+  if(inp) inp.value = val;
+  const drop = $("patientDropdown");
+  if(drop) drop.style.display = "none";
+};
+
+window.handleDoctorAutoFetch = function(q){
+  const drop = $("doctorDropdown");
+  if(!drop) return;
+  if(!q.trim()){ drop.style.display="none"; return; }
+  const docs = state.records["doctors"] || [];
+  const matched = docs.filter(d => d.docName.toLowerCase().includes(q.toLowerCase()));
+  if(!matched.length){ drop.style.display="none"; return; }
+  drop.innerHTML = matched.map(d=>`<div onclick="selectDoctorItem('${escapeHTML(d.docName)}')"><b>${escapeHTML(d.docName)}</b> (${escapeHTML(d.specialty)})</div>`).join('');
+  drop.style.display = "block";
+};
+
+window.selectDoctorItem = function(val){
+  const inp = $("dSearchInput");
+  if(inp) inp.value = val;
+  const drop = $("doctorDropdown");
+  if(drop) drop.style.display = "none";
+};
+
+window.handleBedAutoFetch = function(q){
+  const drop = $("bedDropdown");
+  if(!drop) return;
+  if(!q.trim()){ drop.style.display="none"; return; }
+  const beds = state.records["beds"] || [];
+  const matched = beds.filter(b => (b.bedNo+" "+b.wardName).toLowerCase().includes(q.toLowerCase()));
+  if(!matched.length){ drop.style.display="none"; return; }
+  drop.innerHTML = matched.map(b=>`<div onclick="selectBedItem('${escapeHTML(b.bedNo)} (${escapeHTML(b.wardName)})')">Bed: <b>${escapeHTML(b.bedNo)}</b> - ${escapeHTML(b.wardName)}</div>`).join('');
+  drop.style.display = "block";
+};
+
+window.selectBedItem = function(val){
+  const inp = $("bSearchInput");
+  if(inp) inp.value = val;
+  const drop = $("bedDropdown");
+  if(drop) drop.style.display = "none";
+};
+
 // 360° SINGLE PAGE PATIENT PROFILE & COMPLETE HISTORY
 function renderPatientProfileModule(ws){
   ws.innerHTML = `
@@ -671,9 +734,7 @@ window.searchPatientHistory = function(query){
 
   let html = "";
   matched.forEach(p => {
-    const opd = (state.records["opd"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
     const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-    const billing = (state.records["hospital-billing"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
 
     html += `
       <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
@@ -693,7 +754,7 @@ window.searchPatientHistory = function(query){
           </div>
         </div>
         <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">IPD Admission Status</h4>
-        ${ipd.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>IPD No</th><th>Date</th><th>Ward/Bed</th><th>Advance</th><th>Status</th></tr></thead><tbody>` + ipd.map(i=>`<tr><td><b>${i.ipdNo}</b></td><td>${i.admissionDate||'—'}</td><td>${i.wardBed}</td><td>₹${i.advance}</td><td><span class="status">${i.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No active IPD admissions.</p>'}
+        ${ipd.length ? `<table><thead><tr><th>IPD No</th><th>Date</th><th>Ward/Bed</th><th>Advance</th><th>Status</th></tr></thead><tbody>` + ipd.map(i=>`<tr><td><b>${i.ipdNo}</b></td><td>${i.admissionDate||'—'}</td><td>${i.wardBed}</td><td>₹${i.advance}</td><td><span class="status">${i.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No active IPD admissions.</p>'}
       </div>
     `;
   });
@@ -967,7 +1028,7 @@ function exportCSV(){
   const rows=recordsFor();
   if(!rows.length){toast("No records to export.");return}
   const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];
-  const csv=[cols.join(","),...rows.map(r=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
+  const csv=[cols.join(","),...rows.map(rows=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=datasetKey()+"-export.csv";a.click();
