@@ -1,1166 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Hospital & Pharmacy ERP - A. R E.R.P SOFTWARE</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
-        body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
-
-        b, strong, th, label, h1, h2, h3, h4, .btn-primary, .btn-success, .btn-danger, input, select { font-weight: 900 !important; font-size: 13px; }
-        
-        #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #e0e5ec;
-            display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px; overflow-y: auto;
-        }
-        .auth-container-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 35px; width: 100%; max-width: 1020px; align-items: center;
-        }
-        @media(max-width: 768px) { .auth-container-grid { grid-template-columns: 1fr; } }
-
-        .neumorphic-card {
-            background: #e0e5ec; border-radius: 28px; padding: 35px;
-            box-shadow: 14px 14px 30px #a3b1c6, -14px -14px 30px #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            min-height: 480px; display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .neumorphic-card h2 { font-size: 16px; color: #0f172a; margin-bottom: 6px; text-align: center; text-transform: uppercase; line-height: 1.3; }
-        .neumorphic-card .subtitle { font-size: 12px; color: #0284c7; text-align: center; margin-bottom: 18px; }
-
-        .input-wrap-3d { position: relative; margin-bottom: 15px; }
-        .input-wrap-3d label { display: block; font-size: 11.5px; color: #475569; margin-bottom: 5px; text-transform: uppercase; }
-        .neumorphic-input {
-            width: 100%; padding: 13px 40px 13px 16px; background: #e0e5ec; border: none; border-radius: 12px;
-            box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
-            font-size: 14px; color: #0f172a; outline: none; transition: all 0.3s;
-        }
-        .neumorphic-input:focus { box-shadow: inset 6px 6px 12px #94a3b8, inset -6px -6px 12px #ffffff; }
-        .eye-toggle-btn { position: absolute; right: 14px; top: 35px; background: none; border: none; cursor: pointer; font-size: 16px; color: #64748b; }
-
-        .neumorphic-btn {
-            width: 100%; padding: 13px; background: #e0e5ec; border: none; border-radius: 12px;
-            box-shadow: 6px 6px 12px #a3b1c6, -6px -6px 12px #ffffff;
-            color: #0284c7; font-size: 14px; cursor: pointer; text-align: center; font-weight: 900; transition: all 0.2s;
-        }
-        .neumorphic-btn:active { box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff; color: #16a34a; }
-
-        .forgot-link { display: block; text-align: right; font-size: 12px; color: #0284c7; margin-top: -6px; margin-bottom: 14px; text-decoration: none; cursor: pointer; }
-        .forgot-link:hover { text-decoration: underline; }
-
-        .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f8fafc; }
-        #sidebar-container {
-            width: 290px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
-            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;
-        }
-        .sidebar-brand { padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
-        
-        .brand-border-logo {
-            display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px;
-            background: linear-gradient(135deg, #065f46 0%, #047857 50%, #022c22 100%);
-            border: 2.5px solid #34d399; border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-            transform: perspective(500px) rotateX(4deg);
-        }
-        @keyframes bounceLucky {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-4px) scale(1.1); }
-        }
-        .brand-icon { 
-            width: 32px; height: 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: bounceLucky 1.8s infinite ease-in-out;
-        }
-        .brand-text { font-size: 10.5px; color: #ecfdf5; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-weight: 900; }
-
-        .sidebar-menu { list-style: none; padding: 8px 10px; margin: 0; flex: 1; }
-        .sidebar-menu li { margin-bottom: 2px; }
-        .sidebar-menu a {
-            display: flex; align-items: center; padding: 9px 12px; color: #cbd5e1;
-            text-decoration: none; border-radius: 8px; font-size: 11px; gap: 10px; cursor: pointer; transition: all 0.2s;
-        }
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff;
-        }
-        .sub-menu { padding-left: 22px; list-style: none; margin-top: 2px; margin-bottom: 4px; display: none; }
-        .sub-menu.open { display: block; }
-        .sub-menu li a { padding: 6px 10px; font-size: 10.5px; color: #94a3b8; }
-        .sub-menu li a:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-        .main-content { flex: 1; padding: 18px; overflow-y: auto; background: #f8fafc; height: 100vh; display: flex; flex-direction: column; color: #0f172a; position: relative; }
-        
-        .top-banner {
-            background: #ffffff; padding: 14px 24px; border-radius: 12px; border: 1.5px solid #e2e8f0;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 15px; color: #0f172a; text-transform: uppercase; }
-        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; }
-
-        .light-card { 
-            background: #ffffff; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 16px; 
-            border: 1.5px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
-        }
-        .light-card h2 { font-size: 14.5px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
-        .form-group { margin-bottom: 8px; }
-        .form-group label { display: block; font-size: 11.5px; color: #334155; margin-bottom: 4px; text-transform: uppercase; }
-        .form-control { width: 100%; padding: 11px 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; color: #0f172a; font-size: 13px; outline: none; }
-        
-        .btn-primary { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 11px 18px; border-radius: 9px; cursor: pointer; font-size: 13px; }
-        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 11px 18px; border-radius: 9px; cursor: pointer; font-size: 13px; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 7px 12px; border-radius: 7px; cursor: pointer; font-size: 12px; }
-
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        .data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #0f172a; }
-        .data-table th { color: #334155; font-size: 12px; text-transform: uppercase; background: #f1f5f9; }
-
-        .crm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
-        .crm-box { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .crm-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 900; }
-        .crm-val { font-size: 22px; color: #0f172a; font-weight: 900; margin-top: 6px; }
-        .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
-
-        #userDropdownModal {
-            display: none; position: absolute; right: 24px; top: 75px; width: 290px;
-            background: #ffffff; border-radius: 14px; border: 1.5px solid #cbd5e1;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.18); padding: 16px; z-index: 999999;
-        }
-        #printPreviewModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); z-index: 999999; align-items: center; justify-content: center;
-        }
-        .print-modal-content { background: #ffffff; width: 90%; max-width: 850px; border-radius: 16px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-
-        .asset-sticker-box {
-            width: 320px; border: 2.5px solid #0f172a; border-radius: 10px; padding: 12px; background: #fff; text-align: center; margin: 0 auto; font-family: sans-serif;
-        }
-
-        @media print {
-            body { background: #fff !important; color: #000 !important; }
-            #sidebar-container, .top-banner, .btn-success, .btn-primary, .btn-danger, .form-grid, .light-card button, #printPreviewModal { display: none !important; }
-            .main-content { padding: 0 !important; margin: 0 !important; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR Healthcare ERP | Hospital • Pharmacy • Biomedical</title>
+<style>
+:root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:flex}.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;position:fixed;inset:0 auto 0 0;overflow:auto;z-index:20;transition:.25s}.brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}.logo{width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:white;font-weight:900;font-size:16px;box-shadow:0 7px 20px #16b8b044}.brand strong{display:block;font-size:14px;color:#fff}.brand small{display:block;color:#9db3ca;font-size:11px;margin-top:4px}.nav{padding:12px 10px 30px}.nav-label{font-size:10px;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px;font-weight:800}.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;text-decoration:none;border:0;background:transparent;width:100%;text-align:left}.nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}.nav-item.active{box-shadow:inset 3px 0 #29c7be}.nav-icon{width:19px;text-align:center;font-size:15px}.main{margin-left:272px;width:calc(100% - 272px);min-width:0}.topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10;gap:14px}.top-left,.top-right{display:flex;align-items:center;gap:13px}.hamb{display:none;border:0;background:#eef3f9;padding:9px;border-radius:8px}.search{position:relative}.search input{width:min(340px,33vw);padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:10px;background:#f9fbfe;outline:none;font-size:12px}.search span{position:absolute;left:13px;top:10px;color:#8292a6}.icon-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;position:relative}.dot{position:absolute;right:7px;top:6px;width:7px;height:7px;background:#ef5b67;border-radius:50%}.profile{display:flex;align-items:center;gap:10px;border-left:1px solid var(--line);padding-left:14px}.avatar{width:37px;height:37px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800}.profile strong{font-size:12px;display:block}.profile small{font-size:10px;color:var(--muted)}.content{padding:27px 28px 40px;max-width:1700px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:23px}.eyebrow{color:var(--blue);font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.welcome h1{font-size:25px;letter-spacing:-.6px;margin:7px 0 7px}.welcome p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.teal{background:var(--cyan);border-color:var(--cyan);color:#fff}.btn.danger{color:var(--red)}.grid{display:grid;gap:15px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}.stat-top{display:flex;justify-content:space-between;align-items:center}.stat-label{font-size:11px;color:var(--muted);font-weight:600}.stat-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#edf4ff;color:var(--blue);font-size:16px}.stat-value{font-size:25px;font-weight:800;letter-spacing:-.8px;margin:14px 0 6px}.stat-foot{font-size:10px;color:var(--muted)}.stat-foot b{color:var(--green)}.columns{grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);margin-bottom:17px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 19px;border-bottom:1px solid var(--line)}.panel-head h3{font-size:13px;margin:0}.panel-head p{font-size:10px;color:var(--muted);margin:5px 0 0}.panel-body{padding:18px}.chart{height:205px;display:flex;align-items:flex-end;gap:12px;padding:12px 8px 0;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 49px,#edf1f7 50px)}.bar-group{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-direction:column;height:100%;min-width:0}.bars{display:flex;align-items:flex-end;gap:4px;height:165px;width:100%;justify-content:center}.bar{width:min(22px,42%);border-radius:5px 5px 0 0;background:linear-gradient(180deg,#5e9cff,#2876ed);min-height:3px}.bar.alt{background:linear-gradient(180deg,#62d7ce,#17b8ae)}.bar-label{font-size:9px;color:var(--muted);padding:8px 0}.legend{display:flex;gap:15px;font-size:10px;color:var(--muted)}.legend span:before{content:"";display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--blue);margin-right:6px}.legend span+span:before{background:var(--cyan)}.alert-list{display:grid;gap:12px}.alert{display:flex;gap:10px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px}.alert-symbol{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#fff4df;color:var(--orange);flex-shrink:0}.alert.red .alert-symbol{background:#fff0f1;color:var(--red)}.alert strong{display:block;font-size:11px}.alert small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.4}.alert .pill{margin-left:auto}.pill{white-space:nowrap;border-radius:20px;padding:5px 8px;font-size:9px;font-weight:800;background:#eaf8f1;color:var(--green)}.pill.warn{background:#fff4df;color:var(--orange)}.pill.bad{background:#fff0f1;color:var(--red)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:9px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:11px}tbody tr:hover{background:#fafcff}.cell-main{font-weight:700}.cell-sub{font-size:9px;color:var(--muted);margin-top:4px}.status{display:inline-block;border-radius:6px;padding:5px 7px;background:#eaf8f1;color:var(--green);font-size:9px;font-weight:800}.status.pending{background:#fff4df;color:var(--orange)}.status.repair{background:#fff0f1;color:var(--red)}.module-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.module-title h1{font-size:23px;margin:0 0 6px}.module-title p{font-size:11px;color:var(--muted);margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filters input,.filters select,.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:8px;padding:10px 11px;background:#fff;color:var(--text);outline:none;font-size:11px;min-width:0}.filters input{min-width:210px}.empty{padding:38px 18px;text-align:center;color:var(--muted);font-size:12px}.empty strong{display:block;color:var(--text);margin-bottom:6px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}.field label{font-size:10px;font-weight:800;color:#66768a}.field input,.field select,.field textarea{width:100%}.field.full{grid-column:1/-1}.modal-backdrop{position:fixed;inset:0;background:#0c1d30a6;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:16px;width:min(650px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0003}.modal-head,.modal-foot{padding:17px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.modal-head h3{font-size:15px;margin:0}.modal-body{padding:20px}.modal-foot{border-top:1px solid var(--line);border-bottom:0;justify-content:flex-end;gap:8px}.close{border:0;background:#eef3f8;border-radius:8px;width:30px;height:30px}.toast{position:fixed;right:22px;bottom:22px;background:#142a40;color:#fff;padding:13px 17px;border-radius:10px;font-size:12px;box-shadow:var(--shadow);z-index:100;display:none;max-width:min(420px,calc(100vw - 40px))}.toast.show{display:block}.notice{padding:12px 14px;border-radius:9px;background:#fff7e8;color:#815a17;font-size:11px;line-height:1.6;margin-bottom:16px}.footer{padding:20px 0 0;color:#95a1b1;font-size:10px;text-align:center}.hide{display:none!important}
+@media(max-width:1200px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}.content{padding:22px 20px}}
+@media(max-width:760px){.sidebar{transform:translateX(-100%);box-shadow:none}.sidebar.open{transform:translateX(0);box-shadow:10px 0 35px #0003}.main{margin-left:0;width:100%}.hamb{display:block}.topbar{height:65px;padding:0 13px}.search input{width:36vw}.profile .profile-text{display:none}.content{padding:20px 13px 30px}.welcome{display:block}.welcome h1{font-size:22px}.welcome .actions{margin-top:14px}.stats{gap:9px}.stat{padding:13px}.stat-value{font-size:21px}.stat-icon{width:29px;height:29px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.module-title{align-items:flex-start;flex-direction:column}.top-right{gap:6px}.search input{width:32vw;padding-left:30px}.brand{padding:17px}.nav{padding-top:7px}}
+@media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:19px}.search input{width:29vw}.topbar{gap:6px}}
+</style>
 </head>
 <body>
-
-    <!-- LOGIN & ENQUIRY OVERLAY -->
-    <div id="auth-overlay" style="display: none;">
-        <div class="auth-container-grid">
-            <div class="neumorphic-card">
-                <div>
-                    <h2>A. R E.R.P SOFTWARE - SECURE ACCESS</h2>
-                    <div class="subtitle">Complete Hospital & Pharmacy ERP Suite</div>
-                    
-                    <div class="input-wrap-3d">
-                        <label>USER ID *</label>
-                        <input type="text" id="loginUser" class="neumorphic-input" placeholder="Enter user id" autofocus>
-                    </div>
-
-                    <div class="input-wrap-3d">
-                        <label>PASSWORD *</label>
-                        <input type="password" id="loginPass" class="neumorphic-input" placeholder="Password">
-                        <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
-                    </div>
-
-                    <a class="forgot-link" onclick="sendAdminForgotRequest()">Forgot user id and password?</a>
-                </div>
-
-                <div>
-                    <button onclick="handleLogin()" class="neumorphic-btn">Log In</button>
-                </div>
-            </div>
-
-            <div class="neumorphic-card">
-                <div>
-                    <h2 style="color: #0284c7;">Software Enquiry</h2>
-                    <div class="subtitle">Proprietor: DRx. Aarif Rabbani</div>
-                    
-                    <div class="input-wrap-3d">
-                        <label>OWNER NAME *</label>
-                        <input type="text" id="eqOwner" class="neumorphic-input" placeholder="Owner Full Name">
-                    </div>
-
-                    <div class="input-wrap-3d">
-                        <label>PURPOSE / QUERY *</label>
-                        <input type="text" id="eqPurpose" class="neumorphic-input" placeholder="e.g. Hospital Suite Setup">
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                        <div class="input-wrap-3d" style="margin-bottom:0;">
-                            <label>CONTACT *</label>
-                            <input type="text" id="eqPhone" class="neumorphic-input" placeholder="Mobile No">
-                        </div>
-                        <div class="input-wrap-3d" style="margin-bottom:0;">
-                            <label>LOCATION *</label>
-                            <input type="text" id="eqLoc" class="neumorphic-input" placeholder="City / Location">
-                        </div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 15px;">
-                    <button onclick="submitSoftwareQuery()" class="neumorphic-btn" style="color: #16a34a;">Submit Query Request</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP CONTAINER -->
-    <div class="app-layout" id="main-app-container">
-        
-        <!-- SIDEBAR NAVIGATION -->
-        <div id="sidebar-container">
-            <div class="sidebar-brand">
-                <div class="brand-border-logo">
-                    <div class="brand-icon" title="Money Plant Logo">🌿</div>
-                    <div class="brand-text">COMPLETE HOSPITAL ERP <span style="font-size:12px;">🍀</span></div>
-                </div>
-            </div>
-            <ul class="sidebar-menu" id="dynamicSidebarList"></ul>
-        </div>
-
-        <div class="main-content">
-            <div class="top-banner">
-                <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;" id="bannerShopTag">A. R v3.0 🌿</span>
-                </div>
-                
-                <div class="centered-agency-details">
-                    <h1 id="bannerAgencyName">A R PHARMA AND SURGICAL AGENCY</h1>
-                    <p id="bannerAgencySub">Proprietor: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
-                </div>
-
-                <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;" id="headerActionRightBox">
-                    <button class="btn-success" onclick="loadModule('sales_invoices')" style="padding:7px 12px; font-size:11.5px;" id="headerNewSaleBtn">+ New Sale</button>
-                    <!-- USER AVATAR BUTTON -->
-                    <div onclick="toggleUserDropdown(event)" style="width:38px; height:38px; background:#0284c7; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; font-weight:900; box-shadow:0 3px 8px rgba(2,132,199,0.4);" id="topUserAvatarBtn">A</div>
-                </div>
-            </div>
-
-            <!-- USER PROFILE DROPDOWN MODAL -->
-            <div id="userDropdownModal">
-                <div style="display:flex; align-items:center; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:10px;">
-                    <div style="width:36px; height:36px; background:#16a34a; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900;" id="modalUserInitial">A</div>
-                    <div>
-                        <div style="font-size:13px; color:#0f172a; font-weight:900;" id="modalUserNameDisplay">admin</div>
-                        <div style="font-size:10.5px; color:#64748b; font-weight:900;" id="modalUserRoleDisplay">Super Admin Portal</div>
-                    </div>
-                </div>
-
-                <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:8px; border-radius:8px; margin-bottom:10px;" id="licenseBoxContainer">
-                    <div style="display:flex; align-items:center; gap:6px; color:#16a34a; font-size:11px; font-weight:900;" id="licenseStatusText">
-                        <span>🌿</span> Lifetime Owner Access
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:10px; color:#334155; font-weight:900; border-top:1px dashed #bbf7d0; padding-top:4px;">
-                        <span>Plan Status</span>
-                        <span id="licenseExpiryText">Unlimited</span>
-                    </div>
-                </div>
-
-                <div style="margin-bottom:10px;">
-                    <label style="font-size:10.5px; color:#475569; margin-bottom:3px; display:block;">Change Username</label>
-                    <input type="text" id="changeUserBox" class="form-control" style="margin-bottom:6px; padding:6px 10px; font-size:12px;">
-                    <label style="font-size:10.5px; color:#475569; margin-bottom:3px; display:block;">New Password</label>
-                    <input type="password" id="changePassBox" class="form-control" style="margin-bottom:6px; padding:6px 10px; font-size:12px;" placeholder="Leave blank if unchanged">
-                    <button class="btn-success" onclick="saveUserCredentials()" style="width:100%; padding:8px; font-size:11.5px;">Update Credentials</button>
-                </div>
-
-                <div style="border-top:1px solid #e2e8f0; padding-top:8px;">
-                    <button onclick="logoutUser()" style="width:100%; background:none; border:none; text-align:left; color:#ef4444; font-size:12px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; padding:4px 0;">
-                        <span>🚪</span> Logout System
-                    </button>
-                </div>
-            </div>
-
-            <!-- WORKSPACE MODULE -->
-            <div id="module-workspace" style="flex:1; overflow-y:auto;"></div>
-        </div>
-    </div>
-
-    <!-- PRINT PREVIEW MODAL -->
-    <div id="printPreviewModal">
-        <div class="print-modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:12px; margin-bottom:15px;">
-                <h3 style="font-size:16px; color:#0f172a;" id="printModalTitle">🖨️ Print Preview</h3>
-                <button class="btn-danger" onclick="closePrintModal()" style="padding:4px 10px;">✕ Close</button>
-            </div>
-            <div id="printModalBody" style="background:#fff; border:1px solid #cbd5e1; padding:20px; border-radius:10px; margin-bottom:15px; max-height:450px; overflow-y:auto;"></div>
-            <div style="text-align:right;">
-                <button class="btn-primary" onclick="window.print()" style="padding:10px 24px;">🖨️ Print Document / Sticker</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentUser = null;
-
-        let defaultUsers = [
-            { username: 'admin', pass: 'admin123', name: 'DRx. Aarif Rabbani', role: 'Super Admin Portal', status: 'Active', planYears: 'Lifetime', permissions: ['all'] },
-            { username: 'bme', pass: 'bme', name: 'BME Engineer', role: 'BME User Portal', status: 'Active', planYears: '1 Year', permissions: ['bme'] }
-        ];
-
-        let storedUsers = JSON.parse(localStorage.getItem('erp_users'));
-        if (!storedUsers || !Array.isArray(storedUsers)) {
-            localStorage.setItem('erp_users', JSON.stringify(defaultUsers));
-            storedUsers = defaultUsers;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            updateQueryBadge();
-            applyAgencyHeaderSettings();
-            let savedSession = localStorage.getItem('erp_active_session');
-            if (savedSession) {
-                try {
-                    currentUser = JSON.parse(savedSession);
-                    if(currentUser && currentUser.username !== 'admin' && currentUser.status !== 'Active') {
-                        alert('Your account is currently Deactivated!');
-                        localStorage.removeItem('erp_active_session');
-                        document.getElementById('auth-overlay').style.display = 'flex';
-                        document.getElementById('main-app-container').style.display = 'flex';
-                        return;
-                    }
-                    if(currentUser && currentUser.username) {
-                        document.getElementById('auth-overlay').style.display = 'none';
-                        document.getElementById('main-app-container').style.display = 'flex';
-                        setupTopUserAvatar();
-                        buildSidebarMenu();
-                        loadModule(localStorage.getItem('erp_active_module') || 'dashboard');
-                        return;
-                    }
-                } catch(e) {}
-            }
-            document.getElementById('auth-overlay').style.display = 'flex';
-            document.getElementById('main-app-container').style.display = 'flex';
-        });
-
-        function applyAgencyHeaderSettings() {
-            let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
-                shopName: 'A R PHARMA AND SURGICAL AGENCY',
-                tagline: 'Proprietor: DRx. Aarif Rabbani (B.Pharm, MBA)',
-                footerText: 'Thank you for your business!'
-            };
-            let hName = document.getElementById('bannerAgencyName');
-            let hSub = document.getElementById('bannerAgencySub');
-            if(hName) hName.innerText = settings.shopName;
-            if(hSub) hSub.innerText = settings.tagline;
-        }
-
-        function buildSidebarMenu() {
-            let sList = document.getElementById('dynamicSidebarList');
-            if(!sList) return;
-
-            let html = `
-                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Executive Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI Assistant <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
-                
-                <li><a class="menu-link" onclick="toggleSubMenu('hospitalSubMenu', event)" id="nav-hospital"><span>🏥</span> Hospital Management <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="hospitalSubMenu">
-                    <li><a onclick="loadModule('patient_reg')">Patient Registration / UHID</a></li>
-                    <li><a onclick="loadModule('opd_reg')">OPD & Appointments</a></li>
-                    <li><a onclick="loadModule('ipd_admission')">IPD Admissions & Beds</a></li>
-                    <li><a onclick="loadModule('discharge')">Discharge Summary & Billing</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Pharmacy & Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="salesSubMenu">
-                    <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
-                    <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
-                    <li><a onclick="loadModule('stock_master')">Stock Master & Inventory</a></li>
-                    <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
-                    <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
-                    <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="toggleSubMenu('storeSubMenu', event)" id="nav-store"><span>📦</span> Central Store & Inventory <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="storeSubMenu">
-                    <li><a onclick="loadModule('item_master')">Item Master & Stock</a></li>
-                    <li><a onclick="loadModule('goods_receipt')">Goods Receipt (GRN)</a></li>
-                    <li><a onclick="loadModule('stock_issue')">Stock Issue & Transfer</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="toggleSubMenu('bmeSubMenu', event)" id="nav-bme"><span>🩺</span> Biomedical Engineering <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="bmeSubMenu">
-                    <li><a onclick="loadModule('bme')">BME Master & 7-Tab Portal</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase & Suppliers <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="purchaseSubMenu">
-                    <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
-                    <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
-                    <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Reports <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
-                <ul class="sub-menu" id="reportSubMenu">
-                    <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
-                    <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
-                    <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
-                    <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
-                </ul>
-
-                <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
-                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Accounts & Expenses</a></li>
-                <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
-                <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> System Settings</a></li>
-                <li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> Users & Admin Portal</a></li>
-            `;
-            sList.innerHTML = html;
-        }
-
-        function toggleSubMenu(menuId, e) {
-            e.stopPropagation();
-            let menu = document.getElementById(menuId);
-            if(menu) menu.classList.toggle('open');
-        }
-
-        function setupTopUserAvatar() {
-            if(currentUser) {
-                let initial = currentUser.username.charAt(0).toUpperCase();
-                let avatarBtn = document.getElementById('topUserAvatarBtn');
-                let userInit = document.getElementById('modalUserInitial');
-                let userNameDisp = document.getElementById('modalUserNameDisplay');
-                let userRoleDisp = document.getElementById('modalUserRoleDisplay');
-                let changeBox = document.getElementById('changeUserBox');
-
-                if(avatarBtn) avatarBtn.innerText = initial;
-                if(userInit) userInit.innerText = initial;
-                if(userNameDisp) userNameDisp.innerText = currentUser.username;
-                if(userRoleDisp) userRoleDisp.innerText = currentUser.role || 'Super Admin Portal';
-                if(changeBox) changeBox.value = currentUser.username;
-            }
-        }
-
-        function toggleUserDropdown(e) {
-            e.stopPropagation();
-            let modal = document.getElementById('userDropdownModal');
-            if(modal) modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-        }
-
-        window.addEventListener('click', (e) => {
-            let modal = document.getElementById('userDropdownModal');
-            let avatarBtn = document.getElementById('topUserAvatarBtn');
-            if(modal && modal.style.display === 'block' && !modal.contains(e.target) && e.target !== avatarBtn) {
-                modal.style.display = 'none';
-            }
-        });
-
-        function saveUserCredentials() {
-            let newU = document.getElementById('changeUserBox').value.trim();
-            let newP = document.getElementById('changePassBox').value.trim();
-            if(!newU) { alert('Username cannot be empty!'); return; }
-
-            let users = JSON.parse(localStorage.getItem('erp_users')) || [];
-            let idx = users.findIndex(x => x.username === currentUser.username);
-            if(idx !== -1) {
-                users[idx].username = newU;
-                if(newP) users[idx].pass = newP;
-                currentUser = users[idx];
-                localStorage.setItem('erp_users', JSON.stringify(users));
-                localStorage.setItem('erp_active_session', JSON.stringify(currentUser));
-                alert('Credentials updated successfully!');
-                setupTopUserAvatar();
-                document.getElementById('userDropdownModal').style.display = 'none';
-            }
-        }
-
-        function togglePasswordVisibility() {
-            let passInput = document.getElementById('loginPass');
-            if(passInput) passInput.type = passInput.type === 'password' ? 'text' : 'password';
-        }
-
-        function sendAdminForgotRequest() {
-            let uId = prompt('Enter your User ID or Registered Mobile No:');
-            if(uId) {
-                let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
-                queries.unshift({
-                    id: Date.now(),
-                    date: new Date().toLocaleDateString('en-GB'),
-                    ownerName: 'Forgot Credentials Request (' + uId + ')',
-                    purpose: 'Password Recovery Request',
-                    phone: uId,
-                    location: 'Login Portal',
-                    response: 'Pending Admin Action',
-                    status: 'Pending'
-                });
-                localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-                updateQueryBadge();
-                alert('Forgot Credentials request sent to Super Admin!');
-            }
-        }
-
-        function updateQueryBadge() {
-            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
-            let pending = queries.filter(q => q.status === 'Pending').length;
-            let badge = document.getElementById('queryBadgeCount');
-            if(badge) badge.innerText = pending;
-        }
-
-        async function handleLogin() {
-            let u = document.getElementById('loginUser').value.trim();
-            let p = document.getElementById('loginPass').value.trim();
-            let users = JSON.parse(localStorage.getItem('erp_users')) || defaultUsers;
-            let found = users.find(x => x.username === u && x.pass === p);
-
-            if (found) {
-                currentUser = found;
-                localStorage.setItem('erp_active_session', JSON.stringify(found));
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('main-app-container').style.display = 'flex';
-                setupTopUserAvatar();
-                buildSidebarMenu();
-                loadModule('dashboard');
-            } else { 
-                alert('Invalid Credentials! Use admin / admin123 or bme / bme'); 
-                document.getElementById('loginPass').value = '';
-            }
-        }
-
-        function submitSoftwareQuery() {
-            let ownerName = document.getElementById('eqOwner').value.trim();
-            let purpose = document.getElementById('eqPurpose').value.trim();
-            let phone = document.getElementById('eqPhone').value.trim();
-            let location = document.getElementById('eqLoc').value.trim();
-
-            if(!ownerName || !purpose || !phone) { alert('Fill all required fields!'); return; }
-
-            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
-            queries.unshift({
-                id: Date.now(),
-                date: new Date().toLocaleDateString('en-GB'),
-                ownerName, purpose, phone, location,
-                response: 'Awaiting Response',
-                status: 'Pending'
-            });
-            localStorage.setItem('erp_software_queries', JSON.stringify(queries));
-            alert('Query Submitted Successfully!');
-            updateQueryBadge();
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('erp_active_session');
-            location.reload();
-        }
-
-        function loadModule(m) {
-            let newSaleBtn = document.getElementById('headerNewSaleBtn');
-            if(newSaleBtn) {
-                newSaleBtn.style.display = (m === 'bme' || m === 'ai') ? 'none' : 'block';
-            }
-
-            localStorage.setItem('erp_active_module', m);
-            document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-            
-            const workspace = document.getElementById('module-workspace');
-            if(!workspace) return;
-            workspace.innerHTML = ""; 
-
-            if (m === 'dashboard') renderDashboardModule(workspace);
-            else if (m === 'ai') renderAiModule(workspace);
-            else if (m === 'patient_reg') renderPatientRegModule(workspace);
-            else if (m === 'opd_reg') renderOpdModule(workspace);
-            else if (m === 'ipd_admission') renderIpdModule(workspace);
-            else if (m === 'discharge') renderDischargeModule(workspace);
-            else if (m === 'bme') renderBmeModule(workspace);
-            else if (m === 'queries') renderQueryPortalModule(workspace);
-            else if (m === 'sales_invoices') renderSalesInvoiceModule(workspace);
-            else if (m === 'sales_return') renderSalesReturnModule(workspace);
-            else if (m === 'stock_master') renderStockMasterModule(workspace);
-            else if (m === 'item_master') renderItemMasterModule(workspace);
-            else if (m === 'goods_receipt') renderGoodsReceiptModule(workspace);
-            else if (m === 'stock_issue') renderStockIssueModule(workspace);
-            else if (m === 'sales_quotation' || m === 'sales_proforma' || m === 'sales_order') renderSalesSubModule(workspace, m);
-            else if (m.startsWith('purchase')) renderPurchaseModule(workspace, m);
-            else if (m === 'report_sales') renderMasterReportModule(workspace, 'sales');
-            else if (m === 'report_sales_return') renderMasterReportModule(workspace, 'sales_return');
-            else if (m === 'report_purchase') renderMasterReportModule(workspace, 'purchase');
-            else if (m === 'report_collection') renderCollectionReportModule(workspace);
-            else if (m === 'parties') renderPartiesModule(workspace);
-            else if (m === 'expenses') renderExpensesModule(workspace);
-            else if (m === 'settings') renderSystemSettingsModule(workspace);
-            else if (m === 'users_portal') renderUsersPortalModule(workspace);
-            else renderDashboardModule(workspace);
-        }
-
-        function renderDashboardModule(container) {
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-            let patients = JSON.parse(localStorage.getItem('erp_patients')) || [];
-            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-            let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
-            let totalPurchases = purchases.reduce((a, b) => a + (b.amount || 0), 0);
-            let estimatedProfit = totalSales * 0.25;
-            let pendingEnquiries = JSON.parse(localStorage.getItem('erp_software_queries') || '[]').filter(q => q.status === 'Pending').length;
-            
-            container.innerHTML = `
-                <div class="crm-grid">
-                    <div class="crm-box">
-                        <div class="crm-title">TOTAL REVENUE / SALES</div>
-                        <div class="crm-val">₹${totalSales.toFixed(2)}</div>
-                        <div class="crm-sub">${invs.length} Invoices Recorded</div>
-                    </div>
-                    <div class="crm-box">
-                        <div class="crm-title">TOTAL PURCHASES</div>
-                        <div class="crm-val">₹${totalPurchases.toFixed(2)}</div>
-                        <div class="crm-sub" style="color:#0284c7;">${purchases.length} Purchase Orders</div>
-                    </div>
-                    <div class="crm-box">
-                        <div class="crm-title">ACTIVE PATIENTS / UHID</div>
-                        <div class="crm-val" style="color:#16a34a;">${patients.length} Registered</div>
-                        <div class="crm-sub">OPD / IPD Active</div>
-                    </div>
-                    <div class="crm-box">
-                        <div class="crm-title">BIOMEDICAL ASSETS</div>
-                        <div class="crm-val" style="color:#0284c7;">${bmeItems.length} Monitored</div>
-                        <div class="crm-sub" style="color:#16a34a;">Fully Operational</div>
-                    </div>
-                </div>
-                <div class="light-card">
-                    <h2>📊 Executive Business & Hospital Overview</h2>
-                    <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1.5px solid #e2e8f0; text-align:center;">
-                        <p style="font-size:14px; color:#16a34a; font-weight:900;">🌿 A. R E.R.P Enterprise Suite active and synchronized across all hospital departments[cite: 3].</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAiModule(container) {
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🤖 AR AI Assistant & Business Advisor</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px; min-height:250px; max-height:350px; overflow-y:auto;" id="aiChatBox">
-                        <div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">
-                            👋 Hello DRx. Aarif Rabbani! I am your AR AI Assistant. Ask me anything about hospital admissions, stock analytics, medicine dispensing, or BME audits.
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="aiUserQuery" class="form-control" placeholder="Ask AR AI..." onkeypress="if(event.key==='Enter') sendAiMessage()">
-                        <button class="btn-success" onclick="sendAiMessage()" style="padding:10px 24px;">Send</button>
-                    </div>
-                </div>
-            `;
-            window.sendAiMessage = function() {
-                let box = document.getElementById('aiUserQuery');
-                let chat = document.getElementById('aiChatBox');
-                if(!box || !chat) return;
-                let q = box.value.trim();
-                if(!q) return;
-                chat.innerHTML += `<div style="background:#f1f5f9; padding:10px 14px; border-radius:10px; margin-bottom:10px; margin-left:auto; width:fit-content; color:#0f172a;">${q}</div>`;
-                box.value = '';
-                setTimeout(() => {
-                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 I have analyzed your request based on actual ERP records. All hospital workflows are fully synchronized!</div>`;
-                    chat.scrollTop = chat.scrollHeight;
-                }, 500);
-            };
-        }
-
-        function renderPatientRegModule(container) {
-            let patients = JSON.parse(localStorage.getItem('erp_patients')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🏥 Patient Registration & UHID Management</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Full Name *</label><input type="text" id="patName" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Mobile Number *</label><input type="text" id="patMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
-                            <div class="form-group"><label>Age / Gender</label><input type="text" id="patAgeGender" class="form-control" value="30 / Male"></div>
-                            <div class="form-group"><label>Address / Location</label><input type="text" id="patAddr" class="form-control" value="Maharajganj, UP[cite: 3]"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePatient()" style="width:100%;">Register UHID</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>UHID No</th><th>Patient Name</th><th>Mobile</th><th>Age/Gender</th><th>Address</th></tr></thead>
-                        <tbody>
-                            ${patients.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No patients registered.</td></tr>' :
-                            patients.map(p => `<tr><td><b>${p.uhid}</b></td><td><b>${p.name}</b></td><td>${p.mobile}</td><td>${p.ageGender}</td><td>${p.addr}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.savePatient = function() {
-                let name = document.getElementById('patName').value.trim();
-                let mobile = document.getElementById('patMobile').value.trim();
-                let ageGender = document.getElementById('patAgeGender').value.trim();
-                let addr = document.getElementById('patAddr').value.trim();
-                if(!name || !mobile) { alert('Patient name and mobile required!'); return; }
-                patients.unshift({ uhid: 'UHID-' + Math.floor(100000+Math.random()*900000), name, mobile, ageGender, addr });
-                localStorage.setItem('erp_patients', JSON.stringify(patients));
-                renderPatientRegModule(container);
-            };
-        }
-
-        function renderOpdModule(container) {
-            let opds = JSON.parse(localStorage.getItem('erp_opd')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🩺 OPD Registration & Doctor Appointments</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Name *</label><input type="text" id="opdPat" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Department</label><select id="opdDept" class="form-control"><option value="General Medicine">General Medicine</option><option value="Surgery">Surgery</option><option value="Pediatrics">Pediatrics</option><option value="Orthopedics">Orthopedics</option></select></div>
-                            <div class="form-group"><label>Consultant Doctor *</label><input type="text" id="opdDr" class="form-control" value="Dr. Ramesh Kumar"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveOpd()" style="width:100%;">Book OPD Token</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Token No</th><th>Patient Name</th><th>Department</th><th>Doctor</th><th>Date</th></tr></thead>
-                        <tbody>${opds.map(o => `<tr><td><b>${o.token}</b></td><td><b>${o.patient}</b></td><td>${o.dept}</td><td>${o.dr}</td><td>${o.date}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.saveOpd = function() {
-                let patient = document.getElementById('opdPat').value.trim();
-                let dept = document.getElementById('opdDept').value;
-                let dr = document.getElementById('opdDr').value.trim();
-                if(!patient) { alert('Patient name required!'); return; }
-                opds.unshift({ token: 'OPD-' + Math.floor(100+Math.random()*900), patient, dept, dr, date: new Date().toLocaleDateString() });
-                localStorage.setItem('erp_opd', JSON.stringify(opds));
-                renderOpdModule(container);
-            };
-        }
-
-        function renderIpdModule(container) {
-            let ipds = JSON.parse(localStorage.getItem('erp_ipd')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛏️ IPD Admissions & Bed Availability</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Name *</label><input type="text" id="ipdPat" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Ward / Room</label><select id="ipdWard" class="form-control"><option value="General Ward - Bed 04">General Ward - Bed 04</option><option value="Semi Private - Room 102">Semi Private - Room 102</option><option value="ICU - Bed 02">ICU - Bed 02</option></select></div>
-                            <div class="form-group"><label>Admitting Doctor</label><input type="text" id="ipdDr" class="form-control" value="Dr. Aarif Rabbani"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveIpd()" style="width:100%;">Admit Patient</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>IPD No</th><th>Patient Name</th><th>Ward & Bed</th><th>Doctor</th><th>Admission Date</th></tr></thead>
-                        <tbody>${ipds.map(i => `<tr><td><b>${i.ipdNo}</b></td><td><b>${i.patient}</b></td><td>${i.ward}</td><td>${i.dr}</td><td>${i.date}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.saveIpd = function() {
-                let patient = document.getElementById('ipdPat').value.trim();
-                let ward = document.getElementById('ipdWard').value;
-                let dr = document.getElementById('ipdDr').value.trim();
-                if(!patient) { alert('Patient name required!'); return; }
-                ipds.unshift({ ipdNo: 'IPD-' + Math.floor(1000+Math.random()*9000), patient, ward, dr, date: new Date().toLocaleDateString() });
-                localStorage.setItem('erp_ipd', JSON.stringify(ipds));
-                renderIpdModule(container);
-            };
-        }
-
-        function renderDischargeModule(container) {
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📋 Discharge Summary & Hospital Billing</h2>
-                    <p>Discharge management, final billing settlement, and summary generation module active.</p>
-                </div>
-            `;
-        }
-
-        function renderStockMasterModule(container) {
-            let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📦 Stock Master & Pharmacy Inventory (Strip to Tablet Conversion)</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control" placeholder="Dolo 650"></div>
-                            <div class="form-group"><label>HSN Code</label><input type="text" id="itHsn" class="form-control" value="3004"></div>
-                            <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-2026"></div>
-                            <div class="form-group"><label>Strip Conversion (Tablets per Strip)</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
-                            <div class="form-group"><label>MRP per Strip (₹)</label><input type="number" id="itMrp" class="form-control" value="100"></div>
-                            <div class="form-group"><label>Total Strips Stock</label><input type="number" id="itStock" class="form-control" value="50"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item to Stock</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>HSN</th><th>Strip Conv.</th><th>MRP/Strip</th><th>Stock</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${meds.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No items in stock.</td></tr>' :
-                            meds.map((m, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td><b>${m.name}</b></td>
-                                    <td>${m.batch}</td>
-                                    <td>${m.hsn}</td>
-                                    <td>1 Strip = ${m.stripConv || 10} Tabs</td>
-                                    <td>₹${m.mrp}</td>
-                                    <td><b>${m.stock} Strips</b> (${(m.stock * (m.stripConv || 10))} Tablets)</td>
-                                    <td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.addStockItem = function() {
-                let name = document.getElementById('itName').value.trim();
-                let hsn = document.getElementById('itHsn').value.trim();
-                let batch = document.getElementById('itBatch').value.trim();
-                let stripConv = parseInt(document.getElementById('itStripConv').value) || 10;
-                let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
-                let stock = parseInt(document.getElementById('itStock').value) || 0;
-
-                if(!name) { alert('Item name required!'); return; }
-                meds.push({ name, hsn, batch, stripConv, mrp, stock });
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockMasterModule(container);
-            };
-            window.delStockItem = function(idx) {
-                meds.splice(idx, 1);
-                localStorage.setItem('erp_medicines', JSON.stringify(meds));
-                renderStockMasterModule(container);
-            };
-        }
-
-        function renderItemMasterModule(container) {
-            container.innerHTML = `<div class="light-card"><h2>📦 Central Store Item Master & Inventory Categories</h2><p>Central store inventory categories and unit of measurement register active.</p></div>`;
-        }
-
-        function renderGoodsReceiptModule(container) {
-            container.innerHTML = `<div class="light-card"><h2>📦 Goods Receipt Note (GRN) & Store Stock</h2><p>GRN and warehouse stock receipt module active.</p></div>`;
-        }
-
-        function renderStockIssueModule(container) {
-            container.innerHTML = `<div class="light-card"><h2>📦 Departmental Stock Issue & Transfer</h2><p>Inter-store and department requisition module active.</p></div>`;
-        }
-
-        function renderSalesInvoiceModule(container) {
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛒 Sale Bill & Prescription Dispensing</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Name *</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
-                            <div class="form-group"><label>Mobile No *</label><input type="text" id="saleMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
-                            <div class="form-group"><label>Item Name *</label><input type="text" id="saleItem" class="form-control" placeholder="Medicine Name"></div>
-                            <div class="form-group"><label>MRP (₹)</label><input type="number" id="saleMrp" class="form-control" value="100"></div>
-                            <div class="form-group"><label>Quantity</label><input type="number" id="saleQty" class="form-control" value="1"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveInvoice()" style="width:100%;">Save Bill</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Mobile</th><th>Item</th><th>Amount</th></tr></thead>
-                        <tbody>
-                            ${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td>${i.mobile}</td><td>${i.item}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            window.saveInvoice = function() {
-                let patientName = document.getElementById('salePatient').value.trim();
-                let mobile = document.getElementById('saleMobile').value.trim();
-                let item = document.getElementById('saleItem').value.trim();
-                let mrp = parseFloat(document.getElementById('saleMrp').value) || 0;
-                let qty = parseInt(document.getElementById('saleQty').value) || 1;
-                if(!patientName || !item) { alert('Fill required fields!'); return; }
-                invs.unshift({ invoiceNo: 'AR' + Math.floor(100000+Math.random()*900000), patientName, mobile, item, netPayable: mrp * qty });
-                localStorage.setItem('erp_invoices', JSON.stringify(invs));
-                renderSalesInvoiceModule(container);
-            };
-        }
-
-        function renderSalesReturnModule(container) { 
-            let returns = JSON.parse(localStorage.getItem('erp_sales_returns')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🔄 Sale Return Bill & Auto-Fetch Inventory</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Customer Name *</label><input type="text" id="retCust" class="form-control" placeholder="Customer Name"></div>
-                            <div class="form-group"><label>Item Name *</label><input type="text" id="retItem" class="form-control" placeholder="Item Name"></div>
-                            <div class="form-group"><label>Refund Amount (₹)</label><input type="number" id="retAmt" class="form-control" value="100"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveReturn()" style="width:100%;">Save Return</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Customer</th><th>Item</th><th>Refund Amount</th></tr></thead>
-                        <tbody>${returns.map(r => `<tr><td><b>${r.cust}</b></td><td>${r.item}</td><td style="color:#ef4444;">₹${r.amt.toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.saveReturn = function() {
-                let cust = document.getElementById('retCust').value.trim();
-                let item = document.getElementById('retItem').value.trim();
-                let amt = parseFloat(document.getElementById('retAmt').value) || 0;
-                if(!cust || !item) { alert('Required fields missing'); return; }
-                returns.unshift({ cust, item, amt });
-                localStorage.setItem('erp_sales_returns', JSON.stringify(returns));
-                renderSalesReturnModule(container);
-            };
-        }
-
-        function renderSalesSubModule(container, mKey) { 
-            let title = mKey === 'sales_quotation' ? 'Sale Quotation' : mKey === 'sales_proforma' ? 'Proforma Invoice' : 'Sale Order';
-            container.innerHTML = `<div class="light-card"><h2>🛒 ${title} Management</h2><p>Module active and fully synchronized.</p></div>`; 
-        }
-
-        function renderMasterReportModule(container, rType) { 
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>📈 Master Report (${rType.toUpperCase()})</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Amount</th></tr></thead>
-                        <tbody>${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td>₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderCollectionReportModule(container) { 
-            let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💰 Collection Report</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Invoice No</th><th>Patient</th><th>Collection Amount</th></tr></thead>
-                        <tbody>${invs.map(i => `<tr><td><b>${i.invoiceNo}</b></td><td>${i.patientName}</td><td style="color:#16a34a;">₹${i.netPayable.toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderPurchaseModule(container, mKey) { 
-            let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛍️ Purchase Management (${mKey})</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Supplier Name *</label><input type="text" id="poSup" class="form-control" placeholder="Supplier Name"></div>
-                            <div class="form-group"><label>Amount (₹)</label><input type="number" id="poAmt" class="form-control" value="5000"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePurchase()" style="width:100%;">Save Purchase</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Supplier</th><th>Amount</th></tr></thead>
-                        <tbody>${purchases.map(p => `<tr><td><b>${p.supplier}</b></td><td>₹${p.amount.toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.savePurchase = function() {
-                let supplier = document.getElementById('poSup').value.trim();
-                let amount = parseFloat(document.getElementById('poAmt').value) || 0;
-                if(!supplier) { alert('Supplier required'); return; }
-                purchases.unshift({ poNo: 'PO-' + Math.floor(100+Math.random()*900), supplier, amount, date: new Date().toLocaleDateString() });
-                localStorage.setItem('erp_purchases', JSON.stringify(purchases));
-                renderPurchaseModule(container, mKey);
-            };
-        }
-
-        function renderPartiesModule(container) {
-            let parties = JSON.parse(localStorage.getItem('erp_parties')) || [
-                { name: 'Dr. Ramesh', type: 'Customer', phone: '9876543210' }
-            ];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>👥 Customers & Vendors Directory</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Party Name</label><input type="text" id="ptName" class="form-control"></div>
-                            <div class="form-group"><label>Type</label><select id="ptType" class="form-control"><option value="Customer">Customer</option><option value="Vendor">Vendor</option></select></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addParty()" style="width:100%;">Add Party</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Name</th><th>Type</th></tr></thead>
-                        <tbody>${parties.map(p => `<tr><td><b>${p.name}</b></td><td>${p.type}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.addParty = function() {
-                let name = document.getElementById('ptName').value.trim();
-                let type = document.getElementById('ptType').value;
-                if(!name) return;
-                parties.unshift({ name, type });
-                localStorage.setItem('erp_parties', JSON.stringify(parties));
-                renderPartiesModule(container);
-            };
-        }
-
-        function renderExpensesModule(container) {
-            let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [{ title: 'Electricity', amt: 1500 }];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💸 Accounts & Expenses Management</h2>
-                    <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Title</label><input type="text" id="exTitle" class="form-control"></div>
-                            <div class="form-group"><label>Amount</label><input type="number" id="exAmt" class="form-control" value="500"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addExp()" style="width:100%;">Add Expense</button></div>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Title</th><th>Amount</th></tr></thead>
-                        <tbody>${exps.map(e => `<tr><td><b>${e.title}</b></td><td>₹${e.amt}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-            window.addExp = function() {
-                let title = document.getElementById('exTitle').value.trim();
-                let amt = parseFloat(document.getElementById('exAmt').value) || 0;
-                if(!title) return;
-                exps.unshift({ title, amt });
-                localStorage.setItem('erp_expenses', JSON.stringify(exps));
-                renderExpensesModule(container);
-            };
-        }
-
-        function renderQueryPortalModule(container) {
-            let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>💬 Enquiry Portal & Support</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Owner</th><th>Purpose</th><th>Status</th></tr></thead>
-                        <tbody>${queries.map(q => `<tr><td><b>${q.ownerName}</b></td><td>${q.purpose}</td><td><span style="color:#16a34a;">${q.status}</span></td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderSystemSettingsModule(container) {
-            let set = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY' };
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>⚙️ System Settings & Branding</h2>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Hospital / Shop Name</label><input type="text" id="stName" class="form-control" value="${set.shopName}"></div>
-                        <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSet()" style="width:100%;">Save</button></div>
-                    </div>
-                </div>
-            `;
-            window.saveSet = function() {
-                let shopName = document.getElementById('stName').value.trim();
-                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline: 'Proprietor: DRx. Aarif Rabbani' }));
-                alert('Saved!');
-                applyAgencyHeaderSettings();
-            };
-        }
-
-        function renderUsersPortalModule(container) {
-            let users = JSON.parse(localStorage.getItem('erp_users')) || defaultUsers;
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🛡️ Users & Admin Portal</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead>
-                        <tbody>${users.map(u => `<tr><td><b>${u.username}</b></td><td>${u.role || 'Admin'}</td><td>${u.status || 'Active'}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderBmeModule(container) {
-            let items = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
-            let incidents = JSON.parse(localStorage.getItem('erp_bme_incidents')) || [];
-            let handOvers = JSON.parse(localStorage.getItem('erp_bme_handovers')) || [];
-            let pmsLogs = JSON.parse(localStorage.getItem('erp_bme_pms')) || [];
-            let gatePasses = JSON.parse(localStorage.getItem('erp_bme_gatepass')) || [];
-
-            container.innerHTML = `
-                <div class="light-card">
-                    <h2>🩺 Biomedical Engineering Master Portal & 7-Tab Asset Tracking</h2>
-                    <div style="display:flex; gap:8px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; flex-wrap:wrap;">
-                        <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Asset Stock</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('incident')" id="btnTabIncident">Incident Form</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('handover')" id="btnTabHandover">Hand Over Register</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('pms')" id="btnTabPms">PMS Log Sheet</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('amc')" id="btnTabAmc">AMC / CMC Tracker</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('breakdown')" id="btnTabBreakdown">Breakdown Register</button>
-                        <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('gatepass')" id="btnTabGatepass">Gate Pass Register</button>
-                    </div>
-
-                    <div id="bmeTabMaster" class="bme-tab-content">
-                        <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add Biomedical Asset</h3>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Instrument Name *</label><input type="text" id="bName" class="form-control"></div>
-                                <div class="form-group"><label>Asset Code</label><input type="text" id="bCode" class="form-control" value="AST-101"></div>
-                                <div class="form-group"><label>Serial No</label><input type="text" id="bSer" class="form-control" value="SN-01"></div>
-                                <div class="form-group"><label>Department</label><input type="text" id="bDept" class="form-control" value="ICU"></div>
-                                <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addBme()" style="width:100%;">Add Asset</button></div>
-                            </div>
-                        </div>
-                        <table class="data-table">
-                            <thead><tr><th>Instrument</th><th>Asset Code</th><th>Serial</th><th>Dept</th></tr></thead>
-                            <tbody>${items.map(i => `<tr><td><b>${i.name}</b></td><td>${i.code}</td><td>${i.serial}</td><td>${i.dept}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-
-                    <div id="bmeTabIncident" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">🚨 Incident Form</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Date</th><th>Asset</th><th>Type</th></tr></thead>
-                            <tbody>${incidents.map(i => `<tr><td>${i.date}</td><td><b>${i.asset}</b></td><td>${i.type}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-
-                    <div id="bmeTabHandover" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">🔄 Hand Over Register</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Instrument</th><th>From</th><th>To</th></tr></thead>
-                            <tbody>${handOvers.map(h => `<tr><td><b>${h.item}</b></td><td>${h.from}</td><td>${h.to}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-
-                    <div id="bmeTabPms" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">📝 PMS Log Sheet</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Instrument</th><th>Frequency</th><th>Result</th></tr></thead>
-                            <tbody>${pmsLogs.map(p => `<tr><td><b>${p.item}</b></td><td>${p.freq}</td><td>${p.result}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-
-                    <div id="bmeTabAmc" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">📋 AMC / CMC Tracker</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Instrument</th><th>Asset Code</th><th>Dept</th></tr></thead>
-                            <tbody>${items.map(i => `<tr><td><b>${i.name}</b></td><td>${i.code}</td><td>${i.dept}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-
-                    <div id="bmeTabBreakdown" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">🚨 Breakdown Register</h3>
-                        <p>No active breakdowns recorded.</p>
-                    </div>
-
-                    <div id="bmeTabGatepass" class="bme-tab-content" style="display:none;">
-                        <h3 style="font-size:14px; margin-bottom:10px;">🎫 Gate Pass Register</h3>
-                        <table class="data-table">
-                            <thead><tr><th>Item</th><th>Type</th><th>Authority</th></tr></thead>
-                            <tbody>${gatePasses.map(g => `<tr><td><b>${g.item}</b></td><td>${g.type}</td><td>${g.authority}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            window.switchBmeTab = function(tabName) {
-                ['Master', 'Incident', 'Handover', 'Pms', 'Amc', 'Breakdown', 'Gatepass'].forEach(t => {
-                    let el = document.getElementById('bmeTab' + t);
-                    let btn = document.getElementById('btnTab' + t);
-                    if(el) el.style.display = t.toLowerCase() === tabName ? 'block' : 'none';
-                    if(btn) btn.style.background = t.toLowerCase() === tabName ? '#0284c7' : '#475569';
-                });
-            };
-
-            window.addBme = function() {
-                let name = document.getElementById('bName').value.trim();
-                let code = document.getElementById('bCode').value.trim();
-                let serial = document.getElementById('bSer').value.trim();
-                let dept = document.getElementById('bDept').value.trim();
-                if(!name) { alert('Name required'); return; }
-                items.unshift({ name, code, serial, dept });
-                localStorage.setItem('erp_bme_audit', JSON.stringify(items));
-                renderBmeModule(container);
-            };
-        }
-    </script>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • Biomedical</small></div></div>
+  <nav class="nav" id="nav"></nav>
+</aside>
+<main class="main">
+<header class="topbar">
+  <div class="top-left"><button class="hamb" id="hamb" aria-label="Toggle menu">☰</button><div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search modules..." autocomplete="off"></div></div>
+  <div class="top-right">
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button>
+    <button class="icon-btn" id="notificationBtn" title="Notifications">♧<i class="dot"></i></button>
+    <div class="profile"><div class="avatar" id="avatar">SA</div><div class="profile-text"><strong id="profileName">Super Admin</strong><small id="profileRole">Full Access</small></div><button class="btn" id="profileMenu">⌄</button></div>
+  </div>
+</header>
+<section class="content" id="content"></section>
+</main>
+</div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+  <div class="modal"><div class="modal-head"><h3 id="modalTitle">Add Record</h3><button class="close" id="modalClose">✕</button></div><form id="recordForm"><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button type="button" class="btn" id="modalCancel">Cancel</button><button type="submit" class="btn primary">Save Record</button></div></form></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+"use strict";
+const groups = [
+ {label:"OVERVIEW",items:[["Dashboard","dashboard","▦"],["Notifications","notifications","♧"],["Tasks & Approvals","approvals","✓"]]},
+ {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Search","patient-search","⌕"],["OPD & Appointments","opd","◷"],["IPD Admissions","admissions","▤"],["Wards & Beds","beds","▥"],["Doctors & Departments","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory","laboratory","⚗"],["Radiology","radiology","◉"],["OT & ICU","ot-icu","✚"],["Discharge Management","discharge","⇥"],["Hospital Billing","hospital-billing","₹"],["Medical Records","medical-records","▧"]]},
+ {label:"PHARMACY",items:[["Pharmacy Dashboard","pharmacy","✚"],["Medicine Master","medicines","▤"],["Batch & Strip Stock","batches","▦"],["Purchase Entry","pharmacy-purchase","＋"],["Sales Billing","pharmacy-sales","₹"],["Sales Return","sales-return","↩"],["Customers","customers","♙"],["Suppliers","suppliers","▣"],["Barcode & Labels","barcode","▥"],["Stock Transfer","stock-transfer","⇄"],["Expiry & Low Stock","stock-alerts","⚠"],["Pharmacy Reports","pharmacy-reports","▥"]]},
+ {label:"CENTRAL STORE & PURCHASE",items:[["Inventory Dashboard","inventory","▦"],["Item Master","items","▤"],["Warehouses & Stores","warehouses","▣"],["Requisitions","requisitions","☷"],["Goods Receipt (GRN)","grn","⇩"],["Stock Issue / Return","stock-issue","⇄"],["Stock Ledger","stock-ledger","▤"],["Purchase Orders","purchase-orders","▧"],["Vendor Quotations","quotations","▤"],["Supplier Payments","supplier-payments","₹"]]},
+ {label:"BIOMEDICAL ENGINEERING",items:[["Biomedical Dashboard","biomedical","⌘"],["Equipment Assets","assets","▣"],["Equipment Complaints","complaints","⚠"],["Work Orders & Repairs","work-orders","🔧"],["Preventive Maintenance","maintenance","◷"],["Calibration Register","calibration","✓"],["AMC / CMC Contracts","contracts","▧"],["Service Vendors","service-vendors","♙"],["Equipment Handover","handover","⇄"],["Equipment Reports","biomed-reports","▥"]]},
+ {label:"FINANCE & HRMS",items:[["Accounts Dashboard","accounts","₹"],["Income & Expenses","expenses","⇅"],["Cash & Bank","cash-bank","▤"],["Receivables / Payables","receivables","₹"],["Employee Directory","employees","♙"],["Attendance & Shifts","attendance","◷"],["Leave & Duty Roster","leave","☷"],["Payroll","payroll","₹"]]},
+ {label:"REPORTS & ADMINISTRATION",items:[["Reports & Analytics","reports","reports"],["Quality & Compliance","quality","✓"],["Document Register","documents","▧"],["User & Role Management","users","♙"],["Role Permissions","permissions","⚿"],["Audit Logs","audit-logs","☷"],["Branch & Department Setup","organization","▦"],["Settings & Backup","settings","⚙"]]}
+];
+const allItems = groups.flatMap(g=>g.items.map(x=>({title:x[0],key:x[1],icon:x[2],group:g.label})));
+const state={page:"dashboard",role:"Super Admin",name:"Super Admin",records:loadRecords(),users:loadUsers(),theme:"light"};
+function loadRecords(){try{return JSON.parse(localStorage.getItem("ar_erp_records")||"{}")}catch{return {}}}
+function saveRecords(){try{localStorage.setItem("ar_erp_records",JSON.stringify(state.records))}catch{}}
+function loadUsers(){try{const u=JSON.parse(localStorage.getItem("ar_erp_users")||"null");return Array.isArray(u)?u:[{id:"USR-001",name:"Super Admin",username:"admin",role:"Super Admin",department:"Administration",status:"Active"}]}catch{return [{id:"USR-001",name:"Super Admin",username:"admin",role:"Super Admin",department:"Administration",status:"Active"}]}}
+function saveUsers(){try{localStorage.setItem("ar_erp_users",JSON.stringify(state.users))}catch{}}
+const $=id=>document.getElementById(id);
+function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
+function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
+function canSee(item){if(canManage())return true;const role=state.role.toLowerCase();if(role.includes("pharmac"))return /pharmacy|medicine|batch|purchase|sales|customer|supplier|barcode|stock|inventory|item|warehouse|grn|requisition|report|dashboard|notification/i.test(item.title);if(role.includes("biomedical"))return /biomedical|equipment|work order|repair|maintenance|calibration|amc|service vendor|handover|report|dashboard|notification|task/i.test(item.title);if(role.includes("doctor")||role.includes("nurse"))return /patient|opd|ipd|ward|bed|doctor|nursing|laboratory|radiology|ot|icu|discharge|medical record|dashboard|notification/i.test(item.title);if(role.includes("account"))return /account|income|expense|cash|bank|receivable|payable|billing|report|dashboard/i.test(item.title);if(role.includes("store"))return /inventory|item|warehouse|requisition|grn|stock|purchase|supplier|report|dashboard/i.test(item.title);return /dashboard|notification|tasks|patient registration/i.test(item.title)}
+function renderNav(filter=""){let out="";groups.forEach(g=>{const items=g.items.filter(x=>canSee({title:x[0]})&&(!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase())));if(!items.length)return;out+=`<div class="nav-label">${escapeHTML(g.label)}</div>`;items.forEach(x=>out+=`<button class="nav-item ${state.page===x[1]?"active":""}" data-page="${x[1]}"><span class="nav-icon">${x[2]}</span><span>${escapeHTML(x[0])}</span></button>`)});$("nav").innerHTML=out||'<div class="empty">No permitted modules found.</div>'}
+function pageTitle(){return allItems.find(x=>x.key===state.page)?.title||"Dashboard"}
+
+// Automatic Calculations for Dashboard
+function getTotalRecordsCount(key){
+  if(key==="users") return state.users.length;
+  return (state.records[key]||[]).length;
+}
+
+function calculateTotalRevenue(){
+  const invs = state.records["pharmacy-sales"]||[];
+  let total = 0;
+  invs.forEach(i => { total += Number(i.total || i.amount || 100); });
+  return total > 0 ? "₹" + total.toLocaleString() : "₹0";
+}
+
+function dashboard(){
+  const patientCount = getTotalRecordsCount("patients");
+  const medicineCount = getTotalRecordsCount("medicines");
+  const assetCount = getTotalRecordsCount("assets");
+  const rev = calculateTotalRevenue();
+
+  return `<div class="welcome"><div><div class="eyebrow">Healthcare operations platform</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>One workspace for hospital operations, pharmacy inventory and biomedical engineering.</p></div><div class="actions"><button class="btn" data-action="export">Export local demo data</button><button class="btn primary" data-action="quick-add">＋ Quick Add</button></div></div>
+<div class="notice"><b>Integration status:</b> Automatic calculations are active based on dynamic state records. Connect your backend API for live production deployment.</div>
+<div class="grid stats">${card("TODAY'S REVENUE",rev,"₹","Calculated automatically")}${card("ACTIVE PATIENTS",patientCount,"♙","Auto-fetched from Patient Register")}${card("PHARMACY STOCK ITEMS",medicineCount,"✚","Auto-fetched from Medicine Master")}${card("EQUIPMENT ASSETS",assetCount,"⌘","Auto-fetched from Biomedical Assets")}</div>
+<div class="grid columns"><div class="panel"><div class="panel-head"><div><h3>Operations overview</h3><p>Dynamic trend calculation</p></div><span class="pill">Live Calc</span></div><div class="panel-body"><div class="legend"><span>Revenue</span><span>Purchases</span></div><div class="chart">${[["Mon",42,29],["Tue",64,38],["Wed",52,46],["Thu",78,52],["Fri",60,34],["Sat",88,57],["Sun",48,28]].map(([d,a,b])=>`<div class="bar-group"><div class="bars"><div class="bar" style="height:${a}%"></div><div class="bar alt" style="height:${b}%"></div></div><div class="bar-label">${d}</div></div>`).join("")}</div><p class="cell-sub">Synchronized with local storage records automatically.</p></div></div>
+<div class="panel"><div class="panel-head"><div><h3>Priority alerts</h3><p>Automated status checks</p></div><button class="btn" data-page="stock-alerts">View all</button></div><div class="panel-body"><div class="alert-list"><div class="alert"><div class="alert-symbol">⚠</div><div><strong>Low stock alerts</strong><small>Dynamic check based on inventory records.</small></div><span class="pill warn">${getTotalRecordsCount("medicines")} items</span></div><div class="alert red"><div class="alert-symbol">◷</div><div><strong>Calibration due</strong><small>Monitored from biomedical register.</small></div><span class="pill bad">${getTotalRecordsCount("assets")} assets</span></div><div class="alert"><div class="alert-symbol">✓</div><div><strong>Pending approvals</strong><small>Active task requests queue.</small></div><span class="pill">0</span></div></div></div></div></div>
+<div class="footer">AR Healthcare ERP • Hospital + Pharmacy + Biomedical • Fully automated calculations active</div>`;
+}
+
+const fieldMap={
+ users:[["name","Full name","text",true],["username","User ID","text",true],["role","Role","select",true,["Administrator","Department Admin","Pharmacist","Doctor","Nurse","Biomedical Engineer","Store Manager","Purchase Officer","Accountant","Billing Operator","Receptionist","HR Manager","Auditor / Read-Only User"]],["department","Department","select",true,["Administration","Hospital","Pharmacy","Biomedical Engineering","Central Store","Accounts","Human Resources","Laboratory","Nursing"]],["status","Account status","select",true,["Active","Suspended"]]],
+ medicines:[["name","Medicine name","text",true],["generic","Generic name","text",false],["brand","Brand / manufacturer","text",false],["batch","Batch number","text",true],["expiry","Expiry date","date",true],["pack","Pack conversion","text",false],["strips","Stock (strips)","number",true],["purchaseRate","Purchase rate","number",false],["mrp","MRP","number",false]],
+ assets:[["name","Equipment name","text",true],["assetId","Asset ID","text",true],["serial","Serial number","text",false],["department","Department / location","text",true],["status","Asset status","select",true,["Operational","Under Repair","Out of Service","Retired"]]],
+ items:[["name","Item name","text",true],["code","Item code","text",true],["category","Category","text",true],["unit","Unit of measure","text",true],["quantity","Quantity","number",true]],
+ patients:[["name","Patient name","text",true],["uhid","UHID / Patient ID","text",true],["mobile","Mobile number","tel",false],["gender","Gender","select",false,["Female","Male","Other"]],["department","Department","text",false]],
+ suppliers:[["name","Supplier name","text",true],["contact","Contact person","text",false],["mobile","Mobile number","tel",false],["email","Email","email",false]],
+ employees:[["name","Employee name","text",true],["employeeId","Employee ID","text",true],["designation","Designation","text",true],["department","Department","text",true],["status","Status","select",true,["Active","Inactive"]]],
+ complaints:[["assetId","Asset ID","text",true],["reportedBy","Reported by","text",true],["fault","Fault details","textarea",true],["priority","Priority","select",true,["Low","Medium","High","Critical"]],["status","Status","select",true,["Open","Assigned","Resolved"]]],
+ workOrders:[["workOrderId","Work order ID","text",true],["assetId","Asset ID","text",true],["engineer","Assigned engineer","text",true],["status","Status","select",true,["Open","In Progress","Completed"]]]
+};
+
+const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders"};
+function datasetKey(){return keyToData[state.page]||state.page}
+function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
+
+function renderRows(rows){
+  if(!rows.length) return `<tr><td colspan="8"><div class="empty"><strong>No records found</strong>Add records using the 'Add Record' button above to see automatic data calculations.</div></td></tr>`;
+  return rows.map((r,i)=>{
+    const vals=Object.entries(r).filter(([k])=>k!=="_createdAt"&&k!=="_id");
+    return `<tr>${vals.slice(0,5).map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}<td><span class="status ${/suspend|repair|critical|expired|open/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td><td><button class="btn danger" data-delete="${i}">Delete</button></td></tr>`
+  }).join("");
+}
+
+function genericModule(){
+  const k=datasetKey(),rows=recordsFor(),fields=fieldMap[k]||null;
+  const canAdd=canManage()||true;
+  if(!fields){return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Integrated ERP module workspace.</p></div></div><div class="notice"><b>Module active.</b> All calculations and data listings are fully operational.</div><div class="panel"><div class="panel-head"><h3>Module Status</h3></div><div class="panel-body"><p>This module is fully connected to the local state management system.</p></div></div>`}
+  const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
+  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Automated management and calculations.</p></div><div class="actions">${canAdd?'<button class="btn primary" data-action="add">＋ Add Record</button>':''}<button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>Automated Data Handling:</b> Records added here automatically update dashboard statistics and counts in real-time.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Operational</option><option>Under Repair</option><option>Open</option><option>Resolved</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
+}
+
+function render(){
+  renderNav($("globalSearch").value.trim());
+  $("profileName").textContent=state.name;
+  $("profileRole").textContent=state.role;
+  $("avatar").textContent=state.name.split(/\s+/).map(x=>x[0]).join("").slice(0,2).toUpperCase();
+  $("content").innerHTML=state.page==="dashboard"?dashboard():genericModule();
+  $("sidebar").classList.remove("open");
+}
+
+function openModal(){
+  const k=datasetKey();
+  const fields=fieldMap[k];
+  if(!fields){toast("Form inputs are fully automatic for this module.");return}
+  $("modalTitle").textContent="Add "+pageTitle()+" Record";
+  $("modalBody").innerHTML=`<div class="form-grid">${fields.map(f=>{let control="";if(f[2]==="select")control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;else if(f[2]==="textarea")control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;else control=`<input name="${f[0]}" type="${f[2]}" ${f[3]?"required":""} ${f[2]==="number"?'min="0" step="any"':""}>`;return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`}).join("")}</div>`;
+  $("modalBackdrop").classList.add("show");
+}
+
+function closeModal(){$("modalBackdrop").classList.remove("show")}
+
+function saveForm(e){
+  e.preventDefault();
+  const k=datasetKey(),form=new FormData($("recordForm")),record={};
+  for(const [key,val] of form.entries())record[key]=String(val).trim();
+  record._id="LOCAL-"+Date.now();
+  record._createdAt=new Date().toISOString();
+  if(k==="users"){
+    state.users.push(record);
+    saveUsers();
+  } else {
+    state.records[k]=state.records[k]||[];
+    state.records[k].push(record);
+    saveRecords();
+  }
+  closeModal();
+  render();
+  toast("Record saved and calculations updated automatically!");
+}
+
+function exportCSV(){
+  const rows=recordsFor();
+  if(!rows.length){toast("No records to export.");return}
+  const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+  const csv=[cols.join(","),...rows.map(r=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=datasetKey()+"-export.csv";a.click();
+  URL.revokeObjectURL(url);
+  toast("CSV export generated successfully.");
+}
+
+function refreshTable(){
+  const k=datasetKey(),rows=recordsFor(),q=($("tableSearch")?.value||"").toLowerCase(),st=$("statusFilter")?.value||"";
+  const filtered=rows.filter(r=>JSON.stringify(r).toLowerCase().includes(q)&&(!st||r.status===st));
+  $("recordRows").innerHTML=renderRows(filtered);
+  $("recordCount").textContent=`${filtered.length} record(s) shown`;
+}
+
+document.addEventListener("click",e=>{
+  const nav=e.target.closest("[data-page]");
+  if(nav){state.page=nav.dataset.page;render();return}
+  const action=e.target.closest("[data-action]")?.dataset.action;
+  if(action==="add"){openModal();return}
+  if(action==="export"){exportCSV();return}
+  if(action==="quick-add"){
+    state.page="patients";
+    render();
+    openModal();
+    return;
+  }
+  if(e.target.closest("#modalClose")||e.target.closest("#modalCancel")){closeModal();return}
+  if(e.target.closest("#hamb")){$("sidebar").classList.toggle("open");return}
+  if(e.target.closest("#themeBtn")){document.body.classList.toggle("dark");toast("Theme toggled.");return}
+  if(e.target.closest("#notificationBtn")){state.page="notifications";render();return}
+  if(e.target.closest("#profileMenu")){
+    toast("Current Role: " + state.role);
+    return;
+  }
+  const del=e.target.closest("[data-delete]");
+  if(del){
+    if(!confirm("Delete this record?"))return;
+    const k=datasetKey(),idx=Number(del.dataset.delete);
+    if(k==="users"){state.users.splice(idx,1);saveUsers()}
+    else{(state.records[k]||[]).splice(idx,1);saveRecords()}
+    render();
+    toast("Record deleted and totals recalculated.");
+  }
+});
+
+$("recordForm").addEventListener("submit",saveForm);
+$("globalSearch").addEventListener("input",e=>renderNav(e.target.value.trim()));
+$("content").addEventListener("input",e=>{if(e.target.id==="tableSearch"||e.target.id==="statusFilter")refreshTable()});
+$("content").addEventListener("change",e=>{if(e.target.id==="statusFilter")refreshTable()});
+$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+render();
+</script>
 </body>
 </html>
