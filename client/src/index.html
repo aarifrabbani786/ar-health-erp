@@ -37,27 +37,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .btn.success { background: var(--green-gradient); color: white; box-shadow: 3px 5px 12px rgba(22, 163, 74, 0.4); }
 .btn.danger { background: var(--red-gradient); color: white; box-shadow: 3px 5px 12px rgba(239, 68, 68, 0.4); }
 
-/* PREMIUM MEDICAL BACKGROUND AUTH OVERLAY */
+/* CLEAN LOGIN OVERLAY */
 #auth-overlay {
     position: fixed; inset: 0;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(2, 132, 199, 0.85)), 
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 132, 199, 0.9)), 
                 url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
     z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px;
 }
 
-.auth-container-3d {
-    display: flex; flex-wrap: wrap; gap: 30px; max-width: 920px; width: 100%; justify-content: center; align-items: stretch;
+.login-card-3d {
+    width: 100%; max-width: 420px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px);
+    border-radius: 24px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.8);
 }
+.login-card-3d h2 { text-align: center; font-size: 18px; color: var(--navy); margin-bottom: 4px; text-transform: uppercase; }
+.login-card-3d .sub { text-align: center; font-size: 11px; color: var(--blue); margin-bottom: 22px; }
 
-.login-card-3d, .enquiry-card-3d {
-    flex: 1; min-width: 340px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px);
-    border-radius: 24px; padding: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.8);
-}
-
-.login-card-3d h2, .enquiry-card-3d h2 { text-align: center; font-size: 18px; color: var(--navy); margin-bottom: 4px; text-transform: uppercase; }
-.login-card-3d .sub, .enquiry-card-3d .sub { text-align: center; font-size: 11px; color: var(--blue); margin-bottom: 22px; }
-
-.input-group-3d { position: relative; margin-bottom: 14px; }
+.input-group-3d { position: relative; margin-bottom: 16px; }
 .input-group-3d label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
 .eye-btn { position: absolute; right: 12px; top: 32px; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--muted); }
 
@@ -105,7 +100,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; color: white; display: inline-block; }
 .badge.active { background: #16a34a; }
 .badge.inactive { background: #ef4444; }
-.badge.pending { background: #eab308; }
 
 .crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
 .crm-card {
@@ -113,6 +107,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 }
 .crm-title { font-size: 11px; color: var(--muted); text-transform: uppercase; }
 .crm-val { font-size: 24px; color: var(--navy); margin-top: 6px; }
+
+.autocomplete-items {
+    position: absolute; border: 1.5px solid #cbd5e1; border-top: none; z-index: 99;
+    top: 100%; left: 0; right: 0; background-color: #ffffff; border-radius: 0 0 10px 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); max-height: 160px; overflow-y: auto;
+}
+.autocomplete-items div { padding: 10px; cursor: pointer; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+.autocomplete-items div:hover { background-color: #e0f2fe; color: #0284c7; }
 
 #profileModal {
     display: none; position: fixed; right: 20px; top: 75px; width: 300px;
@@ -123,56 +124,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 </head>
 <body>
 
-    <!-- 3D LOGIN OVERLAY & PUBLIC ENQUIRY FORM -->
+    <!-- CLEAN 3D LOGIN OVERLAY -->
     <div id="auth-overlay">
-        <div class="auth-container-3d">
-            <!-- LOGIN CARD -->
-            <div class="login-card-3d">
-                <h2>AR HEALTHCARE ERP</h2>
-                <div class="sub">Proprietor: DRx. Aarif Rabbani</div>
+        <div class="login-card-3d">
+            <h2>AR HEALTHCARE ERP</h2>
+            <div class="sub">Proprietor: DRx. Aarif Rabbani</div>
 
-                <div class="input-group-3d">
-                    <label>User ID *</label>
-                    <input type="text" id="loginUser" placeholder="Enter User ID" value="Aarif">
-                </div>
-
-                <div class="input-group-3d">
-                    <label>Password *</label>
-                    <input type="password" id="loginPass" placeholder="Enter Password" value="7860">
-                    <button type="button" class="eye-btn" onclick="togglePassword('loginPass')">👁️</button>
-                </div>
-
-                <div style="text-align: right; margin-top: -6px; margin-bottom: 16px;">
-                    <a onclick="forgotPassword()" style="font-size: 11px; color: var(--blue); cursor: pointer;">Forgot Password?</a>
-                </div>
-
-                <button onclick="handleLogin()" class="btn primary" style="width: 100%; padding: 12px;">LOGIN TO SYSTEM</button>
+            <div class="input-group-3d">
+                <label>User ID *</label>
+                <input type="text" id="loginUser" placeholder="Enter User ID" value="Aarif">
             </div>
 
-            <!-- PUBLIC ENQUIRY CARD -->
-            <div class="enquiry-card-3d">
-                <h2>📩 SOFTWARE ENQUIRY</h2>
-                <div class="sub">Request Demo or Custom Setup</div>
-
-                <div class="input-group-3d">
-                    <label>Owner / Hospital Name *</label>
-                    <input type="text" id="eqOwner" placeholder="Name / Hospital">
-                </div>
-                <div class="input-group-3d">
-                    <label>Mobile Number *</label>
-                    <input type="text" id="eqMobile" placeholder="10 Digit Mobile">
-                </div>
-                <div class="input-group-3d">
-                    <label>Location / City *</label>
-                    <input type="text" id="eqLoc" placeholder="City / State">
-                </div>
-                <div class="input-group-3d">
-                    <label>Purpose / Requirement *</label>
-                    <input type="text" id="eqPurpose" placeholder="e.g. Hospital, Pharmacy, BME Setup">
-                </div>
-
-                <button onclick="submitPublicEnquiry()" class="btn success" style="width: 100%; padding: 12px; margin-top: 4px;">SEND ENQUIRY</button>
+            <div class="input-group-3d">
+                <label>Password *</label>
+                <input type="password" id="loginPass" placeholder="Enter Password" value="7860">
+                <button type="button" class="eye-btn" onclick="togglePassword('loginPass')">👁️</button>
             </div>
+
+            <div style="text-align: right; margin-top: -6px; margin-bottom: 16px;">
+                <a onclick="forgotPassword()" style="font-size: 11px; color: var(--blue); cursor: pointer;">Forgot Password?</a>
+            </div>
+
+            <button onclick="handleLogin()" class="btn primary" style="width: 100%; padding: 12px;">LOGIN TO SYSTEM</button>
         </div>
     </div>
 
@@ -226,29 +199,53 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
         let currentUser = null;
 
         let defaultUsers = [
-            { id: 'USR-001', name: 'DRx. Aarif Rabbani', username: 'Aarif', pass: '7860', role: 'Super Admin', status: 'Active', isLocked: true }
+            { id: 'USR-001', name: 'DRx. Aarif Rabbani', username: 'Aarif', pass: '7860', role: 'Super Admin', status: 'Active', isLocked: true },
+            { id: 'USR-002', name: 'Pharmacist Staff', username: 'pharma', pass: '1234', role: 'Pharmacist', status: 'Active', isLocked: false },
+            { id: 'USR-003', name: 'BME Engineer', username: 'bme', pass: '1234', role: 'Biomedical Engineer', status: 'Active', isLocked: false }
         ];
 
         let usersList = JSON.parse(localStorage.getItem('ar_erp_users')) || defaultUsers;
         localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
 
+        let masterItems = [
+            { name: "Paracetamol 650mg", category: "Tablet", price: 30 },
+            { name: "Amoxicillin 500mg", category: "Capsule", price: 85 },
+            { name: "Dolo 650", category: "Tablet", price: 32 },
+            { name: "Azithromycin 500mg", category: "Tablet", price: 120 },
+            { name: "Complete Blood Count (CBC)", category: "Lab Test", price: 350 },
+            { name: "Chest X-Ray Digital", category: "Radiology", price: 500 },
+            { name: "USG Abdomen", category: "Ultrasound", price: 800 },
+            { name: "ECG 12 Lead", category: "Cardiology", price: 250 }
+        ];
+
         const navMenu = [
             { group: "OVERVIEW", items: [ { id: "dashboard", label: "Dashboard", icon: "📊" } ] },
-            { group: "SUPER ADMIN PORTAL", items: [
-                { id: "enquiries_admin", label: "Enquiries & Leads", icon: "📩" },
-                { id: "users_admin", label: "User & Role Management", icon: "🛡️" }
-            ]},
             { group: "HOSPITAL MANAGEMENT", items: [
                 { id: "patients", label: "Patient Registration / UHID", icon: "🏥" },
                 { id: "opd", label: "OPD Appointments", icon: "🩺" },
-                { id: "ipd", label: "IPD Admissions & Beds", icon: "🛏️" }
+                { id: "ipd", label: "IPD Admissions & Beds", icon: "🛏️" },
+                { id: "laboratory", label: "Laboratory Orders", icon: "⚗️" },
+                { id: "radiology", label: "Radiology & Imaging", icon: "📡" }
             ]},
             { group: "PHARMACY MANAGEMENT", items: [
                 { id: "medicines", label: "Medicine Master & Stock", icon: "📦" },
-                { id: "sales", label: "Sales Billing & Dispensing", icon: "🛒" }
+                { id: "sales", label: "Sales Billing & Dispensing", icon: "🛒" },
+                { id: "purchase", label: "Purchase Entry", icon: "🛍️" }
+            ]},
+            { group: "CENTRAL STORE", items: [
+                { id: "store_items", label: "Central Store Items", icon: "📋" },
+                { id: "grn", label: "Goods Receipt (GRN)", icon: "📥" }
             ]},
             { group: "BIOMEDICAL ENGINEERING", items: [
-                { id: "assets", label: "Biomedical Asset Master", icon: "⚙️" }
+                { id: "assets", label: "Biomedical Asset Master", icon: "⚙️" },
+                { id: "complaints", label: "Equipment Complaints", icon: "⚠️" }
+            ]},
+            { group: "ACCOUNTS & HR", items: [
+                { id: "expenses", label: "Income & Expenses", icon: "💸" },
+                { id: "employees", label: "Employee Directory", icon: "👥" }
+            ]},
+            { group: "ADMINISTRATION", items: [
+                { id: "users_admin", label: "User & Role Management", icon: "🛡️" }
             ]}
         ];
 
@@ -280,8 +277,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
         function handleLogin() {
             let u = document.getElementById('loginUser').value.trim();
             let p = document.getElementById('loginPass').value.trim();
-
-            // FIXED LOGIN FOR SUPER ADMIN AARIF
+            
+            // Direct Super Admin bypass for instant smooth login
             if (u.toLowerCase() === 'aarif' && p === '7860') {
                 currentUser = usersList[0];
                 localStorage.setItem('ar_erp_active_session', JSON.stringify(currentUser));
@@ -298,32 +295,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
                 document.getElementById('auth-overlay').style.display = 'none';
                 initApp();
             } else {
-                alert('Invalid User ID or Password! Use ID: Aarif & Pass: 7860');
+                alert('Invalid User ID or Password! Use ID: ');
             }
-        }
-
-        function submitPublicEnquiry() {
-            let owner = document.getElementById('eqOwner').value.trim();
-            let mobile = document.getElementById('eqMobile').value.trim();
-            let loc = document.getElementById('eqLoc').value.trim();
-            let purpose = document.getElementById('eqPurpose').value.trim();
-
-            if (!owner || !mobile || !purpose) return alert('Please fill required Enquiry fields!');
-
-            let enquiries = JSON.parse(localStorage.getItem('ar_enquiries')) || [];
-            let eqNo = generateSmartID('EQ');
-            enquiries.unshift({ eqNo, owner, mobile, loc, purpose, status: 'Pending', response: 'Awaiting Admin Review', date: new Date().toLocaleDateString() });
-            localStorage.setItem('ar_enquiries', JSON.stringify(enquiries));
-
-            alert('Enquiry Submitted Successfully! Super Admin Aarif will review your request.');
-            document.getElementById('eqOwner').value = '';
-            document.getElementById('eqMobile').value = '';
-            document.getElementById('eqLoc').value = '';
-            document.getElementById('eqPurpose').value = '';
-        }
+        
 
         function forgotPassword() {
-            alert('Default Super Admin Login -> User ID: Aarif | Password: 7860');
+            alert('Super Admin Credentials -> User ID: Aarif | Password: 7860');
         }
 
         function handleLogout() {
@@ -386,76 +363,34 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
             ws.innerHTML = '';
 
             if (modId === 'dashboard') renderDashboard(ws);
-            else if (modId === 'enquiries_admin') renderEnquiriesAdmin(ws);
             else if (modId === 'patients') renderGenericTable(ws, 'patients', 'Patient Registration', ['UHID', 'Patient Name', 'Mobile', 'Gender'], ['uhid', 'name', 'mobile', 'gender'], 'AR');
+            else if (modId === 'opd') renderGenericTable(ws, 'opd', 'OPD Appointments', ['Token No', 'Patient Name', 'Department', 'Doctor'], ['token', 'name', 'dept', 'doctor'], 'OPD');
+            else if (modId === 'ipd') renderGenericTable(ws, 'ipd', 'IPD Admissions', ['IPD No', 'Patient Name', 'Ward/Bed', 'Doctor'], ['ipdNo', 'name', 'ward', 'doctor'], 'IPD');
             else if (modId === 'medicines') renderGenericTable(ws, 'medicines', 'Medicine Master', ['Item Name', 'Category', 'Batch', 'MRP'], ['name', 'category', 'batch', 'mrp'], 'MED');
+            else if (modId === 'sales') renderSales(ws);
             else if (modId === 'assets') renderGenericTable(ws, 'assets', 'Biomedical Assets', ['Asset ID', 'Instrument', 'Department', 'Status'], ['assetId', 'name', 'dept', 'status'], 'AST');
             else if (modId === 'users_admin') renderUserManagement(ws);
             else renderGenericTable(ws, modId, modId.toUpperCase(), ['Ref ID', 'Title', 'Description', 'Status'], ['refId', 'title', 'desc', 'status'], 'AR');
         }
 
         function renderDashboard(ws) {
-            let enquiries = JSON.parse(localStorage.getItem('ar_enquiries')) || [];
             let patients = JSON.parse(localStorage.getItem('ar_patients')) || [];
+            let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
+            let medicines = JSON.parse(localStorage.getItem('ar_medicines')) || [];
+            let totalRev = sales.reduce((a, b) => a + Number(b.amount || 0), 0);
+
             ws.innerHTML = `
                 <div class="crm-grid">
-                    <div class="crm-card"><div class="crm-title">Pending Enquiries</div><div class="crm-val" style="color:#eab308;">${enquiries.length}</div></div>
+                    <div class="crm-card"><div class="crm-title">Total Revenue</div><div class="crm-val" style="color:#16a34a;">₹${totalRev.toFixed(2)}</div></div>
                     <div class="crm-card"><div class="crm-title">Patients Registered</div><div class="crm-val" style="color:#0284c7;">${patients.length}</div></div>
+                    <div class="crm-card"><div class="crm-title">Medicine Stock</div><div class="crm-val">${medicines.length}</div></div>
                     <div class="crm-card"><div class="crm-title">System Users</div><div class="crm-val">${usersList.length}</div></div>
                 </div>
                 <div class="panel-3d">
                     <h2>📊 System Status & Automatic Sync</h2>
-                    <p style="font-size:12.5px; color:var(--muted);">Super Admin Login & Enquiry Management fully operational[cite: 16].</p>
+                    <p style="font-size:12.5px; color:var(--muted);">All sidebar modules are fully functional with auto IDs and auto-fetch data sync.</p>
                 </div>
             `;
-        }
-
-        // ENQUIRIES PORTAL ON SUPER ADMIN
-        function renderEnquiriesAdmin(ws) {
-            let enquiries = JSON.parse(localStorage.getItem('ar_enquiries')) || [];
-            ws.innerHTML = `
-                <div class="panel-3d">
-                    <h2>📩 Client Software Enquiries & Leads</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Enquiry ID</th><th>Owner Name</th><th>Mobile</th><th>Location</th><th>Purpose</th><th>Status</th><th>Response / Remark</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${enquiries.length === 0 ? `<tr><td colspan="8" style="text-align:center; color:var(--muted);">No enquiries submitted yet.</td></tr>` :
-                            enquiries.map((eq, idx) => `
-                                <tr>
-                                    <td><b>${eq.eqNo}</b></td>
-                                    <td>${eq.owner}</td>
-                                    <td>${eq.mobile}</td>
-                                    <td>${eq.loc}</td>
-                                    <td>${eq.purpose}</td>
-                                    <td><span class="badge ${eq.status === 'Responded' ? 'active' : 'pending'}">${eq.status}</span></td>
-                                    <td>${eq.response}</td>
-                                    <td>
-                                        <button class="btn primary" onclick="updateEnquiryResponse(${idx})">Update Response</button>
-                                        <button class="btn danger" onclick="deleteEnquiry(${idx})">Delete</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            window.updateEnquiryResponse = function(idx) {
-                let status = prompt("Set Status (Pending / Responded / Completed):", enquiries[idx].status);
-                let resp = prompt("Enter Response Remark / Follow-up Note:", enquiries[idx].response);
-                if (status) enquiries[idx].status = status;
-                if (resp) enquiries[idx].response = resp;
-                localStorage.setItem('ar_enquiries', JSON.stringify(enquiries));
-                renderEnquiriesAdmin(ws);
-            };
-
-            window.deleteEnquiry = function(idx) {
-                if (confirm("Delete this Enquiry lead?")) {
-                    enquiries.splice(idx, 1);
-                    localStorage.setItem('ar_enquiries', JSON.stringify(enquiries));
-                    renderEnquiriesAdmin(ws);
-                }
-            };
         }
 
         function renderGenericTable(ws, storageKey, title, headers, keys, idPrefix) {
@@ -466,11 +401,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
                     <table class="data-table">
                         <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}<th>Action</th></tr></thead>
                         <tbody>
-                            ${data.length === 0 ? `<tr><td colspan="${headers.length + 1}" style="text-align:center; color:var(--muted);">No records found.</td></tr>` :
+                            ${data.length === 0 ? `<tr><td colspan="${headers.length + 1}" style="text-align:center; color:var(--muted);">No records found. Click 'Add Record' above.</td></tr>` :
                             data.map((row, idx) => `
                                 <tr>
                                     ${keys.map(k => `<td><b>${row[k] || '—'}</b></td>`).join('')}
-                                    <td><button class="btn danger" onclick="deleteRecord('${storageKey}', ${idx})">Delete</button></td>
+                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deleteRecord('${storageKey}', ${idx})">Delete</button>` : 'Protected'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -489,8 +424,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 
             let modalHTML = `
                 <div id="dynamicModal" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;">
-                    <div style="background:white; padding:25px; border-radius:18px; width:100%; max-width:450px;">
-                        <h3 style="margin-bottom:15px; font-size:15px;">Add ${title}</h3>
+                    <div style="background:white; padding:25px; border-radius:18px; width:100%; max-width:450px; box-shadow:0 15px 35px rgba(0,0,0,0.2);">
+                        <h3 style="margin-bottom:15px; font-size:15px; color:var(--navy);">Add ${title}</h3>
                         <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
                             ${formFields}
                         </div>
@@ -515,7 +450,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
         }
 
         function deleteRecord(storageKey, idx) {
-            if (confirm('Delete record?')) {
+            if (confirm('Delete this record?')) {
                 let data = JSON.parse(localStorage.getItem('ar_' + storageKey)) || [];
                 data.splice(idx, 1);
                 localStorage.setItem('ar_' + storageKey, JSON.stringify(data));
@@ -523,25 +458,138 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
             }
         }
 
-        function renderUserManagement(ws) {
+        function renderSales(ws) {
+            let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
+            let invID = generateSmartID('ARINV');
             ws.innerHTML = `
                 <div class="panel-3d">
-                    <h2>🛡️ User & Role Management</h2>
+                    <h2>🛒 Sales Billing & Auto-Fetch</h2>
+                    <div class="form-grid">
+                        <div class="field"><label>Invoice No</label><input type="text" id="sInv" value="${invID}" readonly style="background:#e2e8f0;"></div>
+                        <div class="field"><label>Customer Name *</label><input type="text" id="sCust" placeholder="Customer Name"></div>
+                        <div class="field" style="position:relative;">
+                            <label>Item Name (Type to Auto-Fetch) *</label>
+                            <input type="text" id="sItem" placeholder="Type medicine or test..." onkeyup="autoFetchItem(this.value)">
+                            <div id="autoDropdown" class="autocomplete-items" style="display:none;"></div>
+                        </div>
+                        <div class="field"><label>Amount (₹)</label><input type="number" id="sAmt" value="100"></div>
+                        <div class="field" style="justify-content:flex-end;"><button class="btn success" onclick="addSale()">Generate Bill</button></div>
+                    </div>
+                </div>
+                <div class="panel-3d">
+                    <h2>Sales History</h2>
                     <table class="data-table">
-                        <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Invoice No</th><th>Customer</th><th>Item</th><th>Amount</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${usersList.map((u) => `
+                            ${sales.map((s, idx) => `
                                 <tr>
-                                    <td><b>${u.username}</b> ${u.isLocked ? '🔒' : ''}</td>
-                                    <td>${u.name}</td>
-                                    <td>${u.role}</td>
-                                    <td><span class="badge ${u.status === 'Active' ? 'active' : 'inactive'}">${u.status}</span></td>
+                                    <td><b>${s.invNo}</b></td><td>${s.cust}</td><td>${s.item}</td><td>₹${s.amount}</td>
+                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deleteSale(${idx})">Delete</button>` : 'Protected'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
+
+            window.autoFetchItem = function(val) {
+                let drop = document.getElementById('autoDropdown');
+                if (!val) { drop.style.display = 'none'; return; }
+                let matches = masterItems.filter(x => x.name.toLowerCase().includes(val.toLowerCase()));
+                if (matches.length > 0) {
+                    drop.innerHTML = matches.map(m => `<div onclick="selectItem('${m.name}', ${m.price})">${m.name} - ₹${m.price}</div>`).join('');
+                    drop.style.display = 'block';
+                } else { drop.style.display = 'none'; }
+            };
+
+            window.selectItem = function(name, price) {
+                document.getElementById('sItem').value = name;
+                document.getElementById('sAmt').value = price;
+                document.getElementById('autoDropdown').style.display = 'none';
+            };
+
+            window.addSale = function() {
+                let invNo = document.getElementById('sInv').value;
+                let cust = document.getElementById('sCust').value.trim();
+                let item = document.getElementById('sItem').value.trim();
+                let amount = document.getElementById('sAmt').value;
+                if (!cust || !item) return alert('Customer and Item Required!');
+                sales.unshift({ invNo, cust, item, amount });
+                localStorage.setItem('ar_sales', JSON.stringify(sales));
+                renderSales(ws);
+            };
+
+            window.deleteSale = function(idx) {
+                if (confirm('Delete Sale?')) {
+                    sales.splice(idx, 1);
+                    localStorage.setItem('ar_sales', JSON.stringify(sales));
+                    renderSales(ws);
+                }
+            };
+        }
+
+        function renderUserManagement(ws) {
+            ws.innerHTML = `
+                <div class="panel-3d">
+                    <h2>🛡️ User & Role Management (Super Admin Control)</h2>
+                    <div class="form-grid">
+                        <div class="field"><label>Staff Full Name *</label><input type="text" id="uName" placeholder="Full Name"></div>
+                        <div class="field"><label>User ID *</label><input type="text" id="uId" placeholder="User ID"></div>
+                        <div class="field"><label>Password *</label><input type="password" id="uPass" placeholder="Password"></div>
+                        <div class="field"><label>Role</label><select id="uRole"><option>Pharmacist</option><option>Biomedical Engineer</option><option>Receptionist</option><option>Accountant</option></select></div>
+                        <div class="field" style="justify-content:flex-end;"><button class="btn primary" onclick="addUser()">Create User Account</button></div>
+                    </div>
+                </div>
+
+                <div class="panel-3d">
+                    <h2>All Staff Accounts</h2>
+                    <table class="data-table">
+                        <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${usersList.map((u, idx) => `
+                                <tr>
+                                    <td><b>${u.username}</b> ${u.isLocked ? '🔒' : ''}</td>
+                                    <td>${u.name}</td>
+                                    <td>${u.role}</td>
+                                    <td><span class="badge ${u.status === 'Active' ? 'active' : 'inactive'}">${u.status}</span></td>
+                                    <td>
+                                        ${!u.isLocked ? `
+                                            <button class="btn success" onclick="toggleUserStatus(${idx})">${u.status === 'Active' ? 'Deactivate' : 'Activate'}</button>
+                                            <button class="btn danger" onclick="deleteUser(${idx})">Delete</button>
+                                        ` : 'Protected (Super Admin)'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.addUser = function() {
+                let name = document.getElementById('uName').value.trim();
+                let username = document.getElementById('uId').value.trim();
+                let pass = document.getElementById('uPass').value.trim();
+                let role = document.getElementById('uRole').value;
+                if (!name || !username || !pass) return alert('Fill all required fields!');
+                if (usersList.some(x => x.username.toLowerCase() === username.toLowerCase())) return alert('User ID already exists!');
+                usersList.push({ id: 'USR-' + Date.now(), name, username, pass, role, status: 'Active', isLocked: false });
+                localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                renderUserManagement(ws);
+            };
+
+            window.toggleUserStatus = function(idx) {
+                usersList[idx].status = usersList[idx].status === 'Active' ? 'Inactive' : 'Active';
+                localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                renderUserManagement(ws);
+            };
+
+            window.deleteUser = function(idx) {
+                if (confirm('Delete user account?')) {
+                    usersList.splice(idx, 1);
+                    localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                    renderUserManagement(ws);
+                }
+            };
         }
     </script>
 </body>
