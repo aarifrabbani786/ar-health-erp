@@ -48,7 +48,7 @@ button,input,select,textarea{font:inherit;font-weight:700!important}button{curso
 .stat{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}
 .stat-top{display:flex;justify-content:space-between;align-items:center}
 .stat-label{font-size:11px;color:var(--muted);font-weight:800!important}
-.stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#e0f2fe;color:var(--blue);font-size:17px}
+.stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#e0f2fe;color:#0284c7;font-size:17px}
 .stat-value{font-size:25px;font-weight:900!important;letter-spacing:-.8px;margin:14px 0 6px;color:var(--navy)}
 .stat-foot{font-size:10px;color:var(--muted)}
 .panel{background:#fff;border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);min-width:0;margin-bottom:20px}
@@ -69,7 +69,7 @@ tbody tr:hover{background:#f0f9ff}
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .filters input,.filters select,.field input,.field select,.field textarea{border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--text);outline:none;font-size:12px;font-weight:700!important}
 .filters input{min-width:230px}
-.filters input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(2,132,199,0.15)}
+.filters input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#0284c7;box-shadow:0 0 0 3px rgba(2,132,199,0.15)}
 .empty{padding:40px 18px;text-align:center;color:var(--muted);font-size:12.5px}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field{display:grid;gap:6px}
@@ -93,27 +93,31 @@ tbody tr:hover{background:#f0f9ff}
 .autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
 .autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
-/* ANIMATED SPLIT LOGIN (SCREENSHOT 2 EXACT DESIGN) */
-#loginOverlay{position:fixed;inset:0;background:#090d16;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-.animated-login-wrapper{display:flex;width:100%;max-width:850px;min-height:480px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 50px rgba(234,88,12,0.35);border:2px solid #ea580c;position:relative}
-.login-form-side{flex:1;padding:45px 35px;display:flex;flex-direction:column;justify-content:center;background:#111827}
-.login-form-side h2{font-size:24px;color:#fff;margin:0 0 20px;font-weight:900!important}
-.login-field-glow{margin-bottom:20px;position:relative}
-.login-field-glow label{display:block;font-size:11px;color:#9ca3af;margin-bottom:6px;text-transform:uppercase}
-.login-field-glow input{width:100%;padding:13px 14px;border:1.5px solid #374151;border-radius:10px;background:#1f2937;color:#fff;outline:none;font-size:13px}
-.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 15px rgba(234,88,12,0.4)}
-.eye-btn-glow{position:absolute;right:14px;top:33px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:16px}
-.glow-login-btn{width:100%;padding:14px;border:none;border-radius:25px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-weight:900!important;font-size:14px;cursor:pointer;box-shadow:0 8px 25px rgba(234,88,12,0.5);transition:all 0.2s;margin-top:10px}
-.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(234,88,12,0.7)}
-.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#7c2d12 100%);padding:45px 35px;display:flex;flex-direction:column;justify-content:center;color:#fff;clip-path:polygon(15% 0, 100% 0, 100% 100%, 0% 100%);position:relative}
-.welcome-side-glow h2{font-size:28px;margin:0 0 12px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px}
-.welcome-side-glow p{font-size:12px;line-height:1.7;color:#ffedd5;margin:0}
-@media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}.welcome-side-glow{clip-path:none;padding:25px}}
+/* REFINED COMPACT ANIMATED LOGIN (SCREENSHOT 2 STYLE) */
+#loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#090d16,#1e293b);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+.animated-login-wrapper{display:flex;width:100%;max-width:750px;min-height:380px;background:#111827;border-radius:20px;overflow:hidden;box-shadow:0 0 40px rgba(2,132,199,0.35);border:2px solid #0284c7;position:relative}
+.login-form-side{flex:1;padding:35px 28px;display:flex;flex-direction:column;justify-content:center;background:#111827}
+.login-form-side h2{font-size:20px;color:#fff;margin:0 0 16px;font-weight:900!important}
+.login-field-glow{margin-bottom:14px;position:relative}
+.login-field-glow label{display:block;font-size:10px;color:#9ca3af;margin-bottom:5px;text-transform:uppercase}
+.login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:9px;background:#1f2937;color:#fff;outline:none;font-size:12px}
+.login-field-glow input:focus{border-color:#0284c7;box-shadow:0 0 12px rgba(2,132,199,0.4)}
+.eye-btn-glow{position:absolute;right:12px;top:29px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:15px}
+.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-weight:900!important;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(2,132,199,0.5);transition:all 0.2s;margin-top:6px}
+.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(2,132,199,0.7)}
+
+/* AUTO SLIDING / BLINKING MENU CARD ON LOGIN RIGHT SIDE */
+.welcome-side-glow{flex:1;background:linear-gradient(135deg,#0284c7 0%,#0f172a 100%);padding:35px 28px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
+.welcome-side-glow h2{font-size:20px;margin:0 0 8px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px;color:#38bdf8}
+.welcome-side-glow p{font-size:11.5px;line-height:1.6;color:#e0f2fe;margin:0 0 16px}
+.blink-menu-card{background:rgba(255,255,255,0.1);border:1.5px dashed #38bdf8;padding:12px;border-radius:12px;font-size:12px;font-weight:900!important;text-align:center;animation:blinkBorder 2s infinite}
+@keyframes blinkBorder{0%{border-color:#38bdf8}50%{border-color:#fb923c}100%{border-color:#38bdf8}}
+@media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
 </style>
 </head>
 <body>
 
-<!-- ANIMATED SPLIT LOGIN OVERLAY -->
+<!-- REFINED ANIMATED SPLIT LOGIN OVERLAY WITH AUTO SLIDING MENU CARD -->
 <div id="loginOverlay">
   <div class="animated-login-wrapper">
     <div class="login-form-side">
@@ -133,7 +137,8 @@ tbody tr:hover{background:#f0f9ff}
     </div>
     <div class="welcome-side-glow">
       <h2>WELCOME BACK!</h2>
-      <p><b>A R ERP SOFTWARE</b><br>COMPLETE YOUR DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p>
+      <p><b>A R ERP SOFTWARE</b><br>COMPLETE DIGITAL DATA & BILLING WORKSPACE.</p>
+      <div class="blink-menu-card" id="sliderMenuCard">⚡ Loading Modules...</div>
     </div>
   </div>
 </div>
@@ -142,7 +147,7 @@ tbody tr:hover{background:#f0f9ff}
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <div class="logo">AR</div>
-    <div><strong>A R ERP SOFTWARE</strong><small>COMPLETE DIGITAL DATA & BILLING</small></div>
+    <div><strong>A R ERP SOFTWARE</strong><small id="firmTagline">COMPLETE DIGITAL DATA & BILLING</small></div>
   </div>
   <nav class="nav" id="nav"></nav>
 </aside>
@@ -150,6 +155,7 @@ tbody tr:hover{background:#f0f9ff}
 <header class="topbar">
   <div class="top-left"><button class="hamb" id="hamb">☰</button><div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search modules..." autocomplete="off"></div></div>
   <div class="top-right">
+    <div style="font-size:11px; font-weight:900!important; color:var(--navy); background:#f1f5f9; padding:6px 12px; border-radius:8px;" id="liveClockDisplay"></div>
     <button class="icon-btn" id="themeBtn" title="Theme">◐</button>
     <button class="icon-btn" id="notificationBtn" title="Alerts">♧<i class="dot"></i></button>
     <div class="profile"><div class="avatar" id="avatar">SA</div><div class="profile-text"><strong id="profileName">Aarif</strong><small id="profileRole">Super Admin</small></div><button class="btn" id="profileMenu">⌄</button></div>
@@ -184,6 +190,7 @@ const state = {
   role: "Super Admin",
   name: "Aarif",
   isLoggedIn: false,
+  firmName: "A R ERP SOFTWARE",
   records: loadRecords(),
   users: loadUsers()
 };
@@ -204,15 +211,41 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
 
-// DATE-WISE UNIQUE UHID GENERATOR (Format: ARDDMMYY + Serial)
+// AUTO SLIDING MENU CARDS ON LOGIN PAGE
+const sliderModules = [
+  "🏥 Complete Hospital Master & OPD/IPD",
+  "⚗️ Advanced Laboratory & Pathology",
+  "📡 Digital Radiology & Scans",
+  "💊 Pharmacy & HSN Inventory Management",
+  "💼 HRM, Payroll & Employee Directory",
+  "🛡️ Full Control Admin & Role Permissions",
+  "⚙️ BME Master & Equipment Maintenance"
+];
+let currentSliderIdx = 0;
+setInterval(() => {
+  const el = $("sliderMenuCard");
+  if(el){
+    currentSliderIdx = (currentSliderIdx + 1) % sliderModules.length;
+    el.innerHTML = sliderModules[currentSliderIdx];
+  }
+}, 2200);
+
+// REAL TIME LIVE CLOCK
+setInterval(() => {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString();
+  const dateStr = now.toLocaleDateString();
+  if($("liveClockDisplay")) $("liveClockDisplay.innerHTML") = `${dateStr} | ⏰ ${timeStr}`;
+}, 1000);
+
+// DATE-WISE UHID GENERATOR
 function generatePatientUHID(){
   const now = new Date();
   const dd = String(now.getDate()).padStart(2,'0');
   const mm = String(now.getMonth()+1).padStart(2,'0');
   const yy = String(now.getFullYear()).slice(-2);
   const patients = state.records["patients"] || [];
-  const todayCount = patients.length + 1;
-  const serial = String(todayCount).padStart(2,'0');
+  const serial = String(patients.length + 1).padStart(2,'0');
   return `AR${dd}${mm}${yy}${serial}`;
 }
 
@@ -276,13 +309,13 @@ function dashboard(){
   const sales = state.records["pharmacy-sales"]||[];
   const totalRev = sales.reduce((a,b)=>a+Number(b.total||b.amount||0), 0);
 
-  return `<div class="welcome"><div><div class="eyebrow">A R ERP SOFTWARE</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
-<div class="notice"><b>A R ERP SYSTEM ACTIVE:</b> Centralized Patient UHID Auto-Generation (` + generatePatientUHID() + `), Aadhaar/Mobile Auto-Fetch, and Complete Profile History active.</div>
+  return `<div class="welcome"><div><div class="eyebrow">${escapeHTML(state.firmName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
+<div class="notice"><b>SYSTEM ACTIVE:</b> Real-time patient auto-fetch, HSN/GST pharmacy sales, return locks, and profile history active.</div>
 <div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated from Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Auto-fetched from Register")}${card("MEDICINE ITEMS",medicinesCount,"✚","Auto-fetched from Master")}${card("BIOMEDICAL ASSETS",assetsCount,"⌘","Auto-fetched from Assets")}</div>
-<div class="footer">A R ERP SOFTWARE • COMPLETE YOUR DIGITAL DATA AND BILLING SOFTWARE</div>`;
+<div class="footer">${escapeHTML(state.firmName)} • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
 }
 
-// SPECIFIC FIELD MAPPING FOR EVERY MODULE WITH AUTO-FETCH FOR PATIENTS
+// MODULE SPECIFIC FIELD MAPPING (WITH PATIENT AUTO-FETCH & PHARMACY HSN/GST)
 const fieldMap={
  users:[["name","Full Name","text",true],["username","User ID / Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["status","Status","select",true,["Active","Suspended"]]],
  patients:[["uhid","Patient UHID (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
@@ -293,16 +326,19 @@ const fieldMap={
  laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["testName","Lab Test Name","text",true],["price","Test Price (₹)","number",true]],
  radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["scanName","Radiology Procedure Name","text",true],["price","Scan Price (₹)","number",true]],
  "hospital-billing":[["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["serviceName","Service / Treatment Name","text",true],["amount","Total Bill Amount (₹)","number",true],["status","Payment Status","select",true,["Paid","Pending","Partial"]]],
- medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock Quantity (Strips)","number",true],["mrp","MRP (₹)","number",true]],
- "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["medicine","Medicine / Item Name","text",true],["total","Total Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
+ medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["hsn","HSN Code","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock (Strips)","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
+ "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Name / Aadhaar)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
+ "sales-return":[["returnNo","Return No (Auto)","text",true,"RET"],["invoiceNo","Original Invoice No (Locked)","text",true],["reason","Return Reason","text",true],["refundAmount","Refund Amount (₹)","number",true],["status","Status","select",true,["Processed"]]],
+ "pharmacy-purchase":[["poNo","PO No (Auto)","text",true,"PO"],["vendor","Vendor Name & Details","text",true],["item","Item Name & HSN","text",true],["strips","Purchase Strips","number",true],["rate","Purchase Rate/Strip","number",true],["gst","GST %","number",true],["total","Total Purchase Amount (₹)","number",true],["status","Status","select",true,["Received"]]],
  assets:[["assetId","Asset ID (Auto)","text",true,"AST"],["name","Equipment Instrument Name","text",true],["serial","Serial Number","text",true],["department","Department / Location","text",true],["pmDue","Next Maintenance Date","date",true],["status","Asset Status","select",true,["Operational","Under Repair","Out of Service"]]],
  items:[["code","Item Code (Auto)","text",true,"ITM"],["name","Store Item Name","text",true],["category","Category","text",true],["quantity","Stock Quantity","number",true]],
  suppliers:[["supplierId","Supplier ID (Auto)","text",true,"SUP"],["name","Supplier Name","text",true],["mobile","Mobile Number","tel",true],["email","Email ID","text",false]],
  employees:[["employeeId","Employee ID (Auto)","text",true,"EMP"],["name","Employee Name","text",true],["designation","Designation","text",true],["department","Department","text",true],["status","Status","select",true,["Active","Inactive"]]],
- expenses:[["expId","Expense Ref ID (Auto)","text",true,"EXP"],["title","Expense Description","text",true],["amount","Amount (₹)","number",true],["date","Expense Date","date",true],["status","Status","select",true,["Paid","Pending"]]]
+ expenses:[["expId","Expense Ref ID (Auto)","text",true,"EXP"],["title","Expense Description","text",true],["amount","Amount (₹)","number",true],["date","Expense Date","date",true],["status","Status","select",true,["Paid","Pending"]]],
+ settings:[["firmName","Firm / Software Name","text",true],["tagline","Firm Tagline / Header","text",true],["gstin","GSTIN Number","text",false]]
 };
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","expenses":"expenses"};
+const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses","settings":"settings"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
@@ -316,7 +352,7 @@ function renderRows(rows){
   }).join("");
 }
 
-// DEDICATED PATIENT PROFILE & HISTORY MODULE VIEW
+// PATIENT PROFILE & COMPLETE HISTORY MODULE
 function renderPatientProfileModule(ws){
   ws.innerHTML = `
     <div class="module-title">
@@ -404,12 +440,30 @@ function genericModule(){
     renderPatientProfileModule(ws);
     return ws.innerHTML;
   }
+  if(k === "settings"){
+    return `
+      <div class="module-title"><div><h1>Firm & Software Settings</h1><p>Change software name, firm title and logo</p></div></div>
+      <div class="panel" style="max-width:550px;">
+        <div class="panel-head"><h3>Update Software Identity</h3></div>
+        <div class="panel-body">
+          <div class="field" style="margin-bottom:14px;"><label>Firm / Software Name</label><input type="text" id="setFirmName" value="${escapeHTML(state.firmName)}"></div>
+          <div class="field" style="margin-bottom:14px;"><label>Header Tagline</label><input type="text" id="setTagline" value="COMPLETE DIGITAL DATA & BILLING"></div>
+          <button class="btn primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+    `;
+  }
 
   let fields=fieldMap[k] || [["refId","Ref ID (Auto)","text",true,"AR"],["name","Record Name","text",true],["details","Details","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
   const rows=recordsFor();
   const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
-  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>A R ERP SOFTWARE:</b> Records saved in ${pageTitle()} are auto-synchronized and accessible for Billing and Auto-Fetch.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Operational</option><option>Available</option><option>Occupied</option><option>Paid</option><option>Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
+  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Systematic data register and management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>${escapeHTML(state.firmName)}:</b> Records saved in ${pageTitle()} are auto-synchronized and accessible for Billing and Auto-Fetch.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All Statuses</option><option>Active</option><option>Operational</option><option>Available</option><option>Occupied</option><option>Paid</option><option>Pending</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
 }
+
+window.saveSettings = function(){
+  const f = $("setFirmName").value.trim();
+  if(f){ state.firmName = f; $("firmTagline").innerText = $("setTagline").value.trim(); toast("Settings Saved!"); render(); }
+};
 
 function render(){
   renderNav($("globalSearch").value.trim());
@@ -436,6 +490,9 @@ function openModal(){
     if(f[2]==="autocomplete"){
       control=`<div class="autocomplete-box"><input type="text" id="pSearchInput" name="${f[0]}" placeholder="Type Patient Name / UHID / Aadhaar..." onkeyup="handlePatientAutoFetch(this.value)"><div id="patientDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
+    else if(f[2]==="autocomplete-med"){
+      control=`<div class="autocomplete-box"><input type="text" id="mSearchInput" name="${f[0]}" placeholder="Type 2-3 letters of medicine..." onkeyup="handleMedAutoFetch(this.value)"><div id="medDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
     else control=`<input name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[2]==="number"?'min="0" step="any"':""}>`;
@@ -460,6 +517,22 @@ function handlePatientAutoFetch(val){
 function selectAutoPatient(uhid, name, aadhaar){
   $("pSearchInput").value = `${name} (UHID: ${uhid}${aadhaar ? ' | Aadhaar: ' + aadhaar : ''})`;
   $("patientDropdown").style.display = "none";
+}
+
+function handleMedAutoFetch(val){
+  const drop = $("medDropdown");
+  if(!val || val.length < 2){ drop.style.display="none"; return; }
+  const meds = state.records["medicines"] || [];
+  const matches = meds.filter(m => m.name.toLowerCase().includes(val.toLowerCase()));
+  if(matches.length > 0){
+    drop.innerHTML = matches.map(m => `<div onclick="selectAutoMed('${m.name}', ${m.mrp||100})">${m.name} | MRP: ₹${m.mrp||100} | Stock: ${m.strips||10}</div>`).join('');
+    drop.style.display = "block";
+  } else { drop.style.display = "none"; }
+}
+
+function selectAutoMed(name, mrp){
+  $("mSearchInput").value = name;
+  $("medDropdown").style.display = "none";
 }
 
 function closeModal(){$("modalBackdrop").classList.remove("show")}
@@ -521,6 +594,7 @@ document.addEventListener("click",e=>{
   if(del){
     const k=datasetKey(),idx=Number(del.dataset.delete);
     if(k==="users" && state.users[idx]?.isLocked){ toast("Super Admin is locked!"); return; }
+    if(!canManage()){ toast("Permission Denied: Only Admin can delete records."); return; }
     if(!confirm("Delete record?"))return;
     if(k==="users"){state.users.splice(idx,1);saveUsers()}
     else{(state.records[k]||[]).splice(idx,1);saveRecords()}
