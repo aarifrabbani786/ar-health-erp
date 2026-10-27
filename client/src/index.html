@@ -118,7 +118,6 @@ tbody tr:hover{background:#f0f9ff}
 @keyframes blinkBorder{0%{border-color:#fed7aa}50%{border-color:#38bdf8}100%{border-color:#fed7aa}}
 @media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
 
-/* A4 EXACT PRINT STYLING FOR OPD & BILLING */
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
@@ -196,7 +195,7 @@ tbody tr:hover{background:#f0f9ff}
 
 const groups = [
  {label:"OVERVIEW",items:[["Dashboard","dashboard","▦"],["Notifications","notifications","♧"],["Tasks & Approvals","approvals","✓"]]},
- {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Profile & History","patient-profile","🔍"],["OPD Prescription Sheet","opd","◷"],["IPD Admissions","admissions","▤"],["Wards & Beds","beds","▥"],["Doctors & Departments","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory & Pathology","laboratory","⚗"],["Radiology & Scans","radiology","◉"],["OT & ICU","ot-icu","✚"],["Discharge Summary & MRD","discharge","⇥"],["Final Hospital Billing","hospital-billing","₹"],["Medical Records (MRD)","medical-records","▧"]]},
+ {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Profile & History (360°)","patient-profile","🔍"],["OPD Prescription Sheet","opd","◷"],["IPD Admissions","admissions","▤"],["Bed & Ward Transfer","transfers","⇄"],["Wards & Beds","beds","▥"],["Doctors & Departments","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory & Pathology","laboratory","⚗"],["Radiology & Scans","radiology","◉"],["Provisional IPD Bill","provisional-bill","📄"],["Final Hospital Billing & Discharge","hospital-billing","₹"],["Discharge Summary & Register","discharge","⇥"],["Medical Records (MRD)","medical-records","▧"]]},
  {label:"PHARMACY",items:[["Pharmacy Dashboard","pharmacy","✚"],["Medicine Master","medicines","▤"],["Batch & Strip Stock","batches","▦"],["Purchase Entry","pharmacy-purchase","＋"],["Sales Billing","pharmacy-sales","₹"],["Sales Return","sales-return","↩"],["Customers","customers","♙"],["Suppliers","suppliers","▣"],["Barcode & Labels","barcode","▥"],["Stock Transfer","stock-transfer","⇄"],["Expiry & Low Stock","stock-alerts","⚠"],["Pharmacy Reports","pharmacy-reports","▥"]]},
  {label:"CENTRAL STORE & PURCHASE",items:[["Inventory Dashboard","inventory","▦"],["Item Master","items","▤"],["Warehouses & Stores","warehouses","▣"],["Requisitions","requisitions","☷"],["Goods Receipt (GRN)","grn","⇩"],["Stock Issue / Return","stock-issue","⇄"],["Stock Ledger","stock-ledger","▤"],["Purchase Orders","purchase-orders","▧"],["Vendor Quotations","quotations","▤"],["Supplier Payments","supplier-payments","₹"]]},
  {label:"BIOMEDICAL ENGINEERING",items:[["Biomedical Dashboard","biomedical","⌘"],["Equipment Assets","assets","▣"],["Equipment Complaints","complaints","⚠"],["Work Orders & Repairs","work-orders","🔧"],["Preventive Maintenance","maintenance","◷"],["Calibration Register","calibration","✓"],["AMC / CMC Contracts","contracts","▧"],["Service Vendors","service-vendors","♙"],["Equipment Handover","handover","⇄"],["Equipment Reports","biomed-reports","▥"]]},
@@ -237,24 +236,6 @@ function saveUsers(){try{localStorage.setItem("ar_erp_users",JSON.stringify(stat
 const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
-
-const sliderModules = [
-  "🏥 Hospital Master & OPD/IPD",
-  "⚗️ Pathology & Lab Reports",
-  "📡 Radiology & Scans",
-  "💊 Pharmacy Billing & HSN",
-  "💼 HRM & Employee Directory",
-  "🛡️ Role Permissions & Admin",
-  "⚙️ BME Asset & Maintenance"
-];
-let currentSliderIdx = 0;
-setInterval(() => {
-  const el = $("sliderMenuCard");
-  if(el){
-    currentSliderIdx = (currentSliderIdx + 1) % sliderModules.length;
-    el.innerHTML = sliderModules[currentSliderIdx];
-  }
-}, 2200);
 
 function updateLiveClock() {
   const now = new Date();
@@ -346,17 +327,13 @@ $("loginForm").addEventListener("submit", e => {
 
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
 
-// COLLAPSIBLE SIDEBAR MENU GROUPS WITH ROLE RESTRICTION FOR BME
 function renderNav(filter=""){
   let out="";
   groups.forEach((g, idx)=>{
     let allowedItems = g.items;
-    
-    // RESTRICT BME USER TO ONLY BIOMEDICAL ENGINEERING MODULES
     if(state.role === "Biomedical Engineer"){
       allowedItems = g.items.filter(x => g.label === "BIOMEDICAL ENGINEERING" || x[1] === "dashboard");
     }
-
     const items=allowedItems.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));
     if(!items.length)return;
 
@@ -378,16 +355,16 @@ function card(label,value,icon,foot="Live Data Sync"){return `<div class="stat">
 
 function dashboard(){
   const patientsCount = (state.records["patients"]||[]).length;
-  const medicinesCount = (state.records["medicines"]||[]).length;
-  const assetsCount = (state.records["assets"]||[]).length;
+  const ipdAdmittedCount = (state.records["admissions"]||[]).filter(x=>x.status==="Admitted").length;
+  const dischargedCount = (state.records["discharge"]||[]).length;
   const sales = state.records["pharmacy-sales"]||[];
   const totalRev = sales.reduce((a,b)=>a+Number(b.total||b.amount||0), 0);
 
   setTimeout(renderDashboardChart, 100);
 
   return `<div class="welcome"><div><div class="eyebrow">A R ERP SOFTWARE • ${escapeHTML(state.hospitalName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
-<div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated from Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Auto-fetched from Register")}${card("MEDICINE ITEMS",medicinesCount,"✚","Auto-fetched from Master")}${card("BIOMEDICAL ASSETS",assetsCount,"⌘","Auto-fetched from Assets")}</div>
-<div class="panel"><div class="panel-head"><h3>📈 Revenue & OPD Analytics Chart</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
+<div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Total Database Patients")}${card("ACTIVE IPD ADMISSION",ipdAdmittedCount,"▤","Currently In Hospital Beds")}${card("DISCHARGED PATIENTS",dischargedCount,"⇥","Normal / LAMA / DAMA / Reffer")}</div>
+<div class="panel"><div class="panel-head"><h3>📈 Revenue & Patient Flow Analytics</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
 <div class="footer">A R ERP SOFTWARE • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
 }
 
@@ -399,12 +376,16 @@ function renderDashboardChart(){
     data: {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       datasets: [{
-        label: 'OPD Admissions',
-        data: [12, 19, 15, 25, 22, 30, 18],
+        label: 'OPD Out-Patients',
+        data: [15, 22, 18, 30, 25, 35, 20],
         backgroundColor: '#0284c7'
       },{
-        label: 'Pharmacy Sales (₹ in 100s)',
-        data: [20, 35, 28, 45, 40, 60, 50],
+        label: 'IPD Admitted',
+        data: [5, 8, 6, 10, 9, 12, 7],
+        backgroundColor: '#ea580c'
+      },{
+        label: 'Discharged Patients',
+        data: [4, 6, 5, 8, 7, 10, 6],
         backgroundColor: '#16a34a'
       }]
     },
@@ -414,34 +395,53 @@ function renderDashboardChart(){
 
 const fieldMap={
  users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
- patients:[["uhid","Patient UHID (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
+ patients:[["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
  opd:[["token","Token No (Auto)","text",true,"OPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["doctor","Consultant Doctor","text",true],["department","Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology"]],["assessment","Clinical Assessment / Notes","textarea",true],["investigation","Required Investigations","textarea",false],["advice","Advice & Treatment Plan","textarea",true],["fee","OPD Consultation Fee (₹)","number",true]],
- admissions:[["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["wardBed","Ward / Bed Assigned","text",true],["doctor","Consultant Doctor","text",true],["advance","Advance Amount Paid (₹)","number",true]],
- doctors:[["docId","Doctor ID (Auto)","text",true,"DOC"],["name","Doctor Name","text",true],["specialization","Specialization","text",true],["department","Department","text",true],["opdFee","OPD Charge (₹)","number",true]],
+ admissions:[["ipdNo","IPD Admission No (Auto)","text",true,"IPD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["admissionDate","Date of Admission","date",true],["wardBed","Ward / Bed Assigned","text",true],["doctor","Consultant Doctor","text",true],["advance","Advance Amount Paid (₹)","number",true],["status","Admission Status","select",true,["Admitted","Discharged"]]],
+ transfers:[["transferNo","Transfer Ref No (Auto)","text",true,"TRN"],["patientSearch","Search Admitted Patient (UHID / IP)","autocomplete",true],["fromBed","Current Ward / Bed","text",true],["toBed","New Assigned Ward / Bed","text",true],["doctorAdvice","Doctor Transfer Advice / Reason","textarea",true]],
  laboratory:[["testCode","Test Code (Auto)","text",true,"LAB"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["department","Department Name","text",true],["testName","Lab Test Name","text",true],["resultValue","Test Result Value","text",true],["normalRange","Normal Reference Range","text",true],["price","Test Price (₹)","number",true]],
  radiology:[["scanCode","Scan Code (Auto)","text",true,"RAD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["scanName","Procedure Name","text",true],["findings","Radiology Findings & Report","textarea",true],["price","Scan Price (₹)","number",true]],
- discharge:[["dischargeNo","Discharge ID (Auto)","text",true,"DIS"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["diagnosis","Final Diagnosis","textarea",true],["treatmentGiven","Treatment & Course in Hospital","textarea",true],["status","Discharge Status","select",true,["Discharged Stable","Referral","LAMA"]]],
+ "provisional-bill":[
+   ["provNo","Provisional Bill No (Auto)","text",true,"PROV"],
+   ["patientSearch","Search Admitted Patient (UHID / IP)","autocomplete",true],
+   ["bedCharges","Total Bed Charges (₹)","number",true],
+   ["serviceCharges","Services & Doctor Charges (₹)","number",true],
+   ["labCharges","Lab & Radiology Charges (₹)","number",true],
+   ["totalBill","Total Provisional Amount (₹)","number",true],
+   ["advancePaid","Advance Amount Paid (₹)","number",true],
+   ["netDue","Estimated Net Due (₹)","number",true]
+ ],
  "hospital-billing":[
-   ["billNo","Invoice Bill No (Auto)","text",true,"HBILL"],
+   ["billNo","Final Invoice Bill No (Auto)","text",true,"HBILL"],
    ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],
-   ["serviceName","Service Name / Procedures Charge","text",true],
-   ["investigationCharge","Investigation Charge (₹)","number",false],
-   ["totalBill","Total Bill Amount (₹)","number",true],
+   ["admissionDate","Date of Admission","date",true],
+   ["dischargeDate","Date of Discharge","date",true],
+   ["serviceName","Services / Procedures Rendered","text",true],
+   ["totalBill","Total Final Bill Amount (₹)","number",true],
    ["advancePaid","Advance Paid (₹)","number",true],
    ["discount","Discount Amount (₹)","number",false],
    ["dueAmount","Due Balance (₹) (Auto Calculated)","number",true],
    ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Bank Transfer","Credit (Udhar)"]],
-   ["status","Final Discharge Status","select",true,["Paid & Discharged","Credit / Due Pending"]]
+   ["dischargeType","Type of Discharge","select",true,["Normal Discharge","LAMA","Reffer","DAMA","Death","Absconded"]],
+   ["status","Final Settlement Status","select",true,["Paid & Discharged","Credit / Due Pending"]]
+ ],
+ discharge:[
+   ["dischargeNo","Discharge ID (Auto)","text",true,"DIS"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],
+   ["admissionDate","Date of Admission","date",true],
+   ["dischargeDate","Date of Discharge","date",true],
+   ["dischargeType","Type of Discharge","select",true,["Normal Discharge","LAMA","Reffer","DAMA","Death","Absconded"]],
+   ["diagnosis","Final Diagnosis","textarea",true],
+   ["treatmentGiven","Treatment & Course in Hospital","textarea",true],
+   ["adviceDischarge","Advice on Discharge","textarea",true]
  ],
  "medical-records":[["mrdNo","MRD File No (Auto)","text",true,"MRD"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["summary","MRD Clinical Notes & Archival","textarea",true]],
  medicines:[["itemCode","Medicine Code (Auto)","text",true,"MED"],["name","Medicine Brand Name","text",true],["hsn","HSN Code","text",true],["generic","Generic Name","text",false],["batch","Batch Number","text",true],["expiry","Expiry Date","date",true],["strips","Stock (Strips)","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
- "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
- "sales-return":[["returnNo","Return No (Auto)","text",true,"RET"],["invoiceNo","Original Invoice No (Locked)","text",true],["reason","Return Reason","text",true],["refundAmount","Refund Amount (₹)","number",true],["status","Status","select",true,["Processed"]]],
- "pharmacy-purchase":[["poNo","PO No (Auto)","text",true,"PO"],["vendor","Vendor Name & Details","text",true],["item","Item Name & HSN","text",true],["strips","Purchase Strips","number",true],["rate","Purchase Rate/Strip","number",true],["gst","GST %","number",true],["total","Total Purchase Amount (₹)","number",true],["status","Status","select",true,["Received"]]]
+ "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","discharge":"discharge","hospital-billing":"hospital-billing","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
+const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
@@ -463,8 +463,91 @@ function renderRows(rows){
   }).join("");
 }
 
+// SINGLE PAGE PATIENT PROFILE & COMPLETE HISTORY MODULE
+function renderPatientProfileModule(ws){
+  ws.innerHTML = `
+    <div class="module-title">
+      <div><h1>Patient Profile & Complete History (360° Single Page)</h1><p>Search by UHID / IP No, Mobile Number, Aadhaar or Name to view all past records.</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>🔍 Global Patient Search</h3></div>
+      <div class="panel-body">
+        <div class="field" style="max-width:480px; margin-bottom:20px;">
+          <label>Type Patient Mobile / UHID / IP No / Aadhaar / Name</label>
+          <input type="text" id="globalPatientQuery" placeholder="Type to search..." onkeyup="searchPatientHistory(this.value)">
+        </div>
+        <div id="patientHistoryResult">
+          <p style="color:var(--muted);">Enter search keyword above to inspect patient's complete single-page history across OPD, IPD, Transfers, Billing, and Pharmacy.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.searchPatientHistory = function(query){
+  const container = $("patientHistoryResult");
+  if(!query || query.trim() === ""){
+    container.innerHTML = `<p style="color:var(--muted);">Enter search keyword above to inspect patient's complete history.</p>`;
+    return;
+  }
+  const q = query.toLowerCase();
+  const patients = state.records["patients"] || [];
+  const matched = patients.filter(p => (p.uhid + " " + p.name + " " + p.mobile + " " + (p.aadhaar||"")).toLowerCase().includes(q));
+
+  if(matched.length === 0){
+    container.innerHTML = `<p style="color:var(--red);">No patient found matching "${query}".</p>`;
+    return;
+  }
+
+  let html = "";
+  matched.forEach(p => {
+    const opd = (state.records["opd"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+    const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+    const transfers = (state.records["transfers"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+    const billing = (state.records["hospital-billing"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+    const pharmacy = (state.records["pharmacy-sales"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+
+    html += `
+      <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:16px; color:var(--navy); margin:0 0 4px;">👤 ${escapeHTML(p.name)}</h3>
+            <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:900;">UHID / IP No: ${escapeHTML(p.uhid)}</span>
+            <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; font-weight:900;">Mobile: ${escapeHTML(p.mobile)}</span>
+            <span style="font-size:11px; background:#fef9c3; color:#a16207; padding:3px 8px; border-radius:6px; font-weight:900;">Aadhaar: ${escapeHTML(p.aadhaar||'N/A')}</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn primary" onclick="jumpToModule('opd')">+ New OPD</button>
+            <button class="btn success" onclick="jumpToModule('hospital-billing')">+ Final Bill</button>
+          </div>
+        </div>
+
+        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">IPD Admission Status</h4>
+        ${ipd.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>IPD No</th><th>Date</th><th>Ward/Bed</th><th>Advance</th><th>Status</th></tr></thead><tbody>` + ipd.map(i=>`<tr><td><b>${i.ipdNo}</b></td><td>${i.admissionDate||'—'}</td><td>${i.wardBed}</td><td>₹${i.advance}</td><td><span class="status">${i.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No active or past IPD admissions.</p>'}
+
+        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Bed & Ward Transfer History</h4>
+        ${transfers.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>Ref No</th><th>From Bed</th><th>To Bed</th><th>Reason</th></tr></thead><tbody>` + transfers.map(t=>`<tr><td><b>${t.transferNo}</b></td><td>${t.fromBed}</td><td>${t.toBed}</td><td>${t.doctorAdvice}</td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No bed transfers recorded.</p>'}
+
+        <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Final Billing & Settlement History</h4>
+        ${billing.length ? `<table class="data-table" style="margin-bottom:12px;"><thead><tr><th>Bill No</th><th>Admission</th><th>Discharge</th><th>Total</th><th>Due</th><th>Type</th><th>Status</th></tr></thead><tbody>` + billing.map(b=>`<tr><td><b>${b.billNo}</b></td><td>${b.admissionDate||'—'}</td><td>${b.dischargeDate||'—'}</td><td>₹${b.totalBill}</td><td>₹${b.dueAmount}</td><td>${b.dischargeType||'Normal'}</td><td><span class="status">${b.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No final bills calculated.</p>'}
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+};
+
+window.jumpToModule = function(mod){
+  state.page = mod;
+  render();
+};
+
 function genericModule(){
   const k=datasetKey();
+  if(k === "patient-profile"){
+    let ws = document.createElement("div");
+    renderPatientProfileModule(ws);
+    return ws.innerHTML;
+  }
   if(k === "settings"){
     return `
       <div class="module-title"><div><h1>Hospital / Agency Identity & System Settings</h1><p>Update Header Name, Address and Backup Settings</p></div></div>
@@ -581,7 +664,6 @@ window.editRecordRow = function(mod, idx){
   $("modalBackdrop").classList.add("show");
 };
 
-// REAL-TIME AUTO DUE CALCULATION FOR HOSPITAL BILLING
 window.calculateBillingDue = function(){
   const totEl = $("field_totalBill");
   const advEl = $("field_advancePaid");
@@ -603,7 +685,7 @@ function handlePatientAutoFetch(val){
   const patients = state.records["patients"] || [];
   const matches = patients.filter(p => (p.name+" "+p.uhid+" "+p.mobile+" "+(p.aadhaar||"")).toLowerCase().includes(val.toLowerCase()));
   if(matches.length > 0){
-    drop.innerHTML = matches.map(p => `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.mobile}')">${p.name} | Mob: <b>${p.mobile}</b> | UHID: ${p.uhid}</div>`).join('');
+    drop.innerHTML = matches.map(p => `<div onclick="selectAutoPatient('${p.uhid}', '${p.name}', '${p.mobile}')">${p.name} | Mob: <b>${p.mobile}</b> | UHID/IP: ${p.uhid}</div>`).join('');
     drop.style.display = "block";
   } else { drop.style.display = "none"; }
 }
@@ -624,11 +706,6 @@ function handleMedAutoFetch(val){
   } else { drop.style.display = "none"; }
 }
 
-function selectAutoMed(name, mrp){
-  $("mSearchInput").value = name;
-  $("medDropdown").style.display = "none";
-}
-
 function closeModal(){$("modalBackdrop").classList.remove("show")}
 
 function saveForm(e){
@@ -636,9 +713,43 @@ function saveForm(e){
   const k=datasetKey(),form=new FormData($("recordForm")),record={};
   for(const [key,val] of form.entries())record[key]=String(val).trim();
 
+  // STRICT IN-PATIENT (IPD) BILLING RESTRICTION CHECK
+  if(k === "provisional-bill" || k === "hospital-billing"){
+    const pStr = (record.patientSearch || "").toLowerCase();
+    const isAdmitted = (state.records["admissions"] || []).some(a => pStr.includes((a.ipdNo||"").toLowerCase()) || pStr.includes((a.patientSearch||"").toLowerCase()) || pStr.includes((a.uhid||"").toLowerCase()));
+    if(!isAdmitted && k === "provisional-bill"){
+      alert("Error: IPD Provisional Bill bina Admission ke nahi ban sakta.");
+      return;
+    }
+  }
+
   if(record.mobile && record.mobile.length !== 10){
     alert("Error: Mobile number must be exactly 10 digits.");
     return;
+  }
+
+  // AUTO DISCHARGE UPON FINAL BILL PAID & DISCHARGED
+  if(k === "hospital-billing" && record.status === "Paid & Discharged"){
+    const admissions = state.records["admissions"] || [];
+    const pStr = (record.patientSearch || "").toLowerCase();
+    admissions.forEach(a => {
+      if(pStr.includes((a.ipdNo||"").toLowerCase()) || pStr.includes((a.patientSearch||"").toLowerCase())){
+        a.status = "Discharged";
+      }
+    });
+
+    // AUTO PUSH TO DISCHARGE SUMMARY REGISTER
+    state.records["discharge"] = state.records["discharge"] || [];
+    state.records["discharge"].push({
+      dischargeNo: generateSmartID("DIS"),
+      patientSearch: record.patientSearch,
+      admissionDate: record.admissionDate,
+      dischargeDate: record.dischargeDate,
+      dischargeType: record.dischargeType || "Normal Discharge",
+      diagnosis: "Final Billing Settlement Completed",
+      treatmentGiven: record.serviceName,
+      status: "Discharged"
+    });
   }
 
   if(state.editingIdx !== null){
@@ -655,13 +766,13 @@ function saveForm(e){
       state.records[k]=state.records[k]||[];
       state.records[k].push(record); saveRecords();
     }
-    toast("Record Saved!");
+    toast("Record Saved & Processed!");
   }
 
   closeModal(); render();
 }
 
-// EXACT A4 SIZE OPD PRESCRIPTION & FINAL BILLING PRINT FORMAT
+// EXACT A4 PRINT FOR PROVISIONAL & FINAL BILLING AND OPD
 window.printRecordRow = function(mod, idx){
   const records = mod === "users" ? state.users : (state.records[mod] || []);
   const item = records[idx];
@@ -680,7 +791,7 @@ window.printRecordRow = function(mod, idx){
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:14px; border:1px solid #000;">
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>C.R. No / Token:</b> ${escapeHTML(item.token || 'OPD-001')}</td>
+            <td style="border:1px solid #000; padding:6px;"><b>Token No / C.R.:</b> ${escapeHTML(item.token || 'OPD-001')}</td>
             <td style="border:1px solid #000; padding:6px;"><b>Date:</b> ${new Date().toLocaleDateString()}</td>
           </tr>
           <tr>
@@ -714,6 +825,34 @@ window.printRecordRow = function(mod, idx){
         </div>
       </div>
     `;
+  } else if(mod === "provisional-bill"){
+    area.innerHTML = `
+      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
+          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)}</p>
+          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">PROVISIONAL IPD BILL STATEMENT</h4>
+        </div>
+        <div style="font-size:12px; line-height:1.8;">
+          <p><b>Provisional Ref No:</b> ${escapeHTML(item.provNo)} | <b>Date:</b> ${new Date().toLocaleDateString()}</p>
+          <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
+          <hr style="border:0.5px solid #000; margin:10px 0;">
+          <table style="width:100%; font-size:12px; text-align:left;">
+            <tr><td>Total Bed Charges:</td><td>₹${escapeHTML(item.bedCharges || 0)}</td></tr>
+            <tr><td>Services & Doctor Charges:</td><td>₹${escapeHTML(item.serviceCharges || 0)}</td></tr>
+            <tr><td>Lab & Radiology Charges:</td><td>₹${escapeHTML(item.labCharges || 0)}</td></tr>
+            <tr><td><b>Total Provisional Bill:</b></td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
+            <tr><td>Advance Paid:</td><td>₹${escapeHTML(item.advancePaid || 0)}</td></tr>
+            <tr style="font-size:14px;"><td><b>Estimated Net Due Balance:</b></td><td><b style="color:red;">₹${escapeHTML(item.netDue || 0)}</b></td></tr>
+          </table>
+        </div>
+        <br><br>
+        <div style="display:flex; justify-content:space-between; margin-top:40px;">
+          <p>Prepared By: ________________</p>
+          <p>Patient / Guardian Sign: ________________</p>
+        </div>
+      </div>
+    `;
   } else if(mod === "hospital-billing"){
     area.innerHTML = `
       <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
@@ -723,10 +862,11 @@ window.printRecordRow = function(mod, idx){
           <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">FINAL HOSPITAL BILL & DISCHARGE RECEIPT</h4>
         </div>
         <div style="font-size:12px; line-height:1.8; margin-bottom:15px;">
-          <p><b>Invoice Bill No:</b> ${escapeHTML(item.billNo)} | <b>Date:</b> ${new Date().toLocaleDateString()}</p>
+          <p><b>Invoice Bill No:</b> ${escapeHTML(item.billNo)} | <b>Bill Date:</b> ${new Date().toLocaleDateString()}</p>
           <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
-          <p><b>Service / Procedure Name:</b> ${escapeHTML(item.serviceName)}</p>
-          <p><b>Payment Mode:</b> ${escapeHTML(item.paymentMode || 'Cash')}</p>
+          <p><b>Date of Admission:</b> ${escapeHTML(item.admissionDate || '—')} | <b>Date of Discharge:</b> ${escapeHTML(item.dischargeDate || '—')}</p>
+          <p><b>Services Rendered:</b> ${escapeHTML(item.serviceName)}</p>
+          <p><b>Payment Mode:</b> ${escapeHTML(item.paymentMode || 'Cash')} | <b>Type of Discharge:</b> ${escapeHTML(item.dischargeType || 'Normal Discharge')}</p>
           <hr style="border:0.5px solid #000; margin:10px 0;">
           <table style="width:100%; font-size:12px; text-align:left;">
             <tr><td>Total Bill Amount:</td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
