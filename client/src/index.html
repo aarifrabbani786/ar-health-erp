@@ -47,7 +47,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .welcome h1{font-size:25px;letter-spacing:-.6px;margin:7px 0;color:var(--navy)}
 .welcome p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{border:none;background:#e2e8f0;color:var(--text);border-radius:9px;padding:8px 14px;font-size:11.5px;transition:all 0.15s}
+.btn{border:none;background:#e2e8f0;color:var(--text);border-radius:9px;padding:8px 14px;font-size:11.5px;transition:all 0.15s;cursor:pointer}
 .btn.primary{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;box-shadow:0 4px 12px rgba(2,132,199,0.3)}
 .btn.success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 12px rgba(22,163,74,0.3)}
 .btn.danger{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,0.3)}
@@ -143,7 +143,7 @@ tbody tr:hover{background:#f0f9ff}
         </div>
         <button type="submit" class="glow-login-btn">Secure Login</button>
         <div class="login-links">
-          <a onclick="openEnquiryModal()">📝 Enquiry Form</a>
+          <a onclick="openPublicEnquiryModal()">📝 Enquiry Form (Interested?)</a>
           <a onclick="openForgotModal()">Forgot User / Password?</a>
         </div>
       </form>
@@ -325,47 +325,45 @@ $("loginForm").addEventListener("submit", e => {
   }
 });
 
-// ENQUIRY MODAL POPUP
-function openEnquiryModal(){
-  state.editingIdx = null;
-  $("modalTitle").textContent = "📝 Public Enquiry & Client Registration";
-  $("recordForm").onsubmit = saveEnquiryForm;
+// PUBLIC ENQUIRY MODAL ON LOGIN PAGE
+function openPublicEnquiryModal(){
+  const backdrop = $("modalBackdrop");
+  $("modalTitle").textContent = "📝 Public Enquiry & Software Interest Form";
+  $("recordForm").onsubmit = function(e){
+    e.preventDefault();
+    const form = new FormData($("recordForm"));
+    const rec = {
+      enquiryNo: generateSmartID("ENQ"),
+      clientName: form.get("clientName"),
+      clientMobile: form.get("clientMobile"),
+      clientEmail: form.get("clientEmail"),
+      enquiryType: form.get("enquiryType"),
+      message: form.get("message"),
+      status: "Pending Response",
+      responseNotes: "New Enquiry Submitted from Login Page",
+      _createdAt: new Date().toISOString()
+    };
+    state.records["enquiries"] = state.records["enquiries"] || [];
+    state.records["enquiries"].push(rec);
+    saveRecords();
+    closeModal();
+    toast("Enquiry submitted successfully! Our team will contact you soon.");
+  };
+
   $("modalBody").innerHTML = `
     <div class="form-grid">
       <div class="field"><label>Your Full Name *</label><input type="text" name="clientName" required></div>
       <div class="field"><label>Mobile Number *</label><input type="tel" name="clientMobile" maxlength="10" required></div>
       <div class="field"><label>Email ID</label><input type="email" name="clientEmail"></div>
-      <div class="field"><label>Enquiry Subject / Category</label><select name="enquiryType"><option>ERP Software Purchase</option><option>Hospital Customization</option><option>Technical Support</option><option>General Query</option></select></div>
-      <div class="field" style="grid-column:span 2;"><label>Message / Requirements Details *</label><textarea name="message" rows="3" required></textarea></div>
+      <div class="field"><label>Interest Category</label><select name="enquiryType"><option>Complete ERP Software Purchase</option><option>Hospital & Pharmacy Customization</option><option>Technical Support / Demo</option><option>General Query</option></select></div>
+      <div class="field" style="grid-column:span 2;"><label>Requirements / Message *</label><textarea name="message" rows="3" required></textarea></div>
     </div>
   `;
-  $("modalBackdrop").classList.add("show");
+  backdrop.classList.add("show");
 }
 
-function saveEnquiryForm(e){
-  e.preventDefault();
-  const form = new FormData($("recordForm"));
-  const rec = {
-    enquiryNo: generateSmartID("ENQ"),
-    clientName: form.get("clientName"),
-    clientMobile: form.get("clientMobile"),
-    clientEmail: form.get("clientEmail"),
-    enquiryType: form.get("enquiryType"),
-    message: form.get("message"),
-    status: "Pending Response",
-    responseNotes: "New Enquiry Submitted",
-    _createdAt: new Date().toISOString()
-  };
-  state.records["enquiries"] = state.records["enquiries"] || [];
-  state.records["enquiries"].push(rec);
-  saveRecords();
-  closeModal();
-  toast("Enquiry submitted successfully! Our team will contact you soon.");
-}
-
-// FORGOT USER / PASSWORD MODAL
 function openForgotModal(){
-  alert("Forgot Password / User Assistance:\nPlease contact Super Admin (Aarif) or Administrator at the central desk to reset your credentials.");
+  alert("Forgot Password / User Assistance:\nPlease contact Super Admin (Aarif) at the central desk to reset your credentials.");
 }
 
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
@@ -932,7 +930,7 @@ function saveForm(e){
     toast("Record Saved & Processed!");
   }
 
-    closeModal(); render();
+  closeModal(); render();
 }
 
 window.printRecordRow = function(mod, idx){
