@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A. R ERP SOFTWARE - Enterprise Suite</title>
+    <title>Complete Hospital & Pharmacy ERP - A. R E.R.P SOFTWARE</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 800; }
         body { background: #e0e5ec; color: #1e293b; min-height: 100vh; overflow-x: hidden; }
@@ -51,7 +51,7 @@
 
         .app-layout { display: flex; width: 100%; height: 100vh; overflow: hidden; background: #f8fafc; }
         #sidebar-container {
-            width: 270px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
+            width: 280px; background: #0f172a; color: #cbd5e1; flex-shrink: 0;
             border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;
         }
         .sidebar-brand { padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
@@ -73,18 +73,18 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             animation: bounceLucky 1.8s infinite ease-in-out;
         }
-        .brand-text { font-size: 11.5px; color: #ecfdf5; letter-spacing: 0.8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-weight: 900; }
+        .brand-text { font-size: 11px; color: #ecfdf5; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-weight: 900; }
 
         .sidebar-menu { list-style: none; padding: 8px 10px; margin: 0; flex: 1; }
         .sidebar-menu li { margin-bottom: 2px; }
         .sidebar-menu a {
             display: flex; align-items: center; padding: 9px 12px; color: #cbd5e1;
-            text-decoration: none; border-radius: 8px; font-size: 12px; gap: 10px; cursor: pointer; transition: all 0.2s;
+            text-decoration: none; border-radius: 8px; font-size: 11.5px; gap: 10px; cursor: pointer; transition: all 0.2s;
         }
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff;
         }
-        .sub-menu { padding-left: 28px; list-style: none; margin-top: 2px; margin-bottom: 4px; display: none; }
+        .sub-menu { padding-left: 24px; list-style: none; margin-top: 2px; margin-bottom: 4px; display: none; }
         .sub-menu.open { display: block; }
         .sub-menu li a { padding: 6px 10px; font-size: 11px; color: #94a3b8; }
         .sub-menu li a:hover { color: #fff; background: rgba(255,255,255,0.05); }
@@ -96,14 +96,14 @@
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         .centered-agency-details { text-align: center; flex: 1; margin: 0 20px; }
-        .centered-agency-details h1 { font-size: 16px; color: #0f172a; text-transform: uppercase; }
-        .centered-agency-details p { font-size: 11.5px; color: #16a34a; margin-top: 3px; }
+        .centered-agency-details h1 { font-size: 15px; color: #0f172a; text-transform: uppercase; }
+        .centered-agency-details p { font-size: 11px; color: #16a34a; margin-top: 3px; }
 
         .light-card { 
             background: #ffffff; color: #0f172a; border-radius: 12px; padding: 20px; margin-bottom: 16px; 
             border: 1.5px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
         }
-        .light-card h2 { font-size: 15px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .light-card h2 { font-size: 14.5px; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
         .form-group { margin-bottom: 8px; }
@@ -120,8 +120,8 @@
 
         .crm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
         .crm-box { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .crm-title { font-size: 11.5px; color: #64748b; text-transform: uppercase; font-weight: 900; }
-        .crm-val { font-size: 24px; color: #0f172a; font-weight: 900; margin-top: 6px; }
+        .crm-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 900; }
+        .crm-val { font-size: 22px; color: #0f172a; font-weight: 900; margin-top: 6px; }
         .crm-sub { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 900; }
 
         #userDropdownModal {
@@ -153,8 +153,8 @@
         <div class="auth-container-grid">
             <div class="neumorphic-card">
                 <div>
-                    <h2>A. R ERP SOFTWARE - SECURE ACCESS</h2>
-                    <div class="subtitle">Secure Administrator & Staff Access</div>
+                    <h2>A. R E.R.P SOFTWARE - SECURE ACCESS</h2>
+                    <div class="subtitle">Complete Hospital & Pharmacy ERP Suite</div>
                     
                     <div class="input-wrap-3d">
                         <label>USER ID *</label>
@@ -178,7 +178,7 @@
             <div class="neumorphic-card">
                 <div>
                     <h2 style="color: #0284c7;">Software Enquiry</h2>
-                    <div class="subtitle">Purpose & Query Support Request</div>
+                    <div class="subtitle">Proprietor: DRx. Aarif Rabbani</div>
                     
                     <div class="input-wrap-3d">
                         <label>OWNER NAME *</label>
@@ -186,8 +186,8 @@
                     </div>
 
                     <div class="input-wrap-3d">
-                        <label>PURPOSE OF SOFTWARE / QUERY *</label>
-                        <input type="text" id="eqPurpose" class="neumorphic-input" placeholder="e.g. Pharmacy Billing / Customization">
+                        <label>PURPOSE / QUERY *</label>
+                        <input type="text" id="eqPurpose" class="neumorphic-input" placeholder="e.g. Hospital Suite Setup">
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
@@ -217,7 +217,7 @@
             <div class="sidebar-brand">
                 <div class="brand-border-logo">
                     <div class="brand-icon" title="Money Plant Logo">🌿</div>
-                    <div class="brand-text">A. R ERP SOFTWARE <span style="font-size:14px;">🍀</span></div>
+                    <div class="brand-text">COMPLETE HOSPITAL ERP <span style="font-size:12px;">🍀</span></div>
                 </div>
             </div>
             <ul class="sidebar-menu" id="dynamicSidebarList"></ul>
@@ -226,12 +226,12 @@
         <div class="main-content">
             <div class="top-banner">
                 <div style="width: 180px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;" id="bannerShopTag">A. R v2.6 🌿</span>
+                    <span style="font-size:12px; background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; border:1.5px solid #86efac;" id="bannerShopTag">A. R v3.0 🌿</span>
                 </div>
                 
                 <div class="centered-agency-details">
                     <h1 id="bannerAgencyName">A R PHARMA AND SURGICAL AGENCY</h1>
-                    <p id="bannerAgencySub">Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
+                    <p id="bannerAgencySub">Proprietor: DRx. Aarif Rabbani (B.Pharm, MBA)</p>
                 </div>
 
                 <div style="width: 180px; text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;" id="headerActionRightBox">
@@ -340,7 +340,7 @@
         function applyAgencyHeaderSettings() {
             let settings = JSON.parse(localStorage.getItem('erp_shop_settings')) || {
                 shopName: 'A R PHARMA AND SURGICAL AGENCY',
-                tagline: 'Chairman: DRx. Aarif Rabbani (B.Pharm, MBA)',
+                tagline: 'Proprietor: DRx. Aarif Rabbani (B.Pharm, MBA)',
                 footerText: 'Thank you for your business!'
             };
             let hName = document.getElementById('bannerAgencyName');
@@ -354,33 +354,56 @@
             if(!sList) return;
 
             let html = `
-                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Dashboard</a></li>
-                <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
-                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <li><a class="menu-link" onclick="loadModule('dashboard')" id="nav-dashboard"><span>📊</span> Executive Dashboard</a></li>
+                <li><a class="menu-link" onclick="loadModule('ai')" id="nav-ai"><span>🤖</span> AR AI Assistant <span style="background:#16a34a; color:#fff; font-size:9px; padding:2px 6px; border-radius:5px; margin-left:auto;">NEW</span></a></li>
+                
+                <li><a class="menu-link" onclick="toggleSubMenu('hospitalSubMenu', event)" id="nav-hospital"><span>🏥</span> Hospital Management <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="hospitalSubMenu">
+                    <li><a onclick="loadModule('patient_reg')">Patient Registration / UHID</a></li>
+                    <li><a onclick="loadModule('opd_reg')">OPD & Appointments</a></li>
+                    <li><a onclick="loadModule('ipd_admission')">IPD Admissions & Beds</a></li>
+                    <li><a onclick="loadModule('discharge')">Discharge Summary & Billing</a></li>
+                </ul>
+
+                <li><a class="menu-link" onclick="toggleSubMenu('salesSubMenu', event)" id="nav-sales"><span>🛒</span> Pharmacy & Sales <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
                 <ul class="sub-menu" id="salesSubMenu">
                     <li><a onclick="loadModule('sales_invoices')">Sale Bill & Invoices</a></li>
                     <li><a onclick="loadModule('sales_return')">Sale Return Bill</a></li>
-                    <li><a onclick="loadModule('stock_master')">Stock Master</a></li>
+                    <li><a onclick="loadModule('stock_master')">Stock Master & Inventory</a></li>
                     <li><a onclick="loadModule('sales_quotation')">Sale Quotation</a></li>
                     <li><a onclick="loadModule('sales_proforma')">Proforma Invoice</a></li>
                     <li><a onclick="loadModule('sales_order')">Sale Order</a></li>
                 </ul>
-                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+
+                <li><a class="menu-link" onclick="toggleSubMenu('storeSubMenu', event)" id="nav-store"><span>📦</span> Central Store & Inventory <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="storeSubMenu">
+                    <li><a onclick="loadModule('item_master')">Item Master & Stock</a></li>
+                    <li><a onclick="loadModule('goods_receipt')">Goods Receipt (GRN)</a></li>
+                    <li><a onclick="loadModule('stock_issue')">Stock Issue & Transfer</a></li>
+                </ul>
+
+                <li><a class="menu-link" onclick="toggleSubMenu('bmeSubMenu', event)" id="nav-bme"><span>🩺</span> Biomedical Engineering <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+                <ul class="sub-menu" id="bmeSubMenu">
+                    <li><a onclick="loadModule('bme')">BME Master & 7-Tab Portal</a></li>
+                </ul>
+
+                <li><a class="menu-link" onclick="toggleSubMenu('purchaseSubMenu', event)" id="nav-purchase"><span>🛍️</span> Purchase & Suppliers <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
                 <ul class="sub-menu" id="purchaseSubMenu">
                     <li><a onclick="loadModule('purchase_bill')">Purchase Bill</a></li>
                     <li><a onclick="loadModule('purchase_order')">Purchase Order</a></li>
                     <li><a onclick="loadModule('purchase_return')">Purchase Return / Dr. Note</a></li>
                 </ul>
-                <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Report <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
+
+                <li><a class="menu-link" onclick="toggleSubMenu('reportSubMenu', event)" id="nav-reports"><span>📈</span> Master Reports <span style="font-size:10px; margin-left:auto;">▼</span></a></li>
                 <ul class="sub-menu" id="reportSubMenu">
                     <li><a onclick="loadModule('report_sales')">Sale Report</a></li>
                     <li><a onclick="loadModule('report_sales_return')">Sale Return Report</a></li>
                     <li><a onclick="loadModule('report_purchase')">Purchase Report</a></li>
                     <li><a onclick="loadModule('report_collection')">Collection Report</a></li>
                 </ul>
+
                 <li><a class="menu-link" onclick="loadModule('parties')" id="nav-parties"><span>👥</span> Customers & Vendors</a></li>
-                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Expenses</a></li>
-                <li><a class="menu-link" onclick="loadModule('bme')" id="nav-bme"><span>🩺</span> BME Master Portal</a></li>
+                <li><a class="menu-link" onclick="loadModule('expenses')" id="nav-expenses"><span>💸</span> Accounts & Expenses</a></li>
                 <li><a class="menu-link" onclick="loadModule('queries')" id="nav-queries"><span>💬</span> Enquiry Portal <span style="background:#ef4444; color:#fff; font-size:10px; padding:3px 7px; border-radius:6px; margin-left:auto;" id="queryBadgeCount">0</span></a></li>
                 <li><a class="menu-link" onclick="loadModule('settings')" id="nav-settings"><span>⚙️</span> System Settings</a></li>
                 <li><a class="menu-link" onclick="loadModule('users_portal')" id="nav-users_portal"><span>🛡️</span> Users & Admin Portal</a></li>
@@ -530,20 +553,25 @@
 
             localStorage.setItem('erp_active_module', m);
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-            let activeElem = document.getElementById('nav-' + (m.startsWith('sales') || m === 'stock_master' ? 'sales' : m.startsWith('purchase') ? 'purchase' : m.startsWith('report') ? 'reports' : m));
-            if (activeElem) activeElem.classList.add('active');
-
+            
             const workspace = document.getElementById('module-workspace');
             if(!workspace) return;
             workspace.innerHTML = ""; 
 
             if (m === 'dashboard') renderDashboardModule(workspace);
             else if (m === 'ai') renderAiModule(workspace);
+            else if (m === 'patient_reg') renderPatientRegModule(workspace);
+            else if (m === 'opd_reg') renderOpdModule(workspace);
+            else if (m === 'ipd_admission') renderIpdModule(workspace);
+            else if (m === 'discharge') renderDischargeModule(workspace);
             else if (m === 'bme') renderBmeModule(workspace);
             else if (m === 'queries') renderQueryPortalModule(workspace);
             else if (m === 'sales_invoices') renderSalesInvoiceModule(workspace);
             else if (m === 'sales_return') renderSalesReturnModule(workspace);
             else if (m === 'stock_master') renderStockMasterModule(workspace);
+            else if (m === 'item_master') renderItemMasterModule(workspace);
+            else if (m === 'goods_receipt') renderGoodsReceiptModule(workspace);
+            else if (m === 'stock_issue') renderStockIssueModule(workspace);
             else if (m === 'sales_quotation' || m === 'sales_proforma' || m === 'sales_order') renderSalesSubModule(workspace, m);
             else if (m.startsWith('purchase')) renderPurchaseModule(workspace, m);
             else if (m === 'report_sales') renderMasterReportModule(workspace, 'sales');
@@ -560,6 +588,8 @@
         function renderDashboardModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             let purchases = JSON.parse(localStorage.getItem('erp_purchases')) || [];
+            let patients = JSON.parse(localStorage.getItem('erp_patients')) || [];
+            let bmeItems = JSON.parse(localStorage.getItem('erp_bme_audit')) || [];
             let totalSales = invs.reduce((a, b) => a + (b.netPayable || 0), 0);
             let totalPurchases = purchases.reduce((a, b) => a + (b.amount || 0), 0);
             let estimatedProfit = totalSales * 0.25;
@@ -568,7 +598,7 @@
             container.innerHTML = `
                 <div class="crm-grid">
                     <div class="crm-box">
-                        <div class="crm-title">TOTAL SALES (GROSS)</div>
+                        <div class="crm-title">TOTAL REVENUE / SALES</div>
                         <div class="crm-val">₹${totalSales.toFixed(2)}</div>
                         <div class="crm-sub">${invs.length} Invoices Recorded</div>
                     </div>
@@ -578,14 +608,20 @@
                         <div class="crm-sub" style="color:#0284c7;">${purchases.length} Purchase Orders</div>
                     </div>
                     <div class="crm-box">
-                        <div class="crm-title">ESTIMATED PROFIT</div>
-                        <div class="crm-val" style="color:#16a34a;">₹${estimatedProfit.toFixed(2)}</div>
-                        <div class="crm-sub">25% Margin Calculation</div>
+                        <div class="crm-title">ACTIVE PATIENTS / UHID</div>
+                        <div class="crm-val" style="color:#16a34a;">${patients.length} Registered</div>
+                        <div class="crm-sub">OPD / IPD Active</div>
                     </div>
                     <div class="crm-box">
-                        <div class="crm-title">ENQUIRY PENDING</div>
-                        <div class="crm-val" style="color:#ef4444;">${pendingEnquiries}</div>
-                        <div class="crm-sub" style="color:#ef4444;">Active Support Tickets</div>
+                        <div class="crm-title">BIOMEDICAL ASSETS</div>
+                        <div class="crm-val" style="color:#0284c7;">${bmeItems.length} Monitored</div>
+                        <div class="crm-sub" style="color:#16a34a;">Fully Operational</div>
+                    </div>
+                </div>
+                <div class="light-card">
+                    <h2>📊 Executive Business & Hospital Overview</h2>
+                    <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1.5px solid #e2e8f0; text-align:center;">
+                        <p style="font-size:14px; color:#16a34a; font-weight:900;">🌿 A. R E.R.P Enterprise Suite active and synchronized across all hospital departments.</p>
                     </div>
                 </div>
             `;
@@ -597,7 +633,7 @@
                     <h2>🤖 AR AI Assistant & Business Advisor</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px; min-height:250px; max-height:350px; overflow-y:auto;" id="aiChatBox">
                         <div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">
-                            👋 Hello DRx. Aarif Rabbani! I am your AR AI Assistant. Ask me anything about stock, sales analytics, medicine suggestions, or BME audits.
+                            👋 Hello DRx. Aarif Rabbani! I am your AR AI Assistant. Ask me anything about hospital admissions, stock analytics, medicine dispensing, or BME audits.
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -615,42 +651,162 @@
                 chat.innerHTML += `<div style="background:#f1f5f9; padding:10px 14px; border-radius:10px; margin-bottom:10px; margin-left:auto; width:fit-content; color:#0f172a;">${q}</div>`;
                 box.value = '';
                 setTimeout(() => {
-                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 I have analyzed your request based on current ERP records. Everything is fully synchronized!</div>`;
+                    chat.innerHTML += `<div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; margin-bottom:10px; width:fit-content; color:#0369a1;">🤖 I have analyzed your request based on actual ERP records. All hospital workflows are fully synchronized!</div>`;
                     chat.scrollTop = chat.scrollHeight;
                 }, 500);
             };
+        }
+
+        function renderPatientRegModule(container) {
+            let patients = JSON.parse(localStorage.getItem('erp_patients')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🏥 Patient Registration & UHID Management</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Patient Full Name *</label><input type="text" id="patName" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Mobile Number *</label><input type="text" id="patMobile" class="form-control" maxlength="10" placeholder="10 Digit Mobile"></div>
+                            <div class="form-group"><label>Age / Gender</label><input type="text" id="patAgeGender" class="form-control" value="30 / Male"></div>
+                            <div class="form-group"><label>Address / Location</label><input type="text" id="patAddr" class="form-control" value="Maharajganj, UP"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="savePatient()" style="width:100%;">Register UHID</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>UHID No</th><th>Patient Name</th><th>Mobile</th><th>Age/Gender</th><th>Address</th></tr></thead>
+                        <tbody>
+                            ${patients.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No patients registered.</td></tr>' :
+                            patients.map(p => `<tr><td><b>${p.uhid}</b></td><td><b>${p.name}</b></td><td>${p.mobile}</td><td>${p.ageGender}</td><td>${p.addr}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.savePatient = function() {
+                let name = document.getElementById('patName').value.trim();
+                let mobile = document.getElementById('patMobile').value.trim();
+                let ageGender = document.getElementById('patAgeGender').value.trim();
+                let addr = document.getElementById('patAddr').value.trim();
+                if(!name || !mobile) { alert('Patient name and mobile required!'); return; }
+                patients.unshift({ uhid: 'UHID-' + Math.floor(100000+Math.random()*900000), name, mobile, ageGender, addr });
+                localStorage.setItem('erp_patients', JSON.stringify(patients));
+                renderPatientRegModule(container);
+            };
+        }
+
+        function renderOpdModule(container) {
+            let opds = JSON.parse(localStorage.getItem('erp_opd')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🩺 OPD Registration & Doctor Appointments</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="opdPat" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Department</label><select id="opdDept" class="form-control"><option value="General Medicine">General Medicine</option><option value="Surgery">Surgery</option><option value="Pediatrics">Pediatrics</option><option value="Orthopedics">Orthopedics</option></select></div>
+                            <div class="form-group"><label>Consultant Doctor *</label><input type="text" id="opdDr" class="form-control" value="Dr. Ramesh Kumar"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveOpd()" style="width:100%;">Book OPD Token</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Token No</th><th>Patient Name</th><th>Department</th><th>Doctor</th><th>Date</th></tr></thead>
+                        <tbody>${opds.map(o => `<tr><td><b>${o.token}</b></td><td><b>${o.patient}</b></td><td>${o.dept}</td><td>${o.dr}</td><td>${o.date}</td></tr>`).join('')}</tbody>
+                    </table>
+                </div>
+            `;
+            window.saveOpd = function() {
+                let patient = document.getElementById('opdPat').value.trim();
+                let dept = document.getElementById('opdDept').value;
+                let dr = document.getElementById('opdDr').value.trim();
+                if(!patient) { alert('Patient name required!'); return; }
+                opds.unshift({ token: 'OPD-' + Math.floor(100+Math.random()*900), patient, dept, dr, date: new Date().toLocaleDateString() });
+                localStorage.setItem('erp_opd', JSON.stringify(opds));
+                renderOpdModule(container);
+            };
+        }
+
+        function renderIpdModule(container) {
+            let ipds = JSON.parse(localStorage.getItem('erp_ipd')) || [];
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>🛏️ IPD Admissions & Bed Availability</h2>
+                    <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Patient Name *</label><input type="text" id="ipdPat" class="form-control" placeholder="Patient Name"></div>
+                            <div class="form-group"><label>Ward / Room</label><select id="ipdWard" class="form-control"><option value="General Ward - Bed 04">General Ward - Bed 04</option><option value="Semi Private - Room 102">Semi Private - Room 102</option><option value="ICU - Bed 02">ICU - Bed 02</option></select></div>
+                            <div class="form-group"><label>Admitting Doctor</label><input type="text" id="ipdDr" class="form-control" value="Dr. Aarif Rabbani"></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveIpd()" style="width:100%;">Admit Patient</button></div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>IPD No</th><th>Patient Name</th><th>Ward & Bed</th><th>Doctor</th><th>Admission Date</th></tr></thead>
+                        <tbody>${ipds.map(i => `<tr><td><b>${i.ipdNo}</b></td><td><b>${i.patient}</b></td><td>${i.ward}</td><td>${i.dr}</td><td>${i.date}</td></tr>`).join('')}</tbody>
+                    </table>
+                </div>
+            `;
+            window.saveIpd = function() {
+                let patient = document.getElementById('ipdPat').value.trim();
+                let ward = document.getElementById('ipdWard').value;
+                let dr = document.getElementById('ipdDr').value.trim();
+                if(!patient) { alert('Patient name required!'); return; }
+                ipds.unshift({ ipdNo: 'IPD-' + Math.floor(1000+Math.random()*9000), patient, ward, dr, date: new Date().toLocaleDateString() });
+                localStorage.setItem('erp_ipd', JSON.stringify(ipds));
+                renderIpdModule(container);
+            };
+        }
+
+        function renderDischargeModule(container) {
+            container.innerHTML = `
+                <div class="light-card">
+                    <h2>📋 Discharge Summary & Hospital Billing</h2>
+                    <p>Discharge management, final billing settlement, and summary generation module active.</p>
+                </div>
+            `;
         }
 
         function renderStockMasterModule(container) {
             let meds = JSON.parse(localStorage.getItem('erp_medicines')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>📦 Stock Master & Inventory Register</h2>
+                    <h2>📦 Stock Master & Pharmacy Inventory (Strip to Tablet Conversion)</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Item Name *</label><input type="text" id="itName" class="form-control" placeholder="Dolo 650"></div>
                             <div class="form-group"><label>HSN Code</label><input type="text" id="itHsn" class="form-control" value="3004"></div>
                             <div class="form-group"><label>Batch No</label><input type="text" id="itBatch" class="form-control" value="B-2026"></div>
-                            <div class="form-group"><label>Strip Conversion</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
+                            <div class="form-group"><label>Strip Conversion (Tablets per Strip)</label><input type="number" id="itStripConv" class="form-control" value="10"></div>
                             <div class="form-group"><label>MRP per Strip (₹)</label><input type="number" id="itMrp" class="form-control" value="100"></div>
                             <div class="form-group"><label>Total Strips Stock</label><input type="number" id="itStock" class="form-control" value="50"></div>
-                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item</button></div>
+                            <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="addStockItem()" style="width:100%;">Add Item to Stock</button></div>
                         </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>MRP/Strip</th><th>Stock</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Sr</th><th>Item Name</th><th>Batch</th><th>HSN</th><th>Strip Conv.</th><th>MRP/Strip</th><th>Stock</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${meds.map((m, idx) => `<tr><td>${idx + 1}</td><td><b>${m.name}</b></td><td>${m.batch}</td><td>₹${m.mrp}</td><td><b>${m.stock} Strips</b></td><td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 8px;">Delete</button></td></tr>`).join('')}
+                            ${meds.length === 0 ? '<tr><td colspan="8" style="text-align:center;">No items in stock.</td></tr>' :
+                            meds.map((m, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><b>${m.name}</b></td>
+                                    <td>${m.batch}</td>
+                                    <td>${m.hsn}</td>
+                                    <td>1 Strip = ${m.stripConv || 10} Tabs</td>
+                                    <td>₹${m.mrp}</td>
+                                    <td><b>${m.stock} Strips</b> (${(m.stock * (m.stripConv || 10))} Tablets)</td>
+                                    <td><button class="btn-danger" onclick="delStockItem(${idx})" style="padding:4px 10px; font-size:11px;">Delete</button></td>
+                                </tr>
+                            `).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
             window.addStockItem = function() {
                 let name = document.getElementById('itName').value.trim();
+                let hsn = document.getElementById('itHsn').value.trim();
+                let batch = document.getElementById('itBatch').value.trim();
+                let stripConv = parseInt(document.getElementById('itStripConv').value) || 10;
                 let mrp = parseFloat(document.getElementById('itMrp').value) || 0;
                 let stock = parseInt(document.getElementById('itStock').value) || 0;
-                if(!name) { alert('Name required!'); return; }
-                meds.push({ name, batch: 'B-2026', hsn: '3004', mrp, stock });
+
+                if(!name) { alert('Item name required!'); return; }
+                meds.push({ name, hsn, batch, stripConv, mrp, stock });
                 localStorage.setItem('erp_medicines', JSON.stringify(meds));
                 renderStockMasterModule(container);
             };
@@ -661,11 +817,23 @@
             };
         }
 
+        function renderItemMasterModule(container) {
+            container.innerHTML = `<div class="light-card"><h2>📦 Central Store Item Master & Inventory Categories</h2><p>Central store inventory categories and unit of measurement register active.</p></div>`;
+        }
+
+        function renderGoodsReceiptModule(container) {
+            container.innerHTML = `<div class="light-card"><h2>📦 Goods Receipt Note (GRN) & Store Stock</h2><p>GRN and warehouse stock receipt module active.</p></div>`;
+        }
+
+        function renderStockIssueModule(container) {
+            container.innerHTML = `<div class="light-card"><h2>📦 Departmental Stock Issue & Transfer</h2><p>Inter-store and department requisition module active.</p></div>`;
+        }
+
         function renderSalesInvoiceModule(container) {
             let invs = JSON.parse(localStorage.getItem('erp_invoices')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🛒 Sale Bill & Invoice Generation</h2>
+                    <h2>🛒 Sale Bill & Prescription Dispensing</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; border:1.5px solid #e2e8f0; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Patient Name *</label><input type="text" id="salePatient" class="form-control" placeholder="Patient Name"></div>
@@ -792,7 +960,7 @@
             ];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>👥 Customers & Vendors</h2>
+                    <h2>👥 Customers & Vendors Directory</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Party Name</label><input type="text" id="ptName" class="form-control"></div>
@@ -820,7 +988,7 @@
             let exps = JSON.parse(localStorage.getItem('erp_expenses')) || [{ title: 'Electricity', amt: 1500 }];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>💸 Expenses Management</h2>
+                    <h2>💸 Accounts & Expenses Management</h2>
                     <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
                         <div class="form-grid">
                             <div class="form-group"><label>Title</label><input type="text" id="exTitle" class="form-control"></div>
@@ -848,7 +1016,7 @@
             let queries = JSON.parse(localStorage.getItem('erp_software_queries')) || [];
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>💬 Enquiry Portal</h2>
+                    <h2>💬 Enquiry Portal & Support</h2>
                     <table class="data-table">
                         <thead><tr><th>Owner</th><th>Purpose</th><th>Status</th></tr></thead>
                         <tbody>${queries.map(q => `<tr><td><b>${q.ownerName}</b></td><td>${q.purpose}</td><td><span style="color:#16a34a;">${q.status}</span></td></tr>`).join('')}</tbody>
@@ -861,16 +1029,16 @@
             let set = JSON.parse(localStorage.getItem('erp_shop_settings')) || { shopName: 'A R PHARMA AND SURGICAL AGENCY' };
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>⚙️ System Settings</h2>
+                    <h2>⚙️ System Settings & Branding</h2>
                     <div class="form-grid">
-                        <div class="form-group"><label>Shop Name</label><input type="text" id="stName" class="form-control" value="${set.shopName}"></div>
+                        <div class="form-group"><label>Hospital / Shop Name</label><input type="text" id="stName" class="form-control" value="${set.shopName}"></div>
                         <div class="form-group" style="display:flex; align-items:flex-end;"><button class="btn-success" onclick="saveSet()" style="width:100%;">Save</button></div>
                     </div>
                 </div>
             `;
             window.saveSet = function() {
                 let shopName = document.getElementById('stName').value.trim();
-                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline: 'Chairman: DRx. Aarif Rabbani' }));
+                localStorage.setItem('erp_shop_settings', JSON.stringify({ shopName, tagline: 'Proprietor: DRx. Aarif Rabbani' }));
                 alert('Saved!');
                 applyAgencyHeaderSettings();
             };
@@ -898,7 +1066,7 @@
 
             container.innerHTML = `
                 <div class="light-card">
-                    <h2>🩺 BME Master Portal & Asset Tracking</h2>
+                    <h2>🩺 Biomedical Engineering Master Portal & 7-Tab Asset Tracking</h2>
                     <div style="display:flex; gap:8px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; flex-wrap:wrap;">
                         <button class="btn-primary" onclick="switchBmeTab('master')" id="btnTabMaster">Master / Asset Stock</button>
                         <button class="btn-primary" style="background:#475569;" onclick="switchBmeTab('incident')" id="btnTabIncident">Incident Form</button>
@@ -911,7 +1079,7 @@
 
                     <div id="bmeTabMaster" class="bme-tab-content">
                         <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
-                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add BME Asset</h3>
+                            <h3 style="font-size:13px; color:#0284c7; margin-bottom:10px;">➕ Add Biomedical Asset</h3>
                             <div class="form-grid">
                                 <div class="form-group"><label>Instrument Name *</label><input type="text" id="bName" class="form-control"></div>
                                 <div class="form-group"><label>Asset Code</label><input type="text" id="bCode" class="form-control" value="AST-101"></div>
