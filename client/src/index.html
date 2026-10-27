@@ -77,7 +77,7 @@ tbody tr:hover{background:#f0f9ff}
 .filters input,.filters select,.field input,.field select,.field textarea{border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--text);outline:none;font-size:12px}
 .filters input{min-width:200px}
 .empty{padding:40px 18px;text-align:center;color:var(--muted);font-size:12.5px}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form-grid{display:grid;grid-template-columns:1fr;gap:14px}
 .field{display:grid;gap:6px}
 .field label{font-size:10.5px;color:#334155;text-transform:uppercase}
 .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:999999;display:none;align-items:center;justify-content:center;padding:20px}
@@ -91,6 +91,11 @@ tbody tr:hover{background:#f0f9ff}
 .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:#fff;padding:13px 18px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:1000000;display:none}
 .toast.show{display:block}
 .footer{padding:20px 0 0;color:#64748b;font-size:10px;text-align:center}
+
+.autocomplete-box{position:relative}
+.autocomplete-items{position:absolute;border:1.5px solid #0284c7;border-top:none;z-index:99;top:100%;left:0;right:0;background:#fff;border-radius:0 0 10px 10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);max-height:180px;overflow-y:auto}
+.autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
+.autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
 /* LUXURIOUS NEON LAMP LOGIN OVERLAY */
 #loginOverlay{position:fixed;inset:0;background:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -120,7 +125,7 @@ tbody tr:hover{background:#f0f9ff}
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
-  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0; background: #fff; }
+  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; }
 }
 </style>
 </head>
@@ -284,12 +289,36 @@ function toggleProfileDropdown(){
   drop.style.display = (drop.style.display === "flex") ? "none" : "flex";
 }
 
+// INSTANT LOGOUT WITHOUT POPUP AS REQUESTED
 function logoutUser(){
-  if(!confirm("Confirm logout?")) return;
   state.isLoggedIn = false;
   localStorage.setItem("ar_erp_logged", "false");
   $("loginOverlay").style.display = "flex";
   toast("Logged out successfully.");
+}
+
+function openChangePasswordModal(){
+  $("modalTitle").textContent = "🔑 Change Password";
+  state.editingIdx = null;
+  $("modalBody").innerHTML = `
+    <div class="field" style="margin-bottom:12px;"><label>Current Password</label><input type="password" id="oldPass" required></div>
+    <div class="field" style="margin-bottom:12px;"><label>New Password</label><input type="password" id="newPass" required></div>
+  `;
+  $("recordForm").onsubmit = (e) => {
+    e.preventDefault();
+    const oldP = $("oldPass").value;
+    const newP = $("newPass").value;
+    const user = state.users.find(u => u.username.toLowerCase() === state.name.toLowerCase());
+    if(user && (user.pass || "7860") === oldP){
+      user.pass = newP;
+      saveUsers();
+      closeModal();
+      toast("Password Updated Successfully!");
+    } else {
+      alert("Incorrect Old Password!");
+    }
+  };
+  $("modalBackdrop").classList.add("show");
 }
 
 function togglePasswordVis(){
@@ -364,7 +393,7 @@ function openPublicEnquiryModal(){
       <div class="field"><label>Mobile Number *</label><input type="tel" name="clientMobile" maxlength="10" required></div>
       <div class="field"><label>Email ID</label><input type="email" name="clientEmail"></div>
       <div class="field"><label>Interest Category</label><select name="enquiryType"><option>Complete ERP Software Purchase</option><option>Hospital & Pharmacy Customization</option><option>Technical Support / Demo</option><option>General Query</option></select></div>
-      <div class="field" style="grid-column:span 2;"><label>Requirements / Message *</label><textarea name="message" rows="3" required></textarea></div>
+      <div class="field" style="grid-column:1;"><label>Requirements / Message *</label><textarea name="message" rows="3" required></textarea></div>
     </div>
   `;
   backdrop.classList.add("show");
@@ -480,7 +509,7 @@ const fieldMap={
    ["calculatedSalary","Calculated Monthly Total (₹)","number",true]
  ],
  patients:[
-   ["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],
+   ["uhid","Patient UHID / IP No (Auto Unique)","text",true,"AUTO"],
    ["name","Patient Name","text",true],
    ["careOf","Father / Care of Name","text",true],
    ["mobile","Mobile Number (10 Digits)","tel",true],
@@ -503,7 +532,7 @@ const fieldMap={
  ],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
  opd:[
-   ["uhidNo","Patient UHID / IP (Auto or Search)","autocomplete-patient",true],
+   ["uhidNo","Patient UHID / Mobile / Name (Auto-Fetch)","autocomplete-patient",true],
    ["doctor","Consultant Doctor (Auto)","autocomplete-doctor",true],
    ["department","Department (Auto)","text",true],
    ["patientType","Patient Type / Scheme","select",true,["General", "Camp", "Ayushman Bharat", "TPA", "CAPF", "Corporate"]],
@@ -531,7 +560,7 @@ const fieldMap={
    ["totalBill","Total Amount (₹)","number",true],
    ["advancePaid","Advance Amount (Auto Minus)","number",true],
    ["discount","Discount (₹)","number",false],
-   ["dueAmount","Net Due Balance (₹)","number",true],
+   ["dueAmount","Net Due Balance (₹) (Auto)","number",true],
    ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Bank Transfer","Credit"]],
    ["status","Billing Status","select",true,["Paid","Due / Pending"]]
  ],
@@ -583,7 +612,7 @@ const fieldMap={
  ],
  "hospital-billing":[
    ["billNo","Final Invoice Bill No (Auto)","text",true,"HBILL"],
-   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["patientSearch","Search Admitted Patient (UHID / Mobile / Name)","autocomplete-patient",true],
    ["admissionDate","Date & Time of Admission","datetime-local",true],
    ["dischargeDate","Date & Time of Discharge","datetime-local",true],
    ["serviceName","Services Rendered (Autocomplete)","autocomplete-service",true],
@@ -643,7 +672,7 @@ function renderRows(rows){
   }).join("");
 }
 
-// AUTOCOMPLETE HANDLERS
+// ROBUST AUTOCOMPLETE & AUTO-FETCH HANDLERS
 window.handlePatientAutoFetch = function(q){
   const drop = $("patientDropdown");
   if(!drop) return;
@@ -651,7 +680,7 @@ window.handlePatientAutoFetch = function(q){
   const patients = state.records["patients"] || [];
   const matched = patients.filter(p => (p.uhid+" "+p.name+" "+p.mobile).toLowerCase().includes(q.toLowerCase()));
   if(!matched.length){ drop.style.display="none"; return; }
-  drop.innerHTML = matched.map(p=>`<div onclick="selectPatientItem('${escapeHTML(p.uhid)} - ${escapeHTML(p.name)}')"><b>${escapeHTML(p.uhid)}</b> - ${escapeHTML(p.name)} (${escapeHTML(p.mobile)})</div>`).join('');
+  drop.innerHTML = matched.map(p=>`<div onclick="selectPatientItem('${escapeHTML(p.uhid)} - ${escapeHTML(p.name)} (${escapeHTML(p.mobile)})')"><b>${escapeHTML(p.uhid)}</b> - ${escapeHTML(p.name)} (${escapeHTML(p.mobile)})</div>`).join('');
   drop.style.display = "block";
 };
 
@@ -667,15 +696,17 @@ window.handleDoctorAutoFetch = function(q){
   if(!drop) return;
   if(!q.trim()){ drop.style.display="none"; return; }
   const docs = state.records["doctors"] || [];
-  const matched = docs.filter(d => d.docName.toLowerCase().includes(q.toLowerCase()));
+  const matched = docs.filter(d => d.docName.toLowerCase().includes(q.toLowerCase()) || d.specialty.toLowerCase().includes(q.toLowerCase()));
   if(!matched.length){ drop.style.display="none"; return; }
-  drop.innerHTML = matched.map(d=>`<div onclick="selectDoctorItem('${escapeHTML(d.docName)}')"><b>${escapeHTML(d.docName)}</b> (${escapeHTML(d.specialty)})</div>`).join('');
+  drop.innerHTML = matched.map(d=>`<div onclick="selectDoctorItem('${escapeHTML(d.docName)}', ${d.fee||0})"><b>${escapeHTML(d.docName)}</b> (${escapeHTML(d.specialty)}) - Fee: ₹${d.fee||0}</div>`).join('');
   drop.style.display = "block";
 };
 
-window.selectDoctorItem = function(val){
+window.selectDoctorItem = function(name, fee){
   const inp = $("dSearchInput");
-  if(inp) inp.value = val;
+  if(inp) inp.value = name;
+  const feeInp = document.querySelector("input[name='fee']") || document.querySelector("input[id*='fee']");
+  if(feeInp) feeInp.value = fee;
   const drop = $("doctorDropdown");
   if(drop) drop.style.display = "none";
 };
@@ -685,9 +716,9 @@ window.handleBedAutoFetch = function(q){
   if(!drop) return;
   if(!q.trim()){ drop.style.display="none"; return; }
   const beds = state.records["beds"] || [];
-  const matched = beds.filter(b => (b.bedNo+" "+b.wardName).toLowerCase().includes(q.toLowerCase()));
+  const matched = beds.filter(b => (b.bedNo+" "+b.wardName).toLowerCase().includes(q.toLowerCase()) && b.status==="Available");
   if(!matched.length){ drop.style.display="none"; return; }
-  drop.innerHTML = matched.map(b=>`<div onclick="selectBedItem('${escapeHTML(b.bedNo)} (${escapeHTML(b.wardName)})')">Bed: <b>${escapeHTML(b.bedNo)}</b> - ${escapeHTML(b.wardName)}</div>`).join('');
+  drop.innerHTML = matched.map(b=>`<div onclick="selectBedItem('${escapeHTML(b.bedNo)} (${escapeHTML(b.wardName)}) - ₹${b.charge}/day')">Bed: <b>${escapeHTML(b.bedNo)}</b> - ${escapeHTML(b.wardName)} (₹${b.charge}/day)</div>`).join('');
   drop.style.display = "block";
 };
 
@@ -695,6 +726,31 @@ window.selectBedItem = function(val){
   const inp = $("bSearchInput");
   if(inp) inp.value = val;
   const drop = $("bedDropdown");
+  if(drop) drop.style.display = "none";
+};
+
+window.handleServiceAutoFetch = function(q){
+  const drop = $("serviceDropdown");
+  if(!drop) return;
+  if(!q.trim()){ drop.style.display="none"; return; }
+  const srvs = state.records["service-master"] || [];
+  const tests = state.records["test-master"] || [];
+  const combined = [...srvs.map(s=>({name: s.serviceName, price: s.price})), ...tests.map(t=>({name: t.testName, price: t.price}))];
+  const matched = combined.filter(x => x.name.toLowerCase().includes(q.toLowerCase()));
+  if(!matched.length){ drop.style.display="none"; return; }
+  drop.innerHTML = matched.map(s=>`<div onclick="selectServiceItem('${escapeHTML(s.name)}', ${s.price})">${escapeHTML(s.name)} - <b>₹${s.price}</b></div>`).join('');
+  drop.style.display = "block";
+};
+
+window.selectServiceItem = function(name, price){
+  const inp = $("sSearchInput");
+  if(inp) inp.value = name;
+  const totalInp = document.querySelector("input[name='totalBill']") || document.querySelector("input[name='total']");
+  const qtyInp = document.querySelector("input[name='qty']");
+  const qty = Number(qtyInp?.value || 1);
+  if(totalInp) totalInp.value = price * qty;
+  triggerCalculations();
+  const drop = $("serviceDropdown");
   if(drop) drop.style.display = "none";
 };
 
@@ -735,6 +791,7 @@ window.searchPatientHistory = function(query){
   let html = "";
   matched.forEach(p => {
     const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
+    const isAdmitted = ipd.some(i => i.status === "Admitted");
 
     html += `
       <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
@@ -753,6 +810,7 @@ window.searchPatientHistory = function(query){
             <button class="btn danger" onclick="jumpToModule('discharge')">⇥ Discharge</button>
           </div>
         </div>
+        ${isAdmitted ? `<div style="background:#fee2e2; color:#b91c1c; padding:8px 12px; border-radius:8px; font-size:12px; margin-bottom:12px;">⚠️ **Patient currently admitted in IPD.** All billing must be done through Final Hospital Billing & Discharge to prevent calculations error.</div>` : ``}
         <h4 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">IPD Admission Status</h4>
         ${ipd.length ? `<table><thead><tr><th>IPD No</th><th>Date</th><th>Ward/Bed</th><th>Advance</th><th>Status</th></tr></thead><tbody>` + ipd.map(i=>`<tr><td><b>${i.ipdNo}</b></td><td>${i.admissionDate||'—'}</td><td>${i.wardBed}</td><td>₹${i.advance}</td><td><span class="status">${i.status}</span></td></tr>`).join('') + `</tbody></table>` : '<p style="font-size:11px; color:var(--muted); margin-bottom:12px;">No active IPD admissions.</p>'}
       </div>
@@ -898,6 +956,12 @@ function openModal(){
     else if(f[2]==="autocomplete-bed"){
       control=`<div class="autocomplete-box"><input type="text" id="bSearchInput" name="${f[0]}" placeholder="Type Bed No..." onkeyup="handleBedAutoFetch(this.value)" autocomplete="off"><div id="bedDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
+    else if(f[2]==="autocomplete-service"){
+      control=`<div class="autocomplete-box"><input type="text" id="sSearchInput" name="${f[0]}" placeholder="Type Service / Test..." onkeyup="handleServiceAutoFetch(this.value)" autocomplete="off"><div id="serviceDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
+    else if(f[2]==="autocomplete-test"){
+      control=`<div class="autocomplete-box"><input type="text" id="tSearchInput" name="${f[0]}" placeholder="Type Lab Test..." onkeyup="handleServiceAutoFetch(this.value)" autocomplete="off"><div id="serviceDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
+    }
     else if(f[2]==="modules-checkbox"){
       const allMods = ["Dashboard","OPD Prescription","IPD Admissions","Laboratory","Radiology","Final Billing","Pharmacy Sales","Biomedical","Accounts"];
       control = `<div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px; max-height:160px; overflow-y:auto; background:#f8fafc; padding:10px; border-radius:8px; border:1.5px solid var(--line);">${allMods.map(m=>`<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" name="module_chk" value="${m}"> ${m}</label>`).join('')}</div>`;
@@ -910,7 +974,7 @@ function openModal(){
     }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
-    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} oninput="calculateSalaryAuto()">`;
+    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} oninput="triggerCalculations()">`;
     
     return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`
   }).join("")}</div>`;
@@ -927,12 +991,19 @@ window.calculateAgeFromDOB = function(dobVal){
   if(ageField) ageField.value = calculatedAge;
 };
 
-window.calculateSalaryAuto = function(){
+// REAL-TIME AUTO CALCULATIONS FOR BILLING AND SALARY
+window.triggerCalculations = function(){
   const sal = Number(document.querySelector("input[name='salary']")?.value || 0);
   const hra = Number(document.querySelector("input[name='hra']")?.value || 0);
   const calcField = document.querySelector("input[name='calculatedSalary']");
-  if(calcField){
-    calcField.value = sal + hra;
+  if(calcField) calcField.value = sal + hra;
+
+  const totalBill = Number(document.querySelector("input[name='totalBill']")?.value || document.querySelector("input[name='total']")?.value || 0);
+  const advance = Number(document.querySelector("input[name='advancePaid']")?.value || 0);
+  const discount = Number(document.querySelector("input[name='discount']")?.value || 0);
+  const dueField = document.querySelector("input[name='dueAmount']") || document.querySelector("input[name='netDue']");
+  if(dueField){
+    dueField.value = Math.max(0, totalBill - advance - discount);
   }
 };
 
@@ -951,7 +1022,7 @@ window.editRecordRow = function(mod, idx){
     let val = item[f[0]] || "";
     if(f[2]==="select") control=`<select name="${f[0]}">${f[4].map(v=>`<option ${v===val?'selected':''}>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3">${escapeHTML(val)}</textarea>`;
-    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${escapeHTML(val)}">`;
+    else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${escapeHTML(val)}" oninput="triggerCalculations()">`;
     return `<div class="field"><label>${escapeHTML(f[1])}</label>${control}</div>`
   }).join("")}</div>`;
 
@@ -962,12 +1033,31 @@ function closeModal(){$("modalBackdrop").classList.remove("show")}
 
 function saveForm(e){
   e.preventDefault();
-  if(!confirm("Confirm save record?")) return;
-
   const k=datasetKey(),form=new FormData($("recordForm")),record={};
   for(const [key,val] of form.entries()){
     if(key === "module_chk") continue;
     record[key]=String(val).trim();
+  }
+
+  // Check duplicate UHID or mobile on Patient Registration
+  if(k === "patients"){
+    const existing = state.records["patients"] || [];
+    const isDuplicate = existing.some((p, i) => p.uhid === record.uhid && state.editingIdx !== i);
+    if(isDuplicate){
+      alert("Error: Duplicate UHID already exists in database!");
+      return;
+    }
+  }
+
+  // Prevent OPD billing if patient is admitted in IPD
+  if(k === "patient-billing" || k === "opd"){
+    const pSearch = record.patientSearch || record.uhidNo || "";
+    const admittedList = state.records["admissions"] || [];
+    const isAdmitted = admittedList.some(a => a.status === "Admitted" && JSON.stringify(a).toLowerCase().includes(pSearch.toLowerCase()));
+    if(isAdmitted && k === "opd"){
+      alert("Error: Patient is currently admitted in IPD! Please perform billing through 'Final Hospital Billing & Discharge' module.");
+      return;
+    }
   }
 
   if(k === "permissions"){
@@ -1002,21 +1092,23 @@ window.printRecordRow = function(mod, idx){
   const area = $("printArea");
   area.style.display = "block";
   area.innerHTML = `
-    <div style="font-family:'Plus Jakarta Sans',sans-serif; border:2px solid #000; padding:25px; width:100%; box-sizing:border-box; background:#fff; min-height:297mm;">
-      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:18px;">
-        <h1 style="margin:0; font-size:24px; color:#0f172a;">${escapeHTML(state.hospitalName)}</h1>
-        <p style="margin:3px 0; font-size:12px;">${escapeHTML(state.hospitalAddress)}</p>
-        <h3 style="margin:6px 0 0; text-transform:uppercase; text-decoration:underline;">${mod.toUpperCase()} REPORT CARD</h3>
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; border:1px solid #333; padding:20px; width:210mm; min-height:297mm; box-sizing:border-box; background:#fff; margin:auto;">
+      <div style="text-align:center; border-bottom:2px solid #0f172a; padding-bottom:12px; margin-bottom:18px;">
+        <h1 style="margin:0; font-size:22px; color:#0f172a;">${escapeHTML(state.hospitalName)}</h1>
+        <p style="margin:4px 0; font-size:11.5px; color:#475569;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
+        <h3 style="margin:8px 0 0; text-transform:uppercase; font-size:14px; letter-spacing:1px;">${mod.toUpperCase()} OFFICIAL REPORT</h3>
       </div>
-      <div style="font-size:12.5px; line-height:1.8;">
-        <p><b>Print Date:</b> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
-        <hr>
-        ${Object.entries(item).filter(([k])=>!k.startsWith('_')).map(([k,v])=>`<p><b>${k.toUpperCase()}:</b> ${escapeHTML(v)}</p>`).join('')}
+      <div style="font-size:12px; line-height:1.8;">
+        <p><b>Print Timestamp:</b> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+        <hr style="border:0; border-top:1px solid #cbd5e1; margin:12px 0;">
+        <table style="width:100%; border-collapse:collapse;">
+          ${Object.entries(item).filter(([k])=>!k.startsWith('_')).map(([k,v])=>`<tr><td style="padding:8px; border-bottom:1px solid #f1f5f9; width:35%;"><b>${k.toUpperCase()}</b></td><td style="padding:8px; border-bottom:1px solid #f1f5f9;">${escapeHTML(v)}</td></tr>`).join('')}
+        </table>
       </div>
-      <br><br>
-      <div style="display:flex; justify-content:space-between; margin-top:80px;">
-        <p>Prepared By: ________________</p>
-        <p>Authorized Signature: ________________</p>
+      <br><br><br>
+      <div style="display:flex; justify-content:space-between; margin-top:100px; font-size:12px;">
+        <p>Prepared By: ___________________</p>
+        <p>Authorized Signature & Stamp: ___________________</p>
       </div>
     </div>
   `;
@@ -1028,7 +1120,7 @@ function exportCSV(){
   const rows=recordsFor();
   if(!rows.length){toast("No records to export.");return}
   const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];
-  const csv=[cols.join(","),...rows.map(rows=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
+  const csv=[cols.join(","),...rows.map(r=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=datasetKey()+"-export.csv";a.click();
