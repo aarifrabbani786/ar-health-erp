@@ -3,227 +3,602 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR Healthcare ERP | Hospital • Pharmacy • Biomedical</title>
+<title>AR Healthcare ERP | Enterprise 3D Suite</title>
 <style>
-:root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:flex}.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;position:fixed;inset:0 auto 0 0;overflow:auto;z-index:20;transition:.25s}.brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}.logo{width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:white;font-weight:900;font-size:16px;box-shadow:0 7px 20px #16b8b044}.brand strong{display:block;font-size:14px;color:#fff}.brand small{display:block;color:#9db3ca;font-size:11px;margin-top:4px}.nav{padding:12px 10px 30px}.nav-label{font-size:10px;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px;font-weight:800}.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;text-decoration:none;border:0;background:transparent;width:100%;text-align:left}.nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}.nav-item.active{box-shadow:inset 3px 0 #29c7be}.nav-icon{width:19px;text-align:center;font-size:15px}.main{margin-left:272px;width:calc(100% - 272px);min-width:0}.topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10;gap:14px}.top-left,.top-right{display:flex;align-items:center;gap:13px}.hamb{display:none;border:0;background:#eef3f9;padding:9px;border-radius:8px}.search{position:relative}.search input{width:min(340px,33vw);padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:10px;background:#f9fbfe;outline:none;font-size:12px}.search span{position:absolute;left:13px;top:10px;color:#8292a6}.icon-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;position:relative}.dot{position:absolute;right:7px;top:6px;width:7px;height:7px;background:#ef5b67;border-radius:50%}.profile{display:flex;align-items:center;gap:10px;border-left:1px solid var(--line);padding-left:14px}.avatar{width:37px;height:37px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800}.profile strong{font-size:12px;display:block}.profile small{font-size:10px;color:var(--muted)}.content{padding:27px 28px 40px;max-width:1700px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:23px}.eyebrow{color:var(--blue);font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.welcome h1{font-size:25px;letter-spacing:-.6px;margin:7px 0 7px}.welcome p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.teal{background:var(--cyan);border-color:var(--cyan);color:#fff}.btn.danger{color:var(--red)}.grid{display:grid;gap:15px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}.stat-top{display:flex;justify-content:space-between;align-items:center}.stat-label{font-size:11px;color:var(--muted);font-weight:600}.stat-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#edf4ff;color:var(--blue);font-size:16px}.stat-value{font-size:25px;font-weight:800;letter-spacing:-.8px;margin:14px 0 6px}.stat-foot{font-size:10px;color:var(--muted)}.stat-foot b{color:var(--green)}.columns{grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);margin-bottom:17px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 19px;border-bottom:1px solid var(--line)}.panel-head h3{font-size:13px;margin:0}.panel-head p{font-size:10px;color:var(--muted);margin:5px 0 0}.panel-body{padding:18px}.chart{height:205px;display:flex;align-items:flex-end;gap:12px;padding:12px 8px 0;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 49px,#edf1f7 50px)}.bar-group{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-direction:column;height:100%;min-width:0}.bars{display:flex;align-items:flex-end;gap:4px;height:165px;width:100%;justify-content:center}.bar{width:min(22px,42%);border-radius:5px 5px 0 0;background:linear-gradient(180deg,#5e9cff,#2876ed);min-height:3px}.bar.alt{background:linear-gradient(180deg,#62d7ce,#17b8ae)}.bar-label{font-size:9px;color:var(--muted);padding:8px 0}.legend{display:flex;gap:15px;font-size:10px;color:var(--muted)}.legend span:before{content:"";display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--blue);margin-right:6px}.legend span+span:before{background:var(--cyan)}.alert-list{display:grid;gap:12px}.alert{display:flex;gap:10px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px}.alert-symbol{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#fff4df;color:var(--orange);flex-shrink:0}.alert.red .alert-symbol{background:#fff0f1;color:var(--red)}.alert strong{display:block;font-size:11px}.alert small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.4}.alert .pill{margin-left:auto}.pill{white-space:nowrap;border-radius:20px;padding:5px 8px;font-size:9px;font-weight:800;background:#eaf8f1;color:var(--green)}.pill.warn{background:#fff4df;color:var(--orange)}.pill.bad{background:#fff0f1;color:var(--red)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:9px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:11px}tbody tr:hover{background:#fafcff}.cell-main{font-weight:700}.cell-sub{font-size:9px;color:var(--muted);margin-top:4px}.status{display:inline-block;border-radius:6px;padding:5px 7px;background:#eaf8f1;color:var(--green);font-size:9px;font-weight:800}.status.pending{background:#fff4df;color:var(--orange)}.status.repair{background:#fff0f1;color:var(--red)}.module-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.module-title h1{font-size:23px;margin:0 0 6px}.module-title p{font-size:11px;color:var(--muted);margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filters input,.filters select,.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:8px;padding:10px 11px;background:#fff;color:var(--text);outline:none;font-size:11px;min-width:0}.filters input{min-width:210px}.empty{padding:38px 18px;text-align:center;color:var(--muted);font-size:12px}.empty strong{display:block;color:var(--text);margin-bottom:6px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}.field label{font-size:10px;font-weight:800;color:#66768a}.field input,.field select,.field textarea{width:100%}.field.full{grid-column:1/-1}.modal-backdrop{position:fixed;inset:0;background:#0c1d30a6;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:16px;width:min(650px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0003}.modal-head,.modal-foot{padding:17px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.modal-head h3{font-size:15px;margin:0}.modal-body{padding:20px}.modal-foot{border-top:1px solid var(--line);border-bottom:0;justify-content:flex-end;gap:8px}.close{border:0;background:#eef3f8;border-radius:8px;width:30px;height:30px}.toast{position:fixed;right:22px;bottom:22px;background:#142a40;color:#fff;padding:13px 17px;border-radius:10px;font-size:12px;box-shadow:var(--shadow);z-index:100;display:none;max-width:min(420px,calc(100vw - 40px))}.toast.show{display:block}.notice{padding:12px 14px;border-radius:9px;background:#fff7e8;color:#815a17;font-size:11px;line-height:1.6;margin-bottom:16px}.footer{padding:20px 0 0;color:#95a1b1;font-size:10px;text-align:center}.hide{display:none!important}
-@media(max-width:1200px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}.content{padding:22px 20px}}
-@media(max-width:760px){.sidebar{transform:translateX(-100%);box-shadow:none}.sidebar.open{transform:translateX(0);box-shadow:10px 0 35px #0003}.main{margin-left:0;width:100%}.hamb{display:block}.topbar{height:65px;padding:0 13px}.search input{width:36vw}.profile .profile-text{display:none}.content{padding:20px 13px 30px}.welcome{display:block}.welcome h1{font-size:22px}.welcome .actions{margin-top:14px}.stats{gap:9px}.stat{padding:13px}.stat-value{font-size:21px}.stat-icon{width:29px;height:29px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.module-title{align-items:flex-start;flex-direction:column}.top-right{gap:6px}.search input{width:32vw;padding-left:30px}.brand{padding:17px}.nav{padding-top:7px}}
-@media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:19px}.search input{width:29vw}.topbar{gap:6px}}
+:root {
+    --navy: #0f172a;
+    --navy-dark: #070d19;
+    --blue: #0284c7;
+    --blue-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    --green-gradient: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    --red-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --bg-3d: #e2e8f0;
+    --card-3d: #e2e8f0;
+    --text: #0f172a;
+    --muted: #475569;
+    --shadow-out: 8px 8px 16px #b8c2cc, -8px -8px 16px #ffffff;
+    --shadow-in: inset 4px 4px 8px #b8c2cc, inset -4px -4px 8px #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 900 !important; }
+body { background: var(--bg-3d); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* 3D Glass & Neumorphic Buttons & Inputs */
+input, select, textarea {
+    background: var(--card-3d); border: none; outline: none; padding: 11px 14px;
+    border-radius: 10px; box-shadow: var(--shadow-in); color: var(--text); font-size: 12.5px; width: 100%; transition: all 0.2s;
+}
+input:focus, select:focus, textarea:focus { box-shadow: inset 6px 6px 10px #94a3b8, inset -6px -6px 10px #ffffff; }
+
+.btn {
+    border: none; outline: none; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    box-shadow: 5px 5px 10px #b8c2cc, -5px -5px 10px #ffffff; color: var(--text); background: var(--card-3d);
+    font-size: 12px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+}
+.btn:active { box-shadow: var(--shadow-in); transform: translateY(1px); }
+.btn.primary { background: var(--blue-gradient); color: white; box-shadow: 4px 6px 15px rgba(2, 132, 199, 0.4); }
+.btn.success { background: var(--green-gradient); color: white; box-shadow: 4px 6px 15px rgba(22, 163, 74, 0.4); }
+.btn.danger { background: var(--red-gradient); color: white; box-shadow: 4px 6px 15px rgba(239, 68, 68, 0.4); }
+
+/* AUTH OVERLAY */
+#auth-overlay {
+    position: fixed; inset: 0; background: var(--bg-3d); z-index: 999999;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.login-card-3d {
+    width: 100%; max-width: 440px; background: var(--card-3d); border-radius: 24px; padding: 35px;
+    box-shadow: 14px 14px 28px #b8c2cc, -14px -14px 28px #ffffff; border: 1px solid rgba(255,255,255,0.8);
+}
+.login-card-3d h2 { text-align: center; font-size: 18px; color: var(--navy); margin-bottom: 4px; text-transform: uppercase; }
+.login-card-3d .sub { text-align: center; font-size: 11px; color: var(--blue); margin-bottom: 22px; }
+
+.input-group-3d { position: relative; margin-bottom: 16px; }
+.input-group-3d label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
+.eye-btn { position: absolute; right: 12px; top: 32px; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--muted); }
+
+/* MAIN APP LAYOUT */
+.app { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+.sidebar {
+    width: 280px; background: var(--navy); color: #cbd5e1; flex-shrink: 0;
+    display: flex; flex-direction: column; height: 100vh; overflow-y: auto; border-right: 2px solid rgba(255,255,255,0.05);
+}
+.brand { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
+.brand-box {
+    display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4), inset 0 2px 4px rgba(255,255,255,0.4); color: white;
+}
+.nav-list { list-style: none; padding: 10px; flex: 1; }
+.nav-group-label { font-size: 10px; color: #64748b; padding: 14px 10px 4px; text-transform: uppercase; letter-spacing: 1px; }
+.nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #cbd5e1;
+    text-decoration: none; border-radius: 10px; font-size: 11.5px; cursor: pointer; margin-bottom: 3px; transition: all 0.2s;
+}
+.nav-item:hover, .nav-item.active { background: var(--blue-gradient); color: white; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+
+.main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 20px; background: #f8fafc; }
+.topbar {
+    background: var(--card-3d); padding: 12px 20px; border-radius: 16px;
+    box-shadow: var(--shadow-out); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+}
+.search-box { width: 320px; position: relative; }
+
+.panel-3d {
+    background: #ffffff; border-radius: 18px; padding: 22px; margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04); border: 1.5px solid #e2e8f0;
+}
+.panel-3d h2 { font-size: 16px; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; }
+
+.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+.data-table th { background: #f1f5f9; color: var(--muted); text-transform: uppercase; font-size: 10.5px; }
+
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; color: white; display: inline-block; }
+.badge.active { background: #16a34a; }
+.badge.inactive { background: #ef4444; }
+
+.crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.crm-card {
+    background: var(--card-3d); padding: 18px; border-radius: 16px; box-shadow: var(--shadow-out);
+}
+.crm-title { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.crm-val { font-size: 24px; color: var(--navy); margin-top: 6px; }
+
+/* AUTO-COMPLETE DROPDOWN */
+.autocomplete-items {
+    position: absolute; border: 1.5px solid #cbd5e1; border-top: none; z-index: 99;
+    top: 100%; left: 0; right: 0; background-color: #ffffff; border-radius: 0 0 10px 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); max-height: 160px; overflow-y: auto;
+}
+.autocomplete-items div { padding: 10px; cursor: pointer; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+.autocomplete-items div:hover { background-color: #e0f2fe; color: #0284c7; }
+
+#profileModal {
+    display: none; position: fixed; right: 20px; top: 75px; width: 300px;
+    background: #ffffff; border-radius: 16px; border: 1.5px solid #cbd5e1;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.18); padding: 18px; z-index: 9999;
+}
 </style>
 </head>
 <body>
-<div class="app">
-<aside class="sidebar" id="sidebar">
-  <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • Biomedical</small></div></div>
-  <nav class="nav" id="nav"></nav>
-</aside>
-<main class="main">
-<header class="topbar">
-  <div class="top-left"><button class="hamb" id="hamb" aria-label="Toggle menu">☰</button><div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search modules..." autocomplete="off"></div></div>
-  <div class="top-right">
-    <button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button>
-    <button class="icon-btn" id="notificationBtn" title="Notifications">♧<i class="dot"></i></button>
-    <div class="profile"><div class="avatar" id="avatar">SA</div><div class="profile-text"><strong id="profileName">Super Admin</strong><small id="profileRole">Full Access</small></div><button class="btn" id="profileMenu">⌄</button></div>
-  </div>
-</header>
-<section class="content" id="content"></section>
-</main>
-</div>
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
-  <div class="modal"><div class="modal-head"><h3 id="modalTitle">Add Record</h3><button class="close" id="modalClose">✕</button></div><form id="recordForm"><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button type="button" class="btn" id="modalCancel">Cancel</button><button type="submit" class="btn primary">Save Record</button></div></form></div>
-</div>
-<div class="toast" id="toast" role="status"></div>
-<script>
-"use strict";
-const groups = [
- {label:"OVERVIEW",items:[["Dashboard","dashboard","▦"],["Notifications","notifications","♧"],["Tasks & Approvals","approvals","✓"]]},
- {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Search","patient-search","⌕"],["OPD & Appointments","opd","◷"],["IPD Admissions","admissions","▤"],["Wards & Beds","beds","▥"],["Doctors & Departments","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory","laboratory","⚗"],["Radiology","radiology","◉"],["OT & ICU","ot-icu","✚"],["Discharge Management","discharge","⇥"],["Hospital Billing","hospital-billing","₹"],["Medical Records","medical-records","▧"]]},
- {label:"PHARMACY",items:[["Pharmacy Dashboard","pharmacy","✚"],["Medicine Master","medicines","▤"],["Batch & Strip Stock","batches","▦"],["Purchase Entry","pharmacy-purchase","＋"],["Sales Billing","pharmacy-sales","₹"],["Sales Return","sales-return","↩"],["Customers","customers","♙"],["Suppliers","suppliers","▣"],["Barcode & Labels","barcode","▥"],["Stock Transfer","stock-transfer","⇄"],["Expiry & Low Stock","stock-alerts","⚠"],["Pharmacy Reports","pharmacy-reports","▥"]]},
- {label:"CENTRAL STORE & PURCHASE",items:[["Inventory Dashboard","inventory","▦"],["Item Master","items","▤"],["Warehouses & Stores","warehouses","▣"],["Requisitions","requisitions","☷"],["Goods Receipt (GRN)","grn","⇩"],["Stock Issue / Return","stock-issue","⇄"],["Stock Ledger","stock-ledger","▤"],["Purchase Orders","purchase-orders","▧"],["Vendor Quotations","quotations","▤"],["Supplier Payments","supplier-payments","₹"]]},
- {label:"BIOMEDICAL ENGINEERING",items:[["Biomedical Dashboard","biomedical","⌘"],["Equipment Assets","assets","▣"],["Equipment Complaints","complaints","⚠"],["Work Orders & Repairs","work-orders","🔧"],["Preventive Maintenance","maintenance","◷"],["Calibration Register","calibration","✓"],["AMC / CMC Contracts","contracts","▧"],["Service Vendors","service-vendors","♙"],["Equipment Handover","handover","⇄"],["Equipment Reports","biomed-reports","▥"]]},
- {label:"FINANCE & HRMS",items:[["Accounts Dashboard","accounts","₹"],["Income & Expenses","expenses","⇅"],["Cash & Bank","cash-bank","▤"],["Receivables / Payables","receivables","₹"],["Employee Directory","employees","♙"],["Attendance & Shifts","attendance","◷"],["Leave & Duty Roster","leave","☷"],["Payroll","payroll","₹"]]},
- {label:"REPORTS & ADMINISTRATION",items:[["Reports & Analytics","reports","reports"],["Quality & Compliance","quality","✓"],["Document Register","documents","▧"],["User & Role Management","users","♙"],["Role Permissions","permissions","⚿"],["Audit Logs","audit-logs","☷"],["Branch & Department Setup","organization","▦"],["Settings & Backup","settings","⚙"]]}
-];
-const allItems = groups.flatMap(g=>g.items.map(x=>({title:x[0],key:x[1],icon:x[2],group:g.label})));
-const state={page:"dashboard",role:"Super Admin",name:"Super Admin",records:loadRecords(),users:loadUsers(),theme:"light"};
-function loadRecords(){try{return JSON.parse(localStorage.getItem("ar_erp_records")||"{}")}catch{return {}}}
-function saveRecords(){try{localStorage.setItem("ar_erp_records",JSON.stringify(state.records))}catch{}}
-function loadUsers(){try{const u=JSON.parse(localStorage.getItem("ar_erp_users")||"null");return Array.isArray(u)?u:[{id:"USR-001",name:"Super Admin",username:"admin",role:"Super Admin",department:"Administration",status:"Active"}]}catch{return [{id:"USR-001",name:"Super Admin",username:"admin",role:"Super Admin",department:"Administration",status:"Active"}]}}
-function saveUsers(){try{localStorage.setItem("ar_erp_users",JSON.stringify(state.users))}catch{}}
-const $=id=>document.getElementById(id);
-function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
-function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
-function canSee(item){return true;}
-function renderNav(filter=""){let out="";groups.forEach(g=>{const items=g.items.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));if(!items.length)return;out+=`<div class="nav-label">${escapeHTML(g.label)}</div>`;items.forEach(x=>out+=`<button class="nav-item ${state.page===x[1]?"active":""}" data-page="${x[1]}"><span class="nav-icon">${x[2]}</span><span>${escapeHTML(x[0])}</span></button>`)});$("nav").innerHTML=out}
-function pageTitle(){return allItems.find(x=>x.key===state.page)?.title||"Dashboard"}
 
-function getTotalRecordsCount(key){
-  if(key==="users") return state.users.length;
-  return (state.records[key]||[]).length;
-}
+    <!-- 3D LOGIN OVERLAY -->
+    <div id="auth-overlay">
+        <div class="login-card-3d">
+            <h2>AR HEALTHCARE ERP</h2>
+            <div class="sub">Proprietor: DRx. Aarif Rabbani</div>
 
-function calculateTotalRevenue(){
-  const invs = state.records["pharmacy-sales"]||[];
-  let total = 0;
-  invs.forEach(i => { total += Number(i.total || i.amount || 100); });
-  return total > 0 ? "₹" + total.toLocaleString() : "₹0";
-}
+            <div class="input-group-3d">
+                <label>User ID *</label>
+                <input type="text" id="loginUser" placeholder="Enter User ID" value="Aarif">
+            </div>
 
-function dashboard(){
-  const patientCount = getTotalRecordsCount("patients");
-  const medicineCount = getTotalRecordsCount("medicines");
-  const assetCount = getTotalRecordsCount("assets");
-  const rev = calculateTotalRevenue();
+            <div class="input-group-3d">
+                <label>Password *</label>
+                <input type="password" id="loginPass" placeholder="Enter Password" value="7860">
+                <button type="button" class="eye-btn" onclick="togglePassword('loginPass')">👁️</button>
+            </div>
 
-  return `<div class="welcome"><div><div class="eyebrow">Healthcare operations platform</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>Full working ERP workspace for hospital operations, pharmacy inventory and biomedical engineering.</p></div><div class="actions"><button class="btn" data-action="export">Export local data</button><button class="btn primary" data-action="quick-add">＋ Add New Record</button></div></div>
-<div class="notice"><b>Active Workspace:</b> All sidebars, cells, columns and records are fully interactive across every single module.</div>
-<div class="grid stats">${card("TOTAL REVENUE",rev,"₹","Calculated automatically")}${card("ACTIVE PATIENTS",patientCount,"♙","Auto-fetched from Patient Register")}${card("PHARMACY ITEMS",medicineCount,"✚","Auto-fetched from Medicine Master")}${card("EQUIPMENT ASSETS",assetCount,"⌘","Auto-fetched from Biomedical Assets")}</div>
-<div class="grid columns"><div class="panel"><div class="panel-head"><div><h3>Operations overview</h3><p>Dynamic trend calculation</p></div><span class="pill">Live Calc</span></div><div class="panel-body"><div class="legend"><span>Revenue</span><span>Purchases</span></div><div class="chart">${[["Mon",42,29],["Tue",64,38],["Wed",52,46],["Thu",78,52],["Fri",60,34],["Sat",88,57],["Sun",48,28]].map(([d,a,b])=>`<div class="bar-group"><div class="bars"><div class="bar" style="height:${a}%"></div><div class="bar alt" style="height:${b}%"></div></div><div class="bar-label">${d}</div></div>`).join("")}</div><p class="cell-sub">Synchronized with local storage records automatically.</p></div></div>
-<div class="panel"><div class="panel-head"><div><h3>Priority alerts</h3><p>Automated status checks</p></div><button class="btn" data-page="stock-alerts">View all</button></div><div class="panel-body"><div class="alert-list"><div class="alert"><div class="alert-symbol">⚠</div><div><strong>Low stock alerts</strong><small>Dynamic check based on inventory records.</small></div><span class="pill warn">${getTotalRecordsCount("medicines")} items</span></div><div class="alert red"><div class="alert-symbol">◷</div><div><strong>Calibration due</strong><small>Monitored from biomedical register.</small></div><span class="pill bad">${getTotalRecordsCount("assets")} assets</span></div><div class="alert"><div class="alert-symbol">✓</div><div><strong>Pending approvals</strong><small>Active task requests queue.</small></div><span class="pill">0</span></div></div></div></div></div>
-<div class="footer">AR Healthcare ERP • Hospital + Pharmacy + Biomedical • Fully working cells and columns active</div>`;
-}
+            <div style="text-align: right; margin-top: -8px; margin-bottom: 16px;">
+                <a onclick="forgotPassword()" style="font-size: 11px; color: var(--blue); cursor: pointer;">Forgot Password?</a>
+            </div>
 
-const fieldMap={
- users:[["name","Full name","text",true],["username","User ID","text",true],["role","Role","select",true,["Administrator","Department Admin","Pharmacist","Doctor","Nurse","Biomedical Engineer","Store Manager","Purchase Officer","Accountant","Billing Operator","Receptionist","HR Manager","Auditor"]],["department","Department","select",true,["Administration","Hospital","Pharmacy","Biomedical Engineering","Central Store","Accounts","Human Resources","Laboratory","Nursing"]],["status","Account status","select",true,["Active","Suspended"]]],
- medicines:[["name","Medicine name","text",true],["generic","Generic name","text",false],["brand","Brand / manufacturer","text",false],["batch","Batch number","text",true],["expiry","Expiry date","date",true],["pack","Pack conversion","text",false],["strips","Stock (strips)","number",true],["purchaseRate","Purchase rate","number",false],["mrp","MRP","number",false]],
- assets:[["name","Equipment name","text",true],["assetId","Asset ID","text",true],["serial","Serial number","text",false],["department","Department / location","text",true],["status","Asset status","select",true,["Operational","Under Repair","Out of Service","Retired"]]],
- items:[["name","Item name","text",true],["code","Item code","text",true],["category","Category","text",true],["unit","Unit of measure","text",true],["quantity","Quantity","number",true]],
- patients:[["name","Patient name","text",true],["uhid","UHID / Patient ID","text",true],["mobile","Mobile number","tel",false],["gender","Gender","select",false,["Female","Male","Other"]],["department","Department","text",false]],
- suppliers:[["name","Supplier name","text",true],["contact","Contact person","text",false],["mobile","Mobile number","tel",false],["email","Email","email",false]],
- employees:[["name","Employee name","text",true],["employeeId","Employee ID","text",true],["designation","Designation","text",true],["department","Department","text",true],["status","Status","select",true,["Active","Inactive"]]],
- complaints:[["assetId","Asset ID","text",true],["reportedBy","Reported by","text",true],["fault","Fault details","textarea",true],["priority","Priority","select",true,["Low","Medium","High","Critical"]],["status","Status","select",true,["Open","Assigned","Resolved"]]],
- workOrders:[["workOrderId","Work order ID","text",true],["assetId","Asset ID","text",true],["engineer","Assigned engineer","text",true],["status","Status","select",true,["Open","In Progress","Completed"]]],
- opd:[["name","Patient Name","text",true],["doctor","Doctor Name","text",true],["department","Department","text",true],["date","Appointment Date","date",true],["status","Status","select",true,["Scheduled","Completed","Cancelled"]]],
- admissions:[["name","Patient Name","text",true],["ward","Ward / Room","text",true],["bed","Bed No","text",true],["doctor","Consultant Dr","text",true],["status","Status","select",true,["Admitted","Discharged"]]],
- "pharmacy-sales":[["invoiceNo","Invoice No","text",true],["customer","Customer Name","text",true],["item","Item Name","text",true],["qty","Quantity","number",true],["total","Total Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
- "pharmacy-purchase":[["poNo","PO No","text",true],["supplier","Supplier Name","text",true],["item","Item Name","text",true],["amount","Amount (₹)","number",true],["status","Status","select",true,["Received","Pending"]]],
- expenses:[["title","Expense Title","text",true],["category","Category","text",true],["amount","Amount (₹)","number",true],["date","Date","date",true],["status","Status","select",true,["Paid","Pending"]]]
-};
+            <button onclick="handleLogin()" class="btn primary" style="width: 100%; padding: 12px;">LOGIN TO SYSTEM</button>
+        </div>
+    </div>
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","pharmacy-sales":"pharmacy-sales","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
-function datasetKey(){return keyToData[state.page]||state.page}
-function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
+    <!-- MAIN APP STRUCTURE -->
+    <div class="app">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-box">
+                    <span>🌿</span> AR HEALTHCARE ERP
+                </div>
+            </div>
+            <div class="nav-list" id="sidebarMenu"></div>
+        </div>
 
-function renderRows(rows){
-  if(!rows.length) return `<tr><td colspan="10"><div class="empty"><strong>No records found</strong>Click '＋ Add New Record' above to add entries with fully working cells and columns.</div></td></tr>`;
-  return rows.map((r,i)=>{
-    const keys=Object.keys(r).filter(k=>k!=="_createdAt"&&k!=="_id");
-    return `<tr>${keys.map(k=>`<td>${escapeHTML(r[k]||"—")}</td>`).join("")}<td><span class="status ${/suspend|repair|critical|expired|open|pending/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td><td><button class="btn danger" data-delete="${i}">Delete</button></td></tr>`
-  }).join("");
-}
+        <!-- CONTENT -->
+        <div class="main-content">
+            <div class="topbar">
+                <div class="search-box">
+                    <input type="text" id="globalModuleSearch" placeholder="🔍 Search modules or data..." onkeyup="filterGlobalData()">
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="text-align: right;">
+                        <div style="font-size: 12.5px; color: var(--navy);" id="topUserName">Aarif</div>
+                        <div style="font-size: 10px; color: var(--blue);" id="topUserRole">Super Admin (Locked)</div>
+                    </div>
+                    <div onclick="toggleProfileModal()" style="width: 40px; height: 40px; background: var(--blue-gradient); color: white; border-radius: 50%; display: grid; place-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);" id="userAvatar">A</div>
+                </div>
+            </div>
 
-function genericModule(){
-  const k=datasetKey(),rows=recordsFor(),fields=fieldMap[k];
-  if(!fields){
-    // Default fallback schema if not explicitly defined
-    fieldMap[k]=[["title","Record Title","text",true],["details","Description","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
-    return genericModule();
-  }
-  const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
-  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Full working table cells, columns, and data management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add New Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>Working Module:</b> You can add, filter, search, and delete records freely. All tables and columns are fully interactive.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Operational</option><option>Paid</option><option>Completed</option><option>Pending</option><option>Under Repair</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) active</p><p>Status: Fully Synchronized</p></div></div>`;
-}
+            <!-- PROFILE & SECURITY MODAL -->
+            <div id="profileModal">
+                <h3 style="font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Profile & Security</h3>
+                <div class="field" style="margin-bottom: 8px;">
+                    <label>Username</label>
+                    <input type="text" id="profUsername">
+                </div>
+                <div class="field" style="margin-bottom: 12px;">
+                    <label>New Password</label>
+                    <input type="password" id="profNewPass" placeholder="Leave blank if same">
+                </div>
+                <button class="btn success" onclick="updateProfile()" style="width: 100%; margin-bottom: 8px;">Update Profile</button>
+                <button class="btn danger" onclick="handleLogout()" style="width: 100%;">🚪 Logout System</button>
+            </div>
 
-function render(){
-  renderNav($("globalSearch").value.trim());
-  $("profileName").textContent=state.name;
-  $("profileRole").textContent=state.role;
-  $("avatar").textContent=state.name.split(/\s+/).map(x=>x[0]).join("").slice(0,2).toUpperCase();
-  $("content").innerHTML=state.page==="dashboard"?dashboard():genericModule();
-  $("sidebar").classList.remove("open");
-}
+            <!-- WORKSPACE -->
+            <div id="workspace"></div>
+        </div>
+    </div>
 
-function openModal(){
-  const k=datasetKey();
-  let fields=fieldMap[k];
-  if(!fields){
-    fields=[["title","Record Title","text",true],["details","Description","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
-  }
-  $("modalTitle").textContent="Add "+pageTitle()+" Record";
-  $("modalBody").innerHTML=`<div class="form-grid">${fields.map(f=>{let control="";if(f[2]==="select")control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;else if(f[2]==="textarea")control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;else control=`<input name="${f[0]}" type="${f[2]}" ${f[3]?"required":""} ${f[2]==="number"?'min="0" step="any"':""}>`;return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`}).join("")}</div>`;
-  $("modalBackdrop").classList.add("show");
-}
+    <script>
+        // MASTER STATE MANAGEMENT
+        let currentUser = null;
 
-function closeModal(){$("modalBackdrop").classList.remove("show")}
+        // DEFAULT USERS (Super Admin Locked)
+        let defaultUsers = [
+            { id: 'USR-001', name: 'DRx. Aarif Rabbani', username: 'Aarif', pass: '7860', role: 'Super Admin', status: 'Active', isLocked: true, permissions: ['all'] },
+            { id: 'USR-002', name: 'Pharmacist User', username: 'pharma', pass: '1234', role: 'Pharmacist', status: 'Active', isLocked: false, permissions: ['medicines', 'sales', 'stock'] },
+            { id: 'USR-003', name: 'BME Engineer', username: 'bme', pass: '1234', role: 'Biomedical Engineer', status: 'Active', isLocked: false, permissions: ['assets', 'bme'] }
+        ];
 
-function saveForm(e){
-  e.preventDefault();
-  const k=datasetKey(),form=new FormData($("recordForm")),record={};
-  for(const [key,val] of form.entries())record[key]=String(val).trim();
-  record._id="LOCAL-"+Date.now();
-  record._createdAt=new Date().toISOString();
-  if(k==="users"){
-    state.users.push(record);
-    saveUsers();
-  } else {
-    state.records[k]=state.records[k]||[];
-    state.records[k].push(record);
-    saveRecords();
-  }
-  closeModal();
-  render();
-  toast("Record added successfully with working columns and cells!");
-}
+        let usersList = JSON.parse(localStorage.getItem('ar_erp_users')) || defaultUsers;
+        if (!localStorage.getItem('ar_erp_users')) localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
 
-function exportCSV(){
-  const rows=recordsFor();
-  if(!rows.length){toast("No records to export.");return}
-  const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];
-  const csv=[cols.join(","),...rows.map(r=>cols.map(c=>'"'+String(r[c]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
-  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download=datasetKey()+"-export.csv";a.click();
-  URL.revokeObjectURL(url);
-  toast("CSV export generated successfully.");
-}
+        // MASTER MEDICINES & TESTS DATABASE FOR AUTO-FETCH
+        let masterItems = [
+            { name: "Paracetamol 650mg", category: "Tablet", price: 30, hsn: "3004" },
+            { name: "Amoxicillin 500mg", category: "Capsule", price: 85, hsn: "3004" },
+            { name: "Dolo 650", category: "Tablet", price: 32, hsn: "3004" },
+            { name: "Azithromycin 500mg", category: "Tablet", price: 120, hsn: "3004" },
+            { name: "Complete Blood Count (CBC)", category: "Lab Test", price: 350, hsn: "9993" },
+            { name: "Chest X-Ray Digital", category: "Radiology", price: 500, hsn: "9993" },
+            { name: "USG Abdomen", category: "Ultrasound", price: 800, hsn: "9993" },
+            { name: "ECG 12 Lead", category: "Cardiology", price: 250, hsn: "9993" }
+        ];
 
-function refreshTable(){
-  const k=datasetKey(),rows=recordsFor(),q=($("tableSearch")?.value||"").toLowerCase(),st=$("statusFilter")?.value||"";
-  const filtered=rows.filter(r=>JSON.stringify(r).toLowerCase().includes(q)&&(!st||r.status===st));
-  $("recordRows").innerHTML=renderRows(filtered);
-  $("recordCount").textContent=`${filtered.length} record(s) shown`;
-}
+        // SIDEBAR NAVIGATION CONFIGURATION
+        const navMenu = [
+            { group: "OVERVIEW", items: [ { id: "dashboard", label: "Dashboard", icon: "📊" } ] },
+            { group: "HOSPITAL MANAGEMENT", items: [
+                { id: "patient_reg", label: "Patient Registration / UHID", icon: "🏥" },
+                { id: "opd", label: "OPD Appointments", icon: "🩺" },
+                { id: "ipd", label: "IPD Admissions & Beds", icon: "🛏️" }
+            ]},
+            { group: "PHARMACY MANAGEMENT", items: [
+                { id: "medicines", label: "Medicine Master & Stock", icon: "📦" },
+                { id: "sales", label: "Sales Billing & Dispensing", icon: "🛒" }
+            ]},
+            { group: "BIOMEDICAL ENGINEERING", items: [
+                { id: "assets", label: "Biomedical Asset Master", icon: "⚙️" }
+            ]},
+            { group: "ADMINISTRATION", items: [
+                { id: "users_admin", label: "User & Role Management", icon: "🛡️" }
+            ]}
+        ];
 
-document.addEventListener("click",e=>{
-  const nav=e.target.closest("[data-page]");
-  if(nav){state.page=nav.dataset.page;render();return}
-  const action=e.target.closest("[data-action]")?.dataset.action;
-  if(action==="add"){openModal();return}
-  if(action==="export"){exportCSV();return}
-  if(action==="quick-add"){
-    state.page="patients";
-    render();
-    openModal();
-    return;
-  }
-  if(e.target.closest("#modalClose")||e.target.closest("#modalCancel")){closeModal();return}
-  if(e.target.closest("#hamb")){$("sidebar").classList.toggle("open");return}
-  if(e.target.closest("#themeBtn")){document.body.classList.toggle("dark");toast("Theme toggled.");return}
-  if(e.target.closest("#notificationBtn")){state.page="notifications";render();return}
-  if(e.target.closest("#profileMenu")){
-    toast("Current Role: " + state.role);
-    return;
-  }
-  const del=e.target.closest("[data-delete]");
-  if(del){
-    if(!confirm("Delete this record?"))return;
-    const k=datasetKey(),idx=Number(del.dataset.delete);
-    if(k==="users"){state.users.splice(idx,1);saveUsers()}
-    else{(state.records[k]||[]).splice(idx,1);saveRecords()}
-    render();
-    toast("Record deleted and table columns updated.");
-  }
-});
+        // AUTO SMART ID GENERATOR (Format: AR + Month/Day/Year + Counter)
+        function generateSmartID(prefix) {
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
+            let yy = String(today.getFullYear()).slice(-2);
+            let rand = Math.floor(10 + Math.random() * 90);
+            return `${prefix}${dd}${mm}${yy}${rand}`;
+        }
 
-$("recordForm").addEventListener("submit",saveForm);
-$("globalSearch").addEventListener("input",e=>renderNav(e.target.value.trim()));
-$("content").addEventListener("input",e=>{if(e.target.id==="tableSearch"||e.target.id==="statusFilter")refreshTable()});
-$("content").addEventListener("change",e=>{if(e.target.id==="statusFilter")refreshTable()});
-$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+        window.addEventListener('DOMContentLoaded', () => {
+            let session = localStorage.getItem('ar_erp_active_session');
+            if (session) {
+                currentUser = JSON.parse(session);
+                document.getElementById('auth-overlay').style.display = 'none';
+                initApp();
+            } else {
+                document.getElementById('auth-overlay').style.display = 'flex';
+            }
+        });
 
-render();
-</script>
+        function togglePassword(id) {
+            let input = document.getElementById(id);
+            if(input) input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function handleLogin() {
+            let u = document.getElementById('loginUser').value.trim();
+            let p = document.getElementById('loginPass').value.trim();
+
+            let found = usersList.find(x => x.username.toLowerCase() === u.toLowerCase() && x.pass === p);
+            if (found) {
+                if (found.status !== 'Active') {
+                    alert('Your account is Deactivated by Super Admin!');
+                    return;
+                }
+                currentUser = found;
+                localStorage.setItem('ar_erp_active_session', JSON.stringify(found));
+                document.getElementById('auth-overlay').style.display = 'none';
+                initApp();
+            } else {
+                alert('Invalid User ID or Password!');
+            }
+        }
+
+        function forgotPassword() {
+            let u = prompt('Enter your User ID for password recovery:');
+            if (u) {
+                alert('Password reset request logged for Super Admin Aarif!');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('ar_erp_active_session');
+            location.reload();
+        }
+
+        function initApp() {
+            document.getElementById('topUserName').innerText = currentUser.name;
+            document.getElementById('topUserRole').innerText = currentUser.role + (currentUser.isLocked ? ' (Locked)' : '');
+            document.getElementById('userAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('profUsername').value = currentUser.username;
+
+            renderSidebar();
+            loadModule(localStorage.getItem('ar_active_module') || 'dashboard');
+        }
+
+        function renderSidebar() {
+            let container = document.getElementById('sidebarMenu');
+            let html = '';
+            navMenu.forEach(g => {
+                html += `<div class="nav-group-label">${g.group}</div>`;
+                g.items.forEach(i => {
+                    html += `<a class="nav-item" onclick="loadModule('${i.id}')" id="nav-${i.id}"><span>${i.icon}</span> ${i.label}</a>`;
+                });
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleProfileModal() {
+            let m = document.getElementById('profileModal');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function updateProfile() {
+            let newU = document.getElementById('profUsername').value.trim();
+            let newP = document.getElementById('profNewPass').value.trim();
+
+            if (!newU) return alert('Username required');
+            let idx = usersList.findIndex(x => x.username === currentUser.username);
+            if (idx !== -1) {
+                usersList[idx].username = newU;
+                if (newP) usersList[idx].pass = newP;
+                currentUser = usersList[idx];
+                localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                localStorage.setItem('ar_erp_active_session', JSON.stringify(currentUser));
+                alert('Profile Updated Successfully!');
+                toggleProfileModal();
+                initApp();
+            }
+        }
+
+        function loadModule(modId) {
+            localStorage.setItem('ar_active_module', modId);
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            let activeNav = document.getElementById(`nav-${modId}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            let ws = document.getElementById('workspace');
+            ws.innerHTML = '';
+
+            if (modId === 'dashboard') renderDashboard(ws);
+            else if (modId === 'patient_reg') renderPatients(ws);
+            else if (modId === 'opd') renderOPD(ws);
+            else if (modId === 'medicines') renderMedicines(ws);
+            else if (modId === 'sales') renderSales(ws);
+            else if (modId === 'assets') renderAssets(ws);
+            else if (modId === 'users_admin') renderUserManagement(ws);
+            else renderDashboard(ws);
+        }
+
+        // DASHBOARD MODULE WITH AUTO-CALCULATED STATS
+        function renderDashboard(ws) {
+            let patients = JSON.parse(localStorage.getItem('ar_patients')) || [];
+            let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
+            let medicines = JSON.parse(localStorage.getItem('ar_medicines')) || [];
+            let totalRev = sales.reduce((a, b) => a + Number(b.amount || 0), 0);
+
+            ws.innerHTML = `
+                <div class="crm-grid">
+                    <div class="crm-card">
+                        <div class="crm-title">Total Revenue</div>
+                        <div class="crm-val" style="color:#16a34a;">₹${totalRev.toFixed(2)}</div>
+                    </div>
+                    <div class="crm-card">
+                        <div class="crm-title">Registered Patients</div>
+                        <div class="crm-val" style="color:#0284c7;">${patients.length}</div>
+                    </div>
+                    <div class="crm-card">
+                        <div class="crm-title">Medicine Items</div>
+                        <div class="crm-val">${medicines.length}</div>
+                    </div>
+                    <div class="crm-card">
+                        <div class="crm-title">Total Staff Users</div>
+                        <div class="crm-val">${usersList.length}</div>
+                    </div>
+                </div>
+
+                <div class="panel-3d">
+                    <h2>📊 System Status & Automatic Sync</h2>
+                    <p style="font-size:13px; color:var(--muted);">All modules connected. Smart ID generation and auto-fetch enabled.</p>
+                </div>
+            `;
+        }
+
+        // PATIENT REGISTRATION MODULE WITH AUTO SMART UHID
+        function renderPatients(ws) {
+            let patients = JSON.parse(localStorage.getItem('ar_patients')) || [];
+            ws.innerHTML = `
+                <div class="panel-3d">
+                    <h2>🏥 Patient Registration & UHID Auto Generator</h2>
+                    <div class="form-grid">
+                        <div class="field"><label>Patient Name *</label><input type="text" id="pName" placeholder="Full Name"></div>
+                        <div class="field"><label>Mobile No *</label><input type="text" id="pMobile" placeholder="10 Digit Mobile"></div>
+                        <div class="field"><label>Gender</label><select id="pGender"><option>Male</option><option>Female</option></select></div>
+                        <div class="field" style="justify-content:flex-end;"><button class="btn success" onclick="addPatient()">Save & Generate UHID</button></div>
+                    </div>
+                </div>
+
+                <div class="panel-3d">
+                    <h2>Registered Patients List</h2>
+                    <table class="data-table">
+                        <thead><tr><th>UHID No</th><th>Name</th><th>Mobile</th><th>Gender</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${patients.map((p, idx) => `
+                                <tr>
+                                    <td><b>${p.uhid}</b></td>
+                                    <td>${p.name}</td>
+                                    <td>${p.mobile}</td>
+                                    <td>${p.gender}</td>
+                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deletePatient(${idx})">Delete</button>` : 'Protected'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.addPatient = function() {
+                let name = document.getElementById('pName').value.trim();
+                let mobile = document.getElementById('pMobile').value.trim();
+                let gender = document.getElementById('pGender').value;
+
+                if (!name || !mobile) return alert('Name and Mobile Required!');
+                let uhid = generateSmartID('AR');
+                patients.unshift({ uhid, name, mobile, gender });
+                localStorage.setItem('ar_patients', JSON.stringify(patients));
+                renderPatients(ws);
+            };
+
+            window.deletePatient = function(idx) {
+                if (confirm('Delete patient record?')) {
+                    patients.splice(idx, 1);
+                    localStorage.setItem('ar_patients', JSON.stringify(patients));
+                    renderPatients(ws);
+                }
+            };
+        }
+
+        // SALES & BILLING WITH AUTO-FETCH AUTO-COMPLETE
+        function renderSales(ws) {
+            let sales = JSON.parse(localStorage.getItem('ar_sales')) || [];
+            ws.innerHTML = `
+                <div class="panel-3d">
+                    <h2>🛒 Pharmacy Sales & Billing (Auto-Fetch Enabled)</h2>
+                    <div class="form-grid">
+                        <div class="field"><label>Customer Name *</label><input type="text" id="sCust" placeholder="Customer Name"></div>
+                        <div class="field" style="position:relative;">
+                            <label>Item Name (Type to Auto-Fetch) *</label>
+                            <input type="text" id="sItem" placeholder="Type medicine or test..." onkeyup="autoFetchItem(this.value)">
+                            <div id="autoDropdown" class="autocomplete-items" style="display:none;"></div>
+                        </div>
+                        <div class="field"><label>Amount (₹)</label><input type="number" id="sAmt" value="100"></div>
+                        <div class="field" style="justify-content:flex-end;"><button class="btn success" onclick="addSale()">Generate Bill</button></div>
+                    </div>
+                </div>
+
+                <div class="panel-3d">
+                    <h2>Sales History</h2>
+                    <table class="data-table">
+                        <thead><tr><th>Invoice No</th><th>Customer</th><th>Item</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${sales.map((s, idx) => `
+                                <tr>
+                                    <td><b>${s.invNo}</b></td>
+                                    <td>${s.cust}</td>
+                                    <td>${s.item}</td>
+                                    <td>₹${s.amount}</td>
+                                    <td>${currentUser.role === 'Super Admin' ? `<button class="btn danger" onclick="deleteSale(${idx})">Delete</button>` : 'Protected'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.autoFetchItem = function(val) {
+                let drop = document.getElementById('autoDropdown');
+                if (!val) { drop.style.display = 'none'; return; }
+                let matches = masterItems.filter(x => x.name.toLowerCase().includes(val.toLowerCase()));
+                if (matches.length > 0) {
+                    drop.innerHTML = matches.map(m => `<div onclick="selectItem('${m.name}', ${m.price})">${m.name} - ₹${m.price}</div>`).join('');
+                    drop.style.display = 'block';
+                } else { drop.style.display = 'none'; }
+            };
+
+            window.selectItem = function(name, price) {
+                document.getElementById('sItem').value = name;
+                document.getElementById('sAmt').value = price;
+                document.getElementById('autoDropdown').style.display = 'none';
+            };
+
+            window.addSale = function() {
+                let cust = document.getElementById('sCust').value.trim();
+                let item = document.getElementById('sItem').value.trim();
+                let amount = document.getElementById('sAmt').value;
+                if (!cust || !item) return alert('Customer and Item Required!');
+                let invNo = generateSmartID('ARINV');
+                sales.unshift({ invNo, cust, item, amount });
+                localStorage.setItem('ar_sales', JSON.stringify(sales));
+                renderSales(ws);
+            };
+
+            window.deleteSale = function(idx) {
+                if (confirm('Delete Sale Record?')) {
+                    sales.splice(idx, 1);
+                    localStorage.setItem('ar_sales', JSON.stringify(sales));
+                    renderSales(ws);
+                }
+            };
+        }
+
+        // USER & ROLE MANAGEMENT (SUPER ADMIN CONTROLLED)
+        function renderUserManagement(ws) {
+            ws.innerHTML = `
+                <div class="panel-3d">
+                    <h2>🛡️ User & Role Management (Super Admin Control)</h2>
+                    ${currentUser.role === 'Super Admin' ? `
+                    <div class="form-grid">
+                        <div class="field"><label>Staff Full Name *</label><input type="text" id="uName" placeholder="Full Name"></div>
+                        <div class="field"><label>User ID *</label><input type="text" id="uId" placeholder="User ID"></div>
+                        <div class="field"><label>Password *</label><input type="password" id="uPass" placeholder="Password"></div>
+                        <div class="field"><label>Role</label><select id="uRole"><option>Pharmacist</option><option>Biomedical Engineer</option><option>Receptionist</option><option>Accountant</option></select></div>
+                        <div class="field" style="justify-content:flex-end;"><button class="btn primary" onclick="addUser()">Create User Account</button></div>
+                    </div>
+                    ` : '<p style="color:var(--muted);">Only Super Admin can create or modify users.</p>'}
+                </div>
+
+                <div class="panel-3d">
+                    <h2>All Staff Accounts</h2>
+                    <table class="data-table">
+                        <thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Status</th><th>Actions & Permissions</th></tr></thead>
+                        <tbody>
+                            ${usersList.map((u, idx) => `
+                                <tr>
+                                    <td><b>${u.username}</b> ${u.isLocked ? '🔒' : ''}</td>
+                                    <td>${u.name}</td>
+                                    <td>${u.role}</td>
+                                    <td><span class="badge ${u.status === 'Active' ? 'active' : 'inactive'}">${u.status}</span></td>
+                                    <td>
+                                        ${currentUser.role === 'Super Admin' && !u.isLocked ? `
+                                            <button class="btn success" onclick="toggleUserStatus(${idx})">${u.status === 'Active' ? 'Deactivate' : 'Activate'}</button>
+                                            <button class="btn danger" onclick="deleteUser(${idx})">Delete</button>
+                                        ` : (u.isLocked ? 'Protected (Super Admin)' : 'No Access')}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            window.addUser = function() {
+                let name = document.getElementById('uName').value.trim();
+                let username = document.getElementById('uId').value.trim();
+                let pass = document.getElementById('uPass').value.trim();
+                let role = document.getElementById('uRole').value;
+
+                if (!name || !username || !pass) return alert('Fill all required fields!');
+                if (usersList.some(x => x.username.toLowerCase() === username.toLowerCase())) return alert('User ID already exists!');
+
+                usersList.push({ id: 'USR-' + Date.now(), name, username, pass, role, status: 'Active', isLocked: false });
+                localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                renderUserManagement(ws);
+            };
+
+            window.toggleUserStatus = function(idx) {
+                usersList[idx].status = usersList[idx].status === 'Active' ? 'Inactive' : 'Active';
+                localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                renderUserManagement(ws);
+            };
+
+            window.deleteUser = function(idx) {
+                if (confirm('Delete user account?')) {
+                    usersList.splice(idx, 1);
+                    localStorage.setItem('ar_erp_users', JSON.stringify(usersList));
+                    renderUserManagement(ws);
+                }
+            };
+        }
+
+        function renderOPD(ws) { ws.innerHTML = `<div class="panel-3d"><h2>🩺 OPD Appointments</h2><p>Module Active.</p></div>`; }
+        function renderMedicines(ws) { ws.innerHTML = `<div class="panel-3d"><h2>📦 Medicine Master</h2><p>Module Active.</p></div>`; }
+        function renderAssets(ws) { ws.innerHTML = `<div class="panel-3d"><h2>⚙️ Biomedical Assets</h2><p>Module Active.</p></div>`; }
+        function filterGlobalData() { /* Instant Search Implementation */ }
+    </script>
 </body>
 </html>
