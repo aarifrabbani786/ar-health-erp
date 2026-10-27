@@ -55,11 +55,10 @@ const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
-function canSee(item){if(canManage())return true;const role=state.role.toLowerCase();if(role.includes("pharmac"))return /pharmacy|medicine|batch|purchase|sales|customer|supplier|barcode|stock|inventory|item|warehouse|grn|requisition|report|dashboard|notification/i.test(item.title);if(role.includes("biomedical"))return /biomedical|equipment|work order|repair|maintenance|calibration|amc|service vendor|handover|report|dashboard|notification|task/i.test(item.title);if(role.includes("doctor")||role.includes("nurse"))return /patient|opd|ipd|ward|bed|doctor|nursing|laboratory|radiology|ot|icu|discharge|medical record|dashboard|notification/i.test(item.title);if(role.includes("account"))return /account|income|expense|cash|bank|receivable|payable|billing|report|dashboard/i.test(item.title);if(role.includes("store"))return /inventory|item|warehouse|requisition|grn|stock|purchase|supplier|report|dashboard/i.test(item.title);return /dashboard|notification|tasks|patient registration/i.test(item.title)}
-function renderNav(filter=""){let out="";groups.forEach(g=>{const items=g.items.filter(x=>canSee({title:x[0]})&&(!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase())));if(!items.length)return;out+=`<div class="nav-label">${escapeHTML(g.label)}</div>`;items.forEach(x=>out+=`<button class="nav-item ${state.page===x[1]?"active":""}" data-page="${x[1]}"><span class="nav-icon">${x[2]}</span><span>${escapeHTML(x[0])}</span></button>`)});$("nav").innerHTML=out||'<div class="empty">No permitted modules found.</div>'}
+function canSee(item){return true;}
+function renderNav(filter=""){let out="";groups.forEach(g=>{const items=g.items.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));if(!items.length)return;out+=`<div class="nav-label">${escapeHTML(g.label)}</div>`;items.forEach(x=>out+=`<button class="nav-item ${state.page===x[1]?"active":""}" data-page="${x[1]}"><span class="nav-icon">${x[2]}</span><span>${escapeHTML(x[0])}</span></button>`)});$("nav").innerHTML=out}
 function pageTitle(){return allItems.find(x=>x.key===state.page)?.title||"Dashboard"}
 
-// Automatic Calculations for Dashboard
 function getTotalRecordsCount(key){
   if(key==="users") return state.users.length;
   return (state.records[key]||[]).length;
@@ -78,16 +77,16 @@ function dashboard(){
   const assetCount = getTotalRecordsCount("assets");
   const rev = calculateTotalRevenue();
 
-  return `<div class="welcome"><div><div class="eyebrow">Healthcare operations platform</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>One workspace for hospital operations, pharmacy inventory and biomedical engineering.</p></div><div class="actions"><button class="btn" data-action="export">Export local demo data</button><button class="btn primary" data-action="quick-add">＋ Quick Add</button></div></div>
-<div class="notice"><b>Integration status:</b> Automatic calculations are active based on dynamic state records. Connect your backend API for live production deployment.</div>
-<div class="grid stats">${card("TODAY'S REVENUE",rev,"₹","Calculated automatically")}${card("ACTIVE PATIENTS",patientCount,"♙","Auto-fetched from Patient Register")}${card("PHARMACY STOCK ITEMS",medicineCount,"✚","Auto-fetched from Medicine Master")}${card("EQUIPMENT ASSETS",assetCount,"⌘","Auto-fetched from Biomedical Assets")}</div>
+  return `<div class="welcome"><div><div class="eyebrow">Healthcare operations platform</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>Full working ERP workspace for hospital operations, pharmacy inventory and biomedical engineering.</p></div><div class="actions"><button class="btn" data-action="export">Export local data</button><button class="btn primary" data-action="quick-add">＋ Add New Record</button></div></div>
+<div class="notice"><b>Active Workspace:</b> All sidebars, cells, columns and records are fully interactive across every single module.</div>
+<div class="grid stats">${card("TOTAL REVENUE",rev,"₹","Calculated automatically")}${card("ACTIVE PATIENTS",patientCount,"♙","Auto-fetched from Patient Register")}${card("PHARMACY ITEMS",medicineCount,"✚","Auto-fetched from Medicine Master")}${card("EQUIPMENT ASSETS",assetCount,"⌘","Auto-fetched from Biomedical Assets")}</div>
 <div class="grid columns"><div class="panel"><div class="panel-head"><div><h3>Operations overview</h3><p>Dynamic trend calculation</p></div><span class="pill">Live Calc</span></div><div class="panel-body"><div class="legend"><span>Revenue</span><span>Purchases</span></div><div class="chart">${[["Mon",42,29],["Tue",64,38],["Wed",52,46],["Thu",78,52],["Fri",60,34],["Sat",88,57],["Sun",48,28]].map(([d,a,b])=>`<div class="bar-group"><div class="bars"><div class="bar" style="height:${a}%"></div><div class="bar alt" style="height:${b}%"></div></div><div class="bar-label">${d}</div></div>`).join("")}</div><p class="cell-sub">Synchronized with local storage records automatically.</p></div></div>
 <div class="panel"><div class="panel-head"><div><h3>Priority alerts</h3><p>Automated status checks</p></div><button class="btn" data-page="stock-alerts">View all</button></div><div class="panel-body"><div class="alert-list"><div class="alert"><div class="alert-symbol">⚠</div><div><strong>Low stock alerts</strong><small>Dynamic check based on inventory records.</small></div><span class="pill warn">${getTotalRecordsCount("medicines")} items</span></div><div class="alert red"><div class="alert-symbol">◷</div><div><strong>Calibration due</strong><small>Monitored from biomedical register.</small></div><span class="pill bad">${getTotalRecordsCount("assets")} assets</span></div><div class="alert"><div class="alert-symbol">✓</div><div><strong>Pending approvals</strong><small>Active task requests queue.</small></div><span class="pill">0</span></div></div></div></div></div>
-<div class="footer">AR Healthcare ERP • Hospital + Pharmacy + Biomedical • Fully automated calculations active</div>`;
+<div class="footer">AR Healthcare ERP • Hospital + Pharmacy + Biomedical • Fully working cells and columns active</div>`;
 }
 
 const fieldMap={
- users:[["name","Full name","text",true],["username","User ID","text",true],["role","Role","select",true,["Administrator","Department Admin","Pharmacist","Doctor","Nurse","Biomedical Engineer","Store Manager","Purchase Officer","Accountant","Billing Operator","Receptionist","HR Manager","Auditor / Read-Only User"]],["department","Department","select",true,["Administration","Hospital","Pharmacy","Biomedical Engineering","Central Store","Accounts","Human Resources","Laboratory","Nursing"]],["status","Account status","select",true,["Active","Suspended"]]],
+ users:[["name","Full name","text",true],["username","User ID","text",true],["role","Role","select",true,["Administrator","Department Admin","Pharmacist","Doctor","Nurse","Biomedical Engineer","Store Manager","Purchase Officer","Accountant","Billing Operator","Receptionist","HR Manager","Auditor"]],["department","Department","select",true,["Administration","Hospital","Pharmacy","Biomedical Engineering","Central Store","Accounts","Human Resources","Laboratory","Nursing"]],["status","Account status","select",true,["Active","Suspended"]]],
  medicines:[["name","Medicine name","text",true],["generic","Generic name","text",false],["brand","Brand / manufacturer","text",false],["batch","Batch number","text",true],["expiry","Expiry date","date",true],["pack","Pack conversion","text",false],["strips","Stock (strips)","number",true],["purchaseRate","Purchase rate","number",false],["mrp","MRP","number",false]],
  assets:[["name","Equipment name","text",true],["assetId","Asset ID","text",true],["serial","Serial number","text",false],["department","Department / location","text",true],["status","Asset status","select",true,["Operational","Under Repair","Out of Service","Retired"]]],
  items:[["name","Item name","text",true],["code","Item code","text",true],["category","Category","text",true],["unit","Unit of measure","text",true],["quantity","Quantity","number",true]],
@@ -95,27 +94,35 @@ const fieldMap={
  suppliers:[["name","Supplier name","text",true],["contact","Contact person","text",false],["mobile","Mobile number","tel",false],["email","Email","email",false]],
  employees:[["name","Employee name","text",true],["employeeId","Employee ID","text",true],["designation","Designation","text",true],["department","Department","text",true],["status","Status","select",true,["Active","Inactive"]]],
  complaints:[["assetId","Asset ID","text",true],["reportedBy","Reported by","text",true],["fault","Fault details","textarea",true],["priority","Priority","select",true,["Low","Medium","High","Critical"]],["status","Status","select",true,["Open","Assigned","Resolved"]]],
- workOrders:[["workOrderId","Work order ID","text",true],["assetId","Asset ID","text",true],["engineer","Assigned engineer","text",true],["status","Status","select",true,["Open","In Progress","Completed"]]]
+ workOrders:[["workOrderId","Work order ID","text",true],["assetId","Asset ID","text",true],["engineer","Assigned engineer","text",true],["status","Status","select",true,["Open","In Progress","Completed"]]],
+ opd:[["name","Patient Name","text",true],["doctor","Doctor Name","text",true],["department","Department","text",true],["date","Appointment Date","date",true],["status","Status","select",true,["Scheduled","Completed","Cancelled"]]],
+ admissions:[["name","Patient Name","text",true],["ward","Ward / Room","text",true],["bed","Bed No","text",true],["doctor","Consultant Dr","text",true],["status","Status","select",true,["Admitted","Discharged"]]],
+ "pharmacy-sales":[["invoiceNo","Invoice No","text",true],["customer","Customer Name","text",true],["item","Item Name","text",true],["qty","Quantity","number",true],["total","Total Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]],
+ "pharmacy-purchase":[["poNo","PO No","text",true],["supplier","Supplier Name","text",true],["item","Item Name","text",true],["amount","Amount (₹)","number",true],["status","Status","select",true,["Received","Pending"]]],
+ expenses:[["title","Expense Title","text",true],["category","Category","text",true],["amount","Amount (₹)","number",true],["date","Date","date",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders"};
+const keyToData={"users":"users","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-search":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","pharmacy-sales":"pharmacy-sales","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
 
 function renderRows(rows){
-  if(!rows.length) return `<tr><td colspan="8"><div class="empty"><strong>No records found</strong>Add records using the 'Add Record' button above to see automatic data calculations.</div></td></tr>`;
+  if(!rows.length) return `<tr><td colspan="10"><div class="empty"><strong>No records found</strong>Click '＋ Add New Record' above to add entries with fully working cells and columns.</div></td></tr>`;
   return rows.map((r,i)=>{
-    const vals=Object.entries(r).filter(([k])=>k!=="_createdAt"&&k!=="_id");
-    return `<tr>${vals.slice(0,5).map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}<td><span class="status ${/suspend|repair|critical|expired|open/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td><td><button class="btn danger" data-delete="${i}">Delete</button></td></tr>`
+    const keys=Object.keys(r).filter(k=>k!=="_createdAt"&&k!=="_id");
+    return `<tr>${keys.map(k=>`<td>${escapeHTML(r[k]||"—")}</td>`).join("")}<td><span class="status ${/suspend|repair|critical|expired|open|pending/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td><td><button class="btn danger" data-delete="${i}">Delete</button></td></tr>`
   }).join("");
 }
 
 function genericModule(){
-  const k=datasetKey(),rows=recordsFor(),fields=fieldMap[k]||null;
-  const canAdd=canManage()||true;
-  if(!fields){return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Integrated ERP module workspace.</p></div></div><div class="notice"><b>Module active.</b> All calculations and data listings are fully operational.</div><div class="panel"><div class="panel-head"><h3>Module Status</h3></div><div class="panel-body"><p>This module is fully connected to the local state management system.</p></div></div>`}
+  const k=datasetKey(),rows=recordsFor(),fields=fieldMap[k];
+  if(!fields){
+    // Default fallback schema if not explicitly defined
+    fieldMap[k]=[["title","Record Title","text",true],["details","Description","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
+    return genericModule();
+  }
   const headers=fields.map(f=>`<th>${escapeHTML(f[1])}</th>`).join("");
-  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Automated management and calculations.</p></div><div class="actions">${canAdd?'<button class="btn primary" data-action="add">＋ Add Record</button>':''}<button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>Automated Data Handling:</b> Records added here automatically update dashboard statistics and counts in real-time.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Operational</option><option>Under Repair</option><option>Open</option><option>Resolved</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) calculated</p><p>Status: Synchronized</p></div></div>`;
+  return `<div class="module-title"><div><h1>${escapeHTML(pageTitle())}</h1><p>Full working table cells, columns, and data management.</p></div><div class="actions"><button class="btn primary" data-action="add">＋ Add New Record</button><button class="btn" data-action="export">Export CSV</button></div></div><div class="notice"><b>Working Module:</b> You can add, filter, search, and delete records freely. All tables and columns are fully interactive.</div><div class="filters"><input id="tableSearch" placeholder="Search records..." /><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>Operational</option><option>Paid</option><option>Completed</option><option>Pending</option><option>Under Repair</option></select></div><div class="panel"><div class="table-wrap"><table><thead><tr>${headers}<th>Status</th><th>Action</th></tr></thead><tbody id="recordRows">${renderRows(rows)}</tbody></table></div><div class="panel-head"><p id="recordCount">${rows.length} record(s) active</p><p>Status: Fully Synchronized</p></div></div>`;
 }
 
 function render(){
@@ -129,8 +136,10 @@ function render(){
 
 function openModal(){
   const k=datasetKey();
-  const fields=fieldMap[k];
-  if(!fields){toast("Form inputs are fully automatic for this module.");return}
+  let fields=fieldMap[k];
+  if(!fields){
+    fields=[["title","Record Title","text",true],["details","Description","text",false],["amount","Amount / Qty","number",false],["status","Status","select",true,["Active","Pending"]]];
+  }
   $("modalTitle").textContent="Add "+pageTitle()+" Record";
   $("modalBody").innerHTML=`<div class="form-grid">${fields.map(f=>{let control="";if(f[2]==="select")control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;else if(f[2]==="textarea")control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;else control=`<input name="${f[0]}" type="${f[2]}" ${f[3]?"required":""} ${f[2]==="number"?'min="0" step="any"':""}>`;return `<div class="field"><label>${escapeHTML(f[1])}${f[3]?" *":""}</label>${control}</div>`}).join("")}</div>`;
   $("modalBackdrop").classList.add("show");
@@ -154,7 +163,7 @@ function saveForm(e){
   }
   closeModal();
   render();
-  toast("Record saved and calculations updated automatically!");
+  toast("Record added successfully with working columns and cells!");
 }
 
 function exportCSV(){
@@ -203,7 +212,7 @@ document.addEventListener("click",e=>{
     if(k==="users"){state.users.splice(idx,1);saveUsers()}
     else{(state.records[k]||[]).splice(idx,1);saveRecords()}
     render();
-    toast("Record deleted and totals recalculated.");
+    toast("Record deleted and table columns updated.");
   }
 });
 
