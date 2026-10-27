@@ -84,7 +84,7 @@ tbody tr:hover{background:#f0f9ff}
 .modal-backdrop.show{display:flex}
 .modal{background:#fff;border-radius:20px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:2px solid #e2e8f0}
 .modal-head,.modal-foot{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--line)}
-.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:var(--navy)}
+.modal-head h3{font-size:16px;margin:0;font-weight:900!important;color:#navy}
 .modal-body{padding:22px}
 .modal-foot{border-top:1.5px solid var(--line);border-bottom:0;justify-content:flex-end;gap:10px}
 .close{border:0;background:#e2e8f0;border-radius:8px;width:32px;height:32px;cursor:pointer}
@@ -97,22 +97,22 @@ tbody tr:hover{background:#f0f9ff}
 .autocomplete-items div{padding:10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9;color:#0f172a}
 .autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
-/* NEON LAMP LOGIN OVERLAY */
+/* EXCLUSIVE NEON LAMP LOGIN OVERLAY */
 #loginOverlay{position:fixed;inset:0;background:radial-gradient(circle at center,#1e293b 0%,#090d16 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-.animated-login-wrapper{display:flex;width:100%;max-width:800px;min-height:420px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(234,88,12,0.45);border:2.5px solid #ea580c;position:relative}
-.login-form-side{flex:1;padding:35px 30px;display:flex;flex-direction:column;justify-content:center;background:#111827}
-.login-form-side h2{font-size:24px;color:#fff;margin:0 0 16px;font-weight:900!important}
+.animated-login-wrapper{display:flex;width:100%;max-width:840px;min-height:440px;background:#111827;border-radius:24px;overflow:hidden;box-shadow:0 0 70px rgba(234,88,12,0.5);border:2.5px solid #ea580c;position:relative}
+.login-form-side{flex:1;padding:40px 35px;display:flex;flex-direction:column;justify-content:center;background:#111827}
+.login-form-side h2{font-size:26px;color:#fff;margin:0 0 18px;font-weight:900!important}
 .login-field-glow{margin-bottom:14px;position:relative}
 .login-field-glow label{display:block;font-size:10px;color:#9ca3af;margin-bottom:5px;text-transform:uppercase}
-.login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:10px;background:#1f2937;color:#fff;outline:none;font-size:12px}
-.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 15px rgba(234,88,12,0.5)}
+.login-field-glow input{width:100%;padding:12px 14px;border:1.5px solid #374151;border-radius:10px;background:#1f2937;color:#fff;outline:none;font-size:12px}
+.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 18px rgba(234,88,12,0.6)}
 .eye-btn-glow{position:absolute;right:12px;top:29px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:15px}
-.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-weight:900!important;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(234,88,12,0.6);transition:all 0.2s;margin-top:6px}
-.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(234,88,12,0.8)}
+.glow-login-btn{width:100%;padding:13px;border:none;border-radius:22px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-weight:900!important;font-size:13.5px;cursor:pointer;box-shadow:0 6px 22px rgba(234,88,12,0.7);transition:all 0.2s;margin-top:6px}
+.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(234,88,12,0.9)}
 
-.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#0f172a 100%);padding:35px 30px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
-.welcome-side-glow h2{font-size:20px;margin:0 0 8px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px;color:#fed7aa}
-.welcome-side-glow p{font-size:11.5px;line-height:1.6;color:#ffedd5;margin:0 0 16px}
+.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#0f172a 100%);padding:40px 35px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1)}
+.welcome-side-glow h2{font-size:22px;margin:0 0 8px;font-weight:900!important;text-transform:uppercase;letter-spacing:1px;color:#fed7aa}
+.welcome-side-glow p{font-size:12px;line-height:1.6;color:#ffedd5;margin:0 0 16px}
 .blink-menu-card{background:rgba(255,255,255,0.1);border:1.5px dashed #fed7aa;padding:12px;border-radius:12px;font-size:12px;font-weight:900!important;text-align:center;animation:blinkBorder 2s infinite}
 @keyframes blinkBorder{0%{border-color:#fed7aa}50%{border-color:#38bdf8}100%{border-color:#fed7aa}}
 @media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
@@ -120,7 +120,7 @@ tbody tr:hover{background:#f0f9ff}
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
-  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0; background: #fff; }
+  #printArea { position: absolute; left: 0; top: 0; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0; background: #fff; }
 }
 </style>
 </head>
@@ -129,7 +129,7 @@ tbody tr:hover{background:#f0f9ff}
 <div id="loginOverlay">
   <div class="animated-login-wrapper">
     <div class="login-form-side">
-      <h2>Neon Login</h2>
+      <h2>A R ERP SOFTWARE</h2>
       <form id="loginForm">
         <div class="login-field-glow">
           <label>Username *</label>
@@ -144,7 +144,7 @@ tbody tr:hover{background:#f0f9ff}
       </form>
     </div>
     <div class="welcome-side-glow">
-      <h2>WELCOME BACK!</h2>
+      <h2>LUXURIOUS ENTERPRISE</h2>
       <p><b id="loginHeaderTitle">A R ERP SOFTWARE</b><br><span>COMPLETE DIGITAL DATA & BILLING</span></p>
       <div class="blink-menu-card" id="sliderMenuCard">⚡ Loading Modules...</div>
     </div>
@@ -192,8 +192,8 @@ tbody tr:hover{background:#f0f9ff}
 "use strict";
 
 const groups = [
- {label:"OVERVIEW",items:[["Dashboard","dashboard","▦"],["Notifications","notifications","♧"],["Tasks & Approvals","approvals","✓"]]},
- {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Profile & History (360°)","patient-profile","🔍"],["OPD Prescription Sheet","opd","◷"],["IPD Admissions","admissions","▤"],["Bed & Ward Transfer","transfers","⇄"],["Wards & Beds","beds","▥"],["Doctors & Departments","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory & Pathology","laboratory","⚗"],["Radiology & Scans","radiology","◉"],["Provisional IPD Bill","provisional-bill","📄"],["Final Hospital Billing & Discharge","hospital-billing","₹"],["Discharge Summary & Register","discharge","⇥"],["Medical Records (MRD)","medical-records","▧"]]},
+ {label:"OVERVIEW",items:[["Dashboard","dashboard","▦"],["AR AI Assistant","ar-ai","🤖"],["Notifications","notifications","♧"],["Tasks & Approvals","approvals","✓"]]},
+ {label:"HOSPITAL MANAGEMENT",items:[["Patient Registration","patients","＋"],["Patient Profile & History (360°)","patient-profile","🔍"],["Patient & Service Billing","patient-billing","💳"],["OPD Prescription Sheet","opd","◷"],["IPD Admissions","admissions","▤"],["Bed & Ward Transfer","transfers","⇄"],["Wards & Beds","beds","▥"],["Doctors & Specialists","doctors","✚"],["Nursing Station","nursing","♡"],["Laboratory & Pathology","laboratory","⚗"],["Radiology & Scans","radiology","◉"],["Provisional IPD Bill","provisional-bill","📄"],["Final Hospital Billing & Discharge","hospital-billing","₹"],["Discharge Summary & Register","discharge","⇥"],["Medical Records (MRD)","medical-records","▧"]]},
  {label:"SERVICE & PRICE MASTER",items:[["Service & Charges Master","service-master","⚙"],["Lab & Radiology Test Master","test-master","⚗"]]},
  {label:"PHARMACY",items:[["Pharmacy Dashboard","pharmacy","✚"],["Medicine Master","medicines","▤"],["Batch & Strip Stock","batches","▦"],["Purchase Entry","pharmacy-purchase","＋"],["Sales Billing","pharmacy-sales","₹"],["Sales Return","sales-return","↩"],["Customers","customers","♙"],["Suppliers","suppliers","▣"],["Barcode & Labels","barcode","▥"],["Stock Transfer","stock-transfer","⇄"],["Expiry & Low Stock","stock-alerts","⚠"],["Pharmacy Reports","pharmacy-reports","▥"]]},
  {label:"CENTRAL STORE & PURCHASE",items:[["Inventory Dashboard","inventory","▦"],["Item Master","items","▤"],["Warehouses & Stores","warehouses","▣"],["Requisitions","requisitions","☷"],["Goods Receipt (GRN)","grn","⇩"],["Stock Issue / Return","stock-issue","⇄"],["Stock Ledger","stock-ledger","▤"],["Purchase Orders","purchase-orders","▧"],["Vendor Quotations","quotations","▤"],["Supplier Payments","supplier-payments","₹"]]},
@@ -234,7 +234,7 @@ function saveUsers(){try{localStorage.setItem("ar_erp_users",JSON.stringify(stat
 
 const $=id=>document.getElementById(id);
 function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3200)}
+function toast(msg){$("toast").textContent=msg;$("toast.classList")?.add("show");const t=$("toast");if(t){t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}}
 
 const sliderModules = [
   "🏥 Hospital Master & OPD/IPD",
@@ -389,10 +389,12 @@ function dashboard(){
 
   setTimeout(renderDashboardChart, 100);
 
-  return `<div class="welcome"><div><div class="eyebrow">A R ERP SOFTWARE • ${escapeHTML(state.hospitalName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
-<div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Total Database Patients")}${card("ACTIVE IPD ADMISSION",ipdAdmittedCount,"▤","Currently In Hospital Beds")}${card("DISCHARGED PATIENTS",dischargedCount,"⇥","Normal / LAMA / DAMA / Reffer")}</div>
-<div class="panel"><div class="panel-head"><h3>📈 Revenue & Patient Flow Analytics</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
-<div class="footer">A R ERP SOFTWARE • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>`;
+  return `
+    <div class="welcome"><div><div class="eyebrow">A R ERP SOFTWARE • ${escapeHTML(state.hospitalName)}</div><h1>Good day, ${escapeHTML(state.name)} 👋</h1><p>COMPLETE DIGITAL DATA AND BILLING SOFTWARE WORKSPACE.</p></div><div class="actions"><button class="btn" data-action="export">Export Data</button><button class="btn primary" data-action="quick-add">＋ Quick Add Patient</button></div></div>
+    <div class="grid stats">${card("TOTAL REVENUE","₹"+totalRev.toLocaleString(),"₹","Auto-calculated Billing")}${card("REGISTERED PATIENTS",patientsCount,"♙","Total Database Patients")}${card("ACTIVE IPD ADMISSION",ipdAdmittedCount,"▤","Currently In Hospital Beds")}${card("DISCHARGED PATIENTS",dischargedCount,"⇥","Normal / LAMA / DAMA / Reffer")}</div>
+    <div class="panel"><div class="panel-head"><h3>📈 Revenue & Patient Flow Analytics</h3></div><div class="panel-body"><canvas id="dashChart" style="max-height:280px;"></canvas></div></div>
+    <div class="footer">A R ERP SOFTWARE • COMPLETE DIGITAL DATA & BILLING SOFTWARE</div>
+  `;
 }
 
 function renderDashboardChart(){
@@ -424,15 +426,37 @@ const fieldMap={
  users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
  permissions:[["role","User Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Biomedical Engineer","Accountant"]],["allowedModules","Select Allowed Modules (Checklist below)","modules-checkbox",true],["status","Access Status","select",true,["Active","Restricted"]]],
  organization:[["branchCode","Branch Code (Auto)","text",true,"BR"],["branchName","Branch / Unit Name","text",true],["branchType","Department Scope","select",true,["Full Hospital & Pharmacy","Pharmacy Only","Diagnostic Lab Only","Biomedical Wing"]],["location","Location / Address","text",true],["status","Status","select",true,["Active","Inactive"]]],
- patients:[["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],["name","Patient Name","text",true],["mobile","Mobile Number (10 Digits)","tel",true],["aadhaar","Aadhaar Number","text",true],["gender","Gender","select",true,["Male","Female","Other"]],["age","Age","number",true]],
+ patients:[
+   ["uhid","Patient UHID / IP No (Auto)","text",true,"AUTO"],
+   ["name","Patient Name","text",true],
+   ["careOf","Father / Care of Name","text",true],
+   ["mobile","Mobile Number (10 Digits)","tel",true],
+   ["aadhaar","Aadhaar Number (12 Digits)","text",true],
+   ["abhaNo","ABHA Number (Health ID)","text",false],
+   ["gender","Gender","select",true,["Male","Female","Other"]],
+   ["dob","Date of Birth","date",true],
+   ["age","Age (Auto from DOB)","number",true],
+   ["village","Village / Area","text",true],
+   ["district","District","text",true],
+   ["state","State","text",true],
+   ["pincode","Pincode","text",true]
+ ],
+ doctors:[
+   ["docCode","Doctor ID (Auto)","text",true,"DOC"],
+   ["docName","Doctor Full Name","text",true],
+   ["specialty","Specialty / Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology","Surgery","Neurology"]],
+   ["fee","Consultation Fee (₹)","number",true],
+   ["status","Status","select",true,["Active","On Leave"]]
+ ],
  beds:[["bedNo","Bed Number","text",true],["wardName","Ward Name","text",true],["wardType","Ward Type","select",true,["General Ward","ICU","Private Room","Deluxe"]],["charge","Daily Charge (₹)","number",true],["status","Bed Status","select",true,["Available","Occupied","Maintenance"]]],
  opd:[
    ["uhidNo","Patient UHID / IP (Auto or Search)","autocomplete-patient",true],
    ["doctor","Consultant Doctor (Auto)","autocomplete-doctor",true],
    ["department","Department (Auto)","text",true],
+   ["patientType","Patient Type / Scheme","select",true,["General", "Camp", "Ayushman Bharat", "TPA", "CAPF", "Corporate"]],
    ["assessment","Clinical Assessment / Notes","textarea",true],
-   ["investigation","Required Investigations","textarea",false],
-   ["advice","Advice & Treatment Plan","textarea",true],
+   ["investigation","Required Investigations (Doctor Advised)","textarea",false],
+   ["advice","Advice & Treatment Plan (Rx)","textarea",true],
    ["fee","OPD Consultation Fee (₹)","number",true]
  ],
  admissions:[
@@ -445,6 +469,18 @@ const fieldMap={
    ["attendantMobile","Attendant Mobile","tel",true],
    ["advance","Advance Amount Paid (₹)","number",true],
    ["status","Admission Status","select",true,["Admitted","Discharged"]]
+ ],
+ "patient-billing":[
+   ["billNo","Billing Ref No (Auto)","text",true,"PBILL"],
+   ["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],
+   ["serviceName","Service / Test / OPD / IPD Charge","autocomplete-service",true],
+   ["qty","Quantity / Days","number",true],
+   ["totalBill","Total Amount (₹)","number",true],
+   ["advancePaid","Advance Amount (Auto Minus)","number",true],
+   ["discount","Discount (₹)","number",false],
+   ["dueAmount","Net Due Balance (₹)","number",true],
+   ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Bank Transfer","Credit"]],
+   ["status","Billing Status","select",true,["Paid","Due / Pending"]]
  ],
  transfers:[
    ["transferNo","Transfer Ref No (Auto)","text",true,"TRN"],
@@ -532,7 +568,7 @@ const fieldMap={
  "pharmacy-sales":[["invoiceNo","Invoice No (Auto)","text",true,"PHARM"],["patientSearch","Search Patient (UHID / Mobile / Name)","autocomplete-patient",true],["medicine","Medicine Name / Auto-Fetch","autocomplete-med",true],["qty","Sale Quantity","number",true],["discount","Discount %","number",false],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","permissions":"permissions","organization":"organization","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","doctors":"doctors","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
+const keyToData={"users":"users","permissions":"permissions","organization":"organization","doctors":"doctors","medicines":"medicines","batches":"medicines","assets":"assets","patients":"patients","patient-profile":"patients","patient-billing":"patient-billing","items":"items","suppliers":"suppliers","service-vendors":"suppliers","employees":"employees","complaints":"complaints","work-orders":"workOrders","maintenance":"workOrders","opd":"opd","admissions":"admissions","transfers":"transfers","beds":"beds","service-master":"service-master","test-master":"test-master","laboratory":"laboratory","radiology":"radiology","provisional-bill":"provisional-bill","hospital-billing":"hospital-billing","discharge":"discharge","medical-records":"medical-records","pharmacy-sales":"pharmacy-sales","sales-return":"sales-return","pharmacy-purchase":"pharmacy-purchase","expenses":"expenses"};
 
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
@@ -596,23 +632,22 @@ window.searchPatientHistory = function(query){
     const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
     const transfers = (state.records["transfers"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
     const billing = (state.records["hospital-billing"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
-    const pharmacy = (state.records["pharmacy-sales"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()) || JSON.stringify(x).toLowerCase().includes(p.name.toLowerCase()));
 
     html += `
       <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
           <div>
-            <h3 style="font-size:16px; color:var(--navy); margin:0 0 4px;">👤 ${escapeHTML(p.name)}</h3>
+            <h3 style="font-size:16px; color:var(--navy); margin:0 0 4px;">👤 ${escapeHTML(p.name)} (Care of: ${escapeHTML(p.careOf||'N/A')})</h3>
             <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:900;">UHID: ${escapeHTML(p.uhid)}</span>
             <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; font-weight:900;">Mobile: ${escapeHTML(p.mobile)}</span>
             <span style="font-size:11px; background:#fef9c3; color:#a16207; padding:3px 8px; border-radius:6px; font-weight:900;">Aadhaar: ${escapeHTML(p.aadhaar||'N/A')}</span>
+            <span style="font-size:11px; background:#ede9fe; color:#7c3aed; padding:3px 8px; border-radius:6px; font-weight:900;">ABHA: ${escapeHTML(p.abhaNo||'N/A')}</span>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn primary" onclick="jumpToModule('opd')">＋ OPD Prescription</button>
             <button class="btn success" onclick="jumpToModule('admissions')">＋ IPD Admission</button>
-            <button class="btn" style="background:#0284c7; color:#fff;" onclick="jumpToModule('hospital-billing')">₹ Final IPD Billing</button>
+            <button class="btn" style="background:#0284c7; color:#fff;" onclick="jumpToModule('patient-billing')">💳 Patient Billing</button>
             <button class="btn danger" onclick="jumpToModule('discharge')">⇥ Discharge Patient</button>
-            <button class="btn" style="background:#7c3aed; color:#fff;" onclick="jumpToModule('pharmacy-sales')">💊 Pharmacy Sale</button>
           </div>
         </div>
 
@@ -630,6 +665,46 @@ window.searchPatientHistory = function(query){
   container.innerHTML = html;
 };
 
+// AR AI ASSISTANT MODULE
+function renderARAIChatModule(ws){
+  ws.innerHTML = `
+    <div class="module-title"><div><h1>🤖 AR AI Clinical & Administrative Assistant</h1><p>Ask AI for clinical diagnostics support, drug dosage verification, ICD-10 coding, or billing suggestions.</p></div></div>
+    <div class="panel" style="max-width:900px;">
+      <div class="panel-head"><h3>💬 AR AI Workspace Chat</h3></div>
+      <div class="panel-body">
+        <div id="aiChatLog" style="height:320px; border:1.5px solid var(--line); border-radius:10px; padding:15px; overflow-y:auto; background:#f8fafc; margin-bottom:15px; font-size:12.5px; line-height:1.6;">
+          <p style="color:var(--muted);"><b>AR AI:</b> Hello Aarif! I am your AI clinical collaborator. How can I help you today with patient diagnostics, prescriptions, or hospital billing?</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <input type="text" id="aiPromptInput" placeholder="Ask AI anything (e.g. Suggest treatment for acute gastroenteritis)..." style="flex:1; padding:12px; border:1.5px solid var(--line); border-radius:9px; outline:none;" onkeydown="if(event.key==='Enter')sendPromptToARAI()">
+          <button class="btn primary" onclick="sendPromptToARAI()">Send Prompt</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.sendPromptToARAI = function(){
+  const inp = $("aiPromptInput");
+  const log = $("aiChatLog");
+  if(!inp || !inp.value.trim()) return;
+  const q = inp.value.trim();
+  inp.value = "";
+
+  log.innerHTML += `<p style="margin:8px 0; color:#0284c7;"><b>You:</b> ${escapeHTML(q)}</p>`;
+  
+  setTimeout(() => {
+    let reply = "Based on clinical protocols, ensure proper hydration, electrolyte balance, and monitor vitals closely. Let me know if you want me to attach this to the patient's MRD record.";
+    if(q.toLowerCase().includes("fever") || q.toLowerCase().includes("paracetamol")){
+      reply = "For viral pyrexia: Tab Paracetamol 650mg TDS PRN, adequate hydration, and CBC test advised.";
+    } else if(q.toLowerCase().includes("billing") || q.toLowerCase().includes("charge")){
+      reply = "All hospital billing calculations are synchronized with service master rates and advance deposits.";
+    }
+    log.innerHTML += `<p style="margin:8px 0; color:#16a34a;"><b>AR AI:</b> ${escapeHTML(reply)}</p>`;
+    log.scrollTop = log.scrollHeight;
+  }, 600);
+};
+
 window.jumpToModule = function(mod){
   state.page = mod;
   localStorage.setItem("ar_erp_active_page", mod);
@@ -639,7 +714,6 @@ window.jumpToModule = function(mod){
 function renderCollectionReportsModule(ws){
   const sales = state.records["pharmacy-sales"] || [];
   const bills = state.records["hospital-billing"] || [];
-  const opd = state.records["opd"] || [];
 
   ws.innerHTML = `
     <div class="module-title"><div><h1>Collection Reports & Financial Analytics</h1><p>Date-wise, User-wise, Patient-wise, and Service-wise financial collection register.</p></div></div>
@@ -662,7 +736,6 @@ function renderCollectionReportsModule(ws){
 }
 
 window.filterCollections = function(){
-  // Filter logic can be extended as per date input
   toast("Collection Report Filtered.");
 };
 
@@ -671,6 +744,11 @@ function genericModule(){
   if(k === "patient-profile"){
     let ws = document.createElement("div");
     renderPatientProfileModule(ws);
+    return ws.innerHTML;
+  }
+  if(k === "ar-ai"){
+    let ws = document.createElement("div");
+    renderARAIChatModule(ws);
     return ws.innerHTML;
   }
   if(k === "collection-reports"){
@@ -814,6 +892,12 @@ function openModal(){
     else if(f[2]==="autocomplete-test"){
       control=`<div class="autocomplete-box"><input type="text" id="tSearchInput" name="${f[0]}" placeholder="Type test name..." onkeyup="handleTestAutoFetch(this.value)" autocomplete="off"><div id="testDropdown" class="autocomplete-items" style="display:none;"></div></div>`;
     }
+    else if(f[0]==="aadhaar"){
+      control=`<input id="field_${f[0]}" name="${f[0]}" type="text" maxlength="12" pattern="[0-9]{12}" placeholder="12 Digit Aadhaar" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">`;
+    }
+    else if(f[0]==="dob"){
+      control=`<input id="field_dob" name="${f[0]}" type="date" onchange="calculateAgeFromDOB(this.value)" required>`;
+    }
     else if(f[2]==="select") control=`<select name="${f[0]}" ${f[3]?"required":""}>${f[4].map(v=>`<option>${escapeHTML(v)}</option>`).join("")}</select>`;
     else if(f[2]==="textarea") control=`<textarea name="${f[0]}" rows="3" ${f[3]?"required":""}></textarea>`;
     else control=`<input id="field_${f[0]}" name="${f[0]}" type="${f[2]}" value="${val}" ${readOnly} ${f[3]?"required":""} ${f[0]==="mobile"?'maxlength="10" pattern="[0-9]{10}"':""} ${f[2]==="number"?'min="0" step="any"':""} oninput="calculateBillingDue()">`;
@@ -823,6 +907,16 @@ function openModal(){
   
   $("modalBackdrop").classList.add("show");
 }
+
+window.calculateAgeFromDOB = function(dobVal){
+  if(!dobVal) return;
+  const dob = new Date(dobVal);
+  const diff = Date.now() - dob.getTime();
+  const ageDate = new Date(diff);
+  const calculatedAge = Math.abs(ageDate.getUTCFullYear() - 1970);
+  const ageField = document.querySelector("input[name='age']");
+  if(ageField) ageField.value = calculatedAge;
+};
 
 window.editRecordRow = function(mod, idx){
   state.editingIdx = idx;
@@ -849,7 +943,6 @@ window.editRecordRow = function(mod, idx){
   $("modalBackdrop").classList.add("show");
 };
 
-// AUTO-CALCULATE ADVANCE MINUS & DUE BALANCE
 window.calculateBillingDue = function(){
   const totEl = $("field_totalBill");
   const qtyEl = $("field_qty");
@@ -895,23 +988,22 @@ function selectAutoPatient(uhid, name, mobile, advance){
 function handleDoctorAutoFetch(val){
   const drop = $("doctorDropdown");
   if(!val){ drop.style.display="none"; return; }
-  const docs = [
-    {name:"Dr. R. K. Sharma", dept:"General Medicine", fee:300},
-    {name:"Dr. A. Rabbani", dept:"Cardiology", fee:500},
-    {name:"Dr. Priya Singh", dept:"Pediatrics", fee:350},
-    {name:"Dr. Manish Gupta", dept:"Orthopedics", fee:400}
+  const docsMaster = state.records["doctors"] || [
+    {docName:"Dr. R. K. Sharma", specialty:"General Medicine", fee:300},
+    {docName:"Dr. A. Rabbani", specialty:"Cardiology", fee:500},
+    {docName:"Dr. Priya Singh", specialty:"Pediatrics", fee:350}
   ];
-  const matches = docs.filter(d => d.name.toLowerCase().includes(val.toLowerCase()) || d.dept.toLowerCase().includes(val.toLowerCase()));
+  const matches = docsMaster.filter(d => d.docName.toLowerCase().includes(val.toLowerCase()) || d.specialty.toLowerCase().includes(val.toLowerCase()));
   if(matches.length > 0){
-    drop.innerHTML = matches.map(d => `<div onclick="selectAutoDoctor('${d.name}', '${d.dept}', ${d.fee})">${d.name} (${d.dept}) - Fee: ₹${d.fee}</div>`).join('');
+    drop.innerHTML = matches.map(d => `<div onclick="selectAutoDoctor('${d.docName}', '${d.specialty}', ${d.fee})">${d.docName} (${d.specialty}) - Fee: ₹${d.fee}</div>`).join('');
     drop.style.display = "block";
   } else { drop.style.display = "none"; }
 }
 
-function selectAutoDoctor(name, dept, fee){
+function selectAutoDoctor(name, specialty, fee){
   $("dSearchInput").value = name;
   const deptInput = document.querySelector("input[name='department'], select[name='department']");
-  if(deptInput) deptInput.value = dept;
+  if(deptInput) deptInput.value = specialty;
   const feeInput = $("field_fee");
   if(feeInput) feeInput.value = fee;
   $("doctorDropdown").style.display = "none";
@@ -979,31 +1071,6 @@ function selectAutoService(name, price){
   calculateBillingDue();
 }
 
-function handleTestAutoFetch(val){
-  const drop = $("testDropdown");
-  if(!val || val.length < 1){ drop.style.display="none"; return; }
-  const tMaster = state.records["test-master"] || [
-    {testName:"CBC (Complete Blood Count)", price:450},
-    {testName:"Liver Function Test (LFT)", price:1200},
-    {testName:"Kidney Function Test (KFT)", price:1100},
-    {testName:"Chest X-Ray", price:500},
-    {testName:"Ultrasound Whole Abdomen", price:1500}
-  ];
-  const matches = tMaster.filter(t => t.testName.toLowerCase().includes(val.toLowerCase()));
-  if(matches.length > 0){
-    drop.innerHTML = matches.map(t => `<div onclick="selectAutoTest('${t.testName}', ${t.price||400})">${t.testName} - ₹${t.price||400}</div>`).join('');
-    drop.style.display = "block";
-  } else { drop.style.display = "none"; }
-}
-
-function selectAutoTest(name, price){
-  const tInput = $("tSearchInput");
-  if(tInput) tInput.value = name;
-  const pInput = $("field_price");
-  if(pInput) pInput.value = price;
-  $("testDropdown").style.display = "none";
-}
-
 function closeModal(){$("modalBackdrop").classList.remove("show")}
 
 function saveForm(e){
@@ -1033,6 +1100,11 @@ function saveForm(e){
 
   if(record.mobile && record.mobile.length !== 10){
     alert("Error: Mobile number must be exactly 10 digits.");
+    return;
+  }
+
+  if(record.aadhaar && record.aadhaar.length !== 12){
+    alert("Error: Aadhaar number must be exactly 12 digits.");
     return;
   }
 
@@ -1088,42 +1160,43 @@ window.printRecordRow = function(mod, idx){
 
   if(mod === "opd"){
     area.innerHTML = `
-      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
-          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
-          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
-          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">OPD Prescription Sheet</h4>
+      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:25px; width:100%; box-sizing:border-box; background:#fff; min-height:297mm;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+          <h2 style="margin:0; font-size:24px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
+          <p style="margin:3px 0; font-size:11.5px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
+          <h4 style="margin:8px 0 0; text-transform:uppercase; font-size:15px; text-decoration:underline;">OPD PRESCRIPTION SHEET</h4>
         </div>
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:14px; border:1px solid #000;">
+        <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px; border:1px solid #000;">
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Patient UHID / IP:</b> ${escapeHTML(item.uhidNo || 'AR281026')}</td>
-            <td style="border:1px solid #000; padding:6px;"><b>Date:</b> ${new Date().toLocaleDateString()}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Patient UHID / IP:</b> ${escapeHTML(item.uhidNo || 'AR281026')}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Date:</b> ${new Date().toLocaleDateString()}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #000; padding:6px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Consultant')}</td>
-            <td style="border:1px solid #000; padding:6px;"><b>Department:</b> ${escapeHTML(item.department || 'General Medicine')}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Consultant Doctor:</b> ${escapeHTML(item.doctor || 'Dr. Consultant')}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Department / Specialty:</b> ${escapeHTML(item.department || 'General Medicine')}</td>
           </tr>
           <tr>
-            <td colspan="2" style="border:1px solid #000; padding:6px;"><b>Consultation Fee:</b> ₹${escapeHTML(item.fee || '0')}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Patient Type / Scheme:</b> ${escapeHTML(item.patientType || 'General')}</td>
+            <td style="border:1px solid #000; padding:8px;"><b>Consultation Fee:</b> ₹${escapeHTML(item.fee || '0')}</td>
           </tr>
         </table>
-        <div style="display:flex; gap:12px; margin-bottom:20px;">
-          <div style="flex:1; border:1px solid #000; padding:10px; min-height:260px;">
-            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Assessment / Clinical Notes:</b>
-            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.assessment || 'Patient stable.')}</p>
+        <div style="display:flex; gap:15px; margin-bottom:30px;">
+          <div style="flex:1; border:1px solid #000; padding:12px; min-height:320px;">
+            <b style="font-size:12.5px; text-decoration:underline; display:block; margin-bottom:8px;">Assessment / Clinical Notes:</b>
+            <p style="font-size:11.5px; white-space:pre-wrap; margin:0;">${escapeHTML(item.assessment || 'Patient stable.')}</p>
             <br>
-            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Investigations Required:</b>
-            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.investigation || 'CBC, LFT, KFT')}</p>
+            <b style="font-size:12.5px; text-decoration:underline; display:block; margin-bottom:8px;">Investigations Advised (By Doctor):</b>
+            <p style="font-size:11.5px; white-space:pre-wrap; margin:0;">${escapeHTML(item.investigation || 'CBC, LFT, KFT')}</p>
           </div>
-          <div style="flex:2; border:1px solid #000; padding:10px; min-height:260px;">
-            <b style="font-size:12px; text-decoration:underline; display:block; margin-bottom:8px;">Advice & Plan of Treatment (Rx):</b>
-            <p style="font-size:11px; white-space:pre-wrap; margin:0;">${escapeHTML(item.advice || '1. Tab Paracetamol 650mg 1-1-1 x 5 days\n2. Tab Pantocid 40mg 1-0-0 x 5 days')}</p>
+          <div style="flex:2; border:1px solid #000; padding:12px; min-height:320px;">
+            <b style="font-size:12.5px; text-decoration:underline; display:block; margin-bottom:8px;">Advice & Treatment Plan (Rx):</b>
+            <p style="font-size:11.5px; white-space:pre-wrap; margin:0;">${escapeHTML(item.advice || '1. Tab Paracetamol 650mg 1-1-1 x 5 days\n2. Tab Pantocid 40mg 1-0-0 x 5 days')}</p>
           </div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:80px; font-size:12px;">
           <p><b>Next Follow-up on:</b> ____________________</p>
           <div style="text-align:right;">
-            <p style="margin-bottom:30px;"><b>Doctor's Signature:</b> ____________________</p>
+            <p style="margin-bottom:40px;"><b>Doctor's Signature:</b> ____________________</p>
             <p><b>A R ERP SOFTWARE</b></p>
           </div>
         </div>
@@ -1131,30 +1204,30 @@ window.printRecordRow = function(mod, idx){
     `;
   } else if(mod === "hospital-billing"){
     area.innerHTML = `
-      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:20px; width:100%; box-sizing:border-box; background:#fff;">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
-          <h2 style="margin:0; font-size:22px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
-          <p style="margin:2px 0; font-size:11px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
-          <h4 style="margin:6px 0 0; text-transform:uppercase; font-size:14px; text-decoration:underline;">FINAL HOSPITAL BILL & DISCHARGE RECEIPT</h4>
+      <div style="font-family:'Inter',sans-serif; border:2px solid #000; padding:25px; width:100%; box-sizing:border-box; background:#fff; min-height:297mm;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+          <h2 style="margin:0; font-size:24px; color:#0f172a; text-transform:uppercase;">${escapeHTML(state.hospitalName)}</h2>
+          <p style="margin:3px 0; font-size:11.5px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
+          <h4 style="margin:8px 0 0; text-transform:uppercase; font-size:15px; text-decoration:underline;">FINAL HOSPITAL BILL & DISCHARGE RECEIPT</h4>
         </div>
-        <div style="font-size:12px; line-height:1.8; margin-bottom:15px;">
+        <div style="font-size:12.5px; line-height:1.8; margin-bottom:20px;">
           <p><b>Invoice Bill No:</b> ${escapeHTML(item.billNo)} | <b>Bill Date:</b> ${new Date().toLocaleDateString()}</p>
           <p><b>Patient Details:</b> ${escapeHTML(item.patientSearch)}</p>
           <p><b>Date of Admission:</b> ${escapeHTML(item.admissionDate || '—')} | <b>Date of Discharge:</b> ${escapeHTML(item.dischargeDate || '—')}</p>
           <p><b>Services Rendered:</b> ${escapeHTML(item.serviceName)} (Qty: ${escapeHTML(item.qty || 1)})</p>
           <p><b>Payment Mode:</b> ${escapeHTML(item.paymentMode || 'Cash')} | <b>Type of Discharge:</b> ${escapeHTML(item.dischargeType || 'Normal Discharge')}</p>
           <p><b>Discount Authority:</b> ${escapeHTML(item.authority || 'N/A')}</p>
-          <hr style="border:0.5px solid #000; margin:10px 0;">
-          <table style="width:100%; font-size:12px; text-align:left;">
+          <hr style="border:0.5px solid #000; margin:12px 0;">
+          <table style="width:100%; font-size:12.5px; text-align:left;">
             <tr><td>Total Bill Amount:</td><td><b>₹${escapeHTML(item.totalBill)}</b></td></tr>
             <tr><td>Advance Paid:</td><td>₹${escapeHTML(item.advancePaid || 0)}</td></tr>
             <tr><td>Discount Amount:</td><td>₹${escapeHTML(item.discount || 0)}</td></tr>
-            <tr style="font-size:14px;"><td><b>Final Due Balance:</b></td><td><b style="color:${item.dueAmount > 0 ? 'red':'green'};">₹${escapeHTML(item.dueAmount || 0)}</b></td></tr>
+            <tr style="font-size:15px;"><td><b>Final Due Balance:</b></td><td><b style="color:${item.dueAmount > 0 ? 'red':'green'};">₹${escapeHTML(item.dueAmount || 0)}</b></td></tr>
           </table>
           <p><b>Status:</b> ${escapeHTML(item.status)}</p>
         </div>
         <br><br>
-        <div style="display:flex; justify-content:space-between; margin-top:40px;">
+        <div style="display:flex; justify-content:space-between; margin-top:80px;">
           <p>Billing Clerk Signature: ________________</p>
           <p>Authorized Signatory: ________________</p>
         </div>
@@ -1162,20 +1235,20 @@ window.printRecordRow = function(mod, idx){
     `;
   } else {
     area.innerHTML = `
-      <div style="font-family:sans-serif; border:2px solid #000; padding:20px; border-radius:10px; max-width:800px; margin:auto;">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
-          <h1 style="margin:0; font-size:22px;">${escapeHTML(state.hospitalName)}</h1>
+      <div style="font-family:sans-serif; border:2px solid #000; padding:25px; border-radius:10px; max-width:800px; margin:auto; min-height:297mm;">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:18px;">
+          <h1 style="margin:0; font-size:24px;">${escapeHTML(state.hospitalName)}</h1>
           <p style="margin:3px 0; font-size:12px;">${escapeHTML(state.hospitalAddress)} | GSTIN: ${escapeHTML(state.hospitalGstin)}</p>
-          <h3 style="margin:5px 0 0; text-transform:uppercase; text-decoration:underline;">${mod.toUpperCase()} REPORT / BILL</h3>
+          <h3 style="margin:6px 0 0; text-transform:uppercase; text-decoration:underline;">${mod.toUpperCase()} REPORT / BILL</h3>
         </div>
-        <div style="font-size:12px; line-height:1.8;">
+        <div style="font-size:12.5px; line-height:1.8;">
           <p><b>Date:</b> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
           <p><b>Operator:</b> ${escapeHTML(state.name)} (${escapeHTML(state.role)})</p>
           <hr>
           ${Object.entries(item).filter(([k])=>!k.startsWith('_')).map(([k,v])=>`<p><b>${k.toUpperCase()}:</b> ${escapeHTML(v)}</p>`).join('')}
         </div>
         <br><br>
-        <div style="display:flex; justify-content:space-between; margin-top:30px;">
+        <div style="display:flex; justify-content:space-between; margin-top:60px;">
           <p>Prepared By: ________________</p>
           <p>Doctor / Authorized Sign: ________________</p>
         </div>
