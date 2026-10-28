@@ -97,29 +97,31 @@ tbody tr:hover{background:#f0f9ff}
 .autocomplete-items div{padding:9px;cursor:pointer;font-size:11.5px;border-bottom:1px solid #f1f5f9;color:#0f172a}
 .autocomplete-items div:hover{background:#e0f2fe;color:#0284c7}
 
-/* LUXURIOUS NEON LAMP LOGIN OVERLAY */
+/* CENTERED LUXURIOUS NEON LOGIN OVERLAY WITH 3D MONEY PLANT */
 #loginOverlay{position:fixed;inset:0;background:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
-#loginOverlay::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px)}
-.animated-login-wrapper{display:flex;width:100%;max-width:800px;min-height:420px;background:rgba(17,24,39,0.95);border-radius:24px;overflow:hidden;box-shadow:0 0 75px rgba(234,88,12,0.5);border:2px solid #ea580c;position:relative;z-index:2}
+#loginOverlay::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,0.85);backdrop-filter:blur(8px)}
+.animated-login-wrapper{display:flex;width:100%;max-width:850px;min-height:440px;background:rgba(17,24,39,0.95);border-radius:26px;overflow:hidden;box-shadow:0 0 85px rgba(22,163,74,0.4), 0 0 50px rgba(234,88,12,0.5);border:3px solid #16a34a;position:relative;z-index:2;margin:auto}
 .login-form-side{flex:1;padding:35px 30px;display:flex;flex-direction:column;justify-content:center}
 .login-form-side h2{font-size:24px;color:#fff;margin:0 0 5px;letter-spacing:-0.5px}
 .login-form-side p{font-size:11px;color:#94a3b8;margin:0 0 18px}
 .login-field-glow{margin-bottom:12px;position:relative}
 .login-field-glow label{display:block;font-size:9.5px;color:#9ca3af;margin-bottom:4px;text-transform:uppercase}
 .login-field-glow input{width:100%;padding:11px 13px;border:1.5px solid #374151;border-radius:9px;background:#1f2937;color:#fff;outline:none;font-size:11.5px}
-.login-field-glow input:focus{border-color:#ea580c;box-shadow:0 0 16px rgba(234,88,12,0.6)}
+.login-field-glow input:focus{border-color:#16a34a;box-shadow:0 0 16px rgba(22,163,74,0.6)}
 .eye-btn-glow{position:absolute;right:11px;top:27px;background:none;border:none;color:#9ca3af;cursor:pointer;font-size:14px}
-.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(234,88,12,0.7);transition:all 0.2s;margin-top:5px}
-.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(234,88,12,0.9)}
+.glow-login-btn{width:100%;padding:12px;border:none;border-radius:20px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(22,163,74,0.7);transition:all 0.2s;margin-top:5px}
+.glow-login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(22,163,74,0.9)}
 .login-links{display:flex;justify-content:space-between;margin-top:10px;font-size:11px}
 .login-links a{color:#38bdf8;text-decoration:none;cursor:pointer}
 .login-links a:hover{text-decoration:underline}
 
-/* BLINKING LUXURY AR LOGO PANEL */
-.welcome-side-glow{flex:1;background:linear-gradient(135deg,#ea580c 0%,#0f172a 100%);padding:35px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.1);text-align:center}
-.blinking-ar-logo{font-size:42px;font-weight:900!important;letter-spacing:2px;background:linear-gradient(135deg,#ffedd5,#38bdf8,#f43f5e,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:luxBlink 1.8s infinite alternate;margin-bottom:8px;text-shadow:0 0 30px rgba(255,255,255,0.6)}
-@keyframes luxBlink{0%{opacity:0.6;transform:scale(0.97);filter:drop-shadow(0 0 10px rgba(56,189,248,0.5))}100%{opacity:1;transform:scale(1.03);filter:drop-shadow(0 0 25px rgba(234,88,12,0.9))}}
-.welcome-side-glow p{font-size:11.5px;color:#fed7aa;margin:0}
+/* 3D LUXURY MONEY PLANT PANEL */
+.welcome-side-glow{flex:1;background:linear-gradient(135deg,#16a34a 0%,#0f172a 100%);padding:35px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;position:relative;border-left:2px solid rgba(255,255,255,0.15);text-align:center}
+.money-plant-icon{font-size:55px;margin-bottom:10px;animation:plantFloat 2.5s infinite ease-in-out;filter:drop-shadow(0 0 20px rgba(74,222,128,0.8))}
+@keyframes plantFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.05)}}
+.blinking-ar-logo{font-size:38px;font-weight:900!important;letter-spacing:2px;background:linear-gradient(135deg,#f0fdf4,#4ade80,#38bdf8,#facc15);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:luxBlink 1.8s infinite alternate;margin-bottom:6px;text-shadow:0 0 25px rgba(74,222,128,0.7)}
+@keyframes luxBlink{0%{opacity:0.7;transform:scale(0.98)}100%{opacity:1;transform:scale(1.02);filter:drop-shadow(0 0 20px rgba(22,163,74,0.9))}}
+.welcome-side-glow p{font-size:11.5px;color:#dcfce7;margin:0}
 @media(max-width:768px){.animated-login-wrapper{flex-direction:column-reverse}}
 
 @media print {
@@ -136,14 +138,17 @@ tbody tr:hover{background:#f0f9ff}
     <div class="login-form-side">
       <h2>A R ERP SOFTWARE</h2>
       <p>Secure Enterprise Login Portal</p>
-      <form id="loginForm">
+      <!-- Anti-autofill dummy hidden fields -->
+      <input type="text" style="display:none" name="fakeusernameremembered">
+      <input type="password" style="display:none" name="fakepasswordremembered">
+      <form id="loginForm" autocomplete="off">
         <div class="login-field-glow">
           <label>Username *</label>
-          <input type="text" id="loginUser" placeholder="Enter Username" autocomplete="off" required>
+          <input type="text" id="loginUser" placeholder="Enter Username" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required>
         </div>
         <div class="login-field-glow">
           <label>Password *</label>
-          <input type="password" id="loginPass" placeholder="Enter Password" autocomplete="off" required>
+          <input type="password" id="loginPass" placeholder="Enter Password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required>
           <button type="button" class="eye-btn-glow" onclick="togglePasswordVis()">👁️</button>
         </div>
         <button type="submit" class="glow-login-btn">Secure Login</button>
@@ -154,8 +159,9 @@ tbody tr:hover{background:#f0f9ff}
       </form>
     </div>
     <div class="welcome-side-glow">
+      <div class="money-plant-icon">🌿🪴</div>
       <div class="blinking-ar-logo">A R ERP</div>
-      <p><b>LUXURIOUS ENTERPRISE HOSPITAL & PHARMACY ERP</b><br><span style="font-size:9.5px; color:#e2e8f0;">Next-Gen Medical & Accounting System</span></p>
+      <p><b>3D LUXURY ENTERPRISE & HOSPITAL ERP</b><br><span style="font-size:9.5px; color:#bbf7d0;">Prosperity & Precision Medical Suite</span></p>
     </div>
   </div>
 </div>
@@ -267,10 +273,12 @@ function toggleProfileDropdown(){
   drop.style.display = (drop.style.display === "flex") ? "none" : "flex";
 }
 
-// INSTANT LOGOUT WITHOUT POPUP
+// INSTANT LOGOUT WITHOUT POPUP & RESET FIELDS
 function logoutUser(){
   state.isLoggedIn = false;
   localStorage.setItem("ar_erp_logged", "false");
+  $("loginUser").value = "";
+  $("loginPass").value = "";
   $("loginOverlay").style.display = "flex";
   toast("Logged out successfully.");
 }
@@ -300,22 +308,39 @@ function openChangePasswordModal(){
 }
 
 function backupRestoreModal(){
-  $("modalTitle").textContent = "💾 Data Backup & Restore Hub";
+  $("modalTitle").textContent = "💾 Advanced Date/Monthly/Yearly Backup & Export";
   state.editingIdx = null;
   const jsonStr = JSON.stringify({records: state.records, users: state.users}, null, 2);
   $("modalBody").innerHTML = `
     <div class="field" style="margin-bottom:12px;">
-      <label>Export / Copy All Database JSON</label>
-      <textarea rows="6" readonly style="font-family:monospace; font-size:10.5px;">${escapeHTML(jsonStr)}</textarea>
+      <label>Export / Backup JSON Data</label>
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <button type="button" class="btn primary" onclick="downloadBackupFile('daily')">📥 Download Daily Backup</button>
+        <button type="button" class="btn success" onclick="downloadBackupFile('monthly')">📥 Download Monthly Backup</button>
+        <button type="button" class="btn" style="background:#7c3aed; color:#fff;" onclick="downloadBackupFile('yearly')">📥 Download Yearly Backup</button>
+      </div>
+      <textarea rows="4" readonly style="font-family:monospace; font-size:10px;">${escapeHTML(jsonStr)}</textarea>
     </div>
     <div class="field">
-      <label>Import Data JSON</label>
+      <label>Restore / Import Data JSON</label>
       <input type="file" id="importJsonFile" accept=".json" onchange="importDataJSON(event)">
     </div>
   `;
-  $("recordForm").onsubmit = (e)=>{ e.preventDefault(); closeModal(); toast("Backup Saved!"); };
+  $("recordForm").onsubmit = (e)=>{ e.preventDefault(); closeModal(); toast("Backup Process Complete!"); };
   $("modalBackdrop").classList.add("show");
 }
+
+window.downloadBackupFile = function(type){
+  const data = JSON.stringify({records: state.records, users: state.users}, null, 2);
+  const blob = new Blob([data], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ar-erp-${type}-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`${type.toUpperCase()} Backup Downloaded Successfully!`);
+};
 
 function importDataJSON(e){
   const file = e.target.files[0];
@@ -410,17 +435,26 @@ function openForgotModal(){
 
 function canManage(){return state.role==="Super Admin"||state.role==="Administrator"}
 
+// ROLE-BASED PERMISSION FILTERING
 function renderNav(filter=""){
   let out="";
   groups.forEach((g, idx)=>{
-    const items=g.items.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));
+    let allowedItems = g.items;
+    if(state.role !== "Super Admin" && state.role !== "Administrator"){
+      const permRecord = (state.records["permissions"]||[]).find(p => p.role === state.role);
+      if(permRecord && permRecord.allowedModules){
+        const allowedList = permRecord.allowedModules.split(",").map(s => s.trim().toLowerCase());
+        allowedItems = g.items.filter(x => allowedList.includes(x[0].toLowerCase()) || x[1] === "dashboard");
+      }
+    }
+    const items = allowedItems.filter(x=>!filter||(x[0]+" "+g.label).toLowerCase().includes(filter.toLowerCase()));
     if(!items.length)return;
     out+=`<div class="nav-group-header" onclick="toggleNavGroup(${idx})"><span>${escapeHTML(g.label)}</span><span>▾</span></div>`;
     out+=`<div class="nav-sublist open" id="navGroup_${idx}">`;
     items.forEach(x=>out+=`<button class="nav-item ${state.page===x[1]?"active":""}" data-page="${x[1]}"><span class="nav-icon">${x[2]}</span><span>${escapeHTML(x[0])}</span></button>`);
     out+=`</div>`;
   });
-  $("nav").innerHTML=out||'<div class="empty">No modules found.</div>';
+  $("nav").innerHTML=out||'<div class="empty">No authorized modules found for this role.</div>';
 }
 
 window.toggleNavGroup = function(idx){
@@ -471,6 +505,7 @@ function renderDashboardChart(){
 
 const fieldMap={
  users:[["id","User ID","text",true,"USR"],["name","Full Name","text",true],["username","Username","text",true],["pass","Password","text",true],["role","Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Accountant"]],["department","Department","text",true],["status","Status","select",true,["Active","Suspended"]]],
+ permissions:[["role","User Role","select",true,["Administrator","Pharmacist","Doctor","Nurse","Accountant"]],["allowedModules","Allowed Modules (Comma separated e.g. Patient Registration, OPD Prescription, Patient & Service Billing)","text",true],["status","Status","select",true,["Active","Restricted"]]],
  patients:[
    ["uhid","Patient UHID (Auto Unique)","text",true,"AR"],
    ["name","Patient Full Name","text",true],
@@ -486,14 +521,14 @@ const fieldMap={
  doctors:[
    ["docCode","Doctor ID (Auto)","text",true,"DOC"],
    ["docName","Doctor Full Name","text",true],
-   ["specialty","Specialty","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology","Surgery"]],
+   ["specialty","Specialty / Department","select",true,["General Medicine","Cardiology","Orthopedics","Pediatrics","Gynecology","Surgery"]],
    ["fee","Consultation Fee (₹)","number",true],
    ["status","Status","select",true,["Active","On Leave"]]
  ],
  opd:[
    ["uhidNo","Search UHID / Mobile / Name (Auto)","autocomplete-patient",true],
-   ["doctor","Consultant Doctor (Auto-Fetch Fee)","autocomplete-doctor",true],
-   ["department","Department","text",true],
+   ["doctor","Consultant Doctor & Dept (Auto-Fetch)","autocomplete-doctor",true],
+   ["department","Department (Auto-Fetch)","text",true],
    ["patientType","Patient Scheme","select",true,["General","Ayushman Bharat","TPA","Corporate"]],
    ["vitals","Vitals (BP / Pulse / Temp)","text",true],
    ["fee","Consultation Fee (₹)","number",true]
@@ -519,23 +554,11 @@ const fieldMap={
    ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Credit"]],
    ["status","Status","select",true,["Paid","Due / Pending"]]
  ],
- "hospital-billing":[
-   ["billNo","Final Invoice No (Auto)","text",true,"HBILL"],
-   ["patientSearch","Search Admitted Patient (UHID / IPD)","autocomplete-patient",true],
-   ["admissionDate","Admission Date","datetime-local",true],
-   ["dischargeDate","Discharge Date","datetime-local",true],
-   ["totalBill","Total Final Bill (₹)","number",true],
-   ["advancePaid","Advance Paid (Auto)","number",true],
-   ["dueAmount","Net Balance Due (₹)","number",true],
-   ["paymentMode","Payment Mode","select",true,["Cash","Card","UPI","Credit"]],
-   ["dischargeType","Discharge Type","select",true,["Normal Discharge","LAMA","Reffer","DAMA","Death"]],
-   ["status","Status","select",true,["Paid & Discharged","Due Pending"]]
- ],
  medicines:[["itemCode","Medicine Code","text",true,"MED"],["name","Brand Name","text",true],["hsn","HSN Code","text",true],["batch","Batch No","text",true],["expiry","Expiry Date","date",true],["strips","Stock","number",true],["mrp","MRP (₹)","number",true],["gst","GST %","number",true]],
  "pharmacy-sales":[["invoiceNo","Invoice No","text",true,"PHARM"],["patientSearch","Search Patient","autocomplete-patient",true],["medicine","Medicine Name","autocomplete-med",true],["qty","Quantity","number",true],["total","Net Amount (₹)","number",true],["status","Status","select",true,["Paid","Pending"]]]
 };
 
-const keyToData={"users":"users","patients":"patients","patient-profile":"patients","patient-billing":"patient-billing","doctors":"doctors","medicines":"medicines","opd":"opd","admissions":"admissions","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","enquiries":"enquiries"};
+const keyToData={"users":"users","permissions":"permissions","patients":"patients","patient-profile":"patients","patient-billing":"patient-billing","doctors":"doctors","medicines":"medicines","opd":"opd","admissions":"admissions","hospital-billing":"hospital-billing","pharmacy-sales":"pharmacy-sales","enquiries":"enquiries"};
 function datasetKey(){return keyToData[state.page]||state.page}
 function recordsFor(){const k=datasetKey();return k==="users"?state.users:(state.records[k]||[])}
 
@@ -543,20 +566,20 @@ function renderRows(rows){
   if(!rows.length)return `<tr><td colspan="12"><div class="empty"><strong>No records found</strong>Click '＋ Add Record' to populate data.</div></td></tr>`;
   return rows.map((r,i)=>{
     const vals=Object.entries(r).filter(([k])=>k!=="_createdAt"&&k!=="_id"&&k!=="pass"&&k!=="status"&&k!=="isLocked");
-    const isLockedSuperAdmin = (datasetKey()==="users" && r.isLocked);
+    const isProtected = (datasetKey()==="users" && r.isLocked);
+    const canEditDelete = (state.role === "Super Admin" || state.role === "Administrator");
     return `<tr>
       ${vals.map(([k,v])=>`<td>${escapeHTML(v||"—")}</td>`).join("")}
       <td><span class="status ${/suspend|pending|due/i.test(String(r.status||""))?"pending":""}">${escapeHTML(r.status||"Active")}</span></td>
       <td>
         <button class="btn success" onclick="printRecordRow('${datasetKey()}', ${i})">🖨️ Print</button>
-        <button class="btn primary" onclick="editRecordRow('${datasetKey()}', ${i})">✏️ Edit</button>
-        ${isLockedSuperAdmin ? '<span class="pill">Protected</span>' : (canManage() ? `<button class="btn danger" data-delete="${i}">Delete</button>` : 'Protected')}
+        ${canEditDelete && !isProtected ? `<button class="btn primary" onclick="editRecordRow('${datasetKey()}', ${i})">✏️ Edit</button> <button class="btn danger" data-delete="${i}">Delete</button>` : '<span style="font-size:10px; color:var(--muted);">View Only</span>'}
       </td>
     </tr>`
   }).join("");
 }
 
-// 1 or 2 WORDS INSTANT AUTO-SEARCH & AUTO-FETCH
+// INSTANT AUTO-SEARCH (1 OR 2 WORDS)
 window.handlePatientAutoFetch = function(q){
   const drop = $("patientDropdown");
   if(!drop) return;
@@ -582,13 +605,15 @@ window.handleDoctorAutoFetch = function(q){
   const docs = state.records["doctors"] || [];
   const matched = docs.filter(d => d.docName.toLowerCase().includes(q.toLowerCase()) || d.specialty.toLowerCase().includes(q.toLowerCase()));
   if(!matched.length){ drop.style.display="none"; return; }
-  drop.innerHTML = matched.map(d=>`<div onclick="selectDoctorItem('${escapeHTML(d.docName)}', ${d.fee||0})"><b>${escapeHTML(d.docName)}</b> (${escapeHTML(d.specialty)}) - Fee: ₹${d.fee||0}</div>`).join('');
+  drop.innerHTML = matched.map(d=>`<div onclick="selectDoctorItem('${escapeHTML(d.docName)}', '${escapeHTML(d.specialty)}', ${d.fee||0})"><b>${escapeHTML(d.docName)}</b> (${escapeHTML(d.specialty)}) - Fee: ₹${d.fee||0}</div>`).join('');
   drop.style.display = "block";
 };
 
-window.selectDoctorItem = function(name, fee){
+window.selectDoctorItem = function(name, specialty, fee){
   const inp = $("dSearchInput");
-  if(inp) inp.value = name;
+  if(inp) inp.value = name + " (" + specialty + ")";
+  const deptInp = document.querySelector("input[name='department']");
+  if(deptInp) deptInp.value = specialty;
   const feeInp = document.querySelector("input[name='fee']");
   if(feeInp) feeInp.value = fee;
   const drop = $("doctorDropdown");
@@ -674,7 +699,6 @@ window.searchPatientHistory = function(query){
 
   let html = "";
   matched.forEach(p => {
-    const ipd = (state.records["admissions"] || []).filter(x => JSON.stringify(x).toLowerCase().includes(p.uhid.toLowerCase()));
     html += `
       <div style="background:#f8fafc; border:1.5px solid var(--line); border-radius:12px; padding:16px; margin-bottom:15px;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
@@ -721,7 +745,7 @@ window.sendPromptToARAI = function(){
   inp.value = "";
   log.innerHTML += `<p style="margin:6px 0; color:#0284c7;"><b>You:</b> ${escapeHTML(q)}</p>`;
   setTimeout(() => {
-    log.innerHTML += `<p style="margin:6px 0; color:#16a34a;"><b>AR AI:</b> Prescribed protocol confirmed. Ensure regular vital monitoring and hydration.</p>`;
+    log.innerHTML += `<p style="margin:6px 0; color:#16a34a;"><b>AR AI:</b> Protocol confirmed. Ensure regular vital monitoring and hydration.</p>`;
     log.scrollTop = log.scrollHeight;
   }, 500);
 };
@@ -900,14 +924,12 @@ function saveForm(e){
 
   closeModal();
   render();
-  // Instant Print Prompt on Save
   if(confirm("Record saved successfully! Would you like to print it now?")){
     const newlyCreatedIdx = (state.records[k] || recordsFor()).length - 1;
     printRecordRow(k, newlyCreatedIdx >= 0 ? newlyCreatedIdx : 0);
   }
 }
 
-// A4 SIZE OPD PRESCRIPTION & REPORT PRINT
 window.printRecordRow = function(mod, idx){
   const records = mod === "users" ? state.users : (state.records[mod] || []);
   const item = records[idx];
