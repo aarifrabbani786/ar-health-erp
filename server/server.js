@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const db = require('./db'); // Database connection import
 const app = express();
 
 app.use(cors());
@@ -84,6 +85,39 @@ app.post('/api/users/update-password', (req, res) => {
         return res.json({ success: true });
     }
     res.status(404).json({ error: 'User not found' });
+});
+
+// --- BILLS & MEDICINES API ENDPOINTS ---
+app.get('/api/bills', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM bills');
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching bills:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/bills', async (req, res) => {
+    try {
+        const b = req.body;
+        const query = `INSERT INTO bills (invNo, date, cust, mob, netTotal) VALUES (?, ?, ?, ?, ?)`;
+        await db.query(query, [b.invNo, b.date, b.cust, b.mob, b.netTotal]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error saving bill:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/medicines', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM medicines');
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching medicines:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Primary Home Route
