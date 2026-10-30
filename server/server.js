@@ -93,13 +93,8 @@ app.get('/api/bills', async (req, res) => {
         const [rows] = await db.query('SELECT * FROM bills');
         res.json(rows);
     } catch (err) {
-        console.error('Error fetching bills:', err);
-        try {
-            const [rows2] = await db.query('SELECT * FROM patient_bills');
-            res.json(rows2);
-        } catch (err2) {
-            res.status(500).json({ error: err.message });
-        }
+        console.error('API Error fetching bills:', err.message);
+        res.status(500).json({ error: err.message, tableTried: 'bills' });
     }
 });
 app.post('/api/bills', async (req, res) => {
