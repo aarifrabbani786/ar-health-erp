@@ -14,8 +14,10 @@ async function renderDashboard(container) {
         console.error('Error fetching dashboard data:', err);
     }
 
-    let totalSales = bills.reduce((sum, b) => sum + (Number(b.netTotal) || Number(b.total_amount) || 0), 0);
-
+let totalSales = bills.reduce((sum, b) => {
+    const amount = Number(b.netTotal) || Number(b.net_amount) || Number(b.total_amount) || Number(b.amount) || 0;
+    return sum + amount;
+}, 0);
     container.innerHTML = `
         <div class="light-card">
             <h2>📊 Dashboard Module Overview</h2>
