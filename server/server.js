@@ -93,8 +93,20 @@ app.get('/api/bills', async (req, res) => {
         const [rows] = await db.query('SELECT * FROM bills');
         res.json(rows);
     } catch (err) {
-        console.error('API Error fetching bills:', err.message);
-        res.status(500).json({ error: err.message, tableTried: 'bills' });
+        console.error('Error fetching bills:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/bills', async (req, res) => {
+    try {
+        const b = req.body;
+        const query = `INSERT INTO bills (invNo, date, cust, mob, netTotal) VALUES (?, ?, ?, ?, ?)`;
+        await db.query(query, [b.invNo, b.date, b.cust, b.mob, b.netTotal]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error saving bill:', err);
+        res.status(500).json({ error: err.message });
     }
 });
 app.post('/api/bills', async (req, res) => {
