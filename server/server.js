@@ -225,15 +225,15 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR Healthcare ERP | Hospital • Pharmacy • AI</title>
+<title>AR ERP Complete Billing Software</title>
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(rgba(10,25,47,0.7),rgba(5,15,30,0.85)),url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
-.login-card-wrapper{background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
+.login-card-wrapper{background:rgba(15, 23, 42, 0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
 .login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.6;filter:blur(12px)}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.92);color:#fff}
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.95);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
 .login-left p{font-size:13px;color:#94a3b8;margin-bottom:25px}
 .login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(59,130,246,0.3));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
@@ -245,15 +245,15 @@ app.get('/', (req, res) => {
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4)}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
-.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;transition:all 0.3s ease}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
 .logo{width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:white;font-weight:900;font-size:16px}
 .brand strong{display:block;font-size:14px;color:#fff}
 .brand small{display:block;color:#9db3ca;font-size:11px;margin-top:4px}
 .nav{padding:12px 10px 30px;overflow-y:auto;flex:1}
 .nav-label{font-size:10px;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px;font-weight:800}
-.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}
-.nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer;transition:all 0.2s}
+.nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff;transform:translateX(4px)}
 .nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:700}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
@@ -306,7 +306,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <div class="login-card-wrapper">
     <div class="login-left">
       <h2>Sign In</h2>
-      <p>Enter your User ID & Password to access AR Healthcare ERP</p>
+      <p>Enter your User ID & Password to access AR ERP Complete Billing Software</p>
       <form id="login-form-element" onsubmit="handleLogin(event)">
         <div class="login-field">
           <label>User ID / Username</label>
@@ -324,22 +324,25 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       </form>
     </div>
     <div class="login-right">
-      <h2>AR HEALTHCARE ERP</h2>
-      <p style="font-size:13px;line-height:1.6;opacity:.85;margin-top:10px;">A R PHARMA & SURGICAL AGENCY</p>
-      <div style="margin-top:20px;font-size:11px;opacity:0.7;">Hospital Management, Pharmacy & Clinical AI</div>
+      <h2>AR ERP COMPLETE BILLING SOFTWARE</h2>
+      <p style="font-size:13px;line-height:1.6;opacity:.85;margin-top:10px;">Advanced Hospital & Pharmacy Billing System</p>
+      <div style="margin-top:20px;font-size:11px;opacity:0.7;">Multi-Mode Billing & Clinical AI</div>
     </div>
   </div>
 </div>
 
 <div id="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • AI</small></div></div>
+  <aside class="sidebar" id="sidebar-panel">
+    <div class="brand"><div class="logo">AR</div><div><strong>AR ERP BILLING</strong><small>Complete Billing & ERP</small></div></div>
     <nav class="nav" id="nav-menu"></nav>
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
+      <div style="display:flex;align-items:center;gap:15px;">
+        <button class="btn btn-sm" onclick="toggleSidebarSlide()" style="padding:6px 10px;font-size:14px;">☰</button>
+        <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
+      </div>
       <div class="profile">
         <div class="avatar" id="user-avatar">AR</div>
         <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
@@ -458,7 +461,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);">A R PHARMA AND SURGICAL AGENCY</h2>
+      <h2 style="margin:0;color:var(--navy);">AR ERP COMPLETE BILLING SOFTWARE</h2>
       <p style="margin:4px 0;font-size:12px;color:var(--muted);">Hospital Management & OPD Consultation Invoice</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;">
@@ -534,7 +537,7 @@ let currentActiveBillNo = '';
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
-  { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration & Billing", "patients", "＋"], ["Patient Search Master", "patient-search", "⌕"], ["Doctors & Departments", "doctors", "✚"], ["Hospital Billing & Edit Req", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
+  { label: "BILLING & HOSPITAL", items: [["Patient Registration & Billing", "patients", "＋"], ["Patient Search Master", "patient-search", "⌕"], ["Doctors & Departments", "doctors", "✚"], ["Hospital Billing & Edit Req", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
   { label: "PHARMACY & INVENTORY", items: [["Pharmacy Dashboard", "pharmacy", "✚"], ["Medicine Master", "medicines", "▤"], ["Stock & Expiry", "stock-alerts", "⚠"]] },
   { label: "ADMINISTRATION & USERS", items: [["User & Role Management", "users", "♙"], ["Change Password", "password", "⚙"], ["Audit Logs", "audit-logs", "☷"]] }
 ];
@@ -564,6 +567,15 @@ window.togglePasswordVisibility = function() {
   } else {
     pInput.type = 'password';
     btn.innerText = '👁';
+  }
+}
+
+window.toggleSidebarSlide = function() {
+  const sb = document.getElementById('sidebar-panel');
+  if (sb.style.marginLeft === '-272px') {
+    sb.style.marginLeft = '0';
+  } else {
+    sb.style.marginLeft = '-272px';
   }
 }
 
