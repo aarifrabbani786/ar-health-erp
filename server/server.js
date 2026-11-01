@@ -24,6 +24,12 @@ if (connectionString) {
     }
 }
 
+let instituteInfo = {
+    name: 'A.R. ONLINE ZONE & HEALTHCARE ERP',
+    tagline: 'Hospital • Pharmacy • Biomedical & Clinical ERP',
+    address: 'Village Badahara Rani, Maharajganj, Uttar Pradesh'
+};
+
 let dailySequence = { date: '', count: 0 };
 function getNextUHID() {
     const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2);
@@ -39,8 +45,9 @@ function getNextUHID() {
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active', isProtected: true },
-        { id: 'USR-102', name: 'Staff Reception', username: 'staff', password: '123', role: 'Cashier / Receptionist', permissions: ['patients', 'patient-search', 'opd', 'hospital-billing'], status: 'Active', isProtected: false },
-        { id: 'USR-103', name: 'Demo User', username: 'demo', password: '1234', role: 'Demo Viewer', permissions: ['all'], status: 'Active', isProtected: false, isDemo: true }
+        { id: 'USR-102', name: 'Admin User', username: 'admin', password: '123', role: 'Admin', permissions: ['all'], status: 'Active', isProtected: false },
+        { id: 'USR-103', name: 'Staff Reception', username: 'staff', password: '123', role: 'Cashier / Receptionist', permissions: ['patients', 'patient-search', 'opd', 'hospital-billing'], status: 'Active', isProtected: false },
+        { id: 'USR-104', name: 'Demo User', username: 'demo', password: '1234', role: 'Demo Viewer', permissions: ['all'], status: 'Active', isProtected: false, isDemo: true }
     ],
     patients: [
         { uhid: 'AR011126-01', title: 'Mr.', name: 'Aarif Rabbani', relation: 'S/O', guardian: 'Md Rabbani', age: 27, gender: 'Male', contact: '9876543210', adhaar: '123456789012', abha: 'ABHA12345678', address: 'Maharajganj, UP', doctor: 'Dr. A. Khan', fee: 500, discount: 50, netFee: 450, payType: 'Cash', date: '2026-11-01 14:00', workflowStatus: 'Registered & Visited' }
@@ -69,6 +76,15 @@ app.post('/api/login', (req, res) => {
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
+});
+
+app.get('/api/institute', (req, res) => res.json({ success: true, institute: instituteInfo }));
+app.post('/api/institute', (req, res) => {
+    const { name, tagline, address } = req.body;
+    if (name) instituteInfo.name = name;
+    if (tagline) instituteInfo.tagline = tagline;
+    if (address) instituteInfo.address = address;
+    res.json({ success: true, message: 'Institute details updated successfully!', institute: instituteInfo });
 });
 
 app.post('/api/users/create', (req, res) => {
@@ -143,7 +159,6 @@ app.post('/api/patients/register', (req, res) => {
         const p = req.body;
         if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
 
-        // Prevent duplicate billing for same mobile & doctor within short window if needed, or rely on fresh form reset
         const uhid = p.existingUhid || getNextUHID();
         const nowStr = new Date().toLocaleString('en-GB');
         const fee = Number(p.fee || 0);
@@ -183,23 +198,20 @@ app.get('/api/patients/search', (req, res) => {
 
 app.get('/api/bills', (req, res) => res.json(erpData.bills));
 
-app.post('/api/bills/edit-request', (req, res) => {
-    const { billNo, requestedBy, reason } = req.body;
-    const reqItem = { id: 'REQ-' + Date.now(), billNo, requestedBy, reason, status: 'Pending', time: new Date().toLocaleString('en-GB') };
-    erpData.editRequests.unshift(reqItem);
-    res.json({ success: true, message: 'Edit request submitted to Admin for approval.' });
-});
-
-app.get('/api/edit-requests', (req, res) => res.json(erpData.editRequests));
-
-app.post('/api/edit-requests/action', (req, res) => {
-    const { requestId, status } = req.body;
-    const reqItem = erpData.editRequests.find(r => r.id === requestId);
-    if (reqItem) {
-        reqItem.status = status;
-        res.json({ success: true, editRequests: erpData.editRequests });
+app.post('/api/bills/edit', (req, res) => {
+    const { billNo, netFee, payType, userRole } = req.body;
+    if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+        return res.status(403).json({ success: false, message: 'Only Super Admin and Admin can directly edit bills!' });
+    }
+    const bill = erpData.bills.find(b => b.billNo === billNo);
+    if (bill) {
+        bill.netFee = Number(netFee);
+        bill.payType = payType;
+        bill.edited = true;
+        erpData.auditLogs.unshift({ time: new Date().toLocaleString('en-GB'), user: userRole, action: 'Edited bill ' + billNo + ' to Net Fee ₹' + netFee });
+        res.json({ success: true, message: 'Bill updated successfully!', bill });
     } else {
-        res.status(404).json({ success: false, message: 'Request not found' });
+        res.status(404).json({ success: false, message: 'Bill not found' });
     }
 });
 
@@ -301,12 +313,21 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
 .suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px;font-weight:700}
 .suggestion-item:hover{background:#f0f6ff}
 
-#print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999}
+#ar-ai-widget{position:fixed;bottom:25px;right:25px;z-index:99999}
+#ar-ai-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border:none;border-radius:50px;padding:12px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(38,116,232,0.3);display:flex;align-items:center;gap:8px}
+#ar-ai-box{position:absolute;bottom:60px;right:0;width:350px;background:#fff;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;overflow:hidden;border:1px solid var(--line)}
+.ai-head{background:var(--navy);color:#fff;padding:14px;font-weight:700;font-size:13px;display:flex;justify-content:space-between}
+.ai-body{padding:15px;max-height:250px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:10px}
+.ai-foot{padding:10px;border-top:1px solid var(--line);display:flex;gap:8px}
+.ai-foot input{flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;outline:none}
+
+#print-modal, #prescription-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999}
 .print-card{background:#fff;padding:30px;border-radius:16px;width:min(700px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.3)}
 
 @media print {
   body * { visibility: hidden !important; }
-  #print-card-area, #print-card-area *, #prescription-card-area, #prescription-card-area * { visibility: visible !important; }
+  #print-card-area, #print-card-area * { visibility: visible !important; }
+  #prescription-card-area, #prescription-card-area * { visibility: visible !important; }
   #print-modal, #prescription-modal { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; background: white !important; display: flex !important; align-items: flex-start !important; justify-content: center !important; }
   .print-card { box-shadow: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
   .no-print { display: none !important; }
@@ -448,6 +469,16 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
           </form>
         </div>
 
+        <div class="panel" id="backup-panel" style="display:none;">
+          <div class="panel-head"><h3>Settings & Institute Header Setup</h3></div>
+          <form id="institute-form" style="max-width:500px;display:flex;flex-direction:column;gap:15px;">
+            <div class="field"><label>Institute / Hospital / Pharmacy Name *</label><input type="text" id="inst-name" required></div>
+            <div class="field"><label>Tagline / Subtitle *</label><input type="text" id="inst-tagline" required></div>
+            <div class="field"><label>Address / Location *</label><input type="text" id="inst-address" required></div>
+            <button type="submit" class="btn primary">💾 Save Institute Settings</button>
+          </form>
+        </div>
+
         <div class="panel" id="password-panel" style="display:none;">
           <div class="panel-head"><h3>Change Your Account Password</h3></div>
           <form id="password-change-form" style="max-width:400px;display:flex;flex-direction:column;gap:15px;">
@@ -488,8 +519,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);font-weight:900;">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
-      <p style="margin:4px 0;font-size:12px;font-weight:800;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="print-inst-name">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:12px;font-weight:800;color:var(--muted);" id="print-inst-address">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;">
       <div><strong>Bill No:</strong> <span id="pb-billno"></span></div>
@@ -518,18 +549,18 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
     </table>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
       <button class="btn" id="print-modal-close-btn">Close</button>
-      <button class="btn success" id="print-modal-presc-btn">📝 Print Prescription</button>
-      <button class="btn" id="print-modal-edit-btn">✏️ Request Edit</button>
-      <button class="btn primary" id="print-modal-print-btn">🖨 Print Duplicate Bill</button>
+      <button class="btn success" id="print-modal-presc-btn">📝 Open Prescription</button>
+      <button class="btn" id="print-modal-edit-btn">✏️ Edit Bill</button>
+      <button class="btn primary" id="print-modal-print-btn">🖨 Print Bill</button>
     </div>
   </div>
 </div>
 
-<div id="prescription-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999">
+<div id="prescription-modal">
   <div class="print-card" id="prescription-card-area" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);font-weight:900;">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
-      <p style="margin:4px 0;font-size:11px;font-weight:800;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="presc-inst-name">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:11px;font-weight:800;color:var(--muted);" id="presc-inst-address">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
       <h3 style="margin:8px 0;color:var(--blue);font-weight:900;">OPD Prescription Sheet</h3>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;border:1px solid var(--line);padding:10px;border-radius:8px;">
@@ -542,13 +573,15 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
       <div><strong>Doctor Name:</strong> <span id="pr-doctor"></span></div>
       <div><strong>Address:</strong> <span id="pr-address"></span></div>
     </div>
-    <div style="margin-bottom:20px;">
-      <label style="font-size:12px;font-weight:900;color:var(--navy);">Clinical Assessment & Symptoms / Diagnosis:</label>
-      <textarea id="pr-assessment" style="width:100%;height:80px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Write symptoms, clinical findings..."></textarea>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px;background:#f8fafd;padding:10px;border-radius:8px;font-size:12px;">
+      <div><label>BP:</label> <input type="text" id="vital-bp" placeholder="120/80" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Pulse:</label> <input type="text" id="vital-pulse" placeholder="72/min" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Temp:</label> <input type="text" id="vital-temp" placeholder="98.6°F" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Weight:</label> <input type="text" id="vital-wt" placeholder="70 kg" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
     </div>
+    <div style="margin-bottom:15px;font-size:18px;font-weight:900;color:var(--blue);">Rx</div>
     <div style="margin-bottom:20px;">
-      <label style="font-size:12px;font-weight:900;color:var(--navy);">Advice & Plan of Treatment (Rx):</label>
-      <textarea id="pr-treatment" style="width:100%;height:120px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Write medicines, dosage and advice..."></textarea>
+      <textarea id="pr-treatment" style="width:100%;height:150px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:700;" placeholder="Write clinical diagnosis, medicines, dosage and advice here..."></textarea>
     </div>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
       <button class="btn" id="presc-close-btn">Close</button>
@@ -562,6 +595,7 @@ let currentUser = null;
 let activeModuleKey = 'dashboard';
 let doctorsList = [];
 let currentActiveBillNo = '';
+let instituteDetails = { name: '', tagline: '', address: '' };
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
@@ -585,6 +619,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('app').style.display = 'flex';
     renderNav();
     loadDoctors();
+    loadInstituteDetails();
     switchView(savedPage || 'dashboard');
   }
 
@@ -596,6 +631,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('doctor-form').addEventListener('submit', handleAddNewDoctor);
   document.getElementById('user-create-form').addEventListener('submit', handleCreateUser);
   document.getElementById('password-change-form').addEventListener('submit', handleChangePassword);
+  document.getElementById('institute-form').addEventListener('submit', handleInstituteUpdate);
   document.getElementById('ai-close-btn').addEventListener('click', toggleAiBox);
   document.getElementById('ai-send-btn').addEventListener('click', sendAiQuery);
   document.getElementById('ai-input').addEventListener('keypress', (e) => { if(e.key==='Enter') sendAiQuery(); });
@@ -604,15 +640,57 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('print-modal-close-btn').addEventListener('click', () => { document.getElementById('print-modal').style.display = 'none'; });
   document.getElementById('print-modal-presc-btn').addEventListener('click', () => { openPrescriptionSheet(document.getElementById('pb-uhid').innerText); });
   document.getElementById('print-modal-edit-btn').addEventListener('click', requestBillEdit);
-  document.getElementById('print-modal-print-btn').addEventListener('click', () => { window.print(); });
+  document.getElementById('print-modal-print-btn').addEventListener('click', () => { 
+    document.getElementById('print-modal').style.display = 'flex';
+    document.getElementById('prescription-modal').style.display = 'none';
+    window.print(); 
+  });
   document.getElementById('presc-close-btn').addEventListener('click', () => { document.getElementById('prescription-modal').style.display = 'none'; });
-  document.getElementById('presc-print-btn').addEventListener('click', () => { window.print(); });
+  document.getElementById('presc-print-btn').addEventListener('click', () => { 
+    document.getElementById('prescription-modal').style.display = 'flex';
+    document.getElementById('print-modal').style.display = 'none';
+    window.print(); 
+  });
   document.getElementById('live-search-input').addEventListener('input', (e) => handleLiveSearch(e.target.value));
   document.getElementById('reg-doctor').addEventListener('change', autoFetchDoctorFee);
   document.getElementById('reg-fee').addEventListener('input', calculateNetFee);
   document.getElementById('reg-discount').addEventListener('input', calculateNetFee);
   document.getElementById('forgot-link').addEventListener('click', (e) => { e.preventDefault(); alert('Please contact your Super Admin to recover your User ID & Password.'); });
 });
+
+async function loadInstituteDetails() {
+  const res = await fetch('/api/institute');
+  const data = await res.json();
+  if (data.success) {
+    instituteDetails = data.institute;
+    document.getElementById('print-inst-name').innerText = instituteDetails.name;
+    document.getElementById('print-inst-address').innerText = instituteDetails.tagline + ' • ' + instituteDetails.address;
+    document.getElementById('presc-inst-name').innerText = instituteDetails.name;
+    document.getElementById('presc-inst-address').innerText = instituteDetails.tagline + ' • ' + instituteDetails.address;
+    
+    if(document.getElementById('inst-name')) {
+      document.getElementById('inst-name').value = instituteDetails.name;
+      document.getElementById('inst-tagline').value = instituteDetails.tagline;
+      document.getElementById('inst-address').value = instituteDetails.address;
+    }
+  }
+}
+
+async function handleInstituteUpdate(e) {
+  e.preventDefault();
+  const name = document.getElementById('inst-name').value;
+  const tagline = document.getElementById('inst-tagline').value;
+  const address = document.getElementById('inst-address').value;
+
+  const res = await fetch('/api/institute', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name, tagline, address })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) loadInstituteDetails();
+}
 
 function toggleSidebarSlide() {
   const sb = document.getElementById('sidebar-panel');
@@ -642,6 +720,7 @@ async function handleLogin(e) {
       document.getElementById('app').style.display = 'flex';
       renderNav();
       loadDoctors();
+      loadInstituteDetails();
       switchView('dashboard');
     } else {
       alert(data.message || 'Login Failed');
@@ -730,6 +809,7 @@ function switchView(targetKey) {
     document.getElementById('patient-reg-panel').style.display = (targetKey === 'patients' || targetKey === 'patient-search') ? 'block' : 'none';
     document.getElementById('doctor-panel').style.display = (targetKey === 'doctors') ? 'block' : 'none';
     document.getElementById('user-mgmt-panel').style.display = (targetKey === 'users' && (currentUser.role === 'Super Admin' || currentUser.role === 'Admin')) ? 'block' : 'none';
+    document.getElementById('backup-panel').style.display = (targetKey === 'backup') ? 'block' : 'none';
     document.getElementById('password-panel').style.display = (targetKey === 'password') ? 'block' : 'none';
 
     if (targetKey === 'patients' || targetKey === 'patient-search') {
@@ -966,7 +1046,7 @@ async function handlePatientRegistration(e) {
 
     document.getElementById('print-modal').style.display = 'flex';
     
-    // Auto fresh form to prevent duplicate entry
+    // Auto fresh form and generate next UHID only upon successful registration
     document.getElementById('patient-reg-form').reset();
     document.getElementById('reg-discount').value = '0';
     fetchNextUHID();
@@ -1014,19 +1094,31 @@ async function openPrescriptionSheet(uhid) {
     document.getElementById('pr-doctor').innerText = p.doctor;
     document.getElementById('pr-address').innerText = p.address || 'Maharajganj, UP';
     document.getElementById('prescription-modal').style.display = 'flex';
+    document.getElementById('print-modal').style.display = 'none';
   }
 }
 
 async function requestBillEdit() {
-  const reason = prompt("Enter reason for bill edit request (submitted to Admin):");
-  if (!reason) return;
-  const res = await fetch('/api/bills/edit-request', {
+  if (currentUser.role !== 'Super Admin' && currentUser.role !== 'Admin') {
+    alert('Only Super Admin and Admin can edit bills directly!');
+    return;
+  }
+  const newNet = prompt("Enter new Net Fee (₹) for bill " + currentActiveBillNo + ":");
+  if (!newNet) return;
+  const newMode = prompt("Enter payment mode (Cash / Credit / UPI):", "Cash");
+  if (!newMode) return;
+
+  const res = await fetch('/api/bills/edit', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ billNo: currentActiveBillNo, requestedBy: currentUser.name, reason })
+    body: JSON.stringify({ billNo: currentActiveBillNo, netFee: newNet, payType: newMode, userRole: currentUser.role })
   });
   const data = await res.json();
   alert(data.message);
+  if(data.success) {
+    document.getElementById('pb-amount').innerText = '₹' + Number(data.bill.netFee).toFixed(2);
+    document.getElementById('pb-paymode').innerText = data.bill.payType;
+  }
 }
 
 async function handleAddNewDoctor(e) {
