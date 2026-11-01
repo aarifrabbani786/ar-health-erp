@@ -231,17 +231,17 @@ app.get('/', (req, res) => {
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#09090b 100%);position:fixed;z-index:9999}
-.login-card-wrapper{background:linear-gradient(135deg,rgba(30,41,59,0.85),rgba(15,23,42,0.95));border:1px solid rgba(255,255,255,0.15);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.7);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
-.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#3b82f6,#06b6d4,#8b5cf6,#ec4899);z-index:-1;opacity:0.5;filter:blur(10px)}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.9);color:#fff}
+.login-card-wrapper{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.98));border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
+.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#3b82f6,#06b6d4,#8b5cf6,#ec4899);z-index:-1;opacity:0.6;filter:blur(12px)}
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.95);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
 .login-left p{font-size:13px;color:#94a3b8;margin-bottom:25px}
 .login-right{flex:1;background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .login-field{margin-bottom:18px;text-align:left;position:relative}
-.login-field label{display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:6px}
-.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;background:rgba(255,255,255,0.06);color:#fff;outline:none}
+.login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
+.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.25);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.8);color:#ffffff !important;outline:none}
 .login-input::placeholder{color:#64748b}
-.eye-btn{position:absolute;right:12px;top:32px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px}
+.eye-btn{position:absolute;right:12px;top:34px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(59,130,246,0.4)}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
@@ -588,7 +588,7 @@ async function handleLogin(e) {
       alert(data.message || 'Login Failed');
     }
   } catch (err) {
-    alert('Network Error');
+    alert('Network Error: ' + err.message);
   }
 }
 
