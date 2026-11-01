@@ -21,7 +21,7 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// In-Memory Enterprise Store for 100% Reliability & Fallback
+// In-Memory Enterprise Fallback Store for 100% Reliability
 let erpData = {
     bills: [
         { id: 1, inv_no: 'PBILL311026846', date: '2026-10-31', customer_name: 'Aarif Rabbani', mobile: '9876543210', net_total: 800.00 }
@@ -34,7 +34,7 @@ let erpData = {
     ]
 };
 
-// --- API ENDPOINTS ---
+// --- REST API ENDPOINTS ---
 
 app.get('/api/dashboard/metrics', async (req, res) => {
     try {
@@ -87,32 +87,38 @@ app.get('/api/bills', async (req, res) => {
 });
 
 app.post('/api/bills', async (req, res) => {
-    try {
-        const b = req.body;
-        const invNo = `PBILL${Date.now().toString().slice(-8)}`;
-        const date = new Date().toISOString().split('T')[0];
-        const cust = b.cust || 'Walk-in Patient';
-        const mob = b.mob || '';
-        const netTotal = Number(b.netTotal) || 0;
+    if (pool) {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN'); // ACID Transaction start
+            const b = req.body;
+            const invNo = `PBILL${Date.now().toString().slice(-8)}`;
+            const date = new Date().toISOString().split('T')[0];
+            const cust = b.cust || 'Walk-in Patient';
+            const mob = b.mob || '';
+            const netTotal = Number(b.netTotal) || 0;
 
-        const newBill = { id: Date.now(), inv_no: invNo, date, customer_name: cust, mobile: mob, net_total: netTotal };
-        erpData.bills.unshift(newBill);
+            const insertRes = await client.query(
+                'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                [invNo, date, cust, mob, netTotal, netTotal]
+            );
 
-        if (pool) {
-            try {
-                await pool.query(
-                    'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6)',
-                    [invNo, date, cust, mob, netTotal, netTotal]
-                );
-            } catch (dbErr) {
-                console.error('Database insert warning (fallback used):', dbErr.message);
-            }
+            await client.query('COMMIT');
+            return res.json({ success: true, message: 'Invoice generated and saved atomically to database', bill: insertRes.rows[0] });
+        } catch (dbErr) {
+            await client.query('ROLLBACK');
+            console.error('Database transaction error, falling back:', dbErr.message);
+        } finally {
+            client.release();
         }
-
-        res.json({ success: true, message: 'Invoice generated and saved successfully', bill: newBill });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
     }
+
+    // Fallback in-memory save if pool is not active
+    const b = req.body;
+    const invNo = `PBILL${Date.now().toString().slice(-8)}`;
+    const newBill = { id: Date.now(), inv_no: invNo, date: new Date().toISOString().split('T')[0], customer_name: b.cust || 'Walk-in', mobile: b.mob || '', net_total: Number(b.netTotal) || 0 };
+    erpData.bills.unshift(newBill);
+    res.json({ success: true, message: 'Invoice saved successfully', bill: newBill });
 });
 
 app.get('/api/patients', async (req, res) => {
@@ -135,11 +141,7 @@ app.post('/api/patients', async (req, res) => {
         erpData.patients.unshift(newPatient);
         
         if (pool) {
-            try {
-                await pool.query('INSERT INTO patients (uhid, name, age, sex, contact) VALUES ($1, $2, $3, $4, $5)', [uhid, p.name, p.age, p.sex, p.contact]);
-            } catch (dbErr) {
-                console.error('DB insert warning:', dbErr.message);
-            }
+            await pool.query('INSERT INTO patients (uhid, name, age, sex, contact) VALUES ($1, $2, $3, $4, $5)', [uhid, p.name, p.age, p.sex, p.contact]);
         }
         res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
     } catch (err) {
@@ -159,22 +161,22 @@ app.get('/api/medicines', async (req, res) => {
     }
 });
 
-// --- FULL PROFESSIONAL COMMERCIAL ERP INTERFACE ---
+// --- PROFESSIONAL RESPONSIVE FRONTEND DASHBOARD ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A R Pharma and Surgical Agency | Commercial Enterprise ERP</title>
+    <title>A R Healthcare ERP | Hospital, Pharmacy & Biomedical System</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #e2e8f0; display: flex; height: 100vh; overflow: hidden; color: #0f172a; }
+        body { background: #f1f5f9; display: flex; height: 100vh; overflow: hidden; color: #1e293b; }
         
-        .sidebar { width: 280px; background: #090d16; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .sidebar-brand { padding: 22px; font-size: 17px; font-weight: 700; background: #0f172a; border-bottom: 1px solid #1e293b; color: #38bdf8; }
+        .sidebar { width: 280px; background: #0f172a; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .sidebar-brand { padding: 22px; font-size: 16px; font-weight: 700; background: #090d16; border-bottom: 1px solid #1e293b; color: #38bdf8; display: flex; align-items: center; gap: 10px; }
         .sidebar-menu { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
-        .sidebar-menu li { padding: 13px 24px; font-size: 14px; cursor: pointer; transition: all 0.2s; color: #94a3b8; border-left: 4px solid transparent; }
+        .sidebar-menu li { padding: 13px 24px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #94a3b8; border-left: 4px solid transparent; }
         .sidebar-menu li:hover, .sidebar-menu li.active { background: #1e293b; color: white; font-weight: 600; border-left-color: #38bdf8; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -182,7 +184,8 @@ app.get('/', (req, res) => {
         .dashboard-body { padding: 25px; overflow-y: auto; flex: 1; background: #f8fafc; }
         
         .view-section { display: none; }
-        .view-section.active { display: block; }
+        .view-section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .metric-card { background: white; padding: 22px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-top: 4px solid #0284c7; }
@@ -218,7 +221,7 @@ app.get('/', (req, res) => {
 </head>
 <body>
     <div class="sidebar">
-        <div class="sidebar-brand">🏥 A R ENTERPRISE ERP</div>
+        <div class="sidebar-brand">🏥 A R HEALTHCARE ERP</div>
         <ul class="sidebar-menu" id="nav-list">
             <li class="active" data-target="view-dashboard">📊 Executive Dashboard</li>
             <li data-target="view-patients">👤 Patient Registration (UHID)</li>
@@ -324,7 +327,7 @@ app.get('/', (req, res) => {
             <!-- 5. PHARMACY ERP -->
             <div id="view-pharmacy" class="view-section">
                 <div class="card-box">
-                    <div class="card-title">Pharmacy Inventory & Batch Control Master</div>
+                    <div class="card-title">Pharmacy Inventory & Batch Control Master (FEFO)</div>
                     <table>
                         <thead><tr><th>Medicine ID</th><th>Brand Name</th><th>Generic</th><th>Batch No</th><th>Stock</th><th>MRP (₹)</th></tr></thead>
                         <tbody id="medicine-inventory-tbody">
@@ -347,7 +350,7 @@ app.get('/', (req, res) => {
                             <div class="form-group"><label>Unit Price (₹)</label><input type="number" id="pos-price" value="20.00" oninput="calculatePosTotal()"></div>
                             <div class="form-group"><label>Quantity</label><input type="number" id="pos-qty" value="40" oninput="calculatePosTotal()"></div>
                         </div>
-                        <button class="btn btn-success" style="margin-top: 15px;" onclick="commitPosBill()">💾 Generate Invoice</button>
+                        <button class="btn btn-success" style="margin-top: 15px;" onclick="commitPosBill()">💾 Generate & Save Invoice</button>
                     </div>
                     <div class="bill-summary-box">
                         <div class="card-title" style="margin-bottom: 20px;">Live Bill Calculation</div>
@@ -412,7 +415,7 @@ app.get('/', (req, res) => {
                 const bills = await bRes.json();
                 let bHtml = '';
                 bills.forEach(b => {
-                    bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date || '2026-11-01'}</td><td>\${b.customer_name || 'Walk-in'}</td><td>\${b.mobile || '-'}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
+                    bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date ? b.date.split('T')[0] : '2026-11-01'}</td><td>\${b.customer_name || 'Walk-in'}</td><td>\${b.mobile || '-'}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
                 });
                 document.getElementById('dash-bills-tbody').innerHTML = bHtml;
 
@@ -430,7 +433,7 @@ app.get('/', (req, res) => {
                 const meds = await medRes.json();
                 let mHtml = '';
                 meds.forEach(m => {
-                    mHtml += \`<tr><td>\${m.med_id || 'MED'}</td><td>\${m.brand_name || m.brand}</td><td>\${m.generic_name || m.generic}</td><td>\${m.batch_no || 'B2601'}</td><td>\${m.available_qty || m.stock}</td><td>₹\${Number(m.sale_rate || m.price).toFixed(2)}</td></tr>\`;
+                    mHtml += \`<tr><td>\${m.med_id || 'MED'}</td><td>\${m.brand_name || m.brand}</td><td>\${m.generic_name || m.generic}</td><td>\${m.batch_no || 'B2601'}</td><td>\${m.available_qty !== undefined ? m.available_qty : m.stock}</td><td>₹\${Number(m.sale_rate || m.price).toFixed(2)}</td></tr>\`;
                 });
                 document.getElementById('medicine-inventory-tbody').innerHTML = mHtml;
 
@@ -452,7 +455,7 @@ app.get('/', (req, res) => {
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert('Invoice generated and saved successfully! Invoice No: ' + data.bill.inv_no);
+                    alert('Invoice generated and saved successfully! Invoice No: ' + (data.bill.inv_no || data.bill.invNo));
                     loadEnterpriseData();
                     switchView('view-dashboard');
                 } else {
