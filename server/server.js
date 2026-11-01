@@ -25,13 +25,22 @@ if (connectionString) {
 }
 
 let instituteInfo = {
-    name: 'A.R. ONLINE ZONE & HEALTHCARE ERP',
+    name: 'A.R. MEDICAL COLLEGE & HEALTHCARE',
     tagline: 'Hospital • Pharmacy • Biomedical & Clinical ERP',
     address: 'Village Badahara Rani, Maharajganj, Uttar Pradesh'
 };
 
-let dailySequence = { date: '', count: 0 };
+let dailySequence = { date: '', count: 1 };
 function getNextUHID() {
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2);
+    if (dailySequence.date !== todayStr) {
+        dailySequence.date = todayStr;
+        dailySequence.count = 1;
+    }
+    return 'AR' + todayStr + '-' + dailySequence.count.toString().padStart(2, '0');
+}
+
+function incrementUHID() {
     const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2);
     if (dailySequence.date !== todayStr) {
         dailySequence.date = todayStr;
@@ -39,7 +48,6 @@ function getNextUHID() {
     } else {
         dailySequence.count += 1;
     }
-    return 'AR' + todayStr + '-' + dailySequence.count.toString().padStart(2, '0');
 }
 
 let erpData = {
@@ -59,9 +67,15 @@ let erpData = {
     bills: [
         { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, discount: 50, netFee: 450, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00', edited: false }
     ],
-    editRequests: [],
+    laboratory: [
+        { testId: 'LAB-101', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', testName: 'Complete Blood Count (CBC)', status: 'Completed', result: 'Hb: 13.5 g/dL, WBC: 7200 /µL, Platelets: 2.5 Lakhs', date: '2026-11-01' }
+    ],
+    pharmacyStock: [
+        { itemCode: 'MED-501', itemName: 'Paracetamol 650mg', batch: 'PAR26A', qty: 450, price: '₹2.50' },
+        { itemCode: 'MED-502', itemName: 'Amoxycillin 500mg', batch: 'AMX12B', qty: 120, price: '₹12.00' }
+    ],
     auditLogs: [
-        { time: '2026-11-01 14:00', user: 'Aarif Rabbani', action: 'System Initialized & Default User Loaded' }
+        { time: '2026-11-01 14:00', user: 'Aarif Rabbani', action: 'System Initialized & Default Data Loaded' }
     ]
 };
 
@@ -160,6 +174,8 @@ app.post('/api/patients/register', (req, res) => {
         if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
 
         const uhid = p.existingUhid || getNextUHID();
+        incrementUHID(); // Increment only upon successful registration
+
         const nowStr = new Date().toLocaleString('en-GB');
         const fee = Number(p.fee || 0);
         const discount = Number(p.discount || 0);
@@ -237,6 +253,8 @@ app.get('/api/module/:key', (req, res) => {
     if (['bills', 'hospital-billing'].includes(key)) return res.json({ success: true, data: erpData.bills });
     if (['doctors'].includes(key)) return res.json({ success: true, data: erpData.doctors });
     if (['users'].includes(key)) return res.json({ success: true, data: erpData.users });
+    if (['lab', 'laboratory'].includes(key)) return res.json({ success: true, data: erpData.laboratory });
+    if (['pharmacy', 'medicines'].includes(key)) return res.json({ success: true, data: erpData.pharmacyStock });
     if (['audit-logs'].includes(key)) return res.json({ success: true, data: erpData.auditLogs });
     res.json({ success: true, data: erpData.patients });
 });
@@ -519,7 +537,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="print-inst-name">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="print-inst-name">A.R. MEDICAL COLLEGE & HEALTHCARE</h2>
       <p style="margin:4px 0;font-size:12px;font-weight:800;color:var(--muted);" id="print-inst-address">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;">
@@ -557,13 +575,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
 </div>
 
 <div id="prescription-modal">
-  <div class="print-card" id="prescription-card-area" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
+  <div class="print-card" id="prescription-card-area" style="width:min(800px,96vw);max-height:92vh;overflow-y:auto;">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="presc-inst-name">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;" id="presc-inst-name">A.R. MEDICAL COLLEGE & HEALTHCARE</h2>
       <p style="margin:4px 0;font-size:11px;font-weight:800;color:var(--muted);" id="presc-inst-address">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
       <h3 style="margin:8px 0;color:var(--blue);font-weight:900;">OPD Prescription Sheet</h3>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;border:1px solid var(--line);padding:10px;border-radius:8px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:12px;border:1px solid var(--line);padding:10px;border-radius:8px;">
       <div><strong>UHID:</strong> <span id="pr-uhid"></span></div>
       <div><strong>Date:</strong> <span id="pr-date"></span></div>
       <div><strong>Patient Name:</strong> <span id="pr-name"></span></div>
@@ -573,17 +591,40 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
       <div><strong>Doctor Name:</strong> <span id="pr-doctor"></span></div>
       <div><strong>Address:</strong> <span id="pr-address"></span></div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px;background:#f8fafd;padding:10px;border-radius:8px;font-size:12px;">
-      <div><label>BP:</label> <input type="text" id="vital-bp" placeholder="120/80" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Pulse:</label> <input type="text" id="vital-pulse" placeholder="72/min" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Temp:</label> <input type="text" id="vital-temp" placeholder="98.6°F" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Weight:</label> <input type="text" id="vital-wt" placeholder="70 kg" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+    
+    <!-- Vitals Top Bar -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;background:#f8fafd;padding:10px;border-radius:8px;font-size:12px;">
+      <div><label>BP:</label> <input type="text" id="vital-bp" placeholder="e.g. 120/80" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Pulse:</label> <input type="text" id="vital-pulse" placeholder="e.g. 72/min" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Temp:</label> <input type="text" id="vital-temp" placeholder="e.g. 98.6°F" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Weight:</label> <input type="text" id="vital-wt" placeholder="e.g. 70 kg" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
     </div>
-    <div style="margin-bottom:15px;font-size:18px;font-weight:900;color:var(--blue);">Rx</div>
-    <div style="margin-bottom:20px;">
-      <textarea id="pr-treatment" style="width:100%;height:150px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:700;" placeholder="Write clinical diagnosis, medicines, dosage and advice here..."></textarea>
+
+    <!-- Main Layout: Left 1 inch (Investigation/Advice) & Right Rx Treatment Area -->
+    <div style="display:grid;grid-template-columns:220px 1fr;gap:15px;margin-bottom:15px;">
+      <div style="border-right:1px solid var(--line);padding-right:12px;">
+        <label style="font-size:12px;font-weight:900;color:var(--navy);display:block;margin-bottom:6px;">Investigation / Advice:</label>
+        <textarea id="pr-investigation" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Tests, Lab, X-Ray, Diet instructions..."></textarea>
+      </div>
+      <div>
+        <div style="margin-bottom:8px;font-size:18px;font-weight:900;color:var(--blue);">Rx</div>
+        <textarea id="pr-treatment" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:700;" placeholder="Write clinical diagnosis and medicines here..."></textarea>
+      </div>
     </div>
-    <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+
+    <!-- Footer: Next Visit & Doctor Signature & Medico Legal Disclaimer -->
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px;font-size:12px;font-weight:800;">
+      <div><span>Next Visit: </span><input type="text" id="pr-nextvisit" placeholder="e.g. After 5 Days" style="padding:4px;border:1px solid var(--line);border-radius:4px;width:140px;"></div>
+      <div style="text-align:right;">
+        <div style="margin-bottom:25px;">___________________________</div>
+        <div>Doctor Signature</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--muted);font-weight:700;border-top:1px dashed var(--line);padding-top:6px;">
+      * Note: This prescription is not for medico-legal purposes.
+    </div>
+
+    <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:15px;">
       <button class="btn" id="presc-close-btn">Close</button>
       <button class="btn primary" id="presc-print-btn">🖨 Print Official Prescription</button>
     </div>
@@ -1046,7 +1087,7 @@ async function handlePatientRegistration(e) {
 
     document.getElementById('print-modal').style.display = 'flex';
     
-    // Auto fresh form and generate next UHID only upon successful registration
+    // Auto fresh form and fetch next UHID only upon successful bill save
     document.getElementById('patient-reg-form').reset();
     document.getElementById('reg-discount').value = '0';
     fetchNextUHID();
@@ -1093,6 +1134,16 @@ async function openPrescriptionSheet(uhid) {
     document.getElementById('pr-contact').innerText = p.contact;
     document.getElementById('pr-doctor').innerText = p.doctor;
     document.getElementById('pr-address').innerText = p.address || 'Maharajganj, UP';
+    
+    // Clear Vitals and inputs for fresh prescription
+    document.getElementById('vital-bp').value = '';
+    document.getElementById('vital-pulse').value = '';
+    document.getElementById('vital-temp').value = '';
+    document.getElementById('vital-wt').value = '';
+    document.getElementById('pr-investigation').value = '';
+    document.getElementById('pr-treatment').value = '';
+    document.getElementById('pr-nextvisit').value = '';
+
     document.getElementById('prescription-modal').style.display = 'flex';
     document.getElementById('print-modal').style.display = 'none';
   }
