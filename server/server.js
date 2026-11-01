@@ -21,8 +21,11 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// In-Memory Enterprise Fallback Store for 100% Reliability
+// Enterprise Store
 let erpData = {
+    users: [
+        { username: 'Aarif', password: '7860', name: 'Aarif Rabbani', role: 'Super Admin' }
+    ],
     bills: [
         { id: 1, inv_no: 'PBILL311026846', date: '2026-10-31', customer_name: 'Aarif Rabbani', mobile: '9876543210', net_total: 800.00 }
     ],
@@ -32,17 +35,29 @@ let erpData = {
     patients: [
         { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', status: 'Active OPD' }
     ],
-    opdQueue: [
+    opdTokens: [
         { token: 1, uhid: 'UHID2026001', patientName: 'Aarif Rabbani', doctor: 'Dr. A. Khan (General)', status: 'Waiting' }
+    ],
+    attendance: [
+        { id: 1, empName: 'Aarif Rabbani', role: 'Super Admin', date: '2026-11-01', checkIn: '09:00 AM', status: 'Present' }
     ],
     ipdBeds: [
         { ward: 'General Ward A', bedNo: 'BED-101', patientName: 'Rahul Verma', status: 'Occupied' },
-        { ward: 'General Ward A', bedNo: 'BED-102', patientName: 'Vacant', status: 'Available' },
-        { ward: 'ICU', bedNo: 'ICU-01', patientName: 'Amit Sharma', status: 'Occupied' }
+        { ward: 'General Ward A', bedNo: 'BED-102', patientName: 'Vacant', status: 'Available' }
     ]
 };
 
-// --- REST API ENDPOINTS ---
+// --- AUTH & REST API ENDPOINTS ---
+
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    const user = erpData.users.find(u => u.username === username && u.password === password);
+    if (user) {
+        res.json({ success: true, user: { name: user.name, role: user.role } });
+    } else {
+        res.status(401).json({ success: false, message: 'Invalid Username or Password' });
+    }
+});
 
 app.get('/api/dashboard/metrics', async (req, res) => {
     try {
@@ -75,11 +90,57 @@ app.get('/api/dashboard/metrics', async (req, res) => {
             success: true,
             totalRevenue: 800.00,
             registeredPatients: erpData.patients.length,
-            activeIpdBeds: 2,
+            activeIpdBeds: 1,
             pharmacySalesCount: erpData.bills.length,
             lowStockItems: 0
         });
     }
+});
+
+app.get('/api/opd-tokens', (req, res) => {
+    res.json(erpData.opdTokens);
+});
+
+app.post('/api/opd-tokens', (req, res) => {
+    const { uhid, patientName, doctor } = req.body;
+    const newToken = {
+        token: erpData.opdTokens.length + 1,
+        uhid: uhid || 'UHID-GEN',
+        patientName: patientName || 'Walk-in Patient',
+        doctor: doctor || 'Dr. A. Khan (General)',
+        status: 'Waiting'
+    };
+    erpData.opdTokens.unshift(newToken);
+    res.json({ success: true, message: 'Token Generated Successfully', token: newToken });
+});
+
+app.post('/api/opd-tokens/attend', (req, res) => {
+    const { tokenNo } = req.body;
+    const tokenItem = erpData.opdTokens.find(t => t.token === Number(tokenNo));
+    if (tokenItem) {
+        tokenItem.status = 'Completed';
+        res.json({ success: true, message: `Token #${tokenNo} Consultation Completed` });
+    } else {
+        res.status(404).json({ success: false, message: 'Token Not Found' });
+    }
+});
+
+app.get('/api/attendance', (req, res) => {
+    res.json(erpData.attendance);
+});
+
+app.post('/api/attendance/checkin', (req, res) => {
+    const { empName, role } = req.body;
+    const newEntry = {
+        id: erpData.attendance.length + 1,
+        empName: empName || 'Aarif Rabbani',
+        role: role || 'Super Admin',
+        date: new Date().toISOString().split('T')[0],
+        checkIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: 'Present'
+    };
+    erpData.attendance.unshift(newEntry);
+    res.json({ success: true, message: 'Attendance Marked Successfully', entry: newEntry });
 });
 
 app.get('/api/bills', async (req, res) => {
@@ -131,8 +192,8 @@ app.post('/api/patients', async (req, res) => {
     const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, status: 'Active OPD' };
     erpData.patients.unshift(newPatient);
     
-    // Also auto-add to OPD queue
-    erpData.opdQueue.unshift({ token: erpData.opdQueue.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting' });
+    // Auto-generate OPD Token
+    erpData.opdTokens.unshift({ token: erpData.opdTokens.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting' });
 
     if (pool) {
         try {
@@ -141,15 +202,7 @@ app.post('/api/patients', async (req, res) => {
             console.error('DB insert warning:', dbErr.message);
         }
     }
-    res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
-});
-
-app.get('/api/opd', (req, res) => {
-    res.json(erpData.opdQueue);
-});
-
-app.get('/api/ipd', (req, res) => {
-    res.json(erpData.ipdBeds);
+    res.json({ success: true, message: 'Patient registered & Token created', patient: newPatient });
 });
 
 app.get('/api/medicines', async (req, res) => {
@@ -164,22 +217,35 @@ app.get('/api/medicines', async (req, res) => {
     }
 });
 
-// --- PROFESSIONAL RESPONSIVE FRONTEND DASHBOARD ---
+// --- SINGLE-FILE FULL APPLICATION UI ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A R Healthcare ERP | Hospital, Pharmacy & Biomedical System</title>
+    <title>A R Healthcare ERP | Complete System</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f1f5f9; display: flex; height: 100vh; overflow: hidden; color: #1e293b; }
+        body { background: #0f172a; color: #f8fafc; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* NEON LOGIN STYLING */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; background: radial-gradient(circle, #1e293b 0%, #090d16 100%); position: absolute; z-index: 1000; }
+        .login-card { background: rgba(15, 23, 42, 0.85); padding: 45px 40px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 0 25px rgba(56, 189, 248, 0.25); width: 380px; text-align: center; backdrop-filter: blur(10px); }
+        .login-card h2 { color: #38bdf8; font-size: 24px; margin-bottom: 25px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        .login-input { width: 100%; padding: 12px 16px; margin-bottom: 18px; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #fff; font-size: 14px; outline: none; transition: all 0.3s; }
+        .login-input:focus { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+        .login-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(135deg, #0284c7, #38bdf8); color: white; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); transition: all 0.3s; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 0 22px rgba(56, 189, 248, 0.7); }
+
+        /* ENTERPRISE DASHBOARD STYLING */
+        #app-container { display: none; height: 100vh; width: 100vw; flex-direction: row; background: #f1f5f9; color: #0f172a; }
         
         .sidebar { width: 280px; background: #0f172a; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .sidebar-brand { padding: 22px; font-size: 16px; font-weight: 700; background: #090d16; border-bottom: 1px solid #1e293b; color: #38bdf8; display: flex; align-items: center; gap: 10px; }
-        .sidebar-menu { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
-        .sidebar-menu li { padding: 13px 24px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #94a3b8; border-left: 4px solid transparent; }
+        .sidebar-brand { padding: 22px; font-size: 16px; font-weight: 700; background: #090d16; border-bottom: 1px solid #1e293b; color: #38bdf8; }
+        .sidebar-section-title { font-size: 10px; font-weight: 800; color: #64748b; padding: 14px 24px 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-menu { list-style: none; padding-bottom: 15px; overflow-y: auto; flex: 1; }
+        .sidebar-menu li { padding: 11px 24px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #94a3b8; border-left: 4px solid transparent; }
         .sidebar-menu li:hover, .sidebar-menu li.active { background: #1e293b; color: white; font-weight: 600; border-left-color: #38bdf8; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -207,14 +273,15 @@ app.get('/', (req, res) => {
         th { background: #f1f5f9; color: #334155; font-weight: 700; text-transform: uppercase; font-size: 11px; }
         tr:hover { background: #f8fafc; }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; }
         input, select { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; color: #0f172a; }
         
-        .btn { background: #0284c7; color: white; border: none; padding: 11px 22px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .btn { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
         .btn:hover { background: #0369a1; }
         .btn-success { background: #10b981; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
         
         .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .bill-summary-box { background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
@@ -223,170 +290,257 @@ app.get('/', (req, res) => {
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-brand">🏥 A R HEALTHCARE ERP</div>
-        <ul class="sidebar-menu" id="nav-list">
-            <li class="active" data-target="view-dashboard">📊 Executive Dashboard</li>
-            <li data-target="view-patients">👤 Patient Registration (UHID)</li>
-            <li data-target="view-opd">🩺 OPD Token & Queue</li>
-            <li data-target="view-ipd">🛏️ IPD Wards & Beds</li>
-            <li data-target="view-pharmacy">💊 Pharmacy Inventory & Batches</li>
-            <li data-target="view-billing">🧾 POS Billing & Invoicing</li>
-            <li data-target="view-assets">⚙️ Biomedical Assets</li>
-            <li data-target="view-reports">📈 Financial & Sales Reports</li>
-            <li data-target="view-admin">🔒 Admin Security & Logs</li>
-        </ul>
-    </div>
-    
-    <div class="main-content">
-        <div class="topbar">
-            <h3 id="topbar-title" style="font-size: 18px; font-weight: 700; color: #1e293b;">Executive Dashboard</h3>
-            <span style="font-size: 13px; font-weight: 600; color: #475569;">👤 Aarif Rabbani (Super Admin)</span>
+
+    <!-- 1. NEON LAMP LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <h2>🏥 AR ENTERPRISE ERP</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="login-user" class="login-input" placeholder="Username (Aarif)" required value="Aarif">
+                <input type="password" id="login-pass" class="login-input" placeholder="Password (7860)" required value="7860">
+                <button type="submit" class="login-btn">Secure Login ➔</button>
+            </form>
         </div>
+    </div>
 
-        <div class="dashboard-body">
-            
-            <!-- 1. DASHBOARD -->
-            <div id="view-dashboard" class="view-section active">
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-title">Total Gross Revenue</div>
-                        <div class="metric-value" id="m-revenue">₹0.00</div>
-                    </div>
-                    <div class="metric-card success">
-                        <div class="metric-title">Registered Patients</div>
-                        <div class="metric-value" id="m-patients">0</div>
-                    </div>
-                    <div class="metric-card warning">
-                        <div class="metric-title">Active IPD Beds</div>
-                        <div class="metric-value" id="m-ipd">2 / 20</div>
-                    </div>
-                    <div class="metric-card danger">
-                        <div class="metric-title">Low Stock Alerts</div>
-                        <div class="metric-value">0</div>
-                    </div>
-                </div>
+    <!-- 2. MAIN APPLICATION INTERFACE -->
+    <div id="app-container">
+        <div class="sidebar">
+            <div class="sidebar-brand">🏥 A R HEALTHCARE ERP</div>
+            <ul class="sidebar-menu" id="nav-list">
+                <div class="sidebar-section-title">Overview</div>
+                <li class="active" data-target="view-dashboard">📊 Dashboard</li>
                 
-                <div class="card-box">
-                    <div class="card-header">
-                        <div class="card-title">Recent Sales Invoices & Transactions</div>
-                        <button class="btn" onclick="switchView('view-billing')">+ New POS Bill</button>
+                <div class="sidebar-section-title">Hospital Management</div>
+                <li data-target="view-patients">👤 Patient Registration (UHID)</li>
+                <li data-target="view-opd">🩺 OPD Token & Queue</li>
+                <li data-target="view-ipd">🛏️ IPD Wards & Beds</li>
+                <li data-target="view-pharmacy">💊 Pharmacy Inventory & Batches</li>
+                <li data-target="view-billing">🧾 POS Billing & Invoicing</li>
+                <li data-target="view-assets">⚙️ Biomedical Assets</li>
+
+                <div class="sidebar-section-title">Finance & HRMS</div>
+                <li data-target="view-attendance">⏱️ Attendance & Shifts</li>
+                <li data-target="view-reports">📈 Financial & Sales Reports</li>
+                <li data-target="view-admin">🔒 Admin Security & Logs</li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="topbar">
+                <h3 id="topbar-title" style="font-size: 18px; font-weight: 700; color: #1e293b;">Executive Dashboard</h3>
+                <div>
+                    <span id="user-display" style="font-size: 13px; font-weight: 600; color: #475569; margin-right: 15px;">👤 Aarif Rabbani (Super Admin)</span>
+                    <button class="btn btn-sm" onclick="handleLogout()" style="background:#ef4444;">Logout</button>
+                </div>
+            </div>
+
+            <div class="dashboard-body">
+                
+                <!-- VIEW 1: DASHBOARD -->
+                <div id="view-dashboard" class="view-section active">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-title">Total Gross Revenue</div>
+                            <div class="metric-value" id="m-revenue">₹0.00</div>
+                        </div>
+                        <div class="metric-card success">
+                            <div class="metric-title">Registered Patients</div>
+                            <div class="metric-value" id="m-patients">0</div>
+                        </div>
+                        <div class="metric-card warning">
+                            <div class="metric-title">Active IPD Beds</div>
+                            <div class="metric-value" id="m-ipd">1 / 20</div>
+                        </div>
+                        <div class="metric-card danger">
+                            <div class="metric-title">Low Stock Alerts</div>
+                            <div class="metric-value">0</div>
+                        </div>
                     </div>
-                    <table>
-                        <thead><tr><th>Invoice No</th><th>Date</th><th>Customer Name</th><th>Mobile</th><th>Net Total (₹)</th></tr></thead>
-                        <tbody id="dash-bills-tbody">
-                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading live transactions...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 2. PATIENT REGISTRATION -->
-            <div id="view-patients" class="view-section">
-                <div class="card-box">
-                    <div class="card-title" style="margin-bottom: 20px;">Patient UHID Master Registration Form</div>
-                    <form id="patient-reg-form" onsubmit="handlePatientSubmit(event)">
-                        <div class="form-grid">
-                            <div class="form-group"><label>Patient Full Name</label><input type="text" id="p-name" required></div>
-                            <div class="form-group"><label>Age (Years)</label><input type="number" id="p-age" required></div>
-                            <div class="form-group"><label>Gender</label><select id="p-sex"><option>Male</option><option>Female</option></select></div>
-                            <div class="form-group"><label>Mobile Number</label><input type="text" id="p-mob" required></div>
+                    
+                    <div class="card-box">
+                        <div class="card-header">
+                            <div class="card-title">Recent Sales Invoices & Transactions</div>
+                            <button class="btn" onclick="switchView('view-billing')">+ New POS Bill</button>
                         </div>
-                        <button type="submit" class="btn btn-success" style="margin-top: 10px;">💾 Register & Queue Patient</button>
-                    </form>
-                </div>
-                <div class="card-box">
-                    <div class="card-title">Registered Patients Database</div>
-                    <table>
-                        <thead><tr><th>UHID</th><th>Patient Name</th><th>Age/Sex</th><th>Contact</th><th>Status</th></tr></thead>
-                        <tbody id="patients-table-body">
-                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading patients...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 3. OPD -->
-            <div id="view-opd" class="view-section">
-                <div class="card-box">
-                    <div class="card-title">OPD Doctor Consultation & Token Queue</div>
-                    <table>
-                        <thead><tr><th>Token No</th><th>UHID</th><th>Patient Name</th><th>Assigned Doctor</th><th>Status</th></tr></thead>
-                        <tbody id="opd-table-body">
-                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading OPD queue...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 4. IPD -->
-            <div id="view-ipd" class="view-section">
-                <div class="card-box">
-                    <div class="card-title">IPD Ward Management & Bed Occupancy</div>
-                    <table>
-                        <thead><tr><th>Ward Name</th><th>Bed No</th><th>Patient Name</th><th>Status</th></tr></thead>
-                        <tbody id="ipd-table-body">
-                            <tr><td colspan="4" style="text-align:center; color:#64748b;">Loading ward occupancy...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 5. PHARMACY ERP -->
-            <div id="view-pharmacy" class="view-section">
-                <div class="card-box">
-                    <div class="card-title">Pharmacy Inventory & Batch Control Master (FEFO)</div>
-                    <table>
-                        <thead><tr><th>Medicine ID</th><th>Brand Name</th><th>Generic</th><th>Batch No</th><th>Stock</th><th>MRP (₹)</th></tr></thead>
-                        <tbody id="medicine-inventory-tbody">
-                            <tr><td colspan="6" style="text-align:center; color:#64748b;">Loading inventory...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 6. BILLING POS -->
-            <div id="view-billing" class="view-section">
-                <div class="pos-container">
-                    <div class="card-box" style="margin-bottom:0;">
-                        <div class="card-title" style="margin-bottom:15px;">POS Point of Sale & Invoice Generator</div>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Customer Name</label><input type="text" id="pos-cust" value="Aarif Rabbani"></div>
-                            <div class="form-group"><label>Mobile</label><input type="text" id="pos-mob" value="9876543210"></div>
-                        </div>
-                        <div class="form-grid" style="margin-top: 15px;">
-                            <div class="form-group"><label>Unit Price (₹)</label><input type="number" id="pos-price" value="20.00" oninput="calculatePosTotal()"></div>
-                            <div class="form-group"><label>Quantity</label><input type="number" id="pos-qty" value="40" oninput="calculatePosTotal()"></div>
-                        </div>
-                        <button class="btn btn-success" style="margin-top: 15px;" onclick="commitPosBill()">💾 Generate & Save Invoice</button>
-                    </div>
-                    <div class="bill-summary-box">
-                        <div class="card-title" style="margin-bottom: 20px;">Live Bill Calculation</div>
-                        <div class="summary-row"><span>Subtotal:</span> <span id="sum-sub">₹800.00</span></div>
-                        <div class="summary-row total"><span>Net Total:</span> <span id="sum-net">₹800.00</span></div>
+                        <table>
+                            <thead><tr><th>Invoice No</th><th>Date</th><th>Customer Name</th><th>Mobile</th><th>Net Total (₹)</th></tr></thead>
+                            <tbody id="dash-bills-tbody">
+                                <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading live transactions...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
 
-            <!-- 7. BIOMEDICAL ASSETS -->
-            <div id="view-assets" class="view-section">
-                <div class="card-box"><div class="card-title">Biomedical Engineering Assets</div></div>
-            </div>
+                <!-- VIEW 2: PATIENT REGISTRATION -->
+                <div id="view-patients" class="view-section">
+                    <div class="card-box">
+                        <div class="card-title" style="margin-bottom: 20px;">Patient UHID Master Registration Form</div>
+                        <form id="patient-reg-form" onsubmit="handlePatientSubmit(event)">
+                            <div class="form-grid">
+                                <div class="form-group"><label>Patient Full Name</label><input type="text" id="p-name" required></div>
+                                <div class="form-group"><label>Age (Years)</label><input type="number" id="p-age" required></div>
+                                <div class="form-group"><label>Gender</label><select id="p-sex"><option>Male</option><option>Female</option></select></div>
+                                <div class="form-group"><label>Mobile Number</label><input type="text" id="p-mob" required></div>
+                            </div>
+                            <button type="submit" class="btn btn-success" style="margin-top: 10px;">💾 Register & Create Token</button>
+                        </form>
+                    </div>
+                    <div class="card-box">
+                        <div class="card-title">Registered Patients Database</div>
+                        <table>
+                            <thead><tr><th>UHID</th><th>Patient Name</th><th>Age/Sex</th><th>Contact</th><th>Status</th></tr></thead>
+                            <tbody id="patients-table-body">
+                                <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading patients...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <!-- 8. REPORTS -->
-            <div id="view-reports" class="view-section">
-                <div class="card-box"><div class="card-title">Financial & Pharmacy Turnover Reports</div></div>
-            </div>
+                <!-- VIEW 3: OPD TOKEN & QUEUE -->
+                <div id="view-opd" class="view-section">
+                    <div class="card-box">
+                        <div class="card-title" style="margin-bottom: 15px;">Create OPD Consultation Token</div>
+                        <form onsubmit="handleCreateToken(event)">
+                            <div class="form-grid">
+                                <div class="form-group"><label>Patient UHID</label><input type="text" id="token-uhid" placeholder="e.g. UHID2026001" required></div>
+                                <div class="form-group"><label>Patient Name</label><input type="text" id="token-pname" placeholder="Patient Full Name" required></div>
+                                <div class="form-group"><label>Assigned Doctor</label><select id="token-doc"><option>Dr. A. Khan (General Physician)</option><option>Dr. S. Sharma (Orthopedic)</option><option>Dr. R. Verma (Cardiologist)</option></select></div>
+                            </div>
+                            <button type="submit" class="btn btn-success">+ Issue Token</button>
+                        </form>
+                    </div>
 
-            <!-- 9. ADMIN -->
-            <div id="view-admin" class="view-section">
-                <div class="card-box"><div class="card-title">System Administration & RBAC Security</div></div>
-            </div>
+                    <div class="card-box">
+                        <div class="card-title">OPD Doctor Consultation & Token Queue</div>
+                        <table>
+                            <thead><tr><th>Token No</th><th>UHID</th><th>Patient Name</th><th>Assigned Doctor</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="opd-table-body">
+                                <tr><td colspan="6" style="text-align:center; color:#64748b;">Loading OPD queue...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
+                <!-- VIEW 4: ATTENDANCE & SHIFTS -->
+                <div id="view-attendance" class="view-section">
+                    <div class="card-box">
+                        <div class="card-header">
+                            <div class="card-title">Employee Attendance & Shift Clock-In</div>
+                            <button class="btn btn-success" onclick="handleCheckIn()">⏱️ Mark My Check-In</button>
+                        </div>
+                        <table>
+                            <thead><tr><th>Employee Name</th><th>Role</th><th>Date</th><th>Check-In Time</th><th>Status</th></tr></thead>
+                            <tbody id="attendance-tbody">
+                                <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading attendance records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 5: IPD WARDS & BEDS -->
+                <div id="view-ipd" class="view-section">
+                    <div class="card-box">
+                        <div class="card-title">IPD Ward Management & Bed Occupancy</div>
+                        <table>
+                            <thead><tr><th>Ward Name</th><th>Bed No</th><th>Patient Name</th><th>Status</th></tr></thead>
+                            <tbody id="ipd-table-body">
+                                <tr><td colspan="4" style="text-align:center; color:#64748b;">Loading beds...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 6: PHARMACY ERP -->
+                <div id="view-pharmacy" class="view-section">
+                    <div class="card-box">
+                        <div class="card-title">Pharmacy Inventory & Batch Control Master (FEFO)</div>
+                        <table>
+                            <thead><tr><th>Medicine ID</th><th>Brand Name</th><th>Generic</th><th>Batch No</th><th>Stock</th><th>MRP (₹)</th></tr></thead>
+                            <tbody id="medicine-inventory-tbody">
+                                <tr><td colspan="6" style="text-align:center; color:#64748b;">Loading inventory...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 7: BILLING POS -->
+                <div id="view-billing" class="view-section">
+                    <div class="pos-container">
+                        <div class="card-box" style="margin-bottom:0;">
+                            <div class="card-title" style="margin-bottom:15px;">POS Point of Sale & Invoice Generator</div>
+                            <div class="form-grid">
+                                <div class="form-group"><label>Customer Name</label><input type="text" id="pos-cust" value="Aarif Rabbani"></div>
+                                <div class="form-group"><label>Mobile</label><input type="text" id="pos-mob" value="9876543210"></div>
+                            </div>
+                            <div class="form-grid" style="margin-top: 15px;">
+                                <div class="form-group"><label>Unit Price (₹)</label><input type="number" id="pos-price" value="20.00" oninput="calculatePosTotal()"></div>
+                                <div class="form-group"><label>Quantity</label><input type="number" id="pos-qty" value="40" oninput="calculatePosTotal()"></div>
+                            </div>
+                            <button class="btn btn-success" style="margin-top: 15px;" onclick="commitPosBill()">💾 Generate & Save Invoice</button>
+                        </div>
+                        <div class="bill-summary-box">
+                            <div class="card-title" style="margin-bottom: 20px;">Live Bill Calculation</div>
+                            <div class="summary-row"><span>Subtotal:</span> <span id="sum-sub">₹800.00</span></div>
+                            <div class="summary-row total"><span>Net Total:</span> <span id="sum-net">₹800.00</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 8: BIOMEDICAL ASSETS -->
+                <div id="view-assets" class="view-section">
+                    <div class="card-box"><div class="card-title">Biomedical Engineering Assets & PMS Schedule</div></div>
+                </div>
+
+                <!-- VIEW 9: REPORTS -->
+                <div id="view-reports" class="view-section">
+                    <div class="card-box"><div class="card-title">Financial & Pharmacy Turnover Reports</div></div>
+                </div>
+
+                <!-- VIEW 10: ADMIN -->
+                <div id="view-admin" class="view-section">
+                    <div class="card-box"><div class="card-title">System Administration & RBAC Security</div></div>
+                </div>
+
+            </div>
         </div>
     </div>
 
     <script>
+        let currentUser = null;
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('user-display').innerText = \`👤 \${data.user.name} (\${data.user.role})\`;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'flex';
+                    loadEnterpriseData();
+                } else {
+                    alert(data.message || 'Login Failed');
+                }
+            } catch (err) {
+                alert('Network error during login');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
         const navItems = document.querySelectorAll('#nav-list li');
         const viewSections = document.querySelectorAll('.view-section');
         const topbarTitle = document.getElementById('topbar-title');
@@ -437,24 +591,26 @@ app.get('/', (req, res) => {
                 });
                 document.getElementById('patients-table-body').innerHTML = pHtml;
 
-                // Fetch OPD Queue
-                const opdRes = await fetch('/api/opd');
+                // Fetch OPD Tokens
+                const opdRes = await fetch('/api/opd-tokens');
                 const opdList = await opdRes.json();
                 let opdHtml = '';
                 opdList.forEach(o => {
-                    opdHtml += \`<tr><td>#\${o.token}</td><td>\${o.uhid}</td><td>\${o.patientName}</td><td>\${o.doctor}</td><td><span style="color: #0284c7; font-weight:700;">\${o.status}</span></td></tr>\`;
+                    const actionBtn = o.status === 'Waiting' 
+                        ? \`<button class="btn btn-sm btn-success" onclick="attendToken(\${o.token})">Attend Patient</button>\` 
+                        : \`<span style="color: #10b981; font-weight:700;">✓ Done</span>\`;
+                    opdHtml += \`<tr><td>#\${o.token}</td><td>\${o.uhid}</td><td>\${o.patientName}</td><td>\${o.doctor}</td><td><span style="color: #0284c7; font-weight:700;">\${o.status}</span></td><td>\${actionBtn}</td></tr>\`;
                 });
                 document.getElementById('opd-table-body').innerHTML = opdHtml;
 
-                // Fetch IPD Beds
-                const ipdRes = await fetch('/api/ipd');
-                const ipdList = await ipdRes.json();
-                let ipdHtml = '';
-                ipdList.forEach(i => {
-                    const badgeColor = i.status === 'Occupied' ? '#ef4444' : '#10b981';
-                    ipdHtml += \`<tr><td>\${i.ward}</td><td>\${i.bedNo}</td><td>\${i.patientName}</td><td><span style="color: \${badgeColor}; font-weight:700;">\${i.status}</span></td></tr>\`;
+                // Fetch Attendance
+                const attRes = await fetch('/api/attendance');
+                const attList = await attRes.json();
+                let attHtml = '';
+                attList.forEach(a => {
+                    attHtml += \`<tr><td>\${a.empName}</td><td>\${a.role}</td><td>\${a.date}</td><td>\${a.checkIn}</td><td><span style="color: #10b981; font-weight:700;">\${a.status}</span></td></tr>\`;
                 });
-                document.getElementById('ipd-table-body').innerHTML = ipdHtml;
+                document.getElementById('attendance-tbody').innerHTML = attHtml;
 
                 // Fetch Medicines
                 const medRes = await fetch('/api/medicines');
@@ -467,6 +623,64 @@ app.get('/', (req, res) => {
 
             } catch (err) {
                 console.error('Error loading enterprise data:', err);
+            }
+        }
+
+        async function handleCreateToken(e) {
+            e.preventDefault();
+            const uhid = document.getElementById('token-uhid').value;
+            const patientName = document.getElementById('token-pname').value;
+            const doctor = document.getElementById('token-doc').value;
+
+            try {
+                const res = await fetch('/api/opd-tokens', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uhid, patientName, doctor })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Token #${data.token.token} Issued Successfully!`);
+                    document.getElementById('token-uhid').value = '';
+                    document.getElementById('token-pname').value = '';
+                    loadEnterpriseData();
+                }
+            } catch (err) {
+                alert('Error issuing token');
+            }
+        }
+
+        async function attendToken(tokenNo) {
+            try {
+                const res = await fetch('/api/opd-tokens/attend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tokenNo })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message);
+                    loadEnterpriseData();
+                }
+            } catch (err) {
+                alert('Error updating token');
+            }
+        }
+
+        async function handleCheckIn() {
+            try {
+                const res = await fetch('/api/attendance/checkin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ empName: currentUser ? currentUser.name : 'Aarif Rabbani', role: currentUser ? currentUser.role : 'Super Admin' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Attendance Check-In marked successfully!');
+                    loadEnterpriseData();
+                }
+            } catch (err) {
+                alert('Error marking attendance');
             }
         }
 
@@ -486,8 +700,6 @@ app.get('/', (req, res) => {
                     alert('Invoice generated and saved successfully! Invoice No: ' + data.bill.inv_no);
                     loadEnterpriseData();
                     switchView('view-dashboard');
-                } else {
-                    alert('Error saving bill');
                 }
             } catch (err) {
                 alert('Network error while saving bill');
@@ -509,19 +721,16 @@ app.get('/', (req, res) => {
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert('Patient registered and added to OPD queue! UHID: ' + data.patient.uhid);
+                    alert('Patient registered and token generated! UHID: ' + data.patient.uhid);
                     document.getElementById('patient-reg-form').reset();
                     loadEnterpriseData();
                     switchView('view-opd');
-                } else {
-                    alert('Error registering patient');
                 }
             } catch (err) {
                 alert('Network error during patient registration');
             }
         }
 
-        loadEnterpriseData();
         calculatePosTotal();
     </script>
 </body>
