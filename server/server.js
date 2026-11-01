@@ -45,8 +45,8 @@ let erpData = {
         { uhid: 'AR011126-01', title: 'Mr.', name: 'Aarif Rabbani', relation: 'S/O', guardian: 'Md Rabbani', age: 27, gender: 'Male', contact: '9876543210', adhaar: '123456789012', abha: 'ABHA12345678', address: 'Maharajganj, UP', doctor: 'Dr. A. Khan', fee: 500, discount: 50, netFee: 450, payType: 'Cash', date: '2026-11-01 14:00', workflowStatus: 'Registered & Visited' }
     ],
     doctors: [
-        { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 200, department: 'General Medicine' },
-        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 200, department: 'Gynecology' }
+        { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 500, department: 'General Medicine' },
+        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 700, department: 'Gynecology' }
     ],
     bills: [
         { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, discount: 50, netFee: 450, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00', edited: false }
@@ -287,7 +287,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
-.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
+.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f6ff;cursor:pointer;font-size:12px}
 .suggestion-item:hover{background:#f0f6ff}
 #ar-ai-widget{position:fixed;bottom:25px;right:25px;z-index:99999}
 #ar-ai-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border:none;border-radius:50px;padding:12px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(38,116,232,0.3);display:flex;align-items:center;gap:8px}
@@ -312,7 +312,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <div class="login-card-wrapper">
     <div class="login-left">
       <h2>Sign In</h2>
-      <form id="login-form-element" onsubmit="window.handleLogin(event)">
+      <form id="login-form-element" onsubmit="handleLogin(event)">
         <div class="login-field">
           <label>User ID / Username</label>
           <input type="text" id="login-u" class="login-input" required autocomplete="username">
@@ -347,13 +347,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <main class="main">
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:15px;">
-        <button class="btn btn-sm" onclick="window.toggleSidebarSlide()" style="padding:6px 10px;font-size:14px;">☰</button>
+        <button class="btn btn-sm" onclick="toggleSidebarSlide()" style="padding:6px 10px;font-size:14px;">☰</button>
         <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
       </div>
       <div class="profile">
         <div class="avatar" id="user-avatar">AR</div>
         <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
-        <button class="btn btn-sm danger" onclick="window.handleLogout()" style="margin-left:15px;">Logout</button>
+        <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
       </div>
     </header>
 
@@ -369,7 +369,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="panel">
           <div class="panel-head"><h3>Quick Find & Patient Workflow Hub</h3><small style="color:var(--muted)">Search patient instantly & perform any action</small></div>
           <div style="position:relative;margin-bottom:15px;">
-            <input type="text" id="dash-quick-find" placeholder="🔍 Type Patient Name, Mobile or UHID..." oninput="window.handleDashQuickFind(this.value)" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;outline:none;">
+            <input type="text" id="dash-quick-find" placeholder="🔍 Type Patient Name, Mobile or UHID..." oninput="handleDashQuickFind(this.value)" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;outline:none;">
             <div class="suggestions-box" id="dash-quick-suggestions"></div>
           </div>
           <table>
@@ -382,10 +382,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <div id="view-module-container" class="view-section">
         <div class="panel" id="patient-reg-panel" style="display:none;">
           <div class="panel-head"><h3>New Patient Registration & Quick Billing</h3></div>
-          <form onsubmit="window.handlePatientRegistration(event)">
+          <form onsubmit="handlePatientRegistration(event)">
             <div class="form-grid">
               <div class="field"><label>Auto UHID (Date-Wise)</label><input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:700;color:var(--blue);"></div>
-              <div class="field"><label>Live Patient Search</label><input type="text" id="live-search-input" placeholder="Type Name, Mobile..." oninput="window.handleLiveSearch(this.value)" autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>
+              <div class="field"><label>Live Patient Search</label><input type="text" id="live-search-input" placeholder="Type Name, Mobile..." oninput="handleLiveSearch(this.value)" autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>
               <div class="field"><label>Title</label><select id="reg-title"><option>Mr.</option><option>Mrs.</option><option>Miss</option><option>Master</option><option>Baby of</option></select></div>
               <div class="field"><label>Patient Name *</label><input type="text" id="reg-name" required></div>
               <div class="field"><label>Relation</label><select id="reg-relation"><option>S/O</option><option>D/O</option><option>W/O</option><option>C/O</option></select></div>
@@ -396,9 +396,9 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Aadhaar No</label><input type="text" id="reg-adhaar" maxlength="12" placeholder="12 digits"></div>
               <div class="field"><label>ABHA ID</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
               <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="Address..."></div>
-              <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="window.autoFetchDoctorFee()" required></select></div>
-              <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" oninput="window.calculateNetFee()" required></div>
-              <div class="field"><label>Discount (₹)</label><input type="number" id="reg-discount" value="0" oninput="window.calculateNetFee()"></div>
+              <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select></div>
+              <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" oninput="calculateNetFee()" required></div>
+              <div class="field"><label>Discount (₹)</label><input type="number" id="reg-discount" value="0" oninput="calculateNetFee()"></div>
               <div class="field"><label>Net Payable Fee (₹)</label><input type="number" id="reg-netfee" readonly style="background:#edf2f7;font-weight:700;color:var(--green);"></div>
               <div class="field"><label>Payment Type *</label><select id="reg-paytype"><option>Cash</option><option>Credit / Udhar</option><option>UPI / Online</option><option>Card</option></select></div>
             </div>
@@ -408,7 +408,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="doctor-panel" style="display:none;">
           <div class="panel-head"><h3>Manage Doctors (Add New Doctor ID/Name)</h3></div>
-          <form onsubmit="window.handleAddNewDoctor(event)" class="form-grid">
+          <form onsubmit="handleAddNewDoctor(event)" class="form-grid">
             <div class="field"><label>Doctor Name & Qualification *</label><input type="text" id="doc-name" placeholder="Dr. Name (Specialization)" required></div>
             <div class="field"><label>Default Consultation Fee (₹) *</label><input type="number" id="doc-fee" required></div>
             <div class="field"><label>Department</label><input type="text" id="doc-dept" placeholder="General / Ortho / Gynae"></div>
@@ -418,7 +418,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="user-mgmt-panel" style="display:none;">
           <div class="panel-head"><h3>Create User & Set Permissions</h3></div>
-          <form onsubmit="window.handleCreateUser(event)" class="form-grid">
+          <form onsubmit="handleCreateUser(event)" class="form-grid">
             <div class="field"><label>Full Name *</label><input type="text" id="new-u-name" required></div>
             <div class="field"><label>User ID / Username *</label><input type="text" id="new-u-username" required></div>
             <div class="field"><label>Password *</label><input type="password" id="new-u-password" required></div>
@@ -430,7 +430,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="password-panel" style="display:none;">
           <div class="panel-head"><h3>Change Your Account Password</h3></div>
-          <form onsubmit="window.handleChangePassword(event)" style="max-width:400px;display:flex;flex-direction:column;gap:15px;">
+          <form onsubmit="handleChangePassword(event)" style="max-width:400px;display:flex;flex-direction:column;gap:15px;">
             <div class="field"><label>Old Password *</label><input type="password" id="pass-old" required></div>
             <div class="field"><label>New Password *</label><input type="password" id="pass-new" required></div>
             <button type="submit" class="btn primary">Update Password</button>
@@ -453,16 +453,16 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
 <div id="ar-ai-widget">
   <div id="ar-ai-box">
-    <div class="ai-head"><span>🤖 AR AI Assistant</span><span style="cursor:pointer;" onclick="window.toggleAiBox()">✕</span></div>
+    <div class="ai-head"><span>🤖 AR AI Assistant</span><span style="cursor:pointer;" onclick="toggleAiBox()">✕</span></div>
     <div class="ai-body" id="ai-chat-body">
       <div><b>AR AI:</b> Hello Aarif! Ask me anything about patients, revenue, or credit bills.</div>
     </div>
     <div class="ai-foot">
-      <input type="text" id="ai-input" placeholder="Ask AR AI..." onkeypress="if(event.key==='Enter')window.sendAiQuery()">
-      <button class="btn primary" onclick="window.sendAiQuery()">Send</button>
+      <input type="text" id="ai-input" placeholder="Ask AR AI..." onkeypress="if(event.key==='Enter')sendAiQuery()">
+      <button class="btn primary" onclick="sendAiQuery()">Send</button>
     </div>
   </div>
-  <button id="ar-ai-btn" onclick="window.toggleAiBox()">✨ AR AI</button>
+  <button id="ar-ai-btn" onclick="toggleAiBox()">✨ AR AI</button>
 </div>
 
 <div id="print-modal">
@@ -498,7 +498,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     </table>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
       <button class="btn" onclick="document.getElementById('print-modal').style.display='none'">Close</button>
-      <button class="btn" onclick="window.requestBillEdit()">✏️ Request Edit</button>
+      <button class="btn" onclick="requestBillEdit()">✏️ Request Edit</button>
       <button class="btn primary" onclick="window.print()">🖨 Print Duplicate Bill</button>
     </div>
   </div>
@@ -559,22 +559,22 @@ window.onload = function() {
     document.getElementById('user-avatar').innerText = currentUser.name.slice(0,2).toUpperCase();
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    window.renderNav();
-    window.loadDoctors();
-    window.switchView(savedPage || 'dashboard');
+    renderNav();
+    loadDoctors();
+    switchView(savedPage || 'dashboard');
   }
 };
 
-window.toggleSidebarSlide = function() {
+function toggleSidebarSlide() {
   const sb = document.getElementById('sidebar-panel');
   if (sb.style.marginLeft === '-272px') {
     sb.style.marginLeft = '0';
   } else {
     sb.style.marginLeft = '-272px';
   }
-};
+}
 
-window.handleLogin = async function(e) {
+async function handleLogin(e) {
   e.preventDefault();
   const u = document.getElementById('login-u').value;
   const p = document.getElementById('login-p').value;
@@ -595,30 +595,30 @@ window.handleLogin = async function(e) {
       document.getElementById('user-avatar').innerText = currentUser.name.slice(0,2).toUpperCase();
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'flex';
-      window.renderNav();
-      window.loadDoctors();
-      window.switchView('dashboard');
+      renderNav();
+      loadDoctors();
+      switchView('dashboard');
     } else {
       alert(data.message || 'Login Failed');
     }
   } catch (err) {
     alert('Network Error: ' + err.message);
   }
-};
+}
 
-window.handleLogout = function() {
+function handleLogout() {
   localStorage.removeItem('ar_erp_active_user');
   localStorage.removeItem('ar_erp_active_page');
   location.reload();
-};
+}
 
-window.renderNav = function() {
+function renderNav() {
   let html = '';
   navGroups.forEach(function(g) {
     let groupItemsHtml = '';
     g.items.forEach(function(i) {
       if (currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" onclick="window.switchView(\'' + i[1] + '\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
+        groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" onclick="switchView(\\'' + i[1] + '\\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
       }
     });
     if (groupItemsHtml !== '') {
@@ -626,9 +626,9 @@ window.renderNav = function() {
     }
   });
   document.getElementById('nav-menu').innerHTML = html;
-};
+}
 
-window.loadDoctors = async function() {
+async function loadDoctors() {
   const res = await fetch('/api/doctors');
   doctorsList = await res.json();
   let opt = '<option value="">-- Select Doctor --</option>';
@@ -637,32 +637,32 @@ window.loadDoctors = async function() {
   });
   const docSelect = document.getElementById('reg-doctor');
   if (docSelect) docSelect.innerHTML = opt;
-};
+}
 
-window.autoFetchDoctorFee = function() {
+function autoFetchDoctorFee() {
   const docName = document.getElementById('reg-doctor').value;
   const doc = doctorsList.find(function(d) { return d.name === docName; });
   if (doc) {
     document.getElementById('reg-fee').value = doc.fee;
-    window.calculateNetFee();
+    calculateNetFee();
   }
-};
+}
 
-window.calculateNetFee = function() {
+function calculateNetFee() {
   const fee = Number(document.getElementById('reg-fee').value || 0);
   const disc = Number(document.getElementById('reg-discount').value || 0);
   const net = Math.max(0, fee - disc);
   document.getElementById('reg-netfee').value = net;
-};
+}
 
-window.fetchNextUHID = async function() {
+async function fetchNextUHID() {
   const res = await fetch('/api/next-uhid');
   const data = await res.json();
   const uhidInput = document.getElementById('reg-uhid');
   if (uhidInput) uhidInput.value = data.uhid;
-};
+}
 
-window.switchView = function(targetKey) {
+function switchView(targetKey) {
   activeModuleKey = targetKey;
   localStorage.setItem('ar_erp_active_page', targetKey);
 
@@ -674,7 +674,7 @@ window.switchView = function(targetKey) {
 
   if (targetKey === 'dashboard') {
     document.getElementById('view-dashboard').classList.add('active');
-    window.loadDashboardMetrics();
+    loadDashboardMetrics();
   } else {
     document.getElementById('view-module-container').classList.add('active');
     
@@ -684,16 +684,16 @@ window.switchView = function(targetKey) {
     document.getElementById('password-panel').style.display = (targetKey === 'password') ? 'block' : 'none';
 
     if (targetKey === 'patients' || targetKey === 'patient-search') {
-      window.fetchNextUHID();
+      fetchNextUHID();
     }
-    window.loadUniqueModuleData(targetKey);
+    loadUniqueModuleData(targetKey);
   }
 
   const foundItem = navGroups.flatMap(function(g) { return g.items; }).find(function(i) { return i[1] === targetKey; });
   document.getElementById('topbar-title').innerText = foundItem ? foundItem[0].toUpperCase() : targetKey.toUpperCase();
-};
+}
 
-window.loadDashboardMetrics = async function() {
+async function loadDashboardMetrics() {
   const res = await fetch('/api/dashboard/metrics');
   const data = await res.json();
   if (data.success) {
@@ -714,15 +714,15 @@ window.loadDashboardMetrics = async function() {
       '<td style="font-weight:700;">₹' + p.netFee + ' (' + p.payType + ')</td>' +
       '<td><span style="background:#eef6ff;color:var(--blue);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;">' + (p.workflowStatus || 'Active') + '</span></td>' +
       '<td>' +
-        '<button class="btn btn-sm primary" onclick="window.openPrescriptionSheet(\'' + p.uhid + '\')">📝 Prescription</button> ' +
-        '<button class="btn btn-sm success" onclick="window.openBillingModalByUHID(\'' + p.uhid + '\')">🖨 Bill</button>' +
+        '<button class="btn btn-sm primary" onclick="openPrescriptionSheet(\\'' + p.uhid + '\\')">📝 Prescription</button> ' +
+        '<button class="btn btn-sm success" onclick="openBillingModalByUHID(\\'' + p.uhid + '\\')">🖨 Bill</button>' +
       '</td>' +
     '</tr>';
   });
   document.getElementById('dash-patients').innerHTML = html;
-};
+}
 
-window.handleDashQuickFind = async function(val) {
+async function handleDashQuickFind(val) {
   const box = document.getElementById('dash-quick-suggestions');
   if (val.trim().length < 2) {
     box.style.display = 'none';
@@ -736,15 +736,15 @@ window.handleDashQuickFind = async function(val) {
   }
   let html = '';
   data.forEach(function(p) {
-    html += '<div class="suggestion-item" onclick="window.openPrescriptionSheet(\'' + p.uhid + '\')">' +
+    html += '<div class="suggestion-item" onclick="openPrescriptionSheet(\\'' + p.uhid + '\\')">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (UHID: ' + p.uhid + ') | Mob: ' + p.contact + ' | Dr: ' + p.doctor +
     '</div>';
   });
   box.innerHTML = html;
   box.style.display = 'block';
-};
+}
 
-window.loadUniqueModuleData = async function(key) {
+async function loadUniqueModuleData(key) {
   const heading = document.getElementById('module-title-heading');
   if (heading) heading.innerText = key.toUpperCase().replace('-', ' ') + ' MASTER RECORDS';
 
@@ -766,14 +766,14 @@ window.loadUniqueModuleData = async function(key) {
     rows += '<tr>' + columns.map(function(c) { return '<td>' + (row[c] !== undefined ? row[c] : '—') + '</td>'; }).join('');
     if (key === 'users') {
       let isAct = row.status === 'Active';
-      rows += '<td><button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="window.toggleUserStatus(\'' + row.id + '\', \'' + (isAct ? 'Deactivated' : 'Active') + '\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button></td>';
+      rows += '<td><button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="toggleUserStatus(\\'' + row.id + '\\', \\'' + (isAct ? 'Deactivated' : 'Active') + '\\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button></td>';
     }
     rows += '</tr>';
   });
   document.getElementById('module-tbody').innerHTML = rows;
-};
+}
 
-window.handleLiveSearch = async function(val) {
+async function handleLiveSearch(val) {
   const box = document.getElementById('search-suggestions');
   if (val.trim().length < 2) {
     box.style.display = 'none';
@@ -787,15 +787,15 @@ window.handleLiveSearch = async function(val) {
   }
   let html = '';
   data.forEach(function(p) {
-    html += '<div class="suggestion-item" onclick="window.autoFillPatient(\'' + p.uhid + '\')">' +
+    html += '<div class="suggestion-item" onclick="autoFillPatient(\\'' + p.uhid + '\\')">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (' + p.uhid + ') - Mob: ' + p.contact +
     '</div>';
   });
   box.innerHTML = html;
   box.style.display = 'block';
-};
+}
 
-window.autoFillPatient = async function(uhid) {
+async function autoFillPatient(uhid) {
   const res = await fetch('/api/patients/search?q=' + uhid);
   const data = await res.json();
   if (data.length > 0) {
@@ -813,9 +813,9 @@ window.autoFillPatient = async function(uhid) {
     document.getElementById('reg-address').value = p.address || '';
     document.getElementById('search-suggestions').style.display = 'none';
   }
-};
+}
 
-window.handlePatientRegistration = async function(e) {
+async function handlePatientRegistration(e) {
   e.preventDefault();
   const body = {
     existingUhid: document.getElementById('reg-uhid').value,
@@ -861,13 +861,13 @@ window.handlePatientRegistration = async function(e) {
     document.getElementById('pb-amount').innerText = '₹' + Number(data.bill.netFee).toFixed(2);
 
     document.getElementById('print-modal').style.display = 'flex';
-    window.fetchNextUHID();
+    fetchNextUHID();
   } else {
     alert(data.message);
   }
-};
+}
 
-window.openBillingModalByUHID = async function(uhid) {
+async function openBillingModalByUHID(uhid) {
   const res = await fetch('/api/module/bills');
   const json = await res.json();
   const bill = (json.data || []).find(function(b) { return b.uhid === uhid; });
@@ -890,9 +890,9 @@ window.openBillingModalByUHID = async function(uhid) {
   } else {
     alert('Bill not found for this UHID.');
   }
-};
+}
 
-window.openPrescriptionSheet = async function(uhid) {
+async function openPrescriptionSheet(uhid) {
   const res = await fetch('/api/patients/search?q=' + uhid);
   const data = await res.json();
   if (data.length > 0) {
@@ -907,9 +907,9 @@ window.openPrescriptionSheet = async function(uhid) {
     document.getElementById('pr-address').innerText = p.address || 'Mathura, UP';
     document.getElementById('prescription-modal').style.display = 'flex';
   }
-};
+}
 
-window.requestBillEdit = async function() {
+async function requestBillEdit() {
   const reason = prompt("Enter reason for bill edit request (submitted to Admin):");
   if (!reason) return;
   const res = await fetch('/api/bills/edit-request', {
@@ -919,9 +919,9 @@ window.requestBillEdit = async function() {
   });
   const data = await res.json();
   alert(data.message);
-};
+}
 
-window.handleAddNewDoctor = async function(e) {
+async function handleAddNewDoctor(e) {
   e.preventDefault();
   const name = document.getElementById('doc-name').value;
   const fee = document.getElementById('doc-fee').value;
@@ -934,14 +934,14 @@ window.handleAddNewDoctor = async function(e) {
   const data = await res.json();
   if (data.success) {
     alert('New Doctor added successfully!');
-    window.loadDoctors();
+    loadDoctors();
     document.getElementById('doc-name').value = '';
     document.getElementById('doc-fee').value = '';
     document.getElementById('doc-dept').value = '';
   }
-};
+}
 
-window.handleCreateUser = async function(e) {
+async function handleCreateUser(e) {
   e.preventDefault();
   const body = {
     name: document.getElementById('new-u-name').value,
@@ -958,23 +958,23 @@ window.handleCreateUser = async function(e) {
   const data = await res.json();
   if (data.success) {
     alert('User created successfully!');
-    window.loadUniqueModuleData('users');
+    loadUniqueModuleData('users');
   } else {
     alert(data.message);
   }
-};
+}
 
-window.toggleUserStatus = async function(userId, status) {
+async function toggleUserStatus(userId, status) {
   const res = await fetch('/api/users/status', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ userId, status })
   });
   const data = await res.json();
-  if (data.success) window.loadUniqueModuleData('users');
-};
+  if (data.success) loadUniqueModuleData('users');
+}
 
-window.handleChangePassword = async function(e) {
+async function handleChangePassword(e) {
   e.preventDefault();
   const oldPassword = document.getElementById('pass-old').value;
   const newPassword = document.getElementById('pass-new').value;
@@ -989,14 +989,14 @@ window.handleChangePassword = async function(e) {
     document.getElementById('pass-old').value = '';
     document.getElementById('pass-new').value = '';
   }
-};
+}
 
-window.toggleAiBox = function() {
+function toggleAiBox() {
   const box = document.getElementById('ar-ai-box');
   box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-};
+}
 
-window.sendAiQuery = async function() {
+async function sendAiQuery() {
   const input = document.getElementById('ai-input');
   const txt = input.value.trim();
   if (!txt) return;
@@ -1012,7 +1012,7 @@ window.sendAiQuery = async function() {
   const data = await res.json();
   body.innerHTML += '<div style="background:#f0f6ff;padding:8px;border-radius:6px;margin-bottom:6px;"><b>' + data.reply + '</b></div>';
   body.scrollTop = body.scrollHeight;
-};
+}
 </script>
 </body>
 </html>`);
