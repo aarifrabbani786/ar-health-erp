@@ -16,7 +16,7 @@ if (connectionString) {
         ssl: { rejectUnauthorized: false }
     });
     pool.connect()
-        .then(() => console.log('Connected to Supabase PostgreSQL database successfully.'))
+        .then(() => console.log('Connected to PostgreSQL database successfully.'))
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
@@ -257,8 +257,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Father / Guardian Name</label><input type="text" id="reg-guardian"></div>
               <div class="field"><label>Age *</label><input type="number" id="reg-age" required></div>
               <div class="field"><label>Gender</label><select id="reg-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\d{10}" required placeholder="10 digits"></div>
-              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\d{12}" placeholder="12 digits"></div>
+              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\\\d{10}" required placeholder="10 digits"></div>
+              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\\\d{12}" placeholder="12 digits"></div>
               <div class="field"><label>ABHA ID</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
               <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="District, State"></div>
               <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select></div>
