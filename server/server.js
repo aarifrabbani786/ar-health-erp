@@ -232,14 +232,14 @@ app.get('/', (req, res) => {
 
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
 
-.login-card-wrapper{background:rgba(15, 23, 42, 0.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.3);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6);width:min(880px,94vw);height:500px;display:flex;overflow:hidden;position:relative;z-index:1}
+.login-card-wrapper{background:rgba(15, 23, 42, 0.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.35);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6);width:min(880px,94vw);height:500px;display:flex;overflow:hidden;position:relative;z-index:1}
 .login-card-wrapper::after{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.5;filter:blur(10px)}
 
-.login-left{flex:1.2;padding:40px 45px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(15,23,42,0.75);color:#fff}
+.login-left{flex:1.2;padding:40px 45px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(15,23,42,0.65);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:15px;color:#fff;width:100%}
 .login-left form{width:100%;max-width:320px}
 
-.login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(59,130,246,0.25));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(59,130,246,0.22));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 
 .login-field{margin-bottom:16px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
@@ -572,7 +572,7 @@ window.togglePasswordVisibility = function() {
     pInput.type = 'password';
     btn.innerText = '👁';
   }
-}
+};
 
 window.toggleSidebarSlide = function() {
   const sb = document.getElementById('sidebar-panel');
@@ -581,7 +581,7 @@ window.toggleSidebarSlide = function() {
   } else {
     sb.style.marginLeft = '-272px';
   }
-}
+};
 
 window.handleLogin = async function(e) {
   e.preventDefault();
@@ -613,7 +613,7 @@ window.handleLogin = async function(e) {
   } catch (err) {
     alert('Network Error: ' + err.message);
   }
-}
+};
 
 function handleLogout() {
   localStorage.removeItem('ar_erp_active_user');
@@ -623,9 +623,9 @@ function handleLogout() {
 
 function renderNav() {
   let html = '';
-  navGroups.forEach(g => {
+  navGroups.forEach(function(g) {
     let groupItemsHtml = '';
-    g.items.forEach(i => {
+    g.items.forEach(function(i) {
       if (currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
         groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" onclick="switchView(\'' + i[1] + '\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
       }
@@ -641,7 +641,7 @@ async function loadDoctors() {
   const res = await fetch('/api/doctors');
   doctorsList = await res.json();
   let opt = '<option value="">-- Select Doctor --</option>';
-  doctorsList.forEach(d => {
+  doctorsList.forEach(function(d) {
     opt += '<option value="' + d.name + '">' + d.name + ' (Fee: ₹' + d.fee + ')</option>';
   });
   const docSelect = document.getElementById('reg-doctor');
@@ -650,7 +650,7 @@ async function loadDoctors() {
 
 function autoFetchDoctorFee() {
   const docName = document.getElementById('reg-doctor').value;
-  const doc = doctorsList.find(d => d.name === docName);
+  const doc = doctorsList.find(function(d) { return d.name === docName; });
   if (doc) {
     document.getElementById('reg-fee').value = doc.fee;
     calculateNetFee();
@@ -675,11 +675,11 @@ function switchView(targetKey) {
   activeModuleKey = targetKey;
   localStorage.setItem('ar_erp_active_page', targetKey);
 
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   const activeBtn = document.getElementById('nav-btn-' + targetKey);
   if (activeBtn) activeBtn.classList.add('active');
 
-  document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-section').forEach(function(v) { v.classList.remove('active'); });
 
   if (targetKey === 'dashboard') {
     document.getElementById('view-dashboard').classList.add('active');
@@ -698,7 +698,7 @@ function switchView(targetKey) {
     loadUniqueModuleData(targetKey);
   }
 
-  const foundItem = navGroups.flatMap(g => g.items).find(i => i[1] === targetKey);
+  const foundItem = navGroups.flatMap(function(g) { return g.items; }).find(function(i) { return i[1] === targetKey; });
   document.getElementById('topbar-title').innerText = foundItem ? foundItem[0].toUpperCase() : targetKey.toUpperCase();
 }
 
@@ -714,7 +714,7 @@ async function loadDashboardMetrics() {
   const pRes = await fetch('/api/module/patients');
   const pData = await pRes.json();
   let html = '';
-  (pData.data || []).forEach(p => {
+  (pData.data || []).forEach(function(p) {
     html += '<tr>' +
       '<td><b>' + p.uhid + '</b></td>' +
       '<td>' + p.title + ' ' + p.name + '</td>' +
@@ -744,7 +744,7 @@ async function handleDashQuickFind(val) {
     return;
   }
   let html = '';
-  data.forEach(p => {
+  data.forEach(function(p) {
     html += '<div class="suggestion-item" onclick="openPrescriptionSheet(\'' + p.uhid + '\')">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (UHID: ' + p.uhid + ') | Mob: ' + p.contact + ' | Dr: ' + p.doctor +
     '</div>';
@@ -768,11 +768,11 @@ async function loadUniqueModuleData(key) {
   }
 
   const columns = Object.keys(list[0]);
-  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => '<th>' + c.toUpperCase() + '</th>').join('') + (key === 'users' ? '<th>ACTION</th>' : '') + '</tr>';
+  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(function(c) { return '<th>' + c.toUpperCase() + '</th>'; }).join('') + (key === 'users' ? '<th>ACTION</th>' : '') + '</tr>';
 
   let rows = '';
-  list.forEach(row => {
-    rows += '<tr>' + columns.map(c => '<td>' + (row[c] !== undefined ? row[c] : '—') + '</td>').join('');
+  list.forEach(function(row) {
+    rows += '<tr>' + columns.map(function(c) { return '<td>' + (row[c] !== undefined ? row[c] : '—') + '</td>'; }).join('');
     if (key === 'users') {
       let isAct = row.status === 'Active';
       rows += '<td><button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="toggleUserStatus(\'' + row.id + '\', \'' + (isAct ? 'Deactivated' : 'Active') + '\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button></td>';
@@ -795,7 +795,7 @@ async function handleLiveSearch(val) {
     return;
   }
   let html = '';
-  data.forEach(p => {
+  data.forEach(function(p) {
     html += '<div class="suggestion-item" onclick="autoFillPatient(\'' + p.uhid + '\')">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (' + p.uhid + ') - Mob: ' + p.contact +
     '</div>';
@@ -879,7 +879,7 @@ async function handlePatientRegistration(e) {
 async function openBillingModalByUHID(uhid) {
   const res = await fetch('/api/module/bills');
   const json = await res.json();
-  const bill = (json.data || []).find(b => b.uhid === uhid);
+  const bill = (json.data || []).find(function(b) { return b.uhid === uhid; });
   if (bill) {
     currentActiveBillNo = bill.billNo;
     document.getElementById('pb-billno').innerText = bill.billNo;
@@ -957,7 +957,7 @@ async function handleCreateUser(e) {
     username: document.getElementById('new-u-username').value,
     password: document.getElementById('new-u-password').value,
     role: document.getElementById('new-u-role').value,
-    permissions: document.getElementById('new-u-perms').value.split(',').map(s => s.trim())
+    permissions: document.getElementById('new-u-perms').value.split(',').map(function(s) { return s.trim(); })
   };
   const res = await fetch('/api/users/create', {
     method: 'POST',
