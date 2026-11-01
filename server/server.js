@@ -21,10 +21,10 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// Enterprise Central Store with RBAC, UHID & Calculations
+// Enterprise Central Store with RBAC, Status (Active/Deactive) & Permissions
 let erpData = {
     users: [
-        { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'] }
+        { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
     ],
     patients: [
         { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', address: 'Maharajganj, UP', status: 'Active OPD' }
@@ -50,17 +50,20 @@ let erpData = {
 
 // --- REST API ENDPOINTS ---
 
-// 1. Interactive Auth & User Creation (Super Admin Control)
+// 1. Authentication with Account Active/Deactive Validation
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
-    if (user) {
-        res.json({ success: true, user: { name: user.name, username: user.username, role: user.role, permissions: user.permissions } });
-    } else {
-        res.status(401).json({ success: false, message: 'Invalid Username or Password' });
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid Username or Password' });
     }
+    if (user.status === 'Deactivated') {
+        return res.status(403).json({ success: false, message: 'Your account has been deactivated by Super Admin.' });
+    }
+    res.json({ success: true, user: { name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
 });
 
+// 2. Super Admin User & Permission Management (Create, Edit Permissions, Activate/Deactivate)
 app.get('/api/users', (req, res) => {
     res.json(erpData.users);
 });
@@ -76,13 +79,39 @@ app.post('/api/users', (req, res) => {
         username,
         password,
         role: role || 'Receptionist',
-        permissions: permissions || ['read']
+        permissions: permissions || ['patients'],
+        status: 'Active'
     };
     erpData.users.push(newUser);
     res.json({ success: true, message: 'New Staff User Created Successfully', user: newUser });
 });
 
-// 2. Universal Patient Registration & Search
+app.post('/api/users/update-permission', (req, res) => {
+    const { userId, permissions } = req.body;
+    const user = erpData.users.find(u => u.id === userId);
+    if (user) {
+        user.permissions = permissions;
+        res.json({ success: true, message: `Permissions updated for ${user.name}` });
+    } else {
+        res.status(404).json({ success: false, message: 'User not found' });
+    }
+});
+
+app.post('/api/users/toggle-status', (req, res) => {
+    const { userId } = req.body;
+    const user = erpData.users.find(u => u.id === userId);
+    if (user) {
+        if (user.username === 'Aarif') {
+            return res.status(400).json({ success: false, message: 'Cannot deactivate Primary Super Admin account' });
+        }
+        user.status = user.status === 'Active' ? 'Deactivated' : 'Active';
+        res.json({ success: true, message: `User status changed to ${user.status}` });
+    } else {
+        res.status(404).json({ success: false, message: 'User not found' });
+    }
+});
+
+// 3. Universal Patient Registration & Auto UHID Sync
 app.get('/api/patients', async (req, res) => {
     try {
         if (pool) {
@@ -105,7 +134,7 @@ app.post('/api/patients', async (req, res) => {
     const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, address: p.address || 'Local', status: 'Active OPD' };
     erpData.patients.unshift(newPatient);
 
-    // Auto-create token for registered patient
+    // Auto Token Generation
     erpData.opdTokens.unshift({ token: erpData.opdTokens.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting', date: new Date().toISOString().split('T')[0] });
 
     if (pool) {
@@ -118,7 +147,7 @@ app.post('/api/patients', async (req, res) => {
     res.json({ success: true, message: 'Patient Registered & Universal UHID Generated', patient: newPatient });
 });
 
-// 3. Metrics & Live Calculations
+// 4. Live Revenue & Calculation Metrics
 app.get('/api/dashboard/metrics', async (req, res) => {
     let totalRevenue = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
     let billsCount = erpData.bills.length;
@@ -148,14 +177,9 @@ app.get('/api/dashboard/metrics', async (req, res) => {
     });
 });
 
-// 4. Pharmacy POS & Stock Auto-Deduction
-app.get('/api/medicines', async (req, res) => {
-    res.json(erpData.medicines);
-});
-
-app.get('/api/bills', async (req, res) => {
-    res.json(erpData.bills);
-});
+// 5. Pharmacy POS Billing & Inventory Auto Deductions
+app.get('/api/medicines', async (req, res) => res.json(erpData.medicines));
+app.get('/api/bills', async (req, res) => res.json(erpData.bills));
 
 app.post('/api/bills', async (req, res) => {
     const { uhid, cust, mob, medId, qty, price } = req.body;
@@ -186,10 +210,9 @@ app.post('/api/bills', async (req, res) => {
         } catch (dbErr) {}
     }
 
-    res.json({ success: true, message: 'POS Bill Generated & Stock Updated Successfully', bill: newBill });
+    res.json({ success: true, message: 'POS Bill Generated & Stock Deducted Successfully', bill: newBill });
 });
 
-// 5. OPD Tokens & Attendance
 app.get('/api/opd-tokens', (req, res) => res.json(erpData.opdTokens));
 
 app.post('/api/opd-tokens/attend', (req, res) => {
@@ -197,31 +220,13 @@ app.post('/api/opd-tokens/attend', (req, res) => {
     const item = erpData.opdTokens.find(t => t.token === Number(tokenNo));
     if (item) {
         item.status = 'Completed';
-        res.json({ success: true, message: `Token #${tokenNo} Completed` });
+        res.json({ success: true, message: `Token #${tokenNo} Consultation Completed` });
     } else {
         res.status(404).json({ success: false });
     }
 });
 
-app.get('/api/attendance', (req, res) => res.json(erpData.attendance));
-
-app.post('/api/attendance/checkin', (req, res) => {
-    const { empName, role } = req.body;
-    const entry = {
-        id: Date.now(),
-        empName: empName || 'Aarif Rabbani',
-        role: role || 'Super Admin',
-        date: new Date().toISOString().split('T')[0],
-        checkIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'Present'
-    };
-    erpData.attendance.unshift(entry);
-    res.json({ success: true, message: 'Check-In Marked', entry });
-});
-
-app.get('/api/ipd', (req, res) => res.json(erpData.ipdBeds));
-
-// --- FRONTEND APP LAYOUT ---
+// --- SINGLE-FILE APP FRONTEND LAYOUT ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -233,7 +238,7 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-/* PREMIUM DUAL-PANEL LOGIN PAGE */
+/* DUAL PANEL LOGIN SCREEN (NO HARDCODED USER/PASS) */
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
@@ -292,20 +297,21 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
+.btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
 </style>
 </head>
 <body>
 
-<!-- DUAL PANEL INTERACTIVE LOGIN -->
+<!-- DUAL PANEL INTERACTIVE LOGIN (CLEAN - NO HARDCODED CREDS) -->
 <div id="login-screen">
   <div class="login-container">
     <div class="login-left">
       <h2>Sign In</h2>
       <p>Enter your credentials to access AR Healthcare ERP</p>
       <form onsubmit="handleLogin(event)">
-        <div class="login-field"><label>Username</label><input type="text" id="login-u" class="login-input" value="Aarif" required></div>
-        <div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" value="7860" required></div>
+        <div class="login-field"><label>Username</label><input type="text" id="login-u" class="login-input" placeholder="Enter Username..." required></div>
+        <div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" placeholder="Enter Password..." required></div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
     </div>
@@ -316,7 +322,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   </div>
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- MAIN DASHBOARD APPS -->
 <div id="app">
   <aside class="sidebar">
     <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • Biomedical</small></div></div>
@@ -328,14 +334,14 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
       <div class="profile">
         <div class="avatar" id="user-avatar">AR</div>
-        <div><strong id="user-display-name" style="font-size:13px;display:block;">Aarif Rabbani</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">Super Admin</small></div>
-        <button class="btn btn-sm" onclick="handleLogout()" style="margin-left:15px;background:#ef4444;color:#fff;border:none;">Logout</button>
+        <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
+        <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
       </div>
     </header>
 
     <section class="content">
       
-      <!-- DASHBOARD -->
+      <!-- DASHBOARD VIEW -->
       <div id="view-dashboard" class="view-section active">
         <div class="stats">
           <div class="stat"><div class="stat-top"><span class="stat-label">TODAY'S REVENUE</span></div><div class="stat-value" id="m-rev">₹0.00</div></div>
@@ -352,7 +358,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- PATIENTS (UNIVERSAL UHID) -->
+      <!-- PATIENTS VIEW (UNIVERSAL UHID) -->
       <div id="view-patients" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>Patient Master Universal Registration (UHID)</h3></div>
@@ -376,7 +382,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- OPD QUEUE -->
+      <!-- OPD QUEUE VIEW -->
       <div id="view-opd" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>OPD Doctor Consultation Token Queue</h3></div>
@@ -387,7 +393,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- PHARMACY POS -->
+      <!-- PHARMACY POS VIEW -->
       <div id="view-pharmacy" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>POS Sales Billing & Live Stock Deduction</h3></div>
@@ -411,10 +417,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- SUPER ADMIN USER PERMISSIONS -->
+      <!-- SUPER ADMIN USERS & PERMISSIONS CONTROL VIEW -->
       <div id="view-users" class="view-section">
         <div class="panel">
-          <div class="panel-head"><h3>Super Admin: User Creation & Granular Permissions Control</h3></div>
+          <div class="panel-head"><h3>Super Admin: Create New Staff User</h3></div>
           <form onsubmit="handleCreateUser(event)">
             <div class="form-grid">
               <div class="field"><label>Full Name</label><input type="text" id="u-fullname" required></div>
@@ -423,13 +429,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Role</label><select id="u-role"><option>Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option><option>Administrator</option></select></div>
               <div class="field"><label>Permission Module</label><select id="u-perm"><option value="patients">Patients Only</option><option value="pharmacy">Pharmacy Only</option><option value="opd">OPD Queue Only</option><option value="all">Full Access</option></select></div>
             </div>
-            <button type="submit" class="btn primary">+ Create User & Assign Power</button>
+            <button type="submit" class="btn primary">+ Create User</button>
           </form>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>System Active Users</h3></div>
+          <div class="panel-head"><h3>System Active Users & Granular Permissions Control</h3></div>
           <table>
-            <thead><tr><th>User ID</th><th>Name</th><th>Username</th><th>Role</th><th>Permissions</th></tr></thead>
+            <thead><tr><th>User ID</th><th>Name</th><th>Username</th><th>Role</th><th>Allocated Permissions</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="users-list"></tbody>
           </table>
         </div>
@@ -443,6 +449,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 let currentUser = null;
 let globalMedicines = [];
 let globalPatients = [];
+let globalUsers = [];
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"]] },
@@ -487,13 +494,16 @@ function handleLogout() {
 function renderNav() {
   let html = "";
   navGroups.forEach(g => {
-    html += \`<div class="nav-label">\${g.label}</div>\`;
+    let groupItemsHtml = "";
     g.items.forEach(i => {
-      // Granular permissions check
+      // Permission filtering
       if (currentUser.role === 'Super Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        html += \`<button class="nav-item \${i[1]==='dashboard'?'active':''}" onclick="switchView('\${i[1]}', this)"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
+        groupItemsHtml += \`<button class="nav-item \${i[1]==='dashboard'?'active':''}" onclick="switchView('\${i[1]}', this)"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
       }
     });
+    if(groupItemsHtml !== "") {
+      html += \`<div class="nav-label">\${g.label}</div>\` + groupItemsHtml;
+    }
   });
   document.getElementById('nav-menu').innerHTML = html;
 }
@@ -547,7 +557,7 @@ async function loadAllData() {
   document.getElementById('pos-med').innerHTML = selHtml;
   updatePosRate();
 
-  // OPD
+  // OPD Queue
   const opdRes = await fetch('/api/opd-tokens');
   const opdList = await opdRes.json();
   let oHtml = "";
@@ -557,12 +567,32 @@ async function loadAllData() {
   });
   document.getElementById('opd-list').innerHTML = oHtml;
 
-  // Users
+  // Users List (Super Admin Management)
   const uRes = await fetch('/api/users');
-  const uList = await uRes.json();
+  globalUsers = await uRes.json();
   let uHtml = "";
-  uList.forEach(u => {
-    uHtml += \`<tr><td>\${u.id}</td><td>\${u.name}</td><td>\${u.username}</td><td>\${u.role}</td><td>\${JSON.stringify(u.permissions)}</td></tr>\`;
+  globalUsers.forEach(u => {
+    const isDeactive = u.status === 'Deactivated';
+    const statusBadge = isDeactive ? \`<span style="color:#ef4444;font-weight:700;">Deactivated</span>\` : \`<span style="color:#10b981;font-weight:700;">Active</span>\`;
+    
+    let actions = "";
+    if (currentUser.role === 'Super Admin' && u.username !== 'Aarif') {
+      const toggleLabel = isDeactive ? 'Activate' : 'Deactivate';
+      const toggleBtnClass = isDeactive ? 'success' : 'danger';
+      actions = \`
+        <select onchange="changeUserPermission('\${u.id}', this.value)" style="padding:3px 6px;font-size:11px;">
+          <option value="patients" \${u.permissions.includes('patients')?'selected':''}>Patients Only</option>
+          <option value="pharmacy" \${u.permissions.includes('pharmacy')?'selected':''}>Pharmacy Only</option>
+          <option value="opd" \${u.permissions.includes('opd')?'selected':''}>OPD Queue Only</option>
+          <option value="all" \${u.permissions.includes('all')?'selected':''}>Full Access</option>
+        </select>
+        <button class="btn btn-sm \${toggleBtnClass}" onclick="toggleUserStatus('\${u.id}')" style="margin-left:5px;">\${toggleLabel}</button>
+      \`;
+    } else {
+      actions = \`<span>System Root</span>\`;
+    }
+
+    uHtml += \`<tr><td>\${u.id}</td><td>\${u.name}</td><td>\${u.username}</td><td>\${u.role}</td><td>\${JSON.stringify(u.permissions)}</td><td>\${statusBadge}</td><td>\${actions}</td></tr>\`;
   });
   document.getElementById('users-list').innerHTML = uHtml;
 }
@@ -642,6 +672,37 @@ async function handleCreateUser(e) {
   const data = await res.json();
   if (data.success) {
     alert('User Created!');
+    document.getElementById('u-fullname').value = '';
+    document.getElementById('u-user').value = '';
+    document.getElementById('u-pass').value = '';
+    loadAllData();
+  } else {
+    alert(data.message);
+  }
+}
+
+async function changeUserPermission(userId, newPermission) {
+  const res = await fetch('/api/users/update-permission', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ userId, permissions: [newPermission] })
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert(data.message);
+    loadAllData();
+  }
+}
+
+async function toggleUserStatus(userId) {
+  const res = await fetch('/api/users/toggle-status', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ userId })
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert(data.message);
     loadAllData();
   } else {
     alert(data.message);
