@@ -20,33 +20,44 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// Enterprise Store with All Modules Data & RBAC Users
+// Global In-Memory Database Store for all ERP Modules
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
     ],
     patients: [
-        { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', address: 'Maharajganj, UP', status: 'Active OPD' }
+        { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', address: 'Maharajganj, UP', status: 'Active OPD' },
+        { id: 2, uhid: 'UHID2026002', name: 'Ramesh Verma', age: 42, sex: 'Male', contact: '9812345678', address: 'Gorakhpur, UP', status: 'Admitted IPD' }
     ],
     opdTokens: [
         { token: 1, uhid: 'UHID2026001', patientName: 'Aarif Rabbani', doctor: 'Dr. A. Khan (General)', status: 'Waiting', date: '2026-11-01' }
     ],
     medicines: [
-        { id: 1, med_id: 'MED001', brand_name: 'Paracetamol 650mg', generic_name: 'Paracetamol', batch_no: 'B2601', available_qty: 150, sale_rate: 20.00, mrp: 22.00, units_per_pack: 10 },
-        { id: 2, med_id: 'MED002', brand_name: 'Amoxycillin 500mg', generic_name: 'Amoxycillin', batch_no: 'B2602', available_qty: 85, sale_rate: 45.00, mrp: 50.00, units_per_pack: 10 }
+        { id: 1, med_id: 'MED001', brand_name: 'Paracetamol 650mg', generic_name: 'Paracetamol', batch_no: 'B2601', available_qty: 150, sale_rate: 20.00, mrp: 22.00, units_per_pack: 10, expiry: '2027-12-31', status: 'In Stock' },
+        { id: 2, med_id: 'MED002', brand_name: 'Amoxycillin 500mg', generic_name: 'Amoxycillin', batch_no: 'B2602', available_qty: 15, sale_rate: 45.00, mrp: 50.00, units_per_pack: 10, expiry: '2026-11-20', status: 'Low Stock' }
     ],
     bills: [
         { id: 1, inv_no: 'PBILL311026846', date: '2026-10-31', uhid: 'UHID2026001', customer_name: 'Aarif Rabbani', mobile: '9876543210', items_count: 2, net_total: 800.00 }
     ],
     assets: [
-        { id: 1, assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', status: 'Operational' }
+        { id: 1, assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', status: 'Operational', pmDue: '2026-12-15' },
+        { id: 2, assetId: 'AST-002', name: 'ECG Monitor 12-Lead', department: 'ICU', status: 'Under Repair', pmDue: '2026-11-05' }
     ],
     employees: [
-        { id: 1, employeeId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' }
+        { id: 1, employeeId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' },
+        { id: 2, employeeId: 'EMP-002', name: 'Sunita Sharma', designation: 'Head Nurse', department: 'Nursing', status: 'Active' }
     ],
     ipdBeds: [
-        { ward: 'General Ward A', bedNo: 'BED-101', uhid: 'UHID2026001', patientName: 'Rahul Verma', status: 'Occupied' },
-        { ward: 'General Ward A', bedNo: 'BED-102', uhid: '', patientName: 'Vacant', status: 'Available' }
+        { ward: 'General Ward A', bedNo: 'BED-101', uhid: 'UHID2026002', patientName: 'Ramesh Verma', status: 'Occupied' },
+        { ward: 'General Ward A', bedNo: 'BED-102', uhid: '', patientName: 'Vacant', status: 'Available' },
+        { ward: 'ICU Ward 1', bedNo: 'ICU-01', uhid: '', patientName: 'Vacant', status: 'Available' }
+    ],
+    purchases: [
+        { id: 1, poNo: 'PO-2026-001', vendor: 'MedTech Pharma Supplies', date: '2026-10-25', amount: 15400.00, status: 'Approved' }
+    ],
+    accounts: [
+        { id: 1, txnId: 'TXN-901', type: 'Income', category: 'OPD Billing', amount: 1200.00, date: '2026-11-01', status: 'Cleared' },
+        { id: 2, txnId: 'TXN-902', type: 'Expense', category: 'Pharmacy Restock', amount: 4500.00, date: '2026-10-30', status: 'Cleared' }
     ]
 };
 
@@ -108,8 +119,8 @@ app.post('/api/users/toggle-status', (req, res) => {
     }
 });
 
-// --- CORE MODULE API ENDPOINTS ---
-app.get('/api/dashboard/metrics', async (req, res) => {
+// --- CORE DATA ENDPOINTS ---
+app.get('/api/dashboard/metrics', (req, res) => {
     let totalRevenue = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
     res.json({
         success: true,
@@ -125,13 +136,32 @@ app.get('/api/patients', (req, res) => res.json(erpData.patients));
 app.post('/api/patients', (req, res) => {
     const p = req.body;
     const uhid = `UHID${Date.now().toString().slice(-6)}`;
-    const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, address: p.address || 'Local', status: 'Active OPD' };
+    const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, address: p.address || 'Local', status: p.status || 'Active OPD' };
     erpData.patients.unshift(newPatient);
     erpData.opdTokens.unshift({ token: erpData.opdTokens.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting', date: new Date().toISOString().split('T')[0] });
     res.json({ success: true, message: 'Patient Registered & UHID Generated', patient: newPatient });
 });
 
 app.get('/api/medicines', (req, res) => res.json(erpData.medicines));
+app.post('/api/medicines', (req, res) => {
+    const m = req.body;
+    const newMed = {
+        id: Date.now(),
+        med_id: `MED${Date.now().toString().slice(-4)}`,
+        brand_name: m.brand_name,
+        generic_name: m.generic_name || m.brand_name,
+        batch_no: m.batch_no || 'B-NEW',
+        available_qty: Number(m.available_qty || 100),
+        sale_rate: Number(m.sale_rate || 10),
+        mrp: Number(m.mrp || 12),
+        units_per_pack: 10,
+        expiry: m.expiry || '2028-12-31',
+        status: Number(m.available_qty) < 50 ? 'Low Stock' : 'In Stock'
+    };
+    erpData.medicines.unshift(newMed);
+    res.json({ success: true, message: 'Medicine added to stock master', medicine: newMed });
+});
+
 app.get('/api/bills', (req, res) => res.json(erpData.bills));
 app.post('/api/bills', (req, res) => {
     const { uhid, cust, mob, medId, qty, price } = req.body;
@@ -156,8 +186,31 @@ app.post('/api/opd-tokens/attend', (req, res) => {
 app.get('/api/assets', (req, res) => res.json(erpData.assets));
 app.get('/api/employees', (req, res) => res.json(erpData.employees));
 app.get('/api/ipd', (req, res) => res.json(erpData.ipdBeds));
+app.get('/api/purchases', (req, res) => res.json(erpData.purchases));
+app.get('/api/accounts', (req, res) => res.json(erpData.accounts));
 
-// --- COMMERCIAL SINGLE-FILE FRONTEND WITH ALL SIDEBAR MODULES ---
+// --- AR AI ASSISTANT ENDPOINT ---
+app.post('/api/ai/chat', (req, res) => {
+    const { query } = req.body;
+    const text = (query || "").toLowerCase();
+    let reply = "I am **AR AI Assistant**. How can I help you with Hospital, Pharmacy or Asset operations?";
+
+    if (text.includes("patient") || text.includes("uhid")) {
+        reply = `**AR AI Summary**: Total registered patients: **${erpData.patients.length}**. Latest Patient: **${erpData.patients[0]?.name || 'N/A'}** (${erpData.patients[0]?.uhid || ''}).`;
+    } else if (text.includes("stock") || text.includes("medicine")) {
+        const low = erpData.medicines.filter(m => m.available_qty < 50);
+        reply = `**AR AI Inventory Alert**: Total medicines: **${erpData.medicines.length}**. Low stock items: **${low.length}** (${low.map(x=>x.brand_name).join(', ') || 'None'}).`;
+    } else if (text.includes("revenue") || text.includes("sale") || text.includes("bill")) {
+        const total = erpData.bills.reduce((a, b) => a + Number(b.net_total), 0);
+        reply = `**AR AI Financial Report**: Total revenue recorded: **₹${total.toFixed(2)}** across **${erpData.bills.length}** bills.`;
+    } else if (text.includes("bed") || text.includes("ipd")) {
+        const occ = erpData.ipdBeds.filter(b => b.status === 'Occupied').length;
+        reply = `**AR AI Ward Status**: Occupied Beds: **${occ} / ${erpData.ipdBeds.length}**.`;
+    }
+    res.json({ success: true, reply });
+});
+
+// --- SINGLE-FILE FRONTEND INTEGRATION ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -169,7 +222,7 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-/* CLEAN DUAL-PANEL LOGIN SCREEN */
+/* LOGIN SCREEN */
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
@@ -181,7 +234,7 @@ app.get('/', (req, res) => {
 .login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
 
-/* MAIN APP LAYOUT */
+/* MAIN APP */
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -212,6 +265,13 @@ app.get('/', (req, res) => {
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .panel-head h3{font-size:15px;margin:0;color:var(--navy);font-weight:700}
 
+/* CHART STYLING */
+.chart-box{height:180px;display:flex;align-items:flex-end;gap:12px;padding:10px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 39px,#f0f4f9 40px);border-bottom:1px solid var(--line)}
+.chart-bar-group{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.bars-wrap{display:flex;align-items:flex-end;gap:4px;height:140px;width:100%;justify-content:center}
+.bar-single{width:16px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#5e9cff,#2876ed)}
+.bar-single.alt{background:linear-gradient(180deg,#62d7ce,#17b8ae)}
+
 table{width:100%;border-collapse:collapse}
 th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}
 td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
@@ -226,11 +286,17 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
+
+/* AR AI FLOATING WIDGET */
+#ai-panel{position:fixed;bottom:25px;right:25px;width:340px;background:#fff;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;overflow:hidden;z-index:999;border:1px solid var(--line)}
+.ai-header{background:linear-gradient(135deg,#16b8b0,#2674e8);color:#fff;padding:14px;font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.ai-body{padding:15px;height:240px;overflow-y:auto;font-size:12px;line-height:1.5;background:#f9fbfe}
+.ai-footer{padding:10px;display:flex;gap:8px;border-top:1px solid var(--line);background:#fff}
 </style>
 </head>
 <body>
 
-<!-- CLEAN LOGIN SCREEN -->
+<!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-container">
     <div class="login-left">
@@ -259,10 +325,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <main class="main">
     <header class="topbar">
       <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
-      <div class="profile">
-        <div class="avatar" id="user-avatar">AR</div>
-        <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
-        <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="btn btn-sm success" onclick="toggleAiPanel()">🤖 AR AI Assistant</button>
+        <div class="profile">
+          <div class="avatar" id="user-avatar">AR</div>
+          <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
+          <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
+        </div>
       </div>
     </header>
 
@@ -276,8 +345,27 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           <div class="stat"><div class="stat-label">ACTIVE IPD BEDS</div><div class="stat-value" id="m-ipd">1 / 20</div></div>
           <div class="stat"><div class="stat-label">LOW STOCK ALERTS</div><div class="stat-value" id="m-stock">0</div></div>
         </div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;">
+          <div class="panel">
+            <div class="panel-head"><h3>Operations Revenue vs Restock Overview</h3></div>
+            <div class="chart-box">
+              <div class="chart-bar-group"><div class="bars-wrap"><div class="bar-single" style="height:60%;"></div><div class="bar-single alt" style="height:40%;"></div></div><span style="font-size:10px;margin-top:6px;">Mon</span></div>
+              <div class="chart-bar-group"><div class="bars-wrap"><div class="bar-single" style="height:80%;"></div><div class="bar-single alt" style="height:55%;"></div></div><span style="font-size:10px;margin-top:6px;">Tue</span></div>
+              <div class="chart-bar-group"><div class="bars-wrap"><div class="bar-single" style="height:70%;"></div><div class="bar-single alt" style="height:45%;"></div></div><span style="font-size:10px;margin-top:6px;">Wed</span></div>
+              <div class="chart-bar-group"><div class="bars-wrap"><div class="bar-single" style="height:90%;"></div><div class="bar-single alt" style="height:65%;"></div></div><span style="font-size:10px;margin-top:6px;">Thu</span></div>
+              <div class="chart-bar-group"><div class="bars-wrap"><div class="bar-single" style="height:85%;"></div><div class="bar-single alt" style="height:50%;"></div></div><span style="font-size:10px;margin-top:6px;">Fri</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Priority System Alerts</h3></div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="padding:10px;background:#fff4df;border-radius:8px;font-size:12px;color:#c77a12;"><strong>⚠ Low Medicine Stock</strong><br>Amoxycillin 500mg requires restock.</div>
+              <div style="padding:10px;background:#fff0f1;border-radius:8px;font-size:12px;color:#c93c48;"><strong>🔧 Maintenance Due</strong><br>ECG Monitor 12-Lead reported Under Repair.</div>
+            </div>
+          </div>
+        </div>
         <div class="panel">
-          <div class="panel-head"><h3>Recent Sales Invoices & POS Transactions</h3></div>
+          <div class="panel-head"><h3>Recent POS Invoices</h3></div>
           <table>
             <thead><tr><th>Invoice No</th><th>Date</th><th>Customer / UHID</th><th>Mobile</th><th>Items</th><th>Net Total (₹)</th></tr></thead>
             <tbody id="dash-bills"></tbody>
@@ -285,108 +373,26 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- 2. PATIENT REGISTRATION -->
-      <div id="view-patients" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>Patient Master Universal Registration (UHID)</h3></div>
-          <form onsubmit="handlePatientReg(event)">
-            <div class="form-grid">
-              <div class="field"><label>Patient Name</label><input type="text" id="p-name" required></div>
-              <div class="field"><label>Age</label><input type="number" id="p-age" required></div>
-              <div class="field"><label>Gender</label><select id="p-sex"><option>Male</option><option>Female</option></select></div>
-              <div class="field"><label>Mobile</label><input type="text" id="p-mob" required></div>
-              <div class="field"><label>Address</label><input type="text" id="p-addr"></div>
-            </div>
-            <button type="submit" class="btn primary">+ Register Patient & Issue Token</button>
+      <!-- DYNAMIC SHARED CONTAINER FOR ALL OTHER MODULES WITH FULL TABLES & FORMS -->
+      <div id="view-module-container" class="view-section">
+        <div class="panel" id="module-form-box" style="display:none;">
+          <div class="panel-head"><h3 id="module-form-title">Add New Entry</h3></div>
+          <form id="generic-module-form" onsubmit="handleModuleSubmit(event)">
+            <div class="form-grid" id="module-form-fields"></div>
+            <button type="submit" class="btn primary">+ Save Record</button>
           </form>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Registered Patients Database</h3></div>
-          <table>
-            <thead><tr><th>UHID</th><th>Patient Name</th><th>Age/Sex</th><th>Contact</th><th>Address</th><th>Status</th></tr></thead>
-            <tbody id="patients-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 3. OPD & APPOINTMENTS -->
-      <div id="view-opd" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>OPD Doctor Consultation Token Queue</h3></div>
-          <table>
-            <thead><tr><th>Token No</th><th>UHID</th><th>Patient Name</th><th>Doctor</th><th>Status</th><th>Action</th></tr></thead>
-            <tbody id="opd-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 4. PHARMACY POS & INVENTORY -->
-      <div id="view-pharmacy" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>POS Sales Billing & Live Stock Deduction</h3></div>
-          <form onsubmit="handlePosBill(event)">
-            <div class="form-grid">
-              <div class="field"><label>Patient UHID / Search</label><input type="text" id="pos-uhid" placeholder="UHID..." onchange="autoFetchPatient(this.value)"></div>
-              <div class="field"><label>Customer Name</label><input type="text" id="pos-cust" required></div>
-              <div class="field"><label>Select Medicine</label><select id="pos-med" onchange="updatePosRate()"></select></div>
-              <div class="field"><label>Sale Price (₹)</label><input type="number" id="pos-price" required></div>
-              <div class="field"><label>Quantity</label><input type="number" id="pos-qty" value="1" required></div>
-            </div>
-            <button type="submit" class="btn success">💾 Complete Transaction</button>
-          </form>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Pharmacy Inventory Master (FEFO)</h3></div>
-          <table>
-            <thead><tr><th>Med ID</th><th>Brand Name</th><th>Generic</th><th>Batch</th><th>Available Stock</th><th>Rate (₹)</th></tr></thead>
-            <tbody id="med-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 5. BIOMEDICAL ASSETS -->
-      <div id="view-assets" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>Biomedical Equipment Asset Register</h3></div>
-          <table>
-            <thead><tr><th>Asset ID</th><th>Equipment Name</th><th>Department</th><th>Status</th></tr></thead>
-            <tbody id="assets-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 6. HRMS / EMPLOYEES -->
-      <div id="view-employees" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>Employee & Staff Directory</h3></div>
-          <table>
-            <thead><tr><th>Employee ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Status</th></tr></thead>
-            <tbody id="employees-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 7. SUPER ADMIN USERS & PERMISSIONS CONTROL -->
-      <div id="view-users" class="view-section">
-        <div class="panel">
-          <div class="panel-head"><h3>Super Admin: Create New Staff User</h3></div>
-          <form onsubmit="handleCreateUser(event)">
-            <div class="form-grid">
-              <div class="field"><label>Full Name</label><input type="text" id="u-fullname" required></div>
-              <div class="field"><label>Username</label><input type="text" id="u-user" required></div>
-              <div class="field"><label>Password</label><input type="text" id="u-pass" required></div>
-              <div class="field"><label>Role</label><select id="u-role"><option>Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option><option>Administrator</option></select></div>
-              <div class="field"><label>Permission Module</label><select id="u-perm"><option value="patients">Patients Only</option><option value="pharmacy">Pharmacy Only</option><option value="opd">OPD Queue Only</option><option value="assets">Biomedical Assets Only</option><option value="all">Full Access</option></select></div>
-            </div>
-            <button type="submit" class="btn primary">+ Create User</button>
-          </form>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>System Active Users & Granular Permissions Control</h3></div>
-          <table>
-            <thead><tr><th>User ID</th><th>Name</th><th>Username</th><th>Role</th><th>Allocated Permissions</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="users-list"></tbody>
-          </table>
+          <div class="panel-head">
+            <h3 id="module-table-title">Module Master Table</h3>
+            <button class="btn primary btn-sm" id="module-add-btn" onclick="toggleModuleForm()">+ Add Record</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead id="module-thead"></thead>
+              <tbody id="module-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -394,12 +400,26 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   </main>
 </div>
 
+<!-- AR AI ASSISTANT CHAT PANEL -->
+<div id="ai-panel">
+  <div class="ai-header">
+    <span>🤖 AR AI Assistant</span>
+    <button onclick="toggleAiPanel()" style="background:transparent;border:none;color:#fff;cursor:pointer;font-weight:800;">✕</button>
+  </div>
+  <div class="ai-body" id="ai-messages">
+    <div><strong>AR AI:</strong> Namaste Aarif bhai! Main aapka AR AI assistant hoon. ERP ke bare me kuch bhi puchhein.</div>
+  </div>
+  <div class="ai-footer">
+    <input type="text" id="ai-input" placeholder="Ask AI..." style="flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;" onkeypress="if(event.key==='Enter')sendAiQuery()">
+    <button class="btn primary btn-sm" onclick="sendAiQuery()">Send</button>
+  </div>
+</div>
+
 <script>
 let currentUser = null;
-let globalMedicines = [];
-let globalPatients = [];
-let globalUsers = [];
+let activeModuleKey = 'dashboard';
 
+// Complete Sidebar Menu Mapping matching your Screenshots
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
   { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration", "patients", "＋"], ["Patient Search", "patient-search", "⌕"], ["OPD & Appointments", "opd", "◷"], ["IPD Admissions", "admissions", "▤"], ["Wards & Beds", "beds", "▥"], ["Doctors & Departments", "doctors", "✚"], ["Nursing Station", "nursing", "♡"], ["Laboratory", "laboratory", "⚗"], ["Radiology", "radiology", "◉"], ["OT & ICU", "ot-icu", "✚"], ["Discharge Management", "discharge", "⇥"], ["Hospital Billing", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
@@ -409,6 +429,22 @@ const navGroups = [
   { label: "FINANCE & HRMS", items: [["Accounts Dashboard", "accounts", "₹"], ["Income & Expenses", "expenses", "⇅"], ["Cash & Bank", "cash-bank", "▤"], ["Receivables / Payables", "receivables", "₹"], ["Employee Directory", "employees", "♙"], ["Attendance & Shifts", "attendance", "◷"], ["Leave & Duty Roster", "leave", "☷"], ["Payroll", "payroll", "₹"]] },
   { label: "REPORTS & ADMINISTRATION", items: [["Reports & Analytics", "reports", "▥"], ["Quality & Compliance", "quality", "✓"], ["Document Register", "documents", "▧"], ["User & Role Management", "users", "♙"], ["Role Permissions", "permissions", "⚿"], ["Audit Logs", "audit-logs", "☷"], ["Branch & Department Setup", "organization", "▦"], ["Settings & Backup", "settings", "⚙"]] }
 ];
+
+// Auto Session Restore on Refresh
+window.onload = function() {
+  const savedUser = localStorage.getItem('ar_erp_active_user');
+  const savedPage = localStorage.getItem('ar_erp_active_page');
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+    document.getElementById('user-display-name').innerText = currentUser.name;
+    document.getElementById('user-display-role').innerText = currentUser.role;
+    document.getElementById('user-avatar').innerText = currentUser.name.slice(0,2).toUpperCase();
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    renderNav();
+    switchView(savedPage || 'dashboard');
+  }
+};
 
 async function handleLogin(e) {
   e.preventDefault();
@@ -424,13 +460,15 @@ async function handleLogin(e) {
     const data = await res.json();
     if (data.success) {
       currentUser = data.user;
-      document.getElementById('user-display-name').innerText = data.user.name;
-      document.getElementById('user-display-role').innerText = data.user.role;
-      document.getElementById('user-avatar').innerText = data.user.name.slice(0,2).toUpperCase();
+      localStorage.setItem('ar_erp_active_user', JSON.stringify(currentUser));
+      localStorage.setItem('ar_erp_active_page', 'dashboard');
+      document.getElementById('user-display-name').innerText = currentUser.name;
+      document.getElementById('user-display-role').innerText = currentUser.role;
+      document.getElementById('user-avatar').innerText = currentUser.name.slice(0,2).toUpperCase();
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'flex';
       renderNav();
-      loadAllData();
+      switchView('dashboard');
     } else {
       alert(data.message || 'Login Failed');
     }
@@ -440,6 +478,8 @@ async function handleLogin(e) {
 }
 
 function handleLogout() {
+  localStorage.removeItem('ar_erp_active_user');
+  localStorage.removeItem('ar_erp_active_page');
   location.reload();
 }
 
@@ -449,7 +489,7 @@ function renderNav() {
     let groupItemsHtml = "";
     g.items.forEach(i => {
       if (currentUser.role === 'Super Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        groupItemsHtml += \`<button class="nav-item \${i[1]==='dashboard'?'active':''}" onclick="switchView('\${i[1]}', this)"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
+        groupItemsHtml += \`<button class="nav-item \${i[1]===activeModuleKey?'active':''}" id="nav-btn-\${i[1]}" onclick="switchView('\${i[1]}')"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
       }
     });
     if(groupItemsHtml !== "") {
@@ -459,31 +499,29 @@ function renderNav() {
   document.getElementById('nav-menu').innerHTML = html;
 }
 
-function switchView(targetId, btn) {
+function switchView(targetKey) {
+  activeModuleKey = targetKey;
+  localStorage.setItem('ar_erp_active_page', targetKey);
+
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  const activeBtn = document.getElementById('nav-btn-' + targetKey);
+  if (activeBtn) activeBtn.classList.add('active');
+
   document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-  
-  // Specific view mapping to ensure proper modular hiding and showing
-  const targetEl = document.getElementById('view-' + targetId);
-  if (targetEl) {
-    targetEl.classList.add('active');
+
+  if (targetKey === 'dashboard') {
+    document.getElementById('view-dashboard').classList.add('active');
+    loadDashboardData();
   } else {
-    // Fallback or generic placeholder view for remaining modules
-    let genericView = document.getElementById('view-generic');
-    if (!genericView) {
-      genericView = document.createElement('div');
-      genericView.id = 'view-generic';
-      genericView.className = 'view-section panel';
-      document.querySelector('.content').appendChild(genericView);
-    }
-    genericView.classList.add('active');
-    genericView.innerHTML = \`<div class="panel-head"><h3>Module: \${targetId.toUpperCase()}</h3></div><p style="padding:15px;color:#718096;">This module is successfully loaded. Connect your dedicated submodule components here.</p>\`;
+    document.getElementById('view-module-container').classList.add('active');
+    loadModuleData(targetKey);
   }
-  document.getElementById('topbar-title').innerText = targetId.toUpperCase();
+
+  const foundItem = navGroups.flatMap(g => g.items).find(i => i[1] === targetKey);
+  document.getElementById('topbar-title').innerText = foundItem ? foundItem[0].toUpperCase() : targetKey.toUpperCase();
 }
 
-async function loadAllData() {
+async function loadDashboardData() {
   const mRes = await fetch('/api/dashboard/metrics');
   const mData = await mRes.json();
   if (mData.success) {
@@ -491,7 +529,6 @@ async function loadAllData() {
     document.getElementById('m-pat').innerText = mData.registeredPatients;
     document.getElementById('m-stock').innerText = mData.lowStockItems;
   }
-
   const bRes = await fetch('/api/bills');
   const bills = await bRes.json();
   let bHtml = "";
@@ -499,195 +536,136 @@ async function loadAllData() {
     bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date}</td><td>\${b.customer_name} (\${b.uhid})</td><td>\${b.mobile||'-'}</td><td>\${b.items_count}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
   });
   document.getElementById('dash-bills').innerHTML = bHtml;
-
-  const pRes = await fetch('/api/patients');
-  globalPatients = await pRes.json();
-  let pHtml = "";
-  globalPatients.forEach(p => {
-    pHtml += \`<tr><td><strong>\${p.uhid}</strong></td><td>\${p.name}</td><td>\${p.age}/\${p.sex}</td><td>\${p.contact}</td><td>\${p.address}</td><td><span style="color:#10b981;font-weight:700;">\${p.status}</span></td></tr>\`;
-  });
-  document.getElementById('patients-list').innerHTML = pHtml;
-
-  const medRes = await fetch('/api/medicines');
-  globalMedicines = await medRes.json();
-  let mHtml = "";
-  let selHtml = "";
-  globalMedicines.forEach(m => {
-    mHtml += \`<tr><td>\${m.med_id}</td><td>\${m.brand_name}</td><td>\${m.generic_name}</td><td>\${m.batch_no}</td><td><strong>\${m.available_qty}</strong></td><td>₹\${Number(m.sale_rate).toFixed(2)}</td></tr>\`;
-    selHtml += \`<option value="\${m.med_id}">\${m.brand_name} (Stock: \${m.available_qty})</option>\`;
-  });
-  document.getElementById('med-list').innerHTML = mHtml;
-  document.getElementById('pos-med').innerHTML = selHtml;
-  updatePosRate();
-
-  const opdRes = await fetch('/api/opd-tokens');
-  const opdList = await opdRes.json();
-  let oHtml = "";
-  opdList.forEach(o => {
-    const btn = o.status==='Waiting'?\`<button class="btn btn-sm success" onclick="attendOpd(\${o.token})">Attend</button>\`:'✓ Done';
-    oHtml += \`<tr><td>#\${o.token}</td><td>\${o.uhid}</td><td>\${o.patientName}</td><td>\${o.doctor}</td><td>\${o.status}</td><td>\${btn}</td></tr>\`;
-  });
-  document.getElementById('opd-list').innerHTML = oHtml;
-
-  const aRes = await fetch('/api/assets');
-  const assets = await aRes.json();
-  let aHtml = "";
-  assets.forEach(a => {
-    aHtml += \`<tr><td>\${a.assetId}</td><td>\${a.name}</td><td>\${a.department}</td><td><span style="color:#10b981;font-weight:700;">\${a.status}</span></td></tr>\`;
-  });
-  document.getElementById('assets-list').innerHTML = aHtml;
-
-  const eRes = await fetch('/api/employees');
-  const emps = await eRes.json();
-  let eHtml = "";
-  emps.forEach(e => {
-    eHtml += \`<tr><td>\${e.employeeId}</td><td>\${e.name}</td><td>\${e.designation}</td><td>\${e.department}</td><td><span style="color:#10b981;font-weight:700;">\${e.status}</span></td></tr>\`;
-  });
-  document.getElementById('employees-list').innerHTML = eHtml;
-
-  const uRes = await fetch('/api/users');
-  globalUsers = await uRes.json();
-  let uHtml = "";
-  globalUsers.forEach(u => {
-    const isDeactive = u.status === 'Deactivated';
-    const statusBadge = isDeactive ? \`<span style="color:#ef4444;font-weight:700;">Deactivated</span>\` : \`<span style="color:#10b981;font-weight:700;">Active</span>\`;
-    let actions = "";
-    if (currentUser.role === 'Super Admin' && u.username !== 'Aarif') {
-      const toggleLabel = isDeactive ? 'Activate' : 'Deactivate';
-      const toggleBtnClass = isDeactive ? 'success' : 'danger';
-      actions = \`
-        <select onchange="changeUserPermission('\${u.id}', this.value)" style="padding:3px 6px;font-size:11px;">
-          <option value="patients" \${u.permissions.includes('patients')?'selected':''}>Patients Only</option>
-          <option value="pharmacy" \${u.permissions.includes('pharmacy')?'selected':''}>Pharmacy Only</option>
-          <option value="opd" \${u.permissions.includes('opd')?'selected':''}>OPD Queue Only</option>
-          <option value="assets" \${u.permissions.includes('assets')?'selected':''}>Biomedical Assets Only</option>
-          <option value="all" \${u.permissions.includes('all')?'selected':''}>Full Access</option>
-        </select>
-        <button class="btn btn-sm \${toggleBtnClass}" onclick="toggleUserStatus('\${u.id}')" style="margin-left:5px;">\${toggleLabel}</button>
-      \`;
-    } else {
-      actions = \`<span>System Root</span>\`;
-    }
-    uHtml += \`<tr><td>\${u.id}</td><td>\${u.name}</td><td>\${u.username}</td><td>\${u.role}</td><td>\${JSON.stringify(u.permissions)}</td><td>\${statusBadge}</td><td>\${actions}</td></tr>\`;
-  });
-  document.getElementById('users-list').innerHTML = uHtml;
 }
 
-function autoFetchPatient(uhid) {
-  const p = globalPatients.find(x => x.uhid === uhid.trim());
-  if (p) document.getElementById('pos-cust').value = p.name;
-}
+async function loadModuleData(key) {
+  document.getElementById('module-form-box').style.display = 'none';
+  document.getElementById('module-table-title').innerText = key.toUpperCase().replace('-', ' ') + ' RECORDS';
 
-function updatePosRate() {
-  const medId = document.getElementById('pos-med').value;
-  const m = globalMedicines.find(x => x.med_id === medId);
-  if (m) document.getElementById('pos-price').value = m.sale_rate;
-}
+  let apiEndpoint = '/api/patients';
+  let columns = [];
+  let formHtml = "";
 
-async function handlePatientReg(e) {
-  e.preventDefault();
-  const name = document.getElementById('p-name').value;
-  const age = document.getElementById('p-age').value;
-  const sex = document.getElementById('p-sex').value;
-  const contact = document.getElementById('p-mob').value;
-  const address = document.getElementById('p-addr').value;
-
-  const res = await fetch('/api/patients', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ name, age, sex, contact, address })
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert(data.message + ' | UHID: ' + data.patient.uhid);
-    loadAllData();
-  }
-}
-
-async function handlePosBill(e) {
-  e.preventDefault();
-  const uhid = document.getElementById('pos-uhid').value;
-  const cust = document.getElementById('pos-cust').value;
-  const medId = document.getElementById('pos-med').value;
-  const price = document.getElementById('pos-price').value;
-  const qty = document.getElementById('pos-qty').value;
-
-  const res = await fetch('/api/bills', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ uhid, cust, medId, price, qty })
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert('Bill Generated Successfully! Invoice: ' + data.bill.inv_no);
-    loadAllData();
-  }
-}
-
-async function handleCreateUser(e) {
-  e.preventDefault();
-  if (currentUser.role !== 'Super Admin') {
-    alert('Only Super Admin can create users!');
-    return;
-  }
-  const name = document.getElementById('u-fullname').value;
-  const username = document.getElementById('u-user').value;
-  const password = document.getElementById('u-pass').value;
-  const role = document.getElementById('u-role').value;
-  const perm = [document.getElementById('u-perm').value];
-
-  const res = await fetch('/api/users', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ name, username, password, role, permissions: perm })
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert('User Created!');
-    document.getElementById('u-fullname').value = '';
-    document.getElementById('u-user').value = '';
-    document.getElementById('u-pass').value = '';
-    loadAllData();
+  if (['patients', 'patient-search', 'patients-reg'].includes(key)) {
+    apiEndpoint = '/api/patients';
+    columns = ['UHID', 'Patient Name', 'Age / Sex', 'Contact', 'Address', 'Status'];
+    formHtml = \`
+      <div class="field"><label>Patient Name</label><input type="text" id="fm-1" required></div>
+      <div class="field"><label>Age</label><input type="number" id="fm-2" required></div>
+      <div class="field"><label>Gender</label><select id="fm-3"><option>Male</option><option>Female</option></select></div>
+      <div class="field"><label>Contact</label><input type="text" id="fm-4" required></div>
+      <div class="field"><label>Address</label><input type="text" id="fm-5"></div>
+    \`;
+  } else if (['medicines', 'pharmacy', 'batches', 'stock-alerts'].includes(key)) {
+    apiEndpoint = '/api/medicines';
+    columns = ['Med ID', 'Brand Name', 'Generic Name', 'Batch No', 'Available Stock', 'Rate (₹)', 'Expiry', 'Status'];
+    formHtml = \`
+      <div class="field"><label>Brand Name</label><input type="text" id="fm-1" required></div>
+      <div class="field"><label>Generic Name</label><input type="text" id="fm-2"></div>
+      <div class="field"><label>Batch No</label><input type="text" id="fm-3" required></div>
+      <div class="field"><label>Quantity</label><input type="number" id="fm-4" value="100" required></div>
+      <div class="field"><label>Sale Rate (₹)</label><input type="number" id="fm-5" value="20" required></div>
+    \`;
+  } else if (['assets', 'biomedical', 'complaints', 'work-orders'].includes(key)) {
+    apiEndpoint = '/api/assets';
+    columns = ['Asset ID', 'Equipment Name', 'Department', 'PM Due Date', 'Status'];
+  } else if (['employees', 'attendance', 'payroll', 'leave'].includes(key)) {
+    apiEndpoint = '/api/employees';
+    columns = ['Employee ID', 'Full Name', 'Designation', 'Department', 'Status'];
+  } else if (['users', 'permissions'].includes(key)) {
+    apiEndpoint = '/api/users';
+    columns = ['User ID', 'Full Name', 'Username', 'Role', 'Permissions', 'Status'];
   } else {
-    alert(data.message);
+    apiEndpoint = '/api/patients';
+    columns = ['Ref ID', 'Title / Description', 'Category', 'Date', 'Status'];
   }
-}
 
-async function changeUserPermission(userId, newPermission) {
-  const res = await fetch('/api/users/update-permission', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ userId, permissions: [newPermission] })
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert(data.message);
-    loadAllData();
-  }
-}
+  // Render Table Headers
+  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => \`<th>\${c}</th>\`).join('') + '</tr>';
+  document.getElementById('module-form-fields').innerHTML = formHtml;
 
-async function toggleUserStatus(userId) {
-  const res = await fetch('/api/users/toggle-status', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ userId })
-  });
+  // Fetch & Render Rows
+  const res = await fetch(apiEndpoint);
   const data = await res.json();
-  if (data.success) {
-    alert(data.message);
-    loadAllData();
+  let rowsHtml = "";
+
+  if (Array.isArray(data) && data.length > 0) {
+    data.forEach(item => {
+      const vals = Object.values(item).slice(1);
+      rowsHtml += '<tr>' + vals.map(v => \`<td>\${typeof v === 'object' ? JSON.stringify(v) : v}</td>\`).join('') + '</tr>';
+    });
   } else {
+    rowsHtml = \`<tr><td colspan="\${columns.length}" style="text-align:center;padding:20px;color:var(--muted);">No records found in \${key}. Click + Add Record to insert data.</td></tr>\`;
+  }
+  document.getElementById('module-tbody').innerHTML = rowsHtml;
+}
+
+function toggleModuleForm() {
+  const box = document.getElementById('module-form-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function handleModuleSubmit(e) {
+  e.preventDefault();
+  let endpoint = '/api/patients';
+  let bodyData = {};
+
+  if (['patients', 'patient-search'].includes(activeModuleKey)) {
+    endpoint = '/api/patients';
+    bodyData = {
+      name: document.getElementById('fm-1').value,
+      age: document.getElementById('fm-2').value,
+      sex: document.getElementById('fm-3').value,
+      contact: document.getElementById('fm-4').value,
+      address: document.getElementById('fm-5').value
+    };
+  } else if (['medicines', 'pharmacy', 'batches'].includes(activeModuleKey)) {
+    endpoint = '/api/medicines';
+    bodyData = {
+      brand_name: document.getElementById('fm-1').value,
+      generic_name: document.getElementById('fm-2').value,
+      batch_no: document.getElementById('fm-3').value,
+      available_qty: document.getElementById('fm-4').value,
+      sale_rate: document.getElementById('fm-5').value
+    };
+  }
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(bodyData)
+  });
+  const data = await res.json();
+  if (data.success) {
     alert(data.message);
+    toggleModuleForm();
+    loadModuleData(activeModuleKey);
   }
 }
 
-async function attendOpd(tokenNo) {
-  await fetch('/api/opd-tokens/attend', {
+// AR AI ASSISTANT FUNCTIONS
+function toggleAiPanel() {
+  const p = document.getElementById('ai-panel');
+  p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
+}
+
+async function sendAiQuery() {
+  const inp = document.getElementById('ai-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+
+  const box = document.getElementById('ai-messages');
+  box.innerHTML += \`<div style="margin-top:8px;text-align:right;"><strong>You:</strong> \${msg}</div>\`;
+  inp.value = '';
+
+  const res = await fetch('/api/ai/chat', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ tokenNo })
+    body: JSON.stringify({ query: msg })
   });
-  loadAllData();
+  const data = await res.json();
+  box.innerHTML += \`<div style="margin-top:8px;color:var(--navy);"><strong>AR AI:</strong> \${data.reply}</div>\`;
+  box.scrollTop = box.scrollHeight;
 }
 </script>
 </body>
