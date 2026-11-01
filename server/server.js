@@ -20,19 +20,16 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// In-Memory Database with Date-Wise Reset Counter
 let dailySequence = { date: '', count: 0 };
-
 function getNextUHID() {
-    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2); // DDMMYY
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2);
     if (dailySequence.date !== todayStr) {
         dailySequence.date = todayStr;
         dailySequence.count = 1;
     } else {
         dailySequence.count += 1;
     }
-    const seq = dailySequence.count.toString().padStart(2, '0');
-    return `AR${todayStr}-${seq}`;
+    return `AR${todayStr}-${dailySequence.count.toString().padStart(2, '0')}`;
 }
 
 let erpData = {
@@ -44,8 +41,7 @@ let erpData = {
     ],
     doctors: [
         { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 500 },
-        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 700 },
-        { id: 'DOC3', name: 'Dr. R. K. Sharma (Cardiologist)', fee: 1000 }
+        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 700 }
     ],
     bills: [
         { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00' }
@@ -67,67 +63,36 @@ app.get('/api/users', (req, res) => res.json(erpData.users));
 app.get('/api/doctors', (req, res) => res.json(erpData.doctors));
 app.get('/api/next-uhid', (req, res) => res.json({ uhid: getNextUHID() }));
 
-// Register Patient & Create Bill
 app.post('/api/patients/register', (req, res) => {
     const p = req.body;
-    
-    // Strict Validation
-    if (!/^\d{10}$/.test(p.contact)) {
-        return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
-    }
-    if (p.adhaar && !/^\d{12}$/.test(p.adhaar)) {
-        return res.status(400).json({ success: false, message: 'Aadhaar number must be exactly 12 digits.' });
-    }
+    if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
+    if (p.adhaar && !/^\d{12}$/.test(p.adhaar)) return res.status(400).json({ success: false, message: 'Aadhaar must be exactly 12 digits.' });
 
     const uhid = getNextUHID();
     const nowStr = new Date().toLocaleString('en-GB');
 
     const newPatient = {
-        uhid,
-        title: p.title || 'Mr.',
-        name: p.name,
-        relation: p.relation || 'C/O',
-        guardian: p.guardian || '',
-        age: p.age,
-        gender: p.gender,
-        contact: p.contact,
-        adhaar: p.adhaar || '',
-        abha: p.abha || '',
-        address: p.address || '',
-        doctor: p.doctor,
-        fee: Number(p.fee || 0),
-        payType: p.payType || 'Cash',
-        date: nowStr
+        uhid, title: p.title || 'Mr.', name: p.name, relation: p.relation || 'C/O', guardian: p.guardian || '',
+        age: p.age, gender: p.gender, contact: p.contact, adhaar: p.adhaar || '', abha: p.abha || '',
+        address: p.address || '', doctor: p.doctor, fee: Number(p.fee || 0), payType: p.payType || 'Cash', date: nowStr
     };
-
     erpData.patients.unshift(newPatient);
 
     const billNo = `BILL-${Date.now().toString().slice(-6)}`;
     const newBill = {
-        billNo,
-        uhid,
-        patientName: `${p.title} ${p.name}`,
-        doctor: p.doctor,
-        totalFee: p.fee,
-        payType: p.payType,
-        createdBy: p.createdBy || 'Staff',
-        dateTime: nowStr
+        billNo, uhid, patientName: `${p.title} ${p.name}`, doctor: p.doctor, totalFee: p.fee,
+        payType: p.payType, createdBy: p.createdBy || 'Staff', dateTime: nowStr
     };
     erpData.bills.unshift(newBill);
 
     res.json({ success: true, message: 'Patient Registered & Bill Generated', patient: newPatient, bill: newBill });
 });
 
-// Live Search API
 app.get('/api/patients/search', (req, res) => {
     const q = (req.query.q || '').toLowerCase();
     if (q.length < 2) return res.json([]);
     const results = erpData.patients.filter(p => 
-        p.name.toLowerCase().includes(q) ||
-        p.contact.includes(q) ||
-        p.uhid.toLowerCase().includes(q) ||
-        (p.adhaar && p.adhaar.includes(q)) ||
-        (p.abha && p.abha.toLowerCase().includes(q))
+        p.name.toLowerCase().includes(q) || p.contact.includes(q) || p.uhid.toLowerCase().includes(q) || (p.adhaar && p.adhaar.includes(q))
     );
     res.json(results);
 });
@@ -143,13 +108,7 @@ app.get('/api/module/:key', (req, res) => {
 
 app.get('/api/dashboard/metrics', (req, res) => {
     let rev = erpData.bills.reduce((acc, b) => acc + Number(b.totalFee), 0);
-    res.json({
-        success: true,
-        totalRevenue: rev,
-        registeredPatients: erpData.patients.length,
-        activeIpdBeds: 2,
-        lowStockItems: 1
-    });
+    res.json({ success: true, totalRevenue: rev, registeredPatients: erpData.patients.length, activeIpdBeds: 2, lowStockItems: 1 });
 });
 
 app.get('/', (req, res) => {
@@ -218,12 +177,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 
-/* Live Search Suggestions Dropdown */
 .suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
 .suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
 .suggestion-item:hover{background:#f0f6ff}
 
-/* Printable Bill Modal */
 #print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999}
 .print-card{background:#fff;padding:30px;border-radius:16px;width:min(600px,95vw);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
 @media print{
@@ -271,7 +228,6 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     </header>
 
     <section class="content">
-      <!-- DASHBOARD VIEW -->
       <div id="view-dashboard" class="view-section active">
         <div class="stats">
           <div class="stat"><div class="stat-label">TODAY'S REVENUE</div><div class="stat-value" id="m-rev">₹0.00</div></div>
@@ -288,37 +244,24 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- DYNAMIC MODULE VIEW WITH INTEGRATED REGISTRATION & SEARCH -->
       <div id="view-module-container" class="view-section">
-        
-        <!-- Registration Form Box -->
-        <div class="panel" id="reg-form-panel">
+        <div class="panel" id="patient-reg-panel" style="display:none;">
           <div class="panel-head"><h3>New Patient Registration & Consultation Billing</h3></div>
           <form onsubmit="handlePatientRegistration(event)">
             <div class="form-grid">
-              <div class="field">
-                <label>Auto UHID (Date-Wise)</label>
-                <input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:700;color:var(--blue);">
-              </div>
-              <div class="field">
-                <label>Live Patient Search (Auto-Fetch)</label>
-                <input type="text" id="live-search-input" placeholder="Type 2-4 chars of Name, Mobile, Aadhaar..." oninput="handleLiveSearch(this.value)" autocomplete="off">
-                <div class="suggestions-box" id="search-suggestions"></div>
-              </div>
+              <div class="field"><label>Auto UHID (Date-Wise)</label><input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:700;color:var(--blue);"></div>
+              <div class="field"><label>Live Patient Search (Auto-Fetch)</label><input type="text" id="live-search-input" placeholder="Type Name, Mobile, Aadhaar..." oninput="handleLiveSearch(this.value)" autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>
               <div class="field"><label>Title</label><select id="reg-title"><option>Mr.</option><option>Mrs.</option><option>Miss</option><option>Master</option><option>Baby of</option></select></div>
               <div class="field"><label>Patient Name *</label><input type="text" id="reg-name" required></div>
               <div class="field"><label>Relation</label><select id="reg-relation"><option>S/O</option><option>D/O</option><option>W/O</option><option>C/O</option></select></div>
               <div class="field"><label>Father / Guardian Name</label><input type="text" id="reg-guardian"></div>
               <div class="field"><label>Age *</label><input type="number" id="reg-age" required></div>
               <div class="field"><label>Gender</label><select id="reg-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\d{10}" required placeholder="10 digits only"></div>
-              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\d{12}" placeholder="12 digits only"></div>
-              <div class="field"><label>ABHA ID (Optional)</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
+              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\d{10}" required placeholder="10 digits"></div>
+              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\d{12}" placeholder="12 digits"></div>
+              <div class="field"><label>ABHA ID</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
               <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="District, State"></div>
-              <div class="field">
-                <label>Consulting Doctor *</label>
-                <select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select>
-              </div>
+              <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select></div>
               <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" required></div>
               <div class="field"><label>Payment Type *</label><select id="reg-paytype"><option>Cash</option><option>UPI / Online</option><option>Card</option></select></div>
             </div>
@@ -326,9 +269,11 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           </form>
         </div>
 
-        <!-- Master Data Table -->
         <div class="panel">
-          <div class="panel-head"><h3 id="module-title-heading">Database Records</h3></div>
+          <div class="panel-head">
+            <h3 id="module-title-heading">Module Records</h3>
+            <button class="btn primary btn-sm" id="module-add-btn" style="display:none;" onclick="togglePatientForm()">+ New Registration</button>
+          </div>
           <div style="overflow-x:auto;">
             <table>
               <thead id="module-thead"></thead>
@@ -336,13 +281,11 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
             </table>
           </div>
         </div>
-
       </div>
     </section>
   </main>
 </div>
 
-<!-- PRINTABLE BILL PREVIEW MODAL -->
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
@@ -353,7 +296,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <div><strong>Bill No:</strong> <span id="pb-billno"></span></div>
       <div><strong>Date & Time:</strong> <span id="pb-datetime"></span></div>
       <div><strong>UHID:</strong> <span id="pb-uhid"></span></div>
-      <div><strong>User / Billing Staff:</strong> <span id="pb-user"></span></div>
+      <div><strong>User / Staff:</strong> <span id="pb-user"></span></div>
     </div>
     <hr style="border:0;border-top:1px solid #ddd;">
     <div style="font-size:12px;margin:15px 0;">
@@ -454,11 +397,11 @@ function renderNav() {
     let groupItemsHtml = "";
     g.items.forEach(i => {
       if (currentUser.role === 'Super Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        groupItemsHtml += \`<button class="nav-item \${i[1]===activeModuleKey?'active':''}" id="nav-btn-\${i[1]}" onclick="switchView('\${i[1]}')"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
+        groupItemsHtml += `<button class="nav-item ${i[1]===activeModuleKey?'active':''}" id="nav-btn-${i[1]}" onclick="switchView('${i[1]}')"><span class="nav-icon">${i[2]}</span><span>${i[0]}</span></button>`;
       }
     });
     if(groupItemsHtml !== "") {
-      html += \`<div class="nav-label">\${g.label}</div>\` + groupItemsHtml;
+      html += `<div class="nav-label">${g.label}</div>` + groupItemsHtml;
     }
   });
   document.getElementById('nav-menu').innerHTML = html;
@@ -501,12 +444,26 @@ function switchView(targetKey) {
     loadDashboardMetrics();
   } else {
     document.getElementById('view-module-container').classList.add('active');
-    fetchNextUHID();
+    
+    // Show registration form only for patients module
+    if (targetKey === 'patients' || targetKey === 'patient-search') {
+      document.getElementById('patient-reg-panel').style.display = 'block';
+      document.getElementById('module-add-btn').style.display = 'inline-block';
+      fetchNextUHID();
+    } else {
+      document.getElementById('patient-reg-panel').style.display = 'none';
+      document.getElementById('module-add-btn').style.display = 'none';
+    }
     loadUniqueModuleData(targetKey);
   }
 
   const foundItem = navGroups.flatMap(g => g.items).find(i => i[1] === targetKey);
   document.getElementById('topbar-title').innerText = foundItem ? foundItem[0].toUpperCase() : targetKey.toUpperCase();
+}
+
+function togglePatientForm() {
+  const p = document.getElementById('patient-reg-panel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
 async function loadDashboardMetrics() {
@@ -521,7 +478,7 @@ async function loadDashboardMetrics() {
   const pData = await pRes.json();
   let html = "";
   (pData.data || []).forEach(p => {
-    html += \`<tr><td><b>\${p.uhid}</b></td><td>\${p.title} \${p.name}</td><td>\${p.doctor}</td><td>₹\${p.fee}</td><td>\${p.payType}</td><td>\${p.date}</td></tr>\`;
+    html += `<tr><td><b>${p.uhid}</b></td><td>${p.title} ${p.name}</td><td>${p.doctor}</td><td>₹${p.fee}</td><td>${p.payType}</td><td>${p.date}</td></tr>`;
   });
   document.getElementById('dash-patients').innerHTML = html;
 }
@@ -540,16 +497,15 @@ async function loadUniqueModuleData(key) {
   }
 
   const columns = Object.keys(list[0]);
-  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => \`<th>\${c.toUpperCase()}</th>\`).join('') + '</tr>';
+  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => `<th>${c.toUpperCase()}</th>`).join('') + '</tr>';
 
   let rows = "";
   list.forEach(row => {
-    rows += '<tr>' + columns.map(c => \`<td>\${row[c] !== undefined ? row[c] : '—'}</td>\`).join('') + '</tr>';
+    rows += '<tr>' + columns.map(c => `<td>${row[c] !== undefined ? row[c] : '—'}</td>`).join('') + '</tr>';
   });
   document.getElementById('module-tbody').innerHTML = rows;
 }
 
-// Live Search Auto-Fetch Implementation
 async function handleLiveSearch(val) {
   const box = document.getElementById('search-suggestions');
   if (val.trim().length < 2) {
@@ -620,7 +576,6 @@ async function handlePatientRegistration(e) {
   const data = await res.json();
 
   if (data.success) {
-    // Fill Print Preview Modal
     document.getElementById('pb-billno').innerText = data.bill.billNo;
     document.getElementById('pb-datetime').innerText = data.bill.dateTime;
     document.getElementById('pb-uhid').innerText = data.patient.uhid;
