@@ -287,7 +287,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
-.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f6ff;cursor:pointer;font-size:12px}
+.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
 .suggestion-item:hover{background:#f0f6ff}
 #ar-ai-widget{position:fixed;bottom:25px;right:25px;z-index:99999}
 #ar-ai-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border:none;border-radius:50px;padding:12px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(38,116,232,0.3);display:flex;align-items:center;gap:8px}
@@ -330,8 +330,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <div class="login-right">
       <div class="login-right-overlay"></div>
       <div class="login-right-content">
-        <h2 style="font-size:20px;font-weight:800;margin:0 0 6px 0;">🏥 AR ERP SYSTEM</h2>
-        <p style="font-size:12px;line-height:1.4;margin:0;opacity:0.9;">Professional Hospital & Pharmacy Billing Software</p>
+        <h2 style="font-size:20px;font-weight:800;margin:0 0 6px 0;">🏥 A.R. ONLINE ZONE</h2>
+        <p style="font-size:12px;line-height:1.4;margin:0;opacity:0.9;">Professional Healthcare ERP & Billing System</p>
         <div style="margin-top:10px;font-size:10px;background:rgba(16,185,129,0.3);padding:4px 10px;border-radius:20px;display:inline-block;">⚡ Live Billing & Clinical Workflows</div>
       </div>
     </div>
@@ -498,6 +498,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     </table>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
       <button class="btn" onclick="document.getElementById('print-modal').style.display='none'">Close</button>
+      <button class="btn success" onclick="openPrescriptionSheet(document.getElementById('pb-uhid').innerText)">📝 Print Prescription</button>
       <button class="btn" onclick="requestBillEdit()">✏️ Request Edit</button>
       <button class="btn primary" onclick="window.print()">🖨 Print Duplicate Bill</button>
     </div>
@@ -507,8 +508,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 <div id="prescription-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999">
   <div class="print-card" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);">SKS HOSPITAL MEDICAL COLLEGE & RESEARCH CENTRE</h2>
-      <p style="margin:4px 0;font-size:11px;color:var(--muted);">NH2, Village & Post - Chaumuhan, Mathura, Uttar Pradesh - 281406</p>
+      <h2 style="margin:0;color:var(--navy);">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:11px;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
       <h3 style="margin:8px 0;color:var(--blue);">OPD Prescription Sheet</h3>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;border:1px solid var(--line);padding:10px;border-radius:8px;">
@@ -904,7 +905,7 @@ async function openPrescriptionSheet(uhid) {
     document.getElementById('pr-guardian').innerText = (p.relation || '') + ' ' + (p.guardian || '');
     document.getElementById('pr-contact').innerText = p.contact;
     document.getElementById('pr-doctor').innerText = p.doctor;
-    document.getElementById('pr-address').innerText = p.address || 'Mathura, UP';
+    document.getElementById('pr-address').innerText = p.address || 'Maharajganj, UP';
     document.getElementById('prescription-modal').style.display = 'flex';
   }
 }
