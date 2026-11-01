@@ -190,7 +190,7 @@ app.post('/api/edit-requests/action', (req, res) => {
 app.post('/api/ai/query', (req, res) => {
     const { prompt } = req.body;
     const q = prompt.toLowerCase();
-    let reply = 'AR AI: Main aapka AR Healthcare ERP assistant hu. Aap mujhse patient records, total collection, ya credit ke baare me pooch sakte hain.';
+    let reply = 'AR AI: Main aapka AR ERP assistant hu. Aap mujhse patient records, total collection, ya credit ke baare me pooch sakte hain.';
     if (q.includes('patient') || q.includes('kitne')) {
         reply = 'AR AI: Total registered patients abhi ' + erpData.patients.length + ' hain.';
     } else if (q.includes('revenue') || q.includes('income') || q.includes('collection')) {
@@ -230,19 +230,25 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(rgba(10,25,47,0.7),rgba(5,15,30,0.85)),url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
-.login-card-wrapper{background:rgba(15, 23, 42, 0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
-.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.6;filter:blur(12px)}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.95);color:#fff}
+#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
+#login-screen::before{content:'';position:absolute;inset:0;background:rgba(5,15,30,0.55);backdrop-filter:blur(6px);z-index:0}
+
+.login-card-wrapper{background:rgba(15, 23, 42, 0.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.25);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative;z-index:1}
+.login-card-wrapper::after{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.6;filter:blur(12px)}
+
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.8);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
-.login-left p{font-size:13px;color:#94a3b8;margin-bottom:25px}
-.login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(59,130,246,0.3));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.login-left p{font-size:13px;color:#cbd5e1;margin-bottom:25px}
+
+.login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(59,130,246,0.35));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+
 .login-field{margin-bottom:18px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
-.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.25);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
-.login-input::placeholder{color:#64748b}
-.eye-btn{position:absolute;right:12px;top:34px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px;z-index:10}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4)}
+.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.9);color:#ffffff !important;outline:none}
+.login-input::placeholder{color:#94a3b8}
+
+.eye-btn{position:absolute;right:12px;top:34px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:16px;padding:4px;z-index:20}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4);text-align:center}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;transition:all 0.3s ease}
