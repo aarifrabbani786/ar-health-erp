@@ -21,15 +21,13 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// In-Memory Fallback Store for 100% Reliability
+// In-Memory Enterprise Store for 100% Reliability & Fallback
 let erpData = {
     bills: [
-        { id: 1, invNo: 'PBILL311026846', date: '2026-10-31', cust: 'Aarif Rabbani', mob: '9876543210', netTotal: 800.00 }
+        { id: 1, inv_no: 'PBILL311026846', date: '2026-10-31', customer_name: 'Aarif Rabbani', mobile: '9876543210', net_total: 800.00 }
     ],
     medicines: [
-        { id: 1, medId: 'MED001', brand_name: 'Paracetamol 650mg', generic_name: 'Paracetamol', batch_no: 'B2601', available_qty: 150, sale_rate: 20.00 },
-        { id: 2, medId: 'MED002', brand_name: 'Amoxycillin 500mg', generic_name: 'Amoxycillin', batch_no: 'B2602', available_qty: 85, sale_rate: 45.00 },
-        { id: 3, medId: 'MED003', brand_name: 'Pantoprazole 40mg', generic_name: 'Pantoprazole', batch_no: 'B2603', available_qty: 200, sale_rate: 15.00 }
+        { id: 1, med_id: 'MED001', brand_name: 'Paracetamol 650mg', generic_name: 'Paracetamol', batch_no: 'B2601', available_qty: 150, sale_rate: 20.00 }
     ],
     patients: [
         { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', status: 'Active OPD' }
@@ -50,6 +48,10 @@ app.get('/api/dashboard/metrics', async (req, res) => {
                 totalRevenue = Number(dbRev.rows[0].revenue);
                 billsCount = Number(dbRev.rows[0].cnt);
             }
+            const dbPat = await pool.query('SELECT COUNT(*) as cnt FROM patients');
+            if (dbPat.rows[0].cnt) {
+                patientsCount = Number(dbPat.rows[0].cnt);
+            }
         }
 
         res.json({
@@ -64,55 +66,11 @@ app.get('/api/dashboard/metrics', async (req, res) => {
         res.json({
             success: true,
             totalRevenue: 800.00,
-            registeredPatients: 1,
+            registeredPatients: erpData.patients.length,
             activeIpdBeds: 4,
-            pharmacySalesCount: 1,
+            pharmacySalesCount: erpData.bills.length,
             lowStockItems: 0
         });
-    }
-});
-
-app.get('/api/medicines', async (req, res) => {
-    try {
-        if (pool) {
-            const dbRes = await pool.query('SELECT * FROM medicine_batches b JOIN medicines m ON b.medicine_id = m.id ORDER BY b.expiry_date ASC');
-            if (dbRes.rows.length > 0) return res.json(dbRes.rows);
-        }
-        res.json(erpData.medicines);
-    } catch (err) {
-        res.json(erpData.medicines);
-    }
-});
-
-app.get('/api/patients', async (req, res) => {
-    try {
-        if (pool) {
-            const dbRes = await pool.query('SELECT * FROM patients ORDER BY id DESC');
-            if (dbRes.rows.length > 0) return res.json(dbRes.rows);
-        }
-        res.json(erpData.patients);
-    } catch (err) {
-        res.json(erpData.patients);
-    }
-});
-
-app.post('/api/patients', async (req, res) => {
-    try {
-        const p = req.body;
-        const uhid = `UHID${Date.now().toString().slice(-6)}`;
-        const newPatient = { id: erpData.patients.length + 1, uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, status: 'Active OPD' };
-        erpData.patients.unshift(newPatient);
-        
-        if (pool) {
-            try {
-                await pool.query('INSERT INTO patients (uhid, name, age, sex, contact) VALUES ($1, $2, $3, $4, $5)', [uhid, p.name, p.age, p.sex, p.contact]);
-            } catch (dbErr) {
-                console.error('DB insert warning:', dbErr.message);
-            }
-        }
-        res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -137,7 +95,7 @@ app.post('/api/bills', async (req, res) => {
         const mob = b.mob || '';
         const netTotal = Number(b.netTotal) || 0;
 
-        const newBill = { id: erpData.bills.length + 1, invNo, date, cust, mob, netTotal };
+        const newBill = { id: Date.now(), inv_no: invNo, date, customer_name: cust, mobile: mob, net_total: netTotal };
         erpData.bills.unshift(newBill);
 
         if (pool) {
@@ -154,6 +112,50 @@ app.post('/api/bills', async (req, res) => {
         res.json({ success: true, message: 'Invoice generated and saved successfully', bill: newBill });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/patients', async (req, res) => {
+    try {
+        if (pool) {
+            const dbRes = await pool.query('SELECT * FROM patients ORDER BY id DESC');
+            if (dbRes.rows.length > 0) return res.json(dbRes.rows);
+        }
+        res.json(erpData.patients);
+    } catch (err) {
+        res.json(erpData.patients);
+    }
+});
+
+app.post('/api/patients', async (req, res) => {
+    try {
+        const p = req.body;
+        const uhid = `UHID${Date.now().toString().slice(-6)}`;
+        const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, status: 'Active OPD' };
+        erpData.patients.unshift(newPatient);
+        
+        if (pool) {
+            try {
+                await pool.query('INSERT INTO patients (uhid, name, age, sex, contact) VALUES ($1, $2, $3, $4, $5)', [uhid, p.name, p.age, p.sex, p.contact]);
+            } catch (dbErr) {
+                console.error('DB insert warning:', dbErr.message);
+            }
+        }
+        res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/medicines', async (req, res) => {
+    try {
+        if (pool) {
+            const dbRes = await pool.query('SELECT * FROM medicine_batches b JOIN medicines m ON b.medicine_id = m.id ORDER BY b.expiry_date ASC');
+            if (dbRes.rows.length > 0) return res.json(dbRes.rows);
+        }
+        res.json(erpData.medicines);
+    } catch (err) {
+        res.json(erpData.medicines);
     }
 });
 
@@ -243,11 +245,11 @@ app.get('/', (req, res) => {
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-title">Total Gross Revenue</div>
-                        <div class="metric-value" id="m-revenue">₹800.00</div>
+                        <div class="metric-value" id="m-revenue">₹0.00</div>
                     </div>
                     <div class="metric-card success">
                         <div class="metric-title">Registered Patients</div>
-                        <div class="metric-value" id="m-patients">1</div>
+                        <div class="metric-value" id="m-patients">0</div>
                     </div>
                     <div class="metric-card warning">
                         <div class="metric-title">Active IPD Beds</div>
@@ -267,7 +269,7 @@ app.get('/', (req, res) => {
                     <table>
                         <thead><tr><th>Invoice No</th><th>Date</th><th>Customer Name</th><th>Mobile</th><th>Net Total (₹)</th></tr></thead>
                         <tbody id="dash-bills-tbody">
-                            <tr><td>PBILL311026846</td><td>2026-10-31</td><td>Aarif Rabbani</td><td>9876543210</td><td>800.00</td></tr>
+                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading live transactions...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -292,7 +294,7 @@ app.get('/', (req, res) => {
                     <table>
                         <thead><tr><th>UHID</th><th>Patient Name</th><th>Age/Sex</th><th>Contact</th><th>Status</th></tr></thead>
                         <tbody id="patients-table-body">
-                            <tr><td>UHID2026001</td><td>Aarif Rabbani</td><td>27 / Male</td><td>9876543210</td><td><span style="color: #10b981; font-weight:700;">Active OPD</span></td></tr>
+                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading patients...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -326,7 +328,7 @@ app.get('/', (req, res) => {
                     <table>
                         <thead><tr><th>Medicine ID</th><th>Brand Name</th><th>Generic</th><th>Batch No</th><th>Stock</th><th>MRP (₹)</th></tr></thead>
                         <tbody id="medicine-inventory-tbody">
-                            <tr><td>MED001</td><td>Paracetamol 650mg</td><td>Paracetamol</td><td>B2601</td><td>150</td><td>22.00</td></tr>
+                            <tr><td colspan="6" style="text-align:center; color:#64748b;">Loading inventory...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -395,6 +397,48 @@ app.get('/', (req, res) => {
             document.getElementById('sum-net').innerText = '₹' + total.toFixed(2);
         }
 
+        async function loadEnterpriseData() {
+            try {
+                // Fetch metrics
+                const mRes = await fetch('/api/dashboard/metrics');
+                const mData = await mRes.json();
+                if(mData.success) {
+                    document.getElementById('m-revenue').innerText = '₹' + Number(mData.totalRevenue).toFixed(2);
+                    document.getElementById('m-patients').innerText = mData.registeredPatients;
+                }
+
+                // Fetch Bills for Dashboard Table
+                const bRes = await fetch('/api/bills');
+                const bills = await bRes.json();
+                let bHtml = '';
+                bills.forEach(b => {
+                    bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date || '2026-11-01'}</td><td>\${b.customer_name || 'Walk-in'}</td><td>\${b.mobile || '-'}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
+                });
+                document.getElementById('dash-bills-tbody').innerHTML = bHtml;
+
+                // Fetch Patients
+                const pRes = await fetch('/api/patients');
+                const patients = await pRes.json();
+                let pHtml = '';
+                patients.forEach(p => {
+                    pHtml += \`<tr><td>\${p.uhid}</td><td>\${p.name}</td><td>\${p.age} / \${p.sex}</td><td>\${p.contact}</td><td><span style="color: #10b981; font-weight:700;">\${p.status || 'Active OPD'}</span></td></tr>\`;
+                });
+                document.getElementById('patients-table-body').innerHTML = pHtml;
+
+                // Fetch Medicines
+                const medRes = await fetch('/api/medicines');
+                const meds = await medRes.json();
+                let mHtml = '';
+                meds.forEach(m => {
+                    mHtml += \`<tr><td>\${m.med_id || 'MED'}</td><td>\${m.brand_name || m.brand}</td><td>\${m.generic_name || m.generic}</td><td>\${m.batch_no || 'B2601'}</td><td>\${m.available_qty || m.stock}</td><td>₹\${Number(m.sale_rate || m.price).toFixed(2)}</td></tr>\`;
+                });
+                document.getElementById('medicine-inventory-tbody').innerHTML = mHtml;
+
+            } catch (err) {
+                console.error('Error loading enterprise data:', err);
+            }
+        }
+
         async function commitPosBill() {
             const cust = document.getElementById('pos-cust').value;
             const mob = document.getElementById('pos-mob').value;
@@ -408,11 +452,11 @@ app.get('/', (req, res) => {
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert('Invoice generated and saved successfully! Invoice No: ' + data.bill.invNo);
+                    alert('Invoice generated and saved successfully! Invoice No: ' + data.bill.inv_no);
+                    loadEnterpriseData();
                     switchView('view-dashboard');
-                    location.reload();
                 } else {
-                    alert('Error saving bill: ' + (data.error || 'Unknown error'));
+                    alert('Error saving bill');
                 }
             } catch (err) {
                 alert('Network error while saving bill');
@@ -436,7 +480,8 @@ app.get('/', (req, res) => {
                 if(data.success) {
                     alert('Patient registered successfully! UHID: ' + data.patient.uhid);
                     document.getElementById('patient-reg-form').reset();
-                    location.reload();
+                    loadEnterpriseData();
+                    switchView('view-patients');
                 } else {
                     alert('Error registering patient');
                 }
@@ -444,6 +489,9 @@ app.get('/', (req, res) => {
                 alert('Network error during patient registration');
             }
         }
+
+        loadEnterpriseData();
+        calculatePosTotal();
     </script>
 </body>
 </html>`);
