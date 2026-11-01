@@ -230,19 +230,19 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#09090b 100%);position:fixed;z-index:9999}
-.login-card-wrapper{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.98));border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
-.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#3b82f6,#06b6d4,#8b5cf6,#ec4899);z-index:-1;opacity:0.6;filter:blur(12px)}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.95);color:#fff}
+#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(rgba(10,25,47,0.7),rgba(5,15,30,0.85)),url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
+.login-card-wrapper{background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.2);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.8);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
+.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.6;filter:blur(12px)}
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.92);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
 .login-left p{font-size:13px;color:#94a3b8;margin-bottom:25px}
-.login-right{flex:1;background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.login-right{flex:1;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(59,130,246,0.3));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .login-field{margin-bottom:18px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
-.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.25);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.8);color:#ffffff !important;outline:none}
+.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.25);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
 .login-input::placeholder{color:#64748b}
-.eye-btn{position:absolute;right:12px;top:34px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(59,130,246,0.4)}
+.eye-btn{position:absolute;right:12px;top:34px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px;z-index:10}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4)}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
@@ -307,7 +307,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <div class="login-left">
       <h2>Sign In</h2>
       <p>Enter your User ID & Password to access AR Healthcare ERP</p>
-      <form onsubmit="handleLogin(event)">
+      <form id="login-form-element" onsubmit="handleLogin(event)">
         <div class="login-field">
           <label>User ID / Username</label>
           <input type="text" id="login-u" class="login-input" required autocomplete="username">
@@ -315,7 +315,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="login-field">
           <label>Password</label>
           <input type="password" id="login-p" class="login-input" required autocomplete="current-password">
-          <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
+          <button type="button" class="eye-btn" id="eye-toggle-btn" onclick="togglePasswordVisibility()">👁</button>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
           <a href="#" onclick="alert('Please contact your Administrator or Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
@@ -326,7 +326,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <div class="login-right">
       <h2>AR HEALTHCARE ERP</h2>
       <p style="font-size:13px;line-height:1.6;opacity:.85;margin-top:10px;">A R PHARMA & SURGICAL AGENCY</p>
-      <div style="margin-top:20px;font-size:11px;opacity:0.6;">Hospital Management, Pharmacy & Clinical AI</div>
+      <div style="margin-top:20px;font-size:11px;opacity:0.7;">Hospital Management, Pharmacy & Clinical AI</div>
     </div>
   </div>
 </div>
@@ -555,12 +555,19 @@ window.onload = function() {
   }
 };
 
-function togglePasswordVisibility() {
+window.togglePasswordVisibility = function() {
   const pInput = document.getElementById('login-p');
-  pInput.type = pInput.type === 'password' ? 'text' : 'password';
+  const btn = document.getElementById('eye-toggle-btn');
+  if (pInput.type === 'password') {
+    pInput.type = 'text';
+    btn.innerText = '🙈';
+  } else {
+    pInput.type = 'password';
+    btn.innerText = '👁';
+  }
 }
 
-async function handleLogin(e) {
+window.handleLogin = async function(e) {
   e.preventDefault();
   const u = document.getElementById('login-u').value;
   const p = document.getElementById('login-p').value;
