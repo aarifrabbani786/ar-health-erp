@@ -7,7 +7,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Supabase PostgreSQL Database Connection
 const connectionString = process.env.DATABASE_URL || "";
 let pool = null;
 
@@ -52,7 +51,6 @@ let erpData = {
 };
 
 // --- AUTH & RBAC ENDPOINTS ---
-
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
@@ -111,7 +109,6 @@ app.post('/api/users/toggle-status', (req, res) => {
 });
 
 // --- CORE MODULE API ENDPOINTS ---
-
 app.get('/api/dashboard/metrics', async (req, res) => {
     let totalRevenue = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
     res.json({
@@ -160,7 +157,7 @@ app.get('/api/assets', (req, res) => res.json(erpData.assets));
 app.get('/api/employees', (req, res) => res.json(erpData.employees));
 app.get('/api/ipd', (req, res) => res.json(erpData.ipdBeds));
 
-// --- COMMERCIAL SINGLE-FILE FRONTEND WITH ALL MODULES ---
+// --- COMMERCIAL SINGLE-FILE FRONTEND WITH ALL SIDEBAR MODULES ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -404,12 +401,13 @@ let globalPatients = [];
 let globalUsers = [];
 
 const navGroups = [
-  { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"]] },
-  { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration", "patients", "＋"], ["OPD & Appointments", "opd", "◷"]] },
-  { label: "PHARMACY", items: [["POS Sales & Inventory", "pharmacy", "₹"]] },
-  { label: "BIOMEDICAL", items: [["Equipment Assets", "assets", "▣"]] },
-  { label: "FINANCE & HRMS", items: [["Employee Directory", "employees", "♙"]] },
-  { label: "ADMINISTRATION", items: [["User Roles & Permissions", "users", "⚿"]] }
+  { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
+  { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration", "patients", "＋"], ["Patient Search", "patient-search", "⌕"], ["OPD & Appointments", "opd", "◷"], ["IPD Admissions", "admissions", "▤"], ["Wards & Beds", "beds", "▥"], ["Doctors & Departments", "doctors", "✚"], ["Nursing Station", "nursing", "♡"], ["Laboratory", "laboratory", "⚗"], ["Radiology", "radiology", "◉"], ["OT & ICU", "ot-icu", "✚"], ["Discharge Management", "discharge", "⇥"], ["Hospital Billing", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
+  { label: "PHARMACY", items: [["Pharmacy Dashboard", "pharmacy", "✚"], ["Medicine Master", "medicines", "▤"], ["Batch & Strip Stock", "batches", "▦"], ["Purchase Entry", "pharmacy-purchase", "＋"], ["Sales Billing", "pharmacy-sales", "₹"], ["Sales Return", "sales-return", "↩"], ["Customers", "customers", "♙"], ["Suppliers", "suppliers", "▣"], ["Barcode & Labels", "barcode", "▥"], ["Stock Transfer", "stock-transfer", "⇄"], ["Expiry & Low Stock", "stock-alerts", "⚠"], ["Pharmacy Reports", "pharmacy-reports", "▥"]] },
+  { label: "CENTRAL STORE & PURCHASE", items: [["Inventory Dashboard", "inventory", "▦"], ["Item Master", "items", "▤"], ["Warehouses & Stores", "warehouses", "▣"], ["Requisitions", "requisitions", "☷"], ["Goods Receipt (GRN)", "grn", "⇩"], ["Stock Issue / Return", "stock-issue", "⇄"], ["Stock Ledger", "stock-ledger", "▤"], ["Purchase Orders", "purchase-orders", "▧"], ["Vendor Quotations", "quotations", "▤"], ["Supplier Payments", "supplier-payments", "₹"]] },
+  { label: "BIOMEDICAL ENGINEERING", items: [["Biomedical Dashboard", "biomedical", "⌘"], ["Equipment Assets", "assets", "▣"], ["Equipment Complaints", "complaints", "⚠"], ["Work Orders & Repairs", "work-orders", "🔧"], ["Preventive Maintenance", "maintenance", "◷"], ["Calibration Register", "calibration", "✓"], ["AMC / CMC Contracts", "contracts", "▧"], ["Service Vendors", "service-vendors", "♙"], ["Equipment Handover", "handover", "⇄"], ["Equipment Reports", "biomed-reports", "▥"]] },
+  { label: "FINANCE & HRMS", items: [["Accounts Dashboard", "accounts", "₹"], ["Income & Expenses", "expenses", "⇅"], ["Cash & Bank", "cash-bank", "▤"], ["Receivables / Payables", "receivables", "₹"], ["Employee Directory", "employees", "♙"], ["Attendance & Shifts", "attendance", "◷"], ["Leave & Duty Roster", "leave", "☷"], ["Payroll", "payroll", "₹"]] },
+  { label: "REPORTS & ADMINISTRATION", items: [["Reports & Analytics", "reports", "▥"], ["Quality & Compliance", "quality", "✓"], ["Document Register", "documents", "▧"], ["User & Role Management", "users", "♙"], ["Role Permissions", "permissions", "⚿"], ["Audit Logs", "audit-logs", "☷"], ["Branch & Department Setup", "organization", "▦"], ["Settings & Backup", "settings", "⚙"]] }
 ];
 
 async function handleLogin(e) {
@@ -465,7 +463,23 @@ function switchView(targetId, btn) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (btn) btn.classList.add('active');
   document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + targetId).classList.add('active');
+  
+  // Specific view mapping to ensure proper modular hiding and showing
+  const targetEl = document.getElementById('view-' + targetId);
+  if (targetEl) {
+    targetEl.classList.add('active');
+  } else {
+    // Fallback or generic placeholder view for remaining modules
+    let genericView = document.getElementById('view-generic');
+    if (!genericView) {
+      genericView = document.createElement('div');
+      genericView.id = 'view-generic';
+      genericView.className = 'view-section panel';
+      document.querySelector('.content').appendChild(genericView);
+    }
+    genericView.classList.add('active');
+    genericView.innerHTML = \`<div class="panel-head"><h3>Module: \${targetId.toUpperCase()}</h3></div><p style="padding:15px;color:#718096;">This module is successfully loaded. Connect your dedicated submodule components here.</p>\`;
+  }
   document.getElementById('topbar-title').innerText = targetId.toUpperCase();
 }
 
