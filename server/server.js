@@ -445,7 +445,6 @@ function switchView(targetKey) {
   } else {
     document.getElementById('view-module-container').classList.add('active');
     
-    // Show registration form only for patients module
     if (targetKey === 'patients' || targetKey === 'patient-search') {
       document.getElementById('patient-reg-panel').style.display = 'block';
       document.getElementById('module-add-btn').style.display = 'inline-block';
@@ -553,7 +552,7 @@ async function handlePatientRegistration(e) {
   e.preventDefault();
   const body = {
     title: document.getElementById('reg-title').value,
-    name: document.getElementById('reg-name').value,
+    name: document.getElementById('reg-name'].value,
     relation: document.getElementById('reg-relation').value,
     guardian: document.getElementById('reg-guardian').value,
     age: document.getElementById('reg-age').value,
