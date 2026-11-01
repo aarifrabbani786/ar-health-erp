@@ -20,52 +20,41 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// Enterprise Master Database Store for AR Healthcare ERP
+// In-Memory Database with Date-Wise Reset Counter
+let dailySequence = { date: '', count: 0 };
+
+function getNextUHID() {
+    const todayStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2); // DDMMYY
+    if (dailySequence.date !== todayStr) {
+        dailySequence.date = todayStr;
+        dailySequence.count = 1;
+    } else {
+        dailySequence.count += 1;
+    }
+    const seq = dailySequence.count.toString().padStart(2, '0');
+    return `AR${todayStr}-${seq}`;
+}
+
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
     ],
     patients: [
-        { uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, gender: 'Male', contact: '9876543210', address: 'Maharajganj, UP', status: 'Active OPD' },
-        { uhid: 'UHID2026002', name: 'Ramesh Verma', age: 42, gender: 'Male', contact: '9812345678', address: 'Gorakhpur, UP', status: 'Admitted IPD' }
+        { uhid: 'AR011126-01', title: 'Mr.', name: 'Aarif Rabbani', relation: 'S/O', guardian: 'Md Rabbani', age: 27, gender: 'Male', contact: '9876543210', adhaar: '123456789012', abha: 'ABHA12345678', address: 'Maharajganj, UP', doctor: 'Dr. A. Khan', fee: 500, payType: 'Cash', date: '2026-11-01 14:00' }
     ],
-    opd: [
-        { token: '#101', uhid: 'UHID2026001', patientName: 'Aarif Rabbani', doctor: 'Dr. A. Khan', department: 'General Medicine', status: 'Waiting' }
-    ],
-    admissions: [
-        { ipdNo: 'IPD-901', uhid: 'UHID2026002', patientName: 'Ramesh Verma', ward: 'General Ward A', bed: 'BED-101', admitDate: '2026-11-01', status: 'Admitted' }
-    ],
-    beds: [
-        { ward: 'General Ward A', bedNo: 'BED-101', type: 'Standard', status: 'Occupied', patient: 'Ramesh Verma' },
-        { ward: 'General Ward A', bedNo: 'BED-102', type: 'Standard', status: 'Available', patient: 'None' },
-        { ward: 'ICU Ward 1', bedNo: 'ICU-01', type: 'Critical', status: 'Available', patient: 'None' }
-    ],
-    medicines: [
-        { medId: 'MED001', brandName: 'Paracetamol 650mg', generic: 'Paracetamol', batch: 'B2601', unitsPerStrip: 10, totalTabletsStock: 150, ratePerTablet: 2.00, mrpPerStrip: 22.00, expiry: '2027-12-31' },
-        { medId: 'MED002', brandName: 'Amoxycillin 500mg', generic: 'Amoxycillin', batch: 'B2602', unitsPerStrip: 10, totalTabletsStock: 85, ratePerTablet: 4.50, mrpPerStrip: 50.00, expiry: '2026-11-20' }
+    doctors: [
+        { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 500 },
+        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 700 },
+        { id: 'DOC3', name: 'Dr. R. K. Sharma (Cardiologist)', fee: 1000 }
     ],
     bills: [
-        { inv_no: 'PBILL311026846', date: '2026-10-31', customer: 'Aarif Rabbani', items: '2 Strips Paracetamol', net_total: 44.00 }
+        { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00' }
     ],
-    assets: [
-        { assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', pmDate: '2026-12-15', status: 'Operational' }
-    ],
-    employees: [
-        { empId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' }
-    ],
-    accounts: [
-        { txnId: 'TXN-901', type: 'Income', category: 'OPD Billing', amount: 1200.00, date: '2026-11-01', status: 'Cleared' }
-    ],
-    settings: [
-        { settingKey: 'Hospital Name', value: 'AR Healthcare Super Speciality', category: 'General' },
-        { settingKey: 'GSTIN Number', value: '09AABCA1234F1Z9', category: 'Financial' }
-    ],
-    auditLogs: [
-        { logId: 'LOG-881', user: 'Aarif (Super Admin)', action: 'System Initialized', timestamp: '2026-11-01 14:30' }
+    medicines: [
+        { medId: 'MED001', brandName: 'Paracetamol 650mg', generic: 'Paracetamol', batch: 'B2601', stock: 150, rate: 20.00, expiry: '2027-12-31' }
     ]
 };
 
-// --- AUTH API ---
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
@@ -75,72 +64,92 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => res.json(erpData.users));
+app.get('/api/doctors', (req, res) => res.json(erpData.doctors));
+app.get('/api/next-uhid', (req, res) => res.json({ uhid: getNextUHID() }));
 
-// --- PHARMACY POS BASE-UNIT CALCULATION ENDPOINT ---
-app.post('/api/pharmacy/sell', (req, res) => {
-    const { medId, stripsSold, tabletsSold } = req.body;
-    const med = erpData.medicines.find(m => m.medId === medId);
-    if (!med) return res.status(404).json({ success: false, message: 'Medicine not found' });
-
-    // Expiry check
-    if (new Date(med.expiry) < new Date()) {
-        return res.status(400).json({ success: false, message: 'Cannot sell expired batch medicine!' });
+// Register Patient & Create Bill
+app.post('/api/patients/register', (req, res) => {
+    const p = req.body;
+    
+    // Strict Validation
+    if (!/^\d{10}$/.test(p.contact)) {
+        return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
+    }
+    if (p.adhaar && !/^\d{12}$/.test(p.adhaar)) {
+        return res.status(400).json({ success: false, message: 'Aadhaar number must be exactly 12 digits.' });
     }
 
-    // Base unit deduction calculation (e.g. 2 strips + 3 tablets where 1 strip = 10 tablets -> 23 tablets)
-    const totalDeduction = (Number(stripsSold || 0) * med.unitsPerStrip) + Number(tabletsSold || 0);
+    const uhid = getNextUHID();
+    const nowStr = new Date().toLocaleString('en-GB');
 
-    if (med.totalTabletsStock < totalDeduction) {
-        return res.status(400).json({ success: false, message: `Negative stock prevented! Available tablets: ${med.totalTabletsStock}, Requested: ${totalDeduction}` });
-    }
+    const newPatient = {
+        uhid,
+        title: p.title || 'Mr.',
+        name: p.name,
+        relation: p.relation || 'C/O',
+        guardian: p.guardian || '',
+        age: p.age,
+        gender: p.gender,
+        contact: p.contact,
+        adhaar: p.adhaar || '',
+        abha: p.abha || '',
+        address: p.address || '',
+        doctor: p.doctor,
+        fee: Number(p.fee || 0),
+        payType: p.payType || 'Cash',
+        date: nowStr
+    };
 
-    med.totalTabletsStock -= totalDeduction;
-    const billAmount = totalDeduction * med.ratePerTablet;
+    erpData.patients.unshift(newPatient);
 
+    const billNo = `BILL-${Date.now().toString().slice(-6)}`;
     const newBill = {
-        inv_no: `PBILL${Date.now().toString().slice(-8)}`,
-        date: new Date().toISOString().split('T')[0],
-        customer: 'Walk-in Patient',
-        items: `${stripsSold || 0} Strips, ${tabletsSold || 0} Tablets of ${med.brandName}`,
-        net_total: billAmount
+        billNo,
+        uhid,
+        patientName: `${p.title} ${p.name}`,
+        doctor: p.doctor,
+        totalFee: p.fee,
+        payType: p.payType,
+        createdBy: p.createdBy || 'Staff',
+        dateTime: nowStr
     };
     erpData.bills.unshift(newBill);
 
-    res.json({ success: true, message: `Sold successfully! Exact tablets deducted: ${totalDeduction}`, newStock: med.totalTabletsStock, bill: newBill });
+    res.json({ success: true, message: 'Patient Registered & Bill Generated', patient: newPatient, bill: newBill });
 });
 
-// --- MODULE DATA API ---
+// Live Search API
+app.get('/api/patients/search', (req, res) => {
+    const q = (req.query.q || '').toLowerCase();
+    if (q.length < 2) return res.json([]);
+    const results = erpData.patients.filter(p => 
+        p.name.toLowerCase().includes(q) ||
+        p.contact.includes(q) ||
+        p.uhid.toLowerCase().includes(q) ||
+        (p.adhaar && p.adhaar.includes(q)) ||
+        (p.abha && p.abha.toLowerCase().includes(q))
+    );
+    res.json(results);
+});
+
 app.get('/api/module/:key', (req, res) => {
     const key = req.params.key;
-    if (erpData[key]) return res.json({ success: true, data: erpData[key] });
     if (['patients', 'patient-search', 'patients-reg'].includes(key)) return res.json({ success: true, data: erpData.patients });
-    if (['opd', 'appointments'].includes(key)) return res.json({ success: true, data: erpData.opd });
-    if (['admissions', 'ipd'].includes(key)) return res.json({ success: true, data: erpData.admissions });
-    if (['beds', 'wards'].includes(key)) return res.json({ success: true, data: erpData.beds });
-    if (['medicines', 'pharmacy', 'batches', 'stock-alerts'].includes(key)) return res.json({ success: true, data: erpData.medicines });
-    if (['assets', 'biomedical'].includes(key)) return res.json({ success: true, data: erpData.assets });
-    if (['employees', 'attendance', 'payroll'].includes(key)) return res.json({ success: true, data: erpData.employees });
-    if (['accounts', 'expenses'].includes(key)) return res.json({ success: true, data: erpData.accounts });
-    if (['settings'].includes(key)) return res.json({ success: true, data: erpData.settings });
-    if (['audit-logs'].includes(key)) return res.json({ success: true, data: erpData.auditLogs });
-    res.json({ success: true, data: [{ refId: 'REF-001', description: 'Module record for ' + key, status: 'Active' }] });
+    if (['medicines', 'pharmacy'].includes(key)) return res.json({ success: true, data: erpData.medicines });
+    if (['doctors'].includes(key)) return res.json({ success: true, data: erpData.doctors });
+    if (['hospital-billing', 'bills'].includes(key)) return res.json({ success: true, data: erpData.bills });
+    res.json({ success: true, data: erpData.patients });
 });
 
 app.get('/api/dashboard/metrics', (req, res) => {
-    let rev = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
+    let rev = erpData.bills.reduce((acc, b) => acc + Number(b.totalFee), 0);
     res.json({
         success: true,
         totalRevenue: rev,
         registeredPatients: erpData.patients.length,
-        activeIpdBeds: erpData.beds.filter(b => b.status === 'Occupied').length,
-        pharmacySalesCount: erpData.bills.length,
-        lowStockItems: erpData.medicines.filter(m => m.totalTabletsStock < 50).length
+        activeIpdBeds: 2,
+        lowStockItems: 1
     });
-});
-
-app.post('/api/ai/chat', (req, res) => {
-    const { query } = req.body;
-    res.json({ success: true, reply: `**AR AI Assistant**: Query "${query}" processed successfully. Base unit inventory and financial ledger are fully synced.` });
 });
 
 app.get('/', (req, res) => {
@@ -151,8 +160,9 @@ app.get('/', (req, res) => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AR Healthcare ERP | Hospital • Pharmacy • Biomedical</title>
 <style>
-:root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
+:root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
@@ -163,6 +173,7 @@ app.get('/', (req, res) => {
 .login-field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
 .login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
+
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -174,32 +185,53 @@ app.get('/', (req, res) => {
 .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}
 .nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}
 .nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:700}
+
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
 .profile{display:flex;align-items:center;gap:12px}
 .avatar{width:38px;height:38px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800;font-size:13px}
+
 .content{padding:27px 28px;overflow-y:auto;flex:1}
 .view-section{display:none}
 .view-section.active{display:block}
+
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
 .stat-label{font-size:11px;color:var(--muted);font-weight:700}
 .stat-value{font-size:26px;font-weight:800;margin:12px 0 4px;color:var(--navy)}
+
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:22px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .panel-head h3{font-size:15px;margin:0;color:var(--navy);font-weight:700}
+
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:15px}
+.field{display:flex;flex-direction:column;gap:6px;position:relative}
+.field label{font-size:11px;font-weight:700;color:var(--navy)}
+.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;outline:none}
+
 table{width:100%;border-collapse:collapse}
 th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}
 td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
+
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-#ai-panel{position:fixed;bottom:25px;right:25px;width:340px;background:#fff;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;overflow:hidden;z-index:999;border:1px solid var(--line)}
-.ai-header{background:linear-gradient(135deg,#16b8b0,#2674e8);color:#fff;padding:14px;font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center}
-.ai-body{padding:15px;height:240px;overflow-y:auto;font-size:12px;line-height:1.5;background:#f9fbfe}
-.ai-footer{padding:10px;display:flex;gap:8px;border-top:1px solid var(--line);background:#fff}
+
+/* Live Search Suggestions Dropdown */
+.suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
+.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
+.suggestion-item:hover{background:#f0f6ff}
+
+/* Printable Bill Modal */
+#print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999}
+.print-card{background:#fff;padding:30px;border-radius:16px;width:min(600px,95vw);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
+@media print{
+  body *{visibility:hidden}
+  #print-card-area, #print-card-area *{visibility:visible}
+  #print-card-area{position:absolute;left:0;top:0;width:100%}
+  .no-print{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -216,8 +248,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       </form>
     </div>
     <div class="login-right">
-      <h2>Hello, Friend!</h2>
-      <p style="font-size:13px;line-height:1.6;opacity:.85;">Welcome to Commercial Enterprise HIMS & Pharmacy ERP.</p>
+      <h2>AR HEALTHCARE ERP</h2>
+      <p style="font-size:13px;line-height:1.6;opacity:.85;">A R PHARMA AND SURGICAL AGENCY</p>
     </div>
   </div>
 </div>
@@ -231,13 +263,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <main class="main">
     <header class="topbar">
       <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button class="btn btn-sm success" onclick="toggleAiPanel()">🤖 AR AI Assistant</button>
-        <div class="profile">
-          <div class="avatar" id="user-avatar">AR</div>
-          <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
-          <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
-        </div>
+      <div class="profile">
+        <div class="avatar" id="user-avatar">AR</div>
+        <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
+        <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
       </div>
     </header>
 
@@ -247,25 +276,59 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="stats">
           <div class="stat"><div class="stat-label">TODAY'S REVENUE</div><div class="stat-value" id="m-rev">₹0.00</div></div>
           <div class="stat"><div class="stat-label">REGISTERED PATIENTS</div><div class="stat-value" id="m-pat">0</div></div>
-          <div class="stat"><div class="stat-label">ACTIVE IPD BEDS</div><div class="stat-value" id="m-ipd">1 / 20</div></div>
-          <div class="stat"><div class="stat-label">LOW STOCK ALERTS</div><div class="stat-value" id="m-stock">0</div></div>
+          <div class="stat"><div class="stat-label">ACTIVE IPD BEDS</div><div class="stat-value" id="m-ipd">2 / 20</div></div>
+          <div class="stat"><div class="stat-label">LOW STOCK ALERTS</div><div class="stat-value" id="m-stock">1</div></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Recent System Operations & Revenue Overview</h3></div>
+          <div class="panel-head"><h3>Recent OPD Registrations & Payments</h3></div>
           <table>
-            <thead><tr><th>Invoice / Ref</th><th>Date</th><th>Customer / Details</th><th>Net Total (₹)</th></tr></thead>
-            <tbody id="dash-bills"></tbody>
+            <thead><tr><th>UHID</th><th>Patient Name</th><th>Doctor</th><th>Fee (₹)</th><th>Payment Type</th><th>Date & Time</th></tr></thead>
+            <tbody id="dash-patients"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- DYNAMIC MODULE VIEW -->
+      <!-- DYNAMIC MODULE VIEW WITH INTEGRATED REGISTRATION & SEARCH -->
       <div id="view-module-container" class="view-section">
+        
+        <!-- Registration Form Box -->
+        <div class="panel" id="reg-form-panel">
+          <div class="panel-head"><h3>New Patient Registration & Consultation Billing</h3></div>
+          <form onsubmit="handlePatientRegistration(event)">
+            <div class="form-grid">
+              <div class="field">
+                <label>Auto UHID (Date-Wise)</label>
+                <input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:700;color:var(--blue);">
+              </div>
+              <div class="field">
+                <label>Live Patient Search (Auto-Fetch)</label>
+                <input type="text" id="live-search-input" placeholder="Type 2-4 chars of Name, Mobile, Aadhaar..." oninput="handleLiveSearch(this.value)" autocomplete="off">
+                <div class="suggestions-box" id="search-suggestions"></div>
+              </div>
+              <div class="field"><label>Title</label><select id="reg-title"><option>Mr.</option><option>Mrs.</option><option>Miss</option><option>Master</option><option>Baby of</option></select></div>
+              <div class="field"><label>Patient Name *</label><input type="text" id="reg-name" required></div>
+              <div class="field"><label>Relation</label><select id="reg-relation"><option>S/O</option><option>D/O</option><option>W/O</option><option>C/O</option></select></div>
+              <div class="field"><label>Father / Guardian Name</label><input type="text" id="reg-guardian"></div>
+              <div class="field"><label>Age *</label><input type="number" id="reg-age" required></div>
+              <div class="field"><label>Gender</label><select id="reg-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\d{10}" required placeholder="10 digits only"></div>
+              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\d{12}" placeholder="12 digits only"></div>
+              <div class="field"><label>ABHA ID (Optional)</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
+              <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="District, State"></div>
+              <div class="field">
+                <label>Consulting Doctor *</label>
+                <select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select>
+              </div>
+              <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" required></div>
+              <div class="field"><label>Payment Type *</label><select id="reg-paytype"><option>Cash</option><option>UPI / Online</option><option>Card</option></select></div>
+            </div>
+            <button type="submit" class="btn primary" style="padding:12px 25px;font-size:13px;">💾 Register Patient & Save Bill</button>
+          </form>
+        </div>
+
+        <!-- Master Data Table -->
         <div class="panel">
-          <div class="panel-head">
-            <h3 id="module-title-heading">Module Records</h3>
-            <button class="btn primary btn-sm" onclick="alert('Record creation form active.')">+ Add New Record</button>
-          </div>
+          <div class="panel-head"><h3 id="module-title-heading">Database Records</h3></div>
           <div style="overflow-x:auto;">
             <table>
               <thead id="module-thead"></thead>
@@ -273,28 +336,53 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
             </table>
           </div>
         </div>
+
       </div>
     </section>
   </main>
 </div>
 
-<div id="ai-panel">
-  <div class="ai-header">
-    <span>🤖 AR AI Assistant</span>
-    <button onclick="toggleAiPanel()" style="background:transparent;border:none;color:#fff;cursor:pointer;font-weight:800;">✕</button>
-  </div>
-  <div class="ai-body" id="ai-messages">
-    <div><b>AR AI:</b> Namaste Aarif bhai! Main aapka AR AI assistant hoon.</div>
-  </div>
-  <div class="ai-footer">
-    <input type="text" id="ai-input" placeholder="Ask AI..." style="flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;" onkeypress="if(event.key==='Enter')sendAiQuery()">
-    <button class="btn primary btn-sm" onclick="sendAiQuery()">Send</button>
+<!-- PRINTABLE BILL PREVIEW MODAL -->
+<div id="print-modal">
+  <div class="print-card" id="print-card-area">
+    <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
+      <h2 style="margin:0;color:var(--navy);">A R PHARMA AND SURGICAL AGENCY</h2>
+      <p style="margin:4px 0;font-size:12px;color:var(--muted);">Hospital Management & OPD Consultation Invoice</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;">
+      <div><strong>Bill No:</strong> <span id="pb-billno"></span></div>
+      <div><strong>Date & Time:</strong> <span id="pb-datetime"></span></div>
+      <div><strong>UHID:</strong> <span id="pb-uhid"></span></div>
+      <div><strong>User / Billing Staff:</strong> <span id="pb-user"></span></div>
+    </div>
+    <hr style="border:0;border-top:1px solid #ddd;">
+    <div style="font-size:12px;margin:15px 0;">
+      <p><strong>Patient Name:</strong> <span id="pb-name"></span></p>
+      <p><strong>Age / Gender:</strong> <span id="pb-agegender"></span></p>
+      <p><strong>Contact:</strong> <span id="pb-contact"></span> | <strong>Aadhaar:</strong> <span id="pb-adhaar"></span></p>
+      <p><strong>Consulting Doctor:</strong> <span id="pb-doctor"></span></p>
+    </div>
+    <table style="width:100%;margin:15px 0;">
+      <thead><tr><th>Description</th><th>Mode</th><th>Amount (₹)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>OPD Doctor Consultation Fee</td>
+          <td id="pb-paymode">Cash</td>
+          <td id="pb-amount" style="font-weight:700;">₹0.00</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="btn" onclick="document.getElementById('print-modal').style.display='none'">Close</button>
+      <button class="btn primary" onclick="window.print()">🖨 Print A4 Bill</button>
+    </div>
   </div>
 </div>
 
 <script>
 let currentUser = null;
 let activeModuleKey = 'dashboard';
+let doctorsList = [];
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
@@ -317,6 +405,7 @@ window.onload = function() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
     renderNav();
+    loadDoctors();
     switchView(savedPage || 'dashboard');
   }
 };
@@ -343,6 +432,7 @@ async function handleLogin(e) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'flex';
       renderNav();
+      loadDoctors();
       switchView('dashboard');
     } else {
       alert(data.message || 'Login Failed');
@@ -374,6 +464,28 @@ function renderNav() {
   document.getElementById('nav-menu').innerHTML = html;
 }
 
+async function loadDoctors() {
+  const res = await fetch('/api/doctors');
+  doctorsList = await res.json();
+  let opt = `<option value="">-- Select Doctor --</option>`;
+  doctorsList.forEach(d => {
+    opt += `<option value="${d.name}">${d.name} (Fee: ₹${d.fee})</option>`;
+  });
+  document.getElementById('reg-doctor').innerHTML = opt;
+}
+
+function autoFetchDoctorFee() {
+  const docName = document.getElementById('reg-doctor').value;
+  const doc = doctorsList.find(d => d.name === docName);
+  if (doc) document.getElementById('reg-fee').value = doc.fee;
+}
+
+async function fetchNextUHID() {
+  const res = await fetch('/api/next-uhid');
+  const data = await res.json();
+  document.getElementById('reg-uhid').value = data.uhid;
+}
+
 function switchView(targetKey) {
   activeModuleKey = targetKey;
   localStorage.setItem('ar_erp_active_page', targetKey);
@@ -389,6 +501,7 @@ function switchView(targetKey) {
     loadDashboardMetrics();
   } else {
     document.getElementById('view-module-container').classList.add('active');
+    fetchNextUHID();
     loadUniqueModuleData(targetKey);
   }
 
@@ -402,19 +515,19 @@ async function loadDashboardMetrics() {
   if (data.success) {
     document.getElementById('m-rev').innerText = '₹' + data.totalRevenue.toFixed(2);
     document.getElementById('m-pat').innerText = data.registeredPatients;
-    document.getElementById('m-stock').innerText = data.lowStockItems;
   }
-  const bRes = await fetch('/api/module/bills');
-  const bJson = await bRes.json();
-  let bHtml = "";
-  (bJson.data || []).forEach(b => {
-    bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date}</td><td>\${b.customer}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
+
+  const pRes = await fetch('/api/module/patients');
+  const pData = await pRes.json();
+  let html = "";
+  (pData.data || []).forEach(p => {
+    html += \`<tr><td><b>\${p.uhid}</b></td><td>\${p.title} \${p.name}</td><td>\${p.doctor}</td><td>₹\${p.fee}</td><td>\${p.payType}</td><td>\${p.date}</td></tr>\`;
   });
-  document.getElementById('dash-bills').innerHTML = bHtml;
+  document.getElementById('dash-patients').innerHTML = html;
 }
 
 async function loadUniqueModuleData(key) {
-  document.getElementById('module-title-heading').innerText = key.toUpperCase().replace('-', ' ') + ' MASTER TABLE';
+  document.getElementById('module-title-heading').innerText = key.toUpperCase().replace('-', ' ') + ' MASTER RECORDS';
 
   const res = await fetch('/api/module/' + key);
   const json = await res.json();
@@ -436,28 +549,96 @@ async function loadUniqueModuleData(key) {
   document.getElementById('module-tbody').innerHTML = rows;
 }
 
-function toggleAiPanel() {
-  const p = document.getElementById('ai-panel');
-  p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
+// Live Search Auto-Fetch Implementation
+async function handleLiveSearch(val) {
+  const box = document.getElementById('search-suggestions');
+  if (val.trim().length < 2) {
+    box.style.display = 'none';
+    return;
+  }
+  const res = await fetch('/api/patients/search?q=' + encodeURIComponent(val));
+  const data = await res.json();
+
+  if (data.length === 0) {
+    box.style.display = 'none';
+    return;
+  }
+
+  let html = "";
+  data.forEach(p => {
+    html += `<div class="suggestion-item" onclick="autoFillPatient('${p.uhid}')">
+      <strong>${p.title} ${p.name}</strong> (${p.uhid}) - Mob: ${p.contact}
+    </div>`;
+  });
+  box.innerHTML = html;
+  box.style.display = 'block';
 }
 
-async function sendAiQuery() {
-  const inp = document.getElementById('ai-input');
-  const msg = inp.value.trim();
-  if (!msg) return;
+async function autoFillPatient(uhid) {
+  const res = await fetch('/api/patients/search?q=' + uhid);
+  const data = await res.json();
+  if (data.length > 0) {
+    const p = data[0];
+    document.getElementById('reg-title').value = p.title || 'Mr.';
+    document.getElementById('reg-name').value = p.name;
+    document.getElementById('reg-relation').value = p.relation || 'S/O';
+    document.getElementById('reg-guardian').value = p.guardian || '';
+    document.getElementById('reg-age').value = p.age;
+    document.getElementById('reg-gender').value = p.gender;
+    document.getElementById('reg-contact').value = p.contact;
+    document.getElementById('reg-adhaar').value = p.adhaar || '';
+    document.getElementById('reg-abha').value = p.abha || '';
+    document.getElementById('reg-address').value = p.address || '';
+    document.getElementById('search-suggestions').style.display = 'none';
+  }
+}
 
-  const box = document.getElementById('ai-messages');
-  box.innerHTML += \`<div style="margin-top:8px;text-align:right;"><b>You:</b> \${msg}</div>\`;
-  inp.value = '';
+async function handlePatientRegistration(e) {
+  e.preventDefault();
+  const body = {
+    title: document.getElementById('reg-title').value,
+    name: document.getElementById('reg-name').value,
+    relation: document.getElementById('reg-relation').value,
+    guardian: document.getElementById('reg-guardian').value,
+    age: document.getElementById('reg-age').value,
+    gender: document.getElementById('reg-gender').value,
+    contact: document.getElementById('reg-contact').value,
+    adhaar: document.getElementById('reg-adhaar').value,
+    abha: document.getElementById('reg-abha').value,
+    address: document.getElementById('reg-address').value,
+    doctor: document.getElementById('reg-doctor').value,
+    fee: document.getElementById('reg-fee').value,
+    payType: document.getElementById('reg-paytype').value,
+    createdBy: currentUser.name + ' (' + currentUser.role + ')'
+  };
 
-  const res = await fetch('/api/ai/chat', {
+  const res = await fetch('/api/patients/register', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ query: msg })
+    body: JSON.stringify(body)
   });
   const data = await res.json();
-  box.innerHTML += \`<div style="margin-top:8px;color:var(--navy);"><b>AR AI:</b> \${data.reply}</div>\`;
-  box.scrollTop = box.scrollHeight;
+
+  if (data.success) {
+    // Fill Print Preview Modal
+    document.getElementById('pb-billno').innerText = data.bill.billNo;
+    document.getElementById('pb-datetime').innerText = data.bill.dateTime;
+    document.getElementById('pb-uhid').innerText = data.patient.uhid;
+    document.getElementById('pb-user').innerText = data.bill.createdBy;
+    document.getElementById('pb-name').innerText = `${data.patient.title} ${data.patient.name} (${data.patient.relation} ${data.patient.guardian})`;
+    document.getElementById('pb-agegender').innerText = `${data.patient.age} Yrs / ${data.patient.gender}`;
+    document.getElementById('pb-contact').innerText = data.patient.contact;
+    document.getElementById('pb-adhaar').innerText = data.patient.adhaar || 'N/A';
+    document.getElementById('pb-doctor').innerText = data.patient.doctor;
+    document.getElementById('pb-paymode').innerText = data.patient.payType;
+    document.getElementById('pb-amount').innerText = '₹' + Number(data.patient.fee).toFixed(2);
+
+    document.getElementById('print-modal').style.display = 'flex';
+    loadUniqueModuleData(activeModuleKey);
+    fetchNextUHID();
+  } else {
+    alert(data.message);
+  }
 }
 </script>
 </body>
