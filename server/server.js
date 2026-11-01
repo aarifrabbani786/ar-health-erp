@@ -21,7 +21,7 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// Enterprise Central Store with RBAC, Status (Active/Deactive) & Permissions
+// Enterprise Store with All Modules Data & RBAC Users
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
@@ -39,8 +39,11 @@ let erpData = {
     bills: [
         { id: 1, inv_no: 'PBILL311026846', date: '2026-10-31', uhid: 'UHID2026001', customer_name: 'Aarif Rabbani', mobile: '9876543210', items_count: 2, net_total: 800.00 }
     ],
-    attendance: [
-        { id: 1, empName: 'Aarif Rabbani', role: 'Super Admin', date: '2026-11-01', checkIn: '09:00 AM', status: 'Present' }
+    assets: [
+        { id: 1, assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', status: 'Operational' }
+    ],
+    employees: [
+        { id: 1, employeeId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' }
     ],
     ipdBeds: [
         { ward: 'General Ward A', bedNo: 'BED-101', uhid: 'UHID2026001', patientName: 'Rahul Verma', status: 'Occupied' },
@@ -48,9 +51,8 @@ let erpData = {
     ]
 };
 
-// --- REST API ENDPOINTS ---
+// --- AUTH & RBAC ENDPOINTS ---
 
-// 1. Authentication with Account Active/Deactive Validation
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
@@ -63,10 +65,7 @@ app.post('/api/login', (req, res) => {
     res.json({ success: true, user: { name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
 });
 
-// 2. Super Admin User & Permission Management (Create, Edit Permissions, Activate/Deactivate)
-app.get('/api/users', (req, res) => {
-    res.json(erpData.users);
-});
+app.get('/api/users', (req, res) => res.json(erpData.users));
 
 app.post('/api/users', (req, res) => {
     const { name, username, password, role, permissions } = req.body;
@@ -78,12 +77,12 @@ app.post('/api/users', (req, res) => {
         name,
         username,
         password,
-        role: role || 'Receptionist',
-        permissions: permissions || ['patients'],
+        role: role || 'Staff',
+        permissions: permissions || ['dashboard'],
         status: 'Active'
     };
     erpData.users.push(newUser);
-    res.json({ success: true, message: 'New Staff User Created Successfully', user: newUser });
+    res.json({ success: true, message: 'User Created Successfully', user: newUser });
 });
 
 app.post('/api/users/update-permission', (req, res) => {
@@ -111,122 +110,57 @@ app.post('/api/users/toggle-status', (req, res) => {
     }
 });
 
-// 3. Universal Patient Registration & Auto UHID Sync
-app.get('/api/patients', async (req, res) => {
-    try {
-        if (pool) {
-            const dbRes = await pool.query('SELECT * FROM patients ORDER BY id DESC');
-            if (dbRes.rows.length > 0) return res.json(dbRes.rows);
-        }
-        res.json(erpData.patients);
-    } catch (err) {
-        res.json(erpData.patients);
-    }
-});
+// --- CORE MODULE API ENDPOINTS ---
 
-app.post('/api/patients', async (req, res) => {
-    const p = req.body;
-    const existing = erpData.patients.find(x => x.contact === p.contact);
-    if (existing) {
-        return res.json({ success: true, message: 'Patient already registered with UHID', patient: existing });
-    }
-    const uhid = `UHID${Date.now().toString().slice(-6)}`;
-    const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, address: p.address || 'Local', status: 'Active OPD' };
-    erpData.patients.unshift(newPatient);
-
-    // Auto Token Generation
-    erpData.opdTokens.unshift({ token: erpData.opdTokens.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting', date: new Date().toISOString().split('T')[0] });
-
-    if (pool) {
-        try {
-            await pool.query('INSERT INTO patients (uhid, name, age, sex, contact, address) VALUES ($1, $2, $3, $4, $5, $6)', [uhid, p.name, p.age, p.sex, p.contact, p.address]);
-        } catch (dbErr) {
-            console.error('DB insert warning:', dbErr.message);
-        }
-    }
-    res.json({ success: true, message: 'Patient Registered & Universal UHID Generated', patient: newPatient });
-});
-
-// 4. Live Revenue & Calculation Metrics
 app.get('/api/dashboard/metrics', async (req, res) => {
     let totalRevenue = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
-    let billsCount = erpData.bills.length;
-    let patientsCount = erpData.patients.length;
-
-    if (pool) {
-        try {
-            const dbRev = await pool.query('SELECT SUM(net_total) as revenue, COUNT(*) as cnt FROM sales_invoices');
-            if (dbRev.rows[0].revenue) {
-                totalRevenue = Number(dbRev.rows[0].revenue);
-                billsCount = Number(dbRev.rows[0].cnt);
-            }
-            const dbPat = await pool.query('SELECT COUNT(*) as cnt FROM patients');
-            if (dbPat.rows[0].cnt) {
-                patientsCount = Number(dbPat.rows[0].cnt);
-            }
-        } catch (e) {}
-    }
-
     res.json({
         success: true,
         totalRevenue,
-        registeredPatients: patientsCount,
+        registeredPatients: erpData.patients.length,
         activeIpdBeds: erpData.ipdBeds.filter(b => b.status === 'Occupied').length,
-        pharmacySalesCount: billsCount,
+        pharmacySalesCount: erpData.bills.length,
         lowStockItems: erpData.medicines.filter(m => m.available_qty < 50).length
     });
 });
 
-// 5. Pharmacy POS Billing & Inventory Auto Deductions
-app.get('/api/medicines', async (req, res) => res.json(erpData.medicines));
-app.get('/api/bills', async (req, res) => res.json(erpData.bills));
+app.get('/api/patients', (req, res) => res.json(erpData.patients));
+app.post('/api/patients', (req, res) => {
+    const p = req.body;
+    const uhid = `UHID${Date.now().toString().slice(-6)}`;
+    const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, address: p.address || 'Local', status: 'Active OPD' };
+    erpData.patients.unshift(newPatient);
+    erpData.opdTokens.unshift({ token: erpData.opdTokens.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting', date: new Date().toISOString().split('T')[0] });
+    res.json({ success: true, message: 'Patient Registered & UHID Generated', patient: newPatient });
+});
 
-app.post('/api/bills', async (req, res) => {
+app.get('/api/medicines', (req, res) => res.json(erpData.medicines));
+app.get('/api/bills', (req, res) => res.json(erpData.bills));
+app.post('/api/bills', (req, res) => {
     const { uhid, cust, mob, medId, qty, price } = req.body;
     const invNo = `PBILL${Date.now().toString().slice(-8)}`;
     const netTotal = Number(price) * Number(qty);
-    
-    // Auto deduct inventory stock
     const med = erpData.medicines.find(m => m.med_id === medId || m.id === Number(medId));
-    if (med) {
-        med.available_qty = Math.max(0, med.available_qty - Number(qty));
-    }
+    if (med) med.available_qty = Math.max(0, med.available_qty - Number(qty));
 
-    const newBill = {
-        id: Date.now(),
-        inv_no: invNo,
-        date: new Date().toISOString().split('T')[0],
-        uhid: uhid || 'WALK-IN',
-        customer_name: cust || 'Walk-in Patient',
-        mobile: mob || '',
-        items_count: Number(qty),
-        net_total: netTotal
-    };
+    const newBill = { id: Date.now(), inv_no: invNo, date: new Date().toISOString().split('T')[0], uhid: uhid || 'WALK-IN', customer_name: cust || 'Walk-in', mobile: mob || '', items_count: Number(qty), net_total: netTotal };
     erpData.bills.unshift(newBill);
-
-    if (pool) {
-        try {
-            await pool.query('INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6)', [invNo, newBill.date, newBill.customer_name, newBill.mobile, netTotal, netTotal]);
-        } catch (dbErr) {}
-    }
-
-    res.json({ success: true, message: 'POS Bill Generated & Stock Deducted Successfully', bill: newBill });
+    res.json({ success: true, message: 'POS Bill Generated & Stock Deducted', bill: newBill });
 });
 
 app.get('/api/opd-tokens', (req, res) => res.json(erpData.opdTokens));
-
 app.post('/api/opd-tokens/attend', (req, res) => {
     const { tokenNo } = req.body;
     const item = erpData.opdTokens.find(t => t.token === Number(tokenNo));
-    if (item) {
-        item.status = 'Completed';
-        res.json({ success: true, message: `Token #${tokenNo} Consultation Completed` });
-    } else {
-        res.status(404).json({ success: false });
-    }
+    if (item) item.status = 'Completed';
+    res.json({ success: true, message: 'Consultation Completed' });
 });
 
-// --- SINGLE-FILE APP FRONTEND LAYOUT ---
+app.get('/api/assets', (req, res) => res.json(erpData.assets));
+app.get('/api/employees', (req, res) => res.json(erpData.employees));
+app.get('/api/ipd', (req, res) => res.json(erpData.ipdBeds));
+
+// --- COMMERCIAL SINGLE-FILE FRONTEND WITH ALL MODULES ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -238,21 +172,19 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-/* DUAL PANEL LOGIN SCREEN (NO HARDCODED USER/PASS) */
+/* CLEAN DUAL-PANEL LOGIN SCREEN */
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
 .login-left h2{font-size:26px;color:var(--navy);font-weight:800;margin-bottom:8px}
 .login-left p{font-size:13px;color:var(--muted);margin-bottom:30px}
 .login-right{flex:1;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative}
-.login-right::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 80% 20%,rgba(38,116,232,0.3),transparent)}
 .login-field{margin-bottom:18px;text-align:left}
 .login-field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
-.login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none;transition:.2s}
-.login-input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(38,116,232,0.1)}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(38,116,232,0.3)}
+.login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
 
-/* MAIN DASHBOARD LAYOUT */
+/* MAIN APP LAYOUT */
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -272,12 +204,10 @@ app.get('/', (req, res) => {
 
 .content{padding:27px 28px;overflow-y:auto;flex:1}
 .view-section{display:none}
-.view-section.active{display:block;animation:fadeIn .2s ease-in-out}
-@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.view-section.active{display:block}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
-.stat-top{display:flex;justify-content:space-between;align-items:center}
 .stat-label{font-size:11px;color:var(--muted);font-weight:700}
 .stat-value{font-size:26px;font-weight:800;margin:12px 0 4px;color:var(--navy)}
 
@@ -303,26 +233,26 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 </head>
 <body>
 
-<!-- DUAL PANEL INTERACTIVE LOGIN (CLEAN - NO HARDCODED CREDS) -->
+<!-- CLEAN LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-container">
     <div class="login-left">
       <h2>Sign In</h2>
       <p>Enter your credentials to access AR Healthcare ERP</p>
       <form onsubmit="handleLogin(event)">
-        <div class="login-field"><label>Username</label><input type="text" id="login-u" class="login-input" placeholder="Enter Username..." required></div>
-        <div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" placeholder="Enter Password..." required></div>
+        <div class="login-field"><label>Username</label><input type="text" id="login-u" class="login-input" placeholder="Username..." required></div>
+        <div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" placeholder="Password..." required></div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
     </div>
     <div class="login-right">
       <h2 style="font-size:28px;margin-bottom:12px;">Hello, Friend!</h2>
-      <p style="font-size:13px;line-height:1.6;opacity:.85;margin-bottom:25px;">Welcome to the next generation Commercial Enterprise HIMS & Pharmacy ERP Platform.</p>
+      <p style="font-size:13px;line-height:1.6;opacity:.85;">Welcome to Commercial Enterprise HIMS & Pharmacy ERP.</p>
     </div>
   </div>
 </div>
 
-<!-- MAIN DASHBOARD APPS -->
+<!-- MAIN APP -->
 <div id="app">
   <aside class="sidebar">
     <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • Biomedical</small></div></div>
@@ -341,13 +271,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
     <section class="content">
       
-      <!-- DASHBOARD VIEW -->
+      <!-- 1. DASHBOARD -->
       <div id="view-dashboard" class="view-section active">
         <div class="stats">
-          <div class="stat"><div class="stat-top"><span class="stat-label">TODAY'S REVENUE</span></div><div class="stat-value" id="m-rev">₹0.00</div></div>
-          <div class="stat"><div class="stat-top"><span class="stat-label">REGISTERED PATIENTS</span></div><div class="stat-value" id="m-pat">0</div></div>
-          <div class="stat"><div class="stat-top"><span class="stat-label">ACTIVE IPD BEDS</span></div><div class="stat-value" id="m-ipd">1 / 20</div></div>
-          <div class="stat"><div class="stat-top"><span class="stat-label">LOW STOCK ALERTS</span></div><div class="stat-value" id="m-stock">0</div></div>
+          <div class="stat"><div class="stat-label">TODAY'S REVENUE</div><div class="stat-value" id="m-rev">₹0.00</div></div>
+          <div class="stat"><div class="stat-label">REGISTERED PATIENTS</div><div class="stat-value" id="m-pat">0</div></div>
+          <div class="stat"><div class="stat-label">ACTIVE IPD BEDS</div><div class="stat-value" id="m-ipd">1 / 20</div></div>
+          <div class="stat"><div class="stat-label">LOW STOCK ALERTS</div><div class="stat-value" id="m-stock">0</div></div>
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Recent Sales Invoices & POS Transactions</h3></div>
@@ -358,7 +288,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- PATIENTS VIEW (UNIVERSAL UHID) -->
+      <!-- 2. PATIENT REGISTRATION -->
       <div id="view-patients" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>Patient Master Universal Registration (UHID)</h3></div>
@@ -382,7 +312,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- OPD QUEUE VIEW -->
+      <!-- 3. OPD & APPOINTMENTS -->
       <div id="view-opd" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>OPD Doctor Consultation Token Queue</h3></div>
@@ -393,7 +323,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- PHARMACY POS VIEW -->
+      <!-- 4. PHARMACY POS & INVENTORY -->
       <div id="view-pharmacy" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>POS Sales Billing & Live Stock Deduction</h3></div>
@@ -417,7 +347,29 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- SUPER ADMIN USERS & PERMISSIONS CONTROL VIEW -->
+      <!-- 5. BIOMEDICAL ASSETS -->
+      <div id="view-assets" class="view-section">
+        <div class="panel">
+          <div class="panel-head"><h3>Biomedical Equipment Asset Register</h3></div>
+          <table>
+            <thead><tr><th>Asset ID</th><th>Equipment Name</th><th>Department</th><th>Status</th></tr></thead>
+            <tbody id="assets-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 6. HRMS / EMPLOYEES -->
+      <div id="view-employees" class="view-section">
+        <div class="panel">
+          <div class="panel-head"><h3>Employee & Staff Directory</h3></div>
+          <table>
+            <thead><tr><th>Employee ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Status</th></tr></thead>
+            <tbody id="employees-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7. SUPER ADMIN USERS & PERMISSIONS CONTROL -->
       <div id="view-users" class="view-section">
         <div class="panel">
           <div class="panel-head"><h3>Super Admin: Create New Staff User</h3></div>
@@ -427,7 +379,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Username</label><input type="text" id="u-user" required></div>
               <div class="field"><label>Password</label><input type="text" id="u-pass" required></div>
               <div class="field"><label>Role</label><select id="u-role"><option>Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option><option>Administrator</option></select></div>
-              <div class="field"><label>Permission Module</label><select id="u-perm"><option value="patients">Patients Only</option><option value="pharmacy">Pharmacy Only</option><option value="opd">OPD Queue Only</option><option value="all">Full Access</option></select></div>
+              <div class="field"><label>Permission Module</label><select id="u-perm"><option value="patients">Patients Only</option><option value="pharmacy">Pharmacy Only</option><option value="opd">OPD Queue Only</option><option value="assets">Biomedical Assets Only</option><option value="all">Full Access</option></select></div>
             </div>
             <button type="submit" class="btn primary">+ Create User</button>
           </form>
@@ -453,8 +405,10 @@ let globalUsers = [];
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"]] },
-  { label: "HOSPITAL", items: [["Patient Registration", "patients", "＋"], ["OPD & Appointments", "opd", "◷"]] },
+  { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration", "patients", "＋"], ["OPD & Appointments", "opd", "◷"]] },
   { label: "PHARMACY", items: [["POS Sales & Inventory", "pharmacy", "₹"]] },
+  { label: "BIOMEDICAL", items: [["Equipment Assets", "assets", "▣"]] },
+  { label: "FINANCE & HRMS", items: [["Employee Directory", "employees", "♙"]] },
   { label: "ADMINISTRATION", items: [["User Roles & Permissions", "users", "⚿"]] }
 ];
 
@@ -496,7 +450,6 @@ function renderNav() {
   navGroups.forEach(g => {
     let groupItemsHtml = "";
     g.items.forEach(i => {
-      // Permission filtering
       if (currentUser.role === 'Super Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
         groupItemsHtml += \`<button class="nav-item \${i[1]==='dashboard'?'active':''}" onclick="switchView('\${i[1]}', this)"><span class="nav-icon">\${i[2]}</span><span>\${i[0]}</span></button>\`;
       }
@@ -517,7 +470,6 @@ function switchView(targetId, btn) {
 }
 
 async function loadAllData() {
-  // Metrics
   const mRes = await fetch('/api/dashboard/metrics');
   const mData = await mRes.json();
   if (mData.success) {
@@ -526,7 +478,6 @@ async function loadAllData() {
     document.getElementById('m-stock').innerText = mData.lowStockItems;
   }
 
-  // Bills
   const bRes = await fetch('/api/bills');
   const bills = await bRes.json();
   let bHtml = "";
@@ -535,7 +486,6 @@ async function loadAllData() {
   });
   document.getElementById('dash-bills').innerHTML = bHtml;
 
-  // Patients
   const pRes = await fetch('/api/patients');
   globalPatients = await pRes.json();
   let pHtml = "";
@@ -544,7 +494,6 @@ async function loadAllData() {
   });
   document.getElementById('patients-list').innerHTML = pHtml;
 
-  // Medicines
   const medRes = await fetch('/api/medicines');
   globalMedicines = await medRes.json();
   let mHtml = "";
@@ -557,7 +506,6 @@ async function loadAllData() {
   document.getElementById('pos-med').innerHTML = selHtml;
   updatePosRate();
 
-  // OPD Queue
   const opdRes = await fetch('/api/opd-tokens');
   const opdList = await opdRes.json();
   let oHtml = "";
@@ -567,14 +515,28 @@ async function loadAllData() {
   });
   document.getElementById('opd-list').innerHTML = oHtml;
 
-  // Users List (Super Admin Management)
+  const aRes = await fetch('/api/assets');
+  const assets = await aRes.json();
+  let aHtml = "";
+  assets.forEach(a => {
+    aHtml += \`<tr><td>\${a.assetId}</td><td>\${a.name}</td><td>\${a.department}</td><td><span style="color:#10b981;font-weight:700;">\${a.status}</span></td></tr>\`;
+  });
+  document.getElementById('assets-list').innerHTML = aHtml;
+
+  const eRes = await fetch('/api/employees');
+  const emps = await eRes.json();
+  let eHtml = "";
+  emps.forEach(e => {
+    eHtml += \`<tr><td>\${e.employeeId}</td><td>\${e.name}</td><td>\${e.designation}</td><td>\${e.department}</td><td><span style="color:#10b981;font-weight:700;">\${e.status}</span></td></tr>\`;
+  });
+  document.getElementById('employees-list').innerHTML = eHtml;
+
   const uRes = await fetch('/api/users');
   globalUsers = await uRes.json();
   let uHtml = "";
   globalUsers.forEach(u => {
     const isDeactive = u.status === 'Deactivated';
     const statusBadge = isDeactive ? \`<span style="color:#ef4444;font-weight:700;">Deactivated</span>\` : \`<span style="color:#10b981;font-weight:700;">Active</span>\`;
-    
     let actions = "";
     if (currentUser.role === 'Super Admin' && u.username !== 'Aarif') {
       const toggleLabel = isDeactive ? 'Activate' : 'Deactivate';
@@ -584,6 +546,7 @@ async function loadAllData() {
           <option value="patients" \${u.permissions.includes('patients')?'selected':''}>Patients Only</option>
           <option value="pharmacy" \${u.permissions.includes('pharmacy')?'selected':''}>Pharmacy Only</option>
           <option value="opd" \${u.permissions.includes('opd')?'selected':''}>OPD Queue Only</option>
+          <option value="assets" \${u.permissions.includes('assets')?'selected':''}>Biomedical Assets Only</option>
           <option value="all" \${u.permissions.includes('all')?'selected':''}>Full Access</option>
         </select>
         <button class="btn btn-sm \${toggleBtnClass}" onclick="toggleUserStatus('\${u.id}')" style="margin-left:5px;">\${toggleLabel}</button>
@@ -591,7 +554,6 @@ async function loadAllData() {
     } else {
       actions = \`<span>System Root</span>\`;
     }
-
     uHtml += \`<tr><td>\${u.id}</td><td>\${u.name}</td><td>\${u.username}</td><td>\${u.role}</td><td>\${JSON.stringify(u.permissions)}</td><td>\${statusBadge}</td><td>\${actions}</td></tr>\`;
   });
   document.getElementById('users-list').innerHTML = uHtml;
@@ -599,17 +561,13 @@ async function loadAllData() {
 
 function autoFetchPatient(uhid) {
   const p = globalPatients.find(x => x.uhid === uhid.trim());
-  if (p) {
-    document.getElementById('pos-cust').value = p.name;
-  }
+  if (p) document.getElementById('pos-cust').value = p.name;
 }
 
 function updatePosRate() {
   const medId = document.getElementById('pos-med').value;
   const m = globalMedicines.find(x => x.med_id === medId);
-  if (m) {
-    document.getElementById('pos-price').value = m.sale_rate;
-  }
+  if (m) document.getElementById('pos-price').value = m.sale_rate;
 }
 
 async function handlePatientReg(e) {
