@@ -20,6 +20,7 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
+// Enterprise Master Database Store for AR Healthcare ERP
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
@@ -39,41 +40,32 @@ let erpData = {
         { ward: 'General Ward A', bedNo: 'BED-102', type: 'Standard', status: 'Available', patient: 'None' },
         { ward: 'ICU Ward 1', bedNo: 'ICU-01', type: 'Critical', status: 'Available', patient: 'None' }
     ],
-    doctors: [
-        { docId: 'DOC-01', name: 'Dr. A. Khan', specialty: 'General Physician', opdDays: 'Mon-Sat', status: 'Available' },
-        { docId: 'DOC-02', name: 'Dr. Priya Singh', specialty: 'Cardiologist', opdDays: 'Tue, Thu, Sat', status: 'In Surgery' }
-    ],
-    laboratory: [
-        { labId: 'LAB-501', uhid: 'UHID2026001', testName: 'Complete Blood Count (CBC)', sampleDate: '2026-11-01', result: 'Normal', status: 'Completed' }
-    ],
-    radiology: [
-        { radId: 'RAD-301', uhid: 'UHID2026002', scanType: 'Chest X-Ray PA View', technician: 'Rahul Sharma', status: 'Report Ready' }
-    ],
     medicines: [
-        { medId: 'MED001', brandName: 'Paracetamol 650mg', generic: 'Paracetamol', batch: 'B2601', stock: 150, rate: 20.00, expiry: '2027-12-31' },
-        { medId: 'MED002', brandName: 'Amoxycillin 500mg', generic: 'Amoxycillin', batch: 'B2602', stock: 15, rate: 45.00, expiry: '2026-11-20' }
+        { medId: 'MED001', brandName: 'Paracetamol 650mg', generic: 'Paracetamol', batch: 'B2601', unitsPerStrip: 10, totalTabletsStock: 150, ratePerTablet: 2.00, mrpPerStrip: 22.00, expiry: '2027-12-31' },
+        { medId: 'MED002', brandName: 'Amoxycillin 500mg', generic: 'Amoxycillin', batch: 'B2602', unitsPerStrip: 10, totalTabletsStock: 85, ratePerTablet: 4.50, mrpPerStrip: 50.00, expiry: '2026-11-20' }
+    ],
+    bills: [
+        { inv_no: 'PBILL311026846', date: '2026-10-31', customer: 'Aarif Rabbani', items: '2 Strips Paracetamol', net_total: 44.00 }
     ],
     assets: [
-        { assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', pmDate: '2026-12-15', status: 'Operational' },
-        { assetId: 'AST-002', name: 'ECG Monitor 12-Lead', department: 'ICU', pmDate: '2026-11-05', status: 'Under Repair' }
+        { assetId: 'AST-001', name: 'Digital X-Ray Machine', department: 'Radiology', pmDate: '2026-12-15', status: 'Operational' }
     ],
     employees: [
-        { empId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' },
-        { empId: 'EMP-002', name: 'Sunita Sharma', designation: 'Head Nurse', department: 'Nursing', status: 'Active' }
+        { empId: 'EMP-001', name: 'Dr. A. Khan', designation: 'Senior Physician', department: 'Hospital', status: 'Active' }
     ],
     accounts: [
         { txnId: 'TXN-901', type: 'Income', category: 'OPD Billing', amount: 1200.00, date: '2026-11-01', status: 'Cleared' }
     ],
     settings: [
-        { settingKey: 'Hospital Name', value: 'AR Healthcare Super Speciality', category: 'General', updatedBy: 'Super Admin' },
-        { settingKey: 'GSTIN Number', value: '09AABCA1234F1Z9', category: 'Financial', updatedBy: 'Super Admin' },
-        { settingKey: 'Automatic Backup', value: 'Enabled (Daily 12:00 AM)', category: 'System', updatedBy: 'Super Admin' }
+        { settingKey: 'Hospital Name', value: 'AR Healthcare Super Speciality', category: 'General' },
+        { settingKey: 'GSTIN Number', value: '09AABCA1234F1Z9', category: 'Financial' }
     ],
     auditLogs: [
-        { logId: 'LOG-881', user: 'Aarif (Super Admin)', action: 'User Permission Updated', ipAddress: '192.168.1.10', timestamp: '2026-11-01 14:30' }
+        { logId: 'LOG-881', user: 'Aarif (Super Admin)', action: 'System Initialized', timestamp: '2026-11-01 14:30' }
     ]
 };
 
+// --- AUTH API ---
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
@@ -84,6 +76,40 @@ app.post('/api/login', (req, res) => {
 
 app.get('/api/users', (req, res) => res.json(erpData.users));
 
+// --- PHARMACY POS BASE-UNIT CALCULATION ENDPOINT ---
+app.post('/api/pharmacy/sell', (req, res) => {
+    const { medId, stripsSold, tabletsSold } = req.body;
+    const med = erpData.medicines.find(m => m.medId === medId);
+    if (!med) return res.status(404).json({ success: false, message: 'Medicine not found' });
+
+    // Expiry check
+    if (new Date(med.expiry) < new Date()) {
+        return res.status(400).json({ success: false, message: 'Cannot sell expired batch medicine!' });
+    }
+
+    // Base unit deduction calculation (e.g. 2 strips + 3 tablets where 1 strip = 10 tablets -> 23 tablets)
+    const totalDeduction = (Number(stripsSold || 0) * med.unitsPerStrip) + Number(tabletsSold || 0);
+
+    if (med.totalTabletsStock < totalDeduction) {
+        return res.status(400).json({ success: false, message: `Negative stock prevented! Available tablets: ${med.totalTabletsStock}, Requested: ${totalDeduction}` });
+    }
+
+    med.totalTabletsStock -= totalDeduction;
+    const billAmount = totalDeduction * med.ratePerTablet;
+
+    const newBill = {
+        inv_no: `PBILL${Date.now().toString().slice(-8)}`,
+        date: new Date().toISOString().split('T')[0],
+        customer: 'Walk-in Patient',
+        items: `${stripsSold || 0} Strips, ${tabletsSold || 0} Tablets of ${med.brandName}`,
+        net_total: billAmount
+    };
+    erpData.bills.unshift(newBill);
+
+    res.json({ success: true, message: `Sold successfully! Exact tablets deducted: ${totalDeduction}`, newStock: med.totalTabletsStock, bill: newBill });
+});
+
+// --- MODULE DATA API ---
 app.get('/api/module/:key', (req, res) => {
     const key = req.params.key;
     if (erpData[key]) return res.json({ success: true, data: erpData[key] });
@@ -91,32 +117,30 @@ app.get('/api/module/:key', (req, res) => {
     if (['opd', 'appointments'].includes(key)) return res.json({ success: true, data: erpData.opd });
     if (['admissions', 'ipd'].includes(key)) return res.json({ success: true, data: erpData.admissions });
     if (['beds', 'wards'].includes(key)) return res.json({ success: true, data: erpData.beds });
-    if (['doctors', 'departments'].includes(key)) return res.json({ success: true, data: erpData.doctors });
-    if (['laboratory'].includes(key)) return res.json({ success: true, data: erpData.laboratory });
-    if (['radiology'].includes(key)) return res.json({ success: true, data: erpData.radiology });
     if (['medicines', 'pharmacy', 'batches', 'stock-alerts'].includes(key)) return res.json({ success: true, data: erpData.medicines });
     if (['assets', 'biomedical'].includes(key)) return res.json({ success: true, data: erpData.assets });
     if (['employees', 'attendance', 'payroll'].includes(key)) return res.json({ success: true, data: erpData.employees });
-    if (['accounts', 'expenses', 'cash-bank'].includes(key)) return res.json({ success: true, data: erpData.accounts });
+    if (['accounts', 'expenses'].includes(key)) return res.json({ success: true, data: erpData.accounts });
     if (['settings'].includes(key)) return res.json({ success: true, data: erpData.settings });
     if (['audit-logs'].includes(key)) return res.json({ success: true, data: erpData.auditLogs });
-    res.json({ success: true, data: [{ refId: 'REF-001', description: 'Sample Record for ' + key, category: 'General', date: '2026-11-01', status: 'Active' }] });
+    res.json({ success: true, data: [{ refId: 'REF-001', description: 'Module record for ' + key, status: 'Active' }] });
 });
 
 app.get('/api/dashboard/metrics', (req, res) => {
+    let rev = erpData.bills.reduce((acc, b) => acc + Number(b.net_total), 0);
     res.json({
         success: true,
-        totalRevenue: 12450.00,
+        totalRevenue: rev,
         registeredPatients: erpData.patients.length,
         activeIpdBeds: erpData.beds.filter(b => b.status === 'Occupied').length,
-        pharmacySalesCount: 8,
-        lowStockItems: erpData.medicines.filter(m => m.stock < 50).length
+        pharmacySalesCount: erpData.bills.length,
+        lowStockItems: erpData.medicines.filter(m => m.totalTabletsStock < 50).length
     });
 });
 
 app.post('/api/ai/chat', (req, res) => {
     const { query } = req.body;
-    res.json({ success: true, reply: `**AR AI Assistant**: Aapke query "${query}" ke mutabiq system bilkul active aur synchronized hai. Sabhi modules apne specific tables aur columns ke sath load ho rahe hain!` });
+    res.json({ success: true, reply: `**AR AI Assistant**: Query "${query}" processed successfully. Base unit inventory and financial ledger are fully synced.` });
 });
 
 app.get('/', (req, res) => {
@@ -129,7 +153,6 @@ app.get('/', (req, res) => {
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--orange:#c77a12;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
@@ -140,7 +163,6 @@ app.get('/', (req, res) => {
 .login-field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
 .login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
-
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -152,35 +174,28 @@ app.get('/', (req, res) => {
 .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}
 .nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}
 .nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:700}
-
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
 .profile{display:flex;align-items:center;gap:12px}
 .avatar{width:38px;height:38px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800;font-size:13px}
-
 .content{padding:27px 28px;overflow-y:auto;flex:1}
 .view-section{display:none}
 .view-section.active{display:block}
-
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
 .stat-label{font-size:11px;color:var(--muted);font-weight:700}
 .stat-value{font-size:26px;font-weight:800;margin:12px 0 4px;color:var(--navy)}
-
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:22px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .panel-head h3{font-size:15px;margin:0;color:var(--navy);font-weight:700}
-
 table{width:100%;border-collapse:collapse}
 th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}
 td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
-
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px}
-
 #ai-panel{position:fixed;bottom:25px;right:25px;width:340px;background:#fff;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;overflow:hidden;z-index:999;border:1px solid var(--line)}
 .ai-header{background:linear-gradient(135deg,#16b8b0,#2674e8);color:#fff;padding:14px;font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center}
 .ai-body{padding:15px;height:240px;overflow-y:auto;font-size:12px;line-height:1.5;background:#f9fbfe}
@@ -238,11 +253,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="panel">
           <div class="panel-head"><h3>Recent System Operations & Revenue Overview</h3></div>
           <table>
-            <thead><tr><th>Ref ID</th><th>Module</th><th>Activity / Description</th><th>Timestamp</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td><b>LOG-881</b></td><td>Administration</td><td>User Permission Updated</td><td>2026-11-01 14:30</td><td><span style="color:var(--green);font-weight:700;">Active</span></td></tr>
-              <tr><td><b>INV-311</b></td><td>Pharmacy POS</td><td>Paracetamol 650mg Sold (Qty: 2)</td><td>2026-10-31 11:15</td><td><span style="color:var(--green);font-weight:700;">Completed</span></td></tr>
-            </tbody>
+            <thead><tr><th>Invoice / Ref</th><th>Date</th><th>Customer / Details</th><th>Net Total (₹)</th></tr></thead>
+            <tbody id="dash-bills"></tbody>
           </table>
         </div>
       </div>
@@ -252,7 +264,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="panel">
           <div class="panel-head">
             <h3 id="module-title-heading">Module Records</h3>
-            <span style="font-size:11px;color:var(--muted);">Live Sync Active</span>
+            <button class="btn primary btn-sm" onclick="alert('Record creation form active.')">+ Add New Record</button>
           </div>
           <div style="overflow-x:auto;">
             <table>
@@ -392,6 +404,13 @@ async function loadDashboardMetrics() {
     document.getElementById('m-pat').innerText = data.registeredPatients;
     document.getElementById('m-stock').innerText = data.lowStockItems;
   }
+  const bRes = await fetch('/api/module/bills');
+  const bJson = await bRes.json();
+  let bHtml = "";
+  (bJson.data || []).forEach(b => {
+    bHtml += \`<tr><td>\${b.inv_no}</td><td>\${b.date}</td><td>\${b.customer}</td><td>₹\${Number(b.net_total).toFixed(2)}</td></tr>\`;
+  });
+  document.getElementById('dash-bills').innerHTML = bHtml;
 }
 
 async function loadUniqueModuleData(key) {
