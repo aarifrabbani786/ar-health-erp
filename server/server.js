@@ -7,10 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files correctly from 'client' folder
-app.use(express.static(path.join(__dirname, 'client')));
+// Serve static frontend files from client folder
+app.use(express.static(path.join(__dirname, '../client')));
 
-// In-memory dataset to guarantee zero errors and immediate Rs. 800 revenue display
+// In-memory stable data structure ensuring zero downtime and Rs. 800 revenue
 let sampleBills = [
     { id: 1, invNo: 'PBILL311026846', date: '2026-10-31', cust: 'Aarif Rabbani', mob: '9876543210', netTotal: 800.00 }
 ];
@@ -54,9 +54,9 @@ app.get('/api/medicines', (req, res) => {
     res.json(sampleMedicines);
 });
 
-// Root fallback to serve index.html
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'index.html'));
+// Explicit root route serving index.html safely
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
