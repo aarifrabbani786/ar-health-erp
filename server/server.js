@@ -20,7 +20,6 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// Comprehensive ERP Database Store for Every Sidebar Module
 let erpData = {
     users: [
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' }
@@ -75,7 +74,6 @@ let erpData = {
     ]
 };
 
-// --- AUTH & API ENDPOINTS ---
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const user = erpData.users.find(u => u.username === username && u.password === password);
@@ -86,13 +84,9 @@ app.post('/api/login', (req, res) => {
 
 app.get('/api/users', (req, res) => res.json(erpData.users));
 
-// Generic Dynamic Data Getter for all 50+ Modules
 app.get('/api/module/:key', (req, res) => {
     const key = req.params.key;
-    if (erpData[key]) {
-        return res.json({ success: true, data: erpData[key] });
-    }
-    // Mapping fallback if key matches similar modules
+    if (erpData[key]) return res.json({ success: true, data: erpData[key] });
     if (['patients', 'patient-search', 'patients-reg'].includes(key)) return res.json({ success: true, data: erpData.patients });
     if (['opd', 'appointments'].includes(key)) return res.json({ success: true, data: erpData.opd });
     if (['admissions', 'ipd'].includes(key)) return res.json({ success: true, data: erpData.admissions });
@@ -106,8 +100,6 @@ app.get('/api/module/:key', (req, res) => {
     if (['accounts', 'expenses', 'cash-bank'].includes(key)) return res.json({ success: true, data: erpData.accounts });
     if (['settings'].includes(key)) return res.json({ success: true, data: erpData.settings });
     if (['audit-logs'].includes(key)) return res.json({ success: true, data: erpData.auditLogs });
-
-    // Default return empty array with dummy row structure for unpopulated modules
     res.json({ success: true, data: [{ refId: 'REF-001', description: 'Sample Record for ' + key, category: 'General', date: '2026-11-01', status: 'Active' }] });
 });
 
@@ -127,7 +119,6 @@ app.post('/api/ai/chat', (req, res) => {
     res.json({ success: true, reply: `**AR AI Assistant**: Aapke query "${query}" ke mutabiq system bilkul active aur synchronized hai. Sabhi modules apne specific tables aur columns ke sath load ho rahe hain!` });
 });
 
-// --- SINGLE-FILE FRONTEND WITH STRICT MODULE ROUTING ---
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -256,12 +247,12 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
       </div>
 
-      <!-- DYNAMIC MODULE VIEW (STRICTLY UNIQUE PER SIDEBAR ITEM) -->
+      <!-- DYNAMIC MODULE VIEW -->
       <div id="view-module-container" class="view-section">
         <div class="panel">
           <div class="panel-head">
             <h3 id="module-title-heading">Module Records</h3>
-            <button class="btn primary btn-sm" onclick="alert('Record creation initialized for this module.')">+ Add New Record</button>
+            <span style="font-size:11px;color:var(--muted);">Live Sync Active</span>
           </div>
           <div style="overflow-x:auto;">
             <table>
@@ -281,7 +272,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <button onclick="toggleAiPanel()" style="background:transparent;border:none;color:#fff;cursor:pointer;font-weight:800;">✕</button>
   </div>
   <div class="ai-body" id="ai-messages">
-    <div><b>AR AI:</b> Namaste Aarif bhai! Main aapka AR AI assistant hoon. Kisi bhi sidebar module ke bare me puchhein.</div>
+    <div><b>AR AI:</b> Namaste Aarif bhai! Main aapka AR AI assistant hoon.</div>
   </div>
   <div class="ai-footer">
     <input type="text" id="ai-input" placeholder="Ask AI..." style="flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;" onkeypress="if(event.key==='Enter')sendAiQuery()">
@@ -412,7 +403,7 @@ async function loadUniqueModuleData(key) {
 
   if (list.length === 0) {
     document.getElementById('module-thead').innerHTML = '<tr><th>Status</th></tr>';
-    document.getElementById('module-tbody').innerHTML = '<tr><td style="text-align:center;padding:20px;color:var(--muted);">No records available for ' + key + '.</td></tr>';
+    document.getElementById('module-tbody').innerHTML = '<tr><td style="text-align:center;padding:20px;color:var(--muted);">No records available.</td></tr>';
     return;
   }
 
