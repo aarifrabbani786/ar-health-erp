@@ -62,7 +62,7 @@ app.post('/api/login', (req, res) => {
         const { username, password } = req.body;
         const cleanUser = (username || '').trim().toLowerCase();
         const user = erpData.users.find(u => u.username.toLowerCase() === cleanUser && u.password === password);
-        if (!user) return res.status(401).json({ success: false, message: 'Invalid Username or Password. (Admin: Aarif / 7860)' });
+        if (!user) return res.status(401).json({ success: false, message: 'Invalid User ID or Password. (Admin: Aarif / 7860)' });
         if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account is deactivated by Admin.' });
         res.json({ success: true, user: { id: user.id, name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
     } catch (err) {
@@ -230,19 +230,19 @@ app.get('/', (req, res) => {
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#10243a 0%,#09131d 100%);position:fixed;z-index:9999}
-.login-card-wrapper{background:linear-gradient(135deg,rgba(30,48,70,0.8),rgba(16,36,58,0.9));border:1px solid rgba(255,255,255,0.12);border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,0.6);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
-.login-card-wrapper::before{content:'';position:absolute;inset:-2px;border-radius:26px;background:linear-gradient(45deg,#2674e8,#16b8b0,#ff6b6b);z-index:-1;opacity:0.4;filter:blur(8px)}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:#17283d;color:#fff}
+#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#09090b 100%);position:fixed;z-index:9999}
+.login-card-wrapper{background:linear-gradient(135deg,rgba(30,41,59,0.85),rgba(15,23,42,0.95));border:1px solid rgba(255,255,255,0.15);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.7);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
+.login-card-wrapper::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#3b82f6,#06b6d4,#8b5cf6,#ec4899);z-index:-1;opacity:0.5;filter:blur(10px)}
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:rgba(15,23,42,0.9);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
-.login-left p{font-size:13px;color:#98b3cb;margin-bottom:25px}
-.login-right{flex:1;background:linear-gradient(135deg,#10243a,#1e3c5c);color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.login-left p{font-size:13px;color:#94a3b8;margin-bottom:25px}
+.login-right{flex:1;background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .login-field{margin-bottom:18px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:6px}
 .login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;background:rgba(255,255,255,0.06);color:#fff;outline:none}
-.login-input::placeholder{color:#7893af}
-.eye-btn{position:absolute;right:12px;top:32px;background:none;border:none;color:#98b3cb;cursor:pointer;font-size:15px}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(38,116,232,0.4)}
+.login-input::placeholder{color:#64748b}
+.eye-btn{position:absolute;right:12px;top:32px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(59,130,246,0.4)}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
@@ -310,15 +310,15 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <form onsubmit="handleLogin(event)">
         <div class="login-field">
           <label>User ID / Username</label>
-          <input type="text" id="login-u" class="login-input" placeholder="e.g. Aarif or staff" required autocomplete="username">
+          <input type="text" id="login-u" class="login-input" required autocomplete="username">
         </div>
         <div class="login-field">
           <label>Password</label>
-          <input type="password" id="login-p" class="login-input" placeholder="Password..." required autocomplete="current-password">
+          <input type="password" id="login-p" class="login-input" required autocomplete="current-password">
           <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
-          <a href="#" onclick="alert('Default Admin User ID is: Aarif (Password: 7860) | Staff User ID is: staff (Password: 123)');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
+          <a href="#" onclick="alert('Please contact your Administrator or Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
         </div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
