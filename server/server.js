@@ -31,6 +31,14 @@ let erpData = {
     ],
     patients: [
         { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', status: 'Active OPD' }
+    ],
+    opdQueue: [
+        { token: 1, uhid: 'UHID2026001', patientName: 'Aarif Rabbani', doctor: 'Dr. A. Khan (General)', status: 'Waiting' }
+    ],
+    ipdBeds: [
+        { ward: 'General Ward A', bedNo: 'BED-101', patientName: 'Rahul Verma', status: 'Occupied' },
+        { ward: 'General Ward A', bedNo: 'BED-102', patientName: 'Vacant', status: 'Available' },
+        { ward: 'ICU', bedNo: 'ICU-01', patientName: 'Amit Sharma', status: 'Occupied' }
     ]
 };
 
@@ -58,7 +66,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
             success: true,
             totalRevenue,
             registeredPatients: patientsCount,
-            activeIpdBeds: 4,
+            activeIpdBeds: erpData.ipdBeds.filter(b => b.status === 'Occupied').length,
             pharmacySalesCount: billsCount,
             lowStockItems: 0
         });
@@ -67,7 +75,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
             success: true,
             totalRevenue: 800.00,
             registeredPatients: erpData.patients.length,
-            activeIpdBeds: 4,
+            activeIpdBeds: 2,
             pharmacySalesCount: erpData.bills.length,
             lowStockItems: 0
         });
@@ -87,38 +95,22 @@ app.get('/api/bills', async (req, res) => {
 });
 
 app.post('/api/bills', async (req, res) => {
-    if (pool) {
-        const client = await pool.connect();
-        try {
-            await client.query('BEGIN'); // ACID Transaction start
-            const b = req.body;
-            const invNo = `PBILL${Date.now().toString().slice(-8)}`;
-            const date = new Date().toISOString().split('T')[0];
-            const cust = b.cust || 'Walk-in Patient';
-            const mob = b.mob || '';
-            const netTotal = Number(b.netTotal) || 0;
-
-            const insertRes = await client.query(
-                'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                [invNo, date, cust, mob, netTotal, netTotal]
-            );
-
-            await client.query('COMMIT');
-            return res.json({ success: true, message: 'Invoice generated and saved atomically to database', bill: insertRes.rows[0] });
-        } catch (dbErr) {
-            await client.query('ROLLBACK');
-            console.error('Database transaction error, falling back:', dbErr.message);
-        } finally {
-            client.release();
-        }
-    }
-
-    // Fallback in-memory save if pool is not active
     const b = req.body;
     const invNo = `PBILL${Date.now().toString().slice(-8)}`;
     const newBill = { id: Date.now(), inv_no: invNo, date: new Date().toISOString().split('T')[0], customer_name: b.cust || 'Walk-in', mobile: b.mob || '', net_total: Number(b.netTotal) || 0 };
     erpData.bills.unshift(newBill);
-    res.json({ success: true, message: 'Invoice saved successfully', bill: newBill });
+
+    if (pool) {
+        try {
+            await pool.query(
+                'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6)',
+                [invNo, newBill.date, newBill.customer_name, newBill.mobile, newBill.net_total, newBill.net_total]
+            );
+        } catch (dbErr) {
+            console.error('DB insert warning:', dbErr.message);
+        }
+    }
+    res.json({ success: true, message: 'Invoice generated successfully', bill: newBill });
 });
 
 app.get('/api/patients', async (req, res) => {
@@ -134,19 +126,30 @@ app.get('/api/patients', async (req, res) => {
 });
 
 app.post('/api/patients', async (req, res) => {
-    try {
-        const p = req.body;
-        const uhid = `UHID${Date.now().toString().slice(-6)}`;
-        const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, status: 'Active OPD' };
-        erpData.patients.unshift(newPatient);
-        
-        if (pool) {
+    const p = req.body;
+    const uhid = `UHID${Date.now().toString().slice(-6)}`;
+    const newPatient = { id: Date.now(), uhid, name: p.name, age: p.age, sex: p.sex, contact: p.contact, status: 'Active OPD' };
+    erpData.patients.unshift(newPatient);
+    
+    // Also auto-add to OPD queue
+    erpData.opdQueue.unshift({ token: erpData.opdQueue.length + 1, uhid, patientName: p.name, doctor: 'Dr. A. Khan (General)', status: 'Waiting' });
+
+    if (pool) {
+        try {
             await pool.query('INSERT INTO patients (uhid, name, age, sex, contact) VALUES ($1, $2, $3, $4, $5)', [uhid, p.name, p.age, p.sex, p.contact]);
+        } catch (dbErr) {
+            console.error('DB insert warning:', dbErr.message);
         }
-        res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
     }
+    res.json({ success: true, message: 'Patient registered successfully', patient: newPatient });
+});
+
+app.get('/api/opd', (req, res) => {
+    res.json(erpData.opdQueue);
+});
+
+app.get('/api/ipd', (req, res) => {
+    res.json(erpData.ipdBeds);
 });
 
 app.get('/api/medicines', async (req, res) => {
@@ -225,7 +228,7 @@ app.get('/', (req, res) => {
         <ul class="sidebar-menu" id="nav-list">
             <li class="active" data-target="view-dashboard">📊 Executive Dashboard</li>
             <li data-target="view-patients">👤 Patient Registration (UHID)</li>
-            <li data-target="view-opd">🩺 OPD & Doctor Queue</li>
+            <li data-target="view-opd">🩺 OPD Token & Queue</li>
             <li data-target="view-ipd">🛏️ IPD Wards & Beds</li>
             <li data-target="view-pharmacy">💊 Pharmacy Inventory & Batches</li>
             <li data-target="view-billing">🧾 POS Billing & Invoicing</li>
@@ -256,7 +259,7 @@ app.get('/', (req, res) => {
                     </div>
                     <div class="metric-card warning">
                         <div class="metric-title">Active IPD Beds</div>
-                        <div class="metric-value">4 / 20</div>
+                        <div class="metric-value" id="m-ipd">2 / 20</div>
                     </div>
                     <div class="metric-card danger">
                         <div class="metric-title">Low Stock Alerts</div>
@@ -289,7 +292,7 @@ app.get('/', (req, res) => {
                             <div class="form-group"><label>Gender</label><select id="p-sex"><option>Male</option><option>Female</option></select></div>
                             <div class="form-group"><label>Mobile Number</label><input type="text" id="p-mob" required></div>
                         </div>
-                        <button type="submit" class="btn btn-success" style="margin-top: 10px;">💾 Register Patient</button>
+                        <button type="submit" class="btn btn-success" style="margin-top: 10px;">💾 Register & Queue Patient</button>
                     </form>
                 </div>
                 <div class="card-box">
@@ -306,8 +309,13 @@ app.get('/', (req, res) => {
             <!-- 3. OPD -->
             <div id="view-opd" class="view-section">
                 <div class="card-box">
-                    <div class="card-title">OPD Doctor Consultation & Vitals Token Queue</div>
-                    <p style="color: #64748b; font-size: 13px; margin-top: 6px;">Manage token numbers and doctor consultations.</p>
+                    <div class="card-title">OPD Doctor Consultation & Token Queue</div>
+                    <table>
+                        <thead><tr><th>Token No</th><th>UHID</th><th>Patient Name</th><th>Assigned Doctor</th><th>Status</th></tr></thead>
+                        <tbody id="opd-table-body">
+                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Loading OPD queue...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -317,8 +325,8 @@ app.get('/', (req, res) => {
                     <div class="card-title">IPD Ward Management & Bed Occupancy</div>
                     <table>
                         <thead><tr><th>Ward Name</th><th>Bed No</th><th>Patient Name</th><th>Status</th></tr></thead>
-                        <tbody>
-                            <tr><td>General Ward A</td><td>BED-101</td><td>Rahul Verma</td><td><span style="color: #ef4444; font-weight:700;">Occupied</span></td></tr>
+                        <tbody id="ipd-table-body">
+                            <tr><td colspan="4" style="text-align:center; color:#64748b;">Loading ward occupancy...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -408,9 +416,10 @@ app.get('/', (req, res) => {
                 if(mData.success) {
                     document.getElementById('m-revenue').innerText = '₹' + Number(mData.totalRevenue).toFixed(2);
                     document.getElementById('m-patients').innerText = mData.registeredPatients;
+                    document.getElementById('m-ipd').innerText = mData.activeIpdBeds + ' / 20';
                 }
 
-                // Fetch Bills for Dashboard Table
+                // Fetch Bills
                 const bRes = await fetch('/api/bills');
                 const bills = await bRes.json();
                 let bHtml = '';
@@ -427,6 +436,25 @@ app.get('/', (req, res) => {
                     pHtml += \`<tr><td>\${p.uhid}</td><td>\${p.name}</td><td>\${p.age} / \${p.sex}</td><td>\${p.contact}</td><td><span style="color: #10b981; font-weight:700;">\${p.status || 'Active OPD'}</span></td></tr>\`;
                 });
                 document.getElementById('patients-table-body').innerHTML = pHtml;
+
+                // Fetch OPD Queue
+                const opdRes = await fetch('/api/opd');
+                const opdList = await opdRes.json();
+                let opdHtml = '';
+                opdList.forEach(o => {
+                    opdHtml += \`<tr><td>#\${o.token}</td><td>\${o.uhid}</td><td>\${o.patientName}</td><td>\${o.doctor}</td><td><span style="color: #0284c7; font-weight:700;">\${o.status}</span></td></tr>\`;
+                });
+                document.getElementById('opd-table-body').innerHTML = opdHtml;
+
+                // Fetch IPD Beds
+                const ipdRes = await fetch('/api/ipd');
+                const ipdList = await ipdRes.json();
+                let ipdHtml = '';
+                ipdList.forEach(i => {
+                    const badgeColor = i.status === 'Occupied' ? '#ef4444' : '#10b981';
+                    ipdHtml += \`<tr><td>\${i.ward}</td><td>\${i.bedNo}</td><td>\${i.patientName}</td><td><span style="color: \${badgeColor}; font-weight:700;">\${i.status}</span></td></tr>\`;
+                });
+                document.getElementById('ipd-table-body').innerHTML = ipdHtml;
 
                 // Fetch Medicines
                 const medRes = await fetch('/api/medicines');
@@ -455,7 +483,7 @@ app.get('/', (req, res) => {
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert('Invoice generated and saved successfully! Invoice No: ' + (data.bill.inv_no || data.bill.invNo));
+                    alert('Invoice generated and saved successfully! Invoice No: ' + data.bill.inv_no);
                     loadEnterpriseData();
                     switchView('view-dashboard');
                 } else {
@@ -481,10 +509,10 @@ app.get('/', (req, res) => {
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert('Patient registered successfully! UHID: ' + data.patient.uhid);
+                    alert('Patient registered and added to OPD queue! UHID: ' + data.patient.uhid);
                     document.getElementById('patient-reg-form').reset();
                     loadEnterpriseData();
-                    switchView('view-patients');
+                    switchView('view-opd');
                 } else {
                     alert('Error registering patient');
                 }
