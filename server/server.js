@@ -552,7 +552,7 @@ async function handlePatientRegistration(e) {
   e.preventDefault();
   const body = {
     title: document.getElementById('reg-title').value,
-    name: document.getElementById('reg-name'].value,
+    name: document.getElementById('reg-name').value,
     relation: document.getElementById('reg-relation').value,
     guardian: document.getElementById('reg-guardian').value,
     age: document.getElementById('reg-age').value,
