@@ -60,8 +60,9 @@ let erpData = {
 app.post('/api/login', (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = erpData.users.find(u => u.username === username && u.password === password);
-        if (!user) return res.status(401).json({ success: false, message: 'Invalid Username or Password' });
+        const cleanUser = (username || '').trim().toLowerCase();
+        const user = erpData.users.find(u => u.username.toLowerCase() === cleanUser && u.password === password);
+        if (!user) return res.status(401).json({ success: false, message: 'Invalid Username or Password. (Admin: Aarif / 7860)' });
         if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account is deactivated by Admin.' });
         res.json({ success: true, user: { id: user.id, name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
     } catch (err) {
@@ -72,12 +73,12 @@ app.post('/api/login', (req, res) => {
 app.post('/api/users/create', (req, res) => {
     try {
         const { name, username, password, role, permissions } = req.body;
-        if (erpData.users.some(u => u.username === username)) {
+        if (erpData.users.some(u => u.username.toLowerCase() === username.trim().toLowerCase())) {
             return res.status(400).json({ success: false, message: 'Username already exists.' });
         }
         const newUser = {
             id: 'USR-' + Date.now().toString().slice(-4),
-            name, username, password, role,
+            name, username: username.trim(), password, role,
             permissions: permissions || ['patients', 'search'],
             status: 'Active'
         };
@@ -102,7 +103,7 @@ app.post('/api/users/status', (req, res) => {
 
 app.post('/api/users/change-password', (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
-    const user = erpData.users.find(u => u.username === username);
+    const user = erpData.users.find(u => u.username.toLowerCase() === (username || '').trim().toLowerCase());
     if (!user || user.password !== oldPassword) {
         return res.status(400).json({ success: false, message: 'Incorrect old password.' });
     }
@@ -228,16 +229,21 @@ app.get('/', (req, res) => {
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
-.login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
-.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
-.login-left h2{font-size:26px;color:var(--navy);font-weight:800;margin-bottom:8px}
-.login-left p{font-size:13px;color:var(--muted);margin-bottom:30px}
-.login-right{flex:1;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.login-field{margin-bottom:18px;text-align:left}
-.login-field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
-.login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
+
+#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#10243a 0%,#09131d 100%);position:fixed;z-index:9999}
+.login-card-wrapper{background:linear-gradient(135deg,rgba(30,48,70,0.8),rgba(16,36,58,0.9));border:1px solid rgba(255,255,255,0.12);border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,0.6);width:min(880px,94vw);height:540px;display:flex;overflow:hidden;position:relative}
+.login-card-wrapper::before{content:'';position:absolute;inset:-2px;border-radius:26px;background:linear-gradient(45deg,#2674e8,#16b8b0,#ff6b6b);z-index:-1;opacity:0.4;filter:blur(8px)}
+.login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;background:#17283d;color:#fff}
+.login-left h2{font-size:26px;font-weight:800;margin-bottom:8px;color:#fff}
+.login-left p{font-size:13px;color:#98b3cb;margin-bottom:25px}
+.login-right{flex:1;background:linear-gradient(135deg,#10243a,#1e3c5c);color:#fff;padding:50px 40px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.login-field{margin-bottom:18px;text-align:left;position:relative}
+.login-field label{display:block;font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:6px}
+.login-input{width:100%;padding:13px 40px 13px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;background:rgba(255,255,255,0.06);color:#fff;outline:none}
+.login-input::placeholder{color:#7893af}
+.eye-btn{position:absolute;right:12px;top:32px;background:none;border:none;color:#98b3cb;cursor:pointer;font-size:15px}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(38,116,232,0.4)}
+
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -297,19 +303,30 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 <body>
 
 <div id="login-screen">
-  <div class="login-container">
+  <div class="login-card-wrapper">
     <div class="login-left">
-      <h2>AR Healthcare ERP</h2>
-      <p>Secure Sign In (Admin / Staff)</p>
+      <h2>Sign In</h2>
+      <p>Enter your User ID & Password to access AR Healthcare ERP</p>
       <form onsubmit="handleLogin(event)">
-        <div class="login-field"><label>Username</label><input type="text" id="login-u" class="login-input" placeholder="e.g. Aarif or staff" required></div>
-        <div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" placeholder="Password..." required></div>
+        <div class="login-field">
+          <label>User ID / Username</label>
+          <input type="text" id="login-u" class="login-input" placeholder="e.g. Aarif or staff" required autocomplete="username">
+        </div>
+        <div class="login-field">
+          <label>Password</label>
+          <input type="password" id="login-p" class="login-input" placeholder="Password..." required autocomplete="current-password">
+          <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
+          <a href="#" onclick="alert('Default Admin User ID is: Aarif (Password: 7860) | Staff User ID is: staff (Password: 123)');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
+        </div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
     </div>
     <div class="login-right">
-      <h2>A R PHARMA & SURGICAL</h2>
-      <p style="font-size:13px;line-height:1.6;opacity:.85;">Hospital Management, Pharmacy & Clinical AI</p>
+      <h2>AR HEALTHCARE ERP</h2>
+      <p style="font-size:13px;line-height:1.6;opacity:.85;margin-top:10px;">A R PHARMA & SURGICAL AGENCY</p>
+      <div style="margin-top:20px;font-size:11px;opacity:0.6;">Hospital Management, Pharmacy & Clinical AI</div>
     </div>
   </div>
 </div>
@@ -393,7 +410,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           <div class="panel-head"><h3>Create User & Set Permissions</h3></div>
           <form onsubmit="handleCreateUser(event)" class="form-grid">
             <div class="field"><label>Full Name *</label><input type="text" id="new-u-name" required></div>
-            <div class="field"><label>Username *</label><input type="text" id="new-u-username" required></div>
+            <div class="field"><label>User ID / Username *</label><input type="text" id="new-u-username" required></div>
             <div class="field"><label>Password *</label><input type="password" id="new-u-password" required></div>
             <div class="field"><label>Role *</label><select id="new-u-role"><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Admin</option></select></div>
             <div class="field" style="grid-column:span 2;"><label>Permissions</label><input type="text" id="new-u-perms" value="patients, search, billing" required></div>
@@ -537,6 +554,11 @@ window.onload = function() {
     switchView(savedPage || 'dashboard');
   }
 };
+
+function togglePasswordVisibility() {
+  const pInput = document.getElementById('login-p');
+  pInput.type = pInput.type === 'password' ? 'text' : 'password';
+}
 
 async function handleLogin(e) {
   e.preventDefault();
