@@ -11,13 +11,17 @@ const connectionString = process.env.DATABASE_URL || "";
 let pool = null;
 
 if (connectionString) {
-    pool = new Pool({
-        connectionString,
-        ssl: { rejectUnauthorized: false }
-    });
-    pool.connect()
-        .then(() => console.log('Connected to PostgreSQL database successfully.'))
-        .catch(err => console.error('Database connection warning:', err.message));
+    try {
+        pool = new Pool({
+            connectionString,
+            ssl: { rejectUnauthorized: false }
+        });
+        pool.connect()
+            .then(() => console.log('Connected to PostgreSQL database successfully.'))
+            .catch(err => console.error('Database connection warning:', err.message));
+    } catch (e) {
+        console.error('DB Init Error:', e.message);
+    }
 }
 
 let dailySequence = { date: '', count: 0 };
@@ -52,11 +56,15 @@ let erpData = {
 };
 
 app.post('/api/login', (req, res) => {
-    const { username, password } = req.body;
-    const user = erpData.users.find(u => u.username === username && u.password === password);
-    if (!user) return res.status(401).json({ success: false, message: 'Invalid Username or Password' });
-    if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account deactivated.' });
-    res.json({ success: true, user: { name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
+    try {
+        const { username, password } = req.body;
+        const user = erpData.users.find(u => u.username === username && u.password === password);
+        if (!user) return res.status(401).json({ success: false, message: 'Invalid Username or Password' });
+        if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account deactivated.' });
+        res.json({ success: true, user: { name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.get('/api/users', (req, res) => res.json(erpData.users));
@@ -64,28 +72,32 @@ app.get('/api/doctors', (req, res) => res.json(erpData.doctors));
 app.get('/api/next-uhid', (req, res) => res.json({ uhid: getNextUHID() }));
 
 app.post('/api/patients/register', (req, res) => {
-    const p = req.body;
-    if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
-    if (p.adhaar && !/^\d{12}$/.test(p.adhaar)) return res.status(400).json({ success: false, message: 'Aadhaar must be exactly 12 digits.' });
+    try {
+        const p = req.body;
+        if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
+        if (p.adhaar && !/^\d{12}$/.test(p.adhaar)) return res.status(400).json({ success: false, message: 'Aadhaar must be exactly 12 digits.' });
 
-    const uhid = getNextUHID();
-    const nowStr = new Date().toLocaleString('en-GB');
+        const uhid = getNextUHID();
+        const nowStr = new Date().toLocaleString('en-GB');
 
-    const newPatient = {
-        uhid, title: p.title || 'Mr.', name: p.name, relation: p.relation || 'C/O', guardian: p.guardian || '',
-        age: p.age, gender: p.gender, contact: p.contact, adhaar: p.adhaar || '', abha: p.abha || '',
-        address: p.address || '', doctor: p.doctor, fee: Number(p.fee || 0), payType: p.payType || 'Cash', date: nowStr
-    };
-    erpData.patients.unshift(newPatient);
+        const newPatient = {
+            uhid, title: p.title || 'Mr.', name: p.name, relation: p.relation || 'C/O', guardian: p.guardian || '',
+            age: p.age, gender: p.gender, contact: p.contact, adhaar: p.adhaar || '', abha: p.abha || '',
+            address: p.address || '', doctor: p.doctor, fee: Number(p.fee || 0), payType: p.payType || 'Cash', date: nowStr
+        };
+        erpData.patients.unshift(newPatient);
 
-    const billNo = `BILL-${Date.now().toString().slice(-6)}`;
-    const newBill = {
-        billNo, uhid, patientName: `${p.title} ${p.name}`, doctor: p.doctor, totalFee: p.fee,
-        payType: p.payType, createdBy: p.createdBy || 'Staff', dateTime: nowStr
-    };
-    erpData.bills.unshift(newBill);
+        const billNo = `BILL-${Date.now().toString().slice(-6)}`;
+        const newBill = {
+            billNo, uhid, patientName: p.title + ' ' + p.name, doctor: p.doctor, totalFee: p.fee,
+            payType: p.payType, createdBy: p.createdBy || 'Staff', dateTime: nowStr
+        };
+        erpData.bills.unshift(newBill);
 
-    res.json({ success: true, message: 'Patient Registered & Bill Generated', patient: newPatient, bill: newBill });
+        res.json({ success: true, message: 'Patient Registered & Bill Generated', patient: newPatient, bill: newBill });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.get('/api/patients/search', (req, res) => {
@@ -121,7 +133,6 @@ app.get('/', (req, res) => {
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#eef2f7 0%,#c9d6ff 100%);position:fixed;z-index:9999}
 .login-container{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(16,36,58,0.15);width:min(850px,92vw);height:520px;display:flex;overflow:hidden}
 .login-left{flex:1.2;padding:50px 45px;display:flex;flex-direction:column;justify-content:center}
@@ -132,7 +143,6 @@ app.get('/', (req, res) => {
 .login-field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
 .login-input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#f8fafc;outline:none}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d5ec4);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
-
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
@@ -144,43 +154,34 @@ app.get('/', (req, res) => {
 .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}
 .nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff}
 .nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:700}
-
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
 .profile{display:flex;align-items:center;gap:12px}
 .avatar{width:38px;height:38px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800;font-size:13px}
-
 .content{padding:27px 28px;overflow-y:auto;flex:1}
 .view-section{display:none}
 .view-section.active{display:block}
-
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
 .stat-label{font-size:11px;color:var(--muted);font-weight:700}
 .stat-value{font-size:26px;font-weight:800;margin:12px 0 4px;color:var(--navy)}
-
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:22px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .panel-head h3{font-size:15px;margin:0;color:var(--navy);font-weight:700}
-
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:15px}
 .field{display:flex;flex-direction:column;gap:6px;position:relative}
 .field label{font-size:11px;font-weight:700;color:var(--navy)}
 .field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;outline:none}
-
 table{width:100%;border-collapse:collapse}
 th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}
 td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
-
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
-
 .suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
 .suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
 .suggestion-item:hover{background:#f0f6ff}
-
 #print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999}
 .print-card{background:#fff;padding:30px;border-radius:16px;width:min(600px,95vw);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
 @media print{
@@ -257,8 +258,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Father / Guardian Name</label><input type="text" id="reg-guardian"></div>
               <div class="field"><label>Age *</label><input type="number" id="reg-age" required></div>
               <div class="field"><label>Gender</label><select id="reg-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="\\\\d{10}" required placeholder="10 digits"></div>
-              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="\\\\d{12}" placeholder="12 digits"></div>
+              <div class="field"><label>Mobile No (10-Digit Locked) *</label><input type="text" id="reg-contact" maxlength="10" pattern="[0-9]{10}" required placeholder="10 digits"></div>
+              <div class="field"><label>Aadhaar No (12-Digit Locked)</label><input type="text" id="reg-adhaar" maxlength="12" pattern="[0-9]{12}" placeholder="12 digits"></div>
               <div class="field"><label>ABHA ID</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
               <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="District, State"></div>
               <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select></div>
@@ -397,11 +398,11 @@ function renderNav() {
     let groupItemsHtml = "";
     g.items.forEach(i => {
       if (currentUser.role === 'Super Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        groupItemsHtml += `<button class="nav-item ${i[1]===activeModuleKey?'active':''}" id="nav-btn-${i[1]}" onclick="switchView('${i[1]}')"><span class="nav-icon">${i[2]}</span><span>${i[0]}</span></button>`;
+        groupItemsHtml += '<button class="nav-item ' + (i[1]===activeModuleKey?'active':'') + '" id="nav-btn-' + i[1] + '" onclick="switchView(\\'' + i[1] + '\\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
       }
     });
     if(groupItemsHtml !== "") {
-      html += `<div class="nav-label">${g.label}</div>` + groupItemsHtml;
+      html += '<div class="nav-label">' + g.label + '</div>' + groupItemsHtml;
     }
   });
   document.getElementById('nav-menu').innerHTML = html;
@@ -410,9 +411,9 @@ function renderNav() {
 async function loadDoctors() {
   const res = await fetch('/api/doctors');
   doctorsList = await res.json();
-  let opt = `<option value="">-- Select Doctor --</option>`;
+  let opt = '<option value="">-- Select Doctor --</option>';
   doctorsList.forEach(d => {
-    opt += `<option value="${d.name}">${d.name} (Fee: ₹${d.fee})</option>`;
+    opt += '<option value="' + d.name + '">' + d.name + ' (Fee: ₹' + d.fee + ')</option>';
   });
   document.getElementById('reg-doctor').innerHTML = opt;
 }
@@ -477,7 +478,7 @@ async function loadDashboardMetrics() {
   const pData = await pRes.json();
   let html = "";
   (pData.data || []).forEach(p => {
-    html += `<tr><td><b>${p.uhid}</b></td><td>${p.title} ${p.name}</td><td>${p.doctor}</td><td>₹${p.fee}</td><td>${p.payType}</td><td>${p.date}</td></tr>`;
+    html += '<tr><td><b>' + p.uhid + '</b></td><td>' + p.title + ' ' + p.name + '</td><td>' + p.doctor + '</td><td>₹' + p.fee + '</td><td>' + p.payType + '</td><td>' + p.date + '</td></tr>';
   });
   document.getElementById('dash-patients').innerHTML = html;
 }
@@ -496,11 +497,11 @@ async function loadUniqueModuleData(key) {
   }
 
   const columns = Object.keys(list[0]);
-  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => `<th>${c.toUpperCase()}</th>`).join('') + '</tr>';
+  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(c => '<th>' + c.toUpperCase() + '</th>').join('') + '</tr>';
 
   let rows = "";
   list.forEach(row => {
-    rows += '<tr>' + columns.map(c => `<td>${row[c] !== undefined ? row[c] : '—'}</td>`).join('') + '</tr>';
+    rows += '<tr>' + columns.map(c => '<td>' + (row[c] !== undefined ? row[c] : '—') + '</td>').join('') + '</tr>';
   });
   document.getElementById('module-tbody').innerHTML = rows;
 }
@@ -521,9 +522,7 @@ async function handleLiveSearch(val) {
 
   let html = "";
   data.forEach(p => {
-    html += `<div class="suggestion-item" onclick="autoFillPatient('${p.uhid}')">
-      <strong>${p.title} ${p.name}</strong> (${p.uhid}) - Mob: ${p.contact}
-    </div>`;
+    html += '<div class="suggestion-item" onclick="autoFillPatient(\\'' + p.uhid + '\\')"><strong>' + p.title + ' ' + p.name + '</strong> (' + p.uhid + ') - Mob: ' + p.contact + '</div>';
   });
   box.innerHTML = html;
   box.style.display = 'block';
@@ -579,8 +578,8 @@ async function handlePatientRegistration(e) {
     document.getElementById('pb-datetime').innerText = data.bill.dateTime;
     document.getElementById('pb-uhid').innerText = data.patient.uhid;
     document.getElementById('pb-user').innerText = data.bill.createdBy;
-    document.getElementById('pb-name').innerText = `${data.patient.title} ${data.patient.name} (${data.patient.relation} ${data.patient.guardian})`;
-    document.getElementById('pb-agegender').innerText = `${data.patient.age} Yrs / ${data.patient.gender}`;
+    document.getElementById('pb-name').innerText = data.patient.title + ' ' + data.patient.name + ' (' + data.patient.relation + ' ' + data.patient.guardian + ')';
+    document.getElementById('pb-agegender').innerText = data.patient.age + ' Yrs / ' + data.patient.gender;
     document.getElementById('pb-contact').innerText = data.patient.contact;
     document.getElementById('pb-adhaar').innerText = data.patient.adhaar || 'N/A';
     document.getElementById('pb-doctor').innerText = data.patient.doctor;
