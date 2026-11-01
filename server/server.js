@@ -21,15 +21,15 @@ if (connectionString) {
         .catch(err => console.error('Database connection warning:', err.message));
 }
 
-// In-Memory Enterprise Store for 100% Reliability & Zero Downtime
+// In-Memory Fallback Store for 100% Reliability
 let erpData = {
     bills: [
         { id: 1, invNo: 'PBILL311026846', date: '2026-10-31', cust: 'Aarif Rabbani', mob: '9876543210', netTotal: 800.00 }
     ],
     medicines: [
-        { id: 1, medId: 'MED001', brand: 'Paracetamol 650mg', generic: 'Paracetamol', batch: 'B2601', stock: 150, price: 20.00 },
-        { id: 2, medId: 'MED002', brand: 'Amoxycillin 500mg', generic: 'Amoxycillin', batch: 'B2602', stock: 85, price: 45.00 },
-        { id: 3, medId: 'MED003', brand: 'Pantoprazole 40mg', generic: 'Pantoprazole', batch: 'B2603', stock: 200, price: 15.00 }
+        { id: 1, medId: 'MED001', brand_name: 'Paracetamol 650mg', generic_name: 'Paracetamol', batch_no: 'B2601', available_qty: 150, sale_rate: 20.00 },
+        { id: 2, medId: 'MED002', brand_name: 'Amoxycillin 500mg', generic_name: 'Amoxycillin', batch_no: 'B2602', available_qty: 85, sale_rate: 45.00 },
+        { id: 3, medId: 'MED003', brand_name: 'Pantoprazole 40mg', generic_name: 'Pantoprazole', batch_no: 'B2603', available_qty: 200, sale_rate: 15.00 }
     ],
     patients: [
         { id: 1, uhid: 'UHID2026001', name: 'Aarif Rabbani', age: 27, sex: 'Male', contact: '9876543210', status: 'Active OPD' }
@@ -143,8 +143,8 @@ app.post('/api/bills', async (req, res) => {
         if (pool) {
             try {
                 await pool.query(
-                    'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, net_total) VALUES ($1, $2, $3, $4, $5)',
-                    [invNo, date, cust, mob, netTotal]
+                    'INSERT INTO sales_invoices (inv_no, date, customer_name, mobile, subtotal, net_total) VALUES ($1, $2, $3, $4, $5, $6)',
+                    [invNo, date, cust, mob, netTotal, netTotal]
                 );
             } catch (dbErr) {
                 console.error('Database insert warning (fallback used):', dbErr.message);
