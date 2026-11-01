@@ -67,12 +67,22 @@ let erpData = {
     bills: [
         { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, discount: 50, netFee: 450, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00', edited: false }
     ],
+    opdAppointments: [
+        { appId: 'APT-101', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', tokenNo: 1, slot: 'Morning (10:00 AM)', status: 'Booked' }
+    ],
+    ipdAdmissions: [
+        { ipdNo: 'IPD-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', ward: 'General Ward - Bed 01', doctor: 'Dr. A. Khan', admitDate: '2026-11-01', status: 'Admitted' }
+    ],
+    wards: [
+        { wardName: 'General Ward', totalBeds: 10, occupiedBeds: 1, dailyCharge: '₹500 / day' },
+        { wardName: 'Private Room', totalBeds: 5, occupiedBeds: 0, dailyCharge: '₹1500 / day' },
+        { wardName: 'ICU', totalBeds: 5, occupiedBeds: 1, dailyCharge: '₹3000 / day' }
+    ],
     laboratory: [
-        { testId: 'LAB-101', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', testName: 'Complete Blood Count (CBC)', status: 'Completed', result: 'Hb: 13.5 g/dL, WBC: 7200 /µL, Platelets: 2.5 Lakhs', date: '2026-11-01' }
+        { testId: 'LAB-101', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', testName: 'Complete Blood Count (CBC)', status: 'Completed', result: 'Hb: 13.5 g/dL, WBC: 7200 /µL', date: '2026-11-01' }
     ],
     pharmacyStock: [
-        { itemCode: 'MED-501', itemName: 'Paracetamol 650mg', batch: 'PAR26A', qty: 450, price: '₹2.50' },
-        { itemCode: 'MED-502', itemName: 'Amoxycillin 500mg', batch: 'AMX12B', qty: 120, price: '₹12.00' }
+        { itemCode: 'MED-501', itemName: 'Paracetamol 650mg', batch: 'PAR26A', qty: 450, price: '₹2.50' }
     ],
     auditLogs: [
         { time: '2026-11-01 14:00', user: 'Aarif Rabbani', action: 'System Initialized & Default Data Loaded' }
@@ -174,7 +184,7 @@ app.post('/api/patients/register', (req, res) => {
         if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
 
         const uhid = p.existingUhid || getNextUHID();
-        incrementUHID(); // Increment only upon successful registration
+        incrementUHID(); // Increment only upon successful bill save
 
         const nowStr = new Date().toLocaleString('en-GB');
         const fee = Number(p.fee || 0);
@@ -195,12 +205,35 @@ app.post('/api/patients/register', (req, res) => {
         };
         erpData.bills.unshift(newBill);
 
-        erpData.auditLogs.unshift({ time: nowStr, user: p.createdBy || 'Staff', action: 'Registered Patient ' + p.name + ' (' + uhid + ') with Net Fee ₹' + netFee + ' [Mode: ' + p.payType + ']' });
-
         res.json({ success: true, message: 'Patient Registered & Bill Generated', patient: newPatient, bill: newBill });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
+});
+
+app.post('/api/opd/book', (req, res) => {
+    const { uhid, patientName, doctor, slot } = req.body;
+    const aptId = 'APT-' + Date.now().toString().slice(-4);
+    const tokenNo = erpData.opdAppointments.length + 1;
+    const newApt = { appId, uhid, patientName, doctor, tokenNo, slot: slot || 'Morning Session', status: 'Booked' };
+    erpData.opdAppointments.unshift(newApt);
+    res.json({ success: true, message: 'OPD Appointment Booked Successfully', appointment: newApt });
+});
+
+app.post('/api/ipd/admit', (req, res) => {
+    const { uhid, patientName, ward, doctor } = req.body;
+    const ipdNo = 'IPD-' + Date.now().toString().slice(-4);
+    const admitDate = new Date().toLocaleDateString('en-GB');
+    const newAdmit = { ipdNo, uhid, patientName, ward, doctor, admitDate, status: 'Admitted' };
+    erpData.ipdAdmissions.unshift(newAdmit);
+    res.json({ success: true, message: 'Patient Admitted to IPD Successfully', admission: newAdmit });
+});
+
+app.post('/api/wards/add', (req, res) => {
+    const { wardName, totalBeds, dailyCharge } = req.body;
+    const newWard = { wardName, totalBeds: Number(totalBeds), occupiedBeds: 0, dailyCharge: '₹' + dailyCharge + ' / day' };
+    erpData.wards.push(newWard);
+    res.json({ success: true, message: 'Ward Added Successfully', wards: erpData.wards });
 });
 
 app.get('/api/patients/search', (req, res) => {
@@ -224,7 +257,6 @@ app.post('/api/bills/edit', (req, res) => {
         bill.netFee = Number(netFee);
         bill.payType = payType;
         bill.edited = true;
-        erpData.auditLogs.unshift({ time: new Date().toLocaleString('en-GB'), user: userRole, action: 'Edited bill ' + billNo + ' to Net Fee ₹' + netFee });
         res.json({ success: true, message: 'Bill updated successfully!', bill });
     } else {
         res.status(404).json({ success: false, message: 'Bill not found' });
@@ -249,7 +281,10 @@ app.post('/api/ai/query', (req, res) => {
 
 app.get('/api/module/:key', (req, res) => {
     const key = req.params.key;
-    if (['patients', 'patient-search', 'patients-reg', 'opd'].includes(key)) return res.json({ success: true, data: erpData.patients });
+    if (['patients', 'patient-search', 'patients-reg'].includes(key)) return res.json({ success: true, data: erpData.patients });
+    if (['opd'].includes(key)) return res.json({ success: true, data: erpData.opdAppointments });
+    if (['ipd'].includes(key)) return res.json({ success: true, data: erpData.ipdAdmissions });
+    if (['wards'].includes(key)) return res.json({ success: true, data: erpData.wards });
     if (['bills', 'hospital-billing'].includes(key)) return res.json({ success: true, data: erpData.bills });
     if (['doctors'].includes(key)) return res.json({ success: true, data: erpData.doctors });
     if (['users'].includes(key)) return res.json({ success: true, data: erpData.users });
@@ -262,7 +297,7 @@ app.get('/api/module/:key', (req, res) => {
 app.get('/api/dashboard/metrics', (req, res) => {
     let rev = erpData.bills.reduce((acc, b) => acc + Number(b.netFee), 0);
     let creditTotal = erpData.bills.filter(b => b.payType === 'Credit / Udhar').reduce((acc, b) => acc + Number(b.netFee), 0);
-    res.json({ success: true, totalRevenue: rev, creditTotal, registeredPatients: erpData.patients.length, activeIpdBeds: 2, lowStockItems: 1 });
+    res.json({ success: true, totalRevenue: rev, creditTotal, registeredPatients: erpData.patients.length, activeIpdBeds: erpData.ipdAdmissions.length, lowStockItems: 1 });
 });
 
 app.get('/', (req, res) => {
@@ -347,8 +382,9 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
   #print-card-area, #print-card-area * { visibility: visible !important; }
   #prescription-card-area, #prescription-card-area * { visibility: visible !important; }
   #print-modal, #prescription-modal { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; background: white !important; display: flex !important; align-items: flex-start !important; justify-content: center !important; }
-  .print-card { box-shadow: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  .print-card { box-shadow: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; height: auto !important; }
   .no-print { display: none !important; }
+  @page { size: A4; margin: 10mm; }
 }
 </style>
 </head>
@@ -449,6 +485,40 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
               <div class="field"><label>Payment Type *</label><select id="reg-paytype"><option>Cash</option><option>Credit / Udhar</option><option>UPI / Online</option><option>Card</option></select></div>
             </div>
             <button type="submit" class="btn primary" style="padding:12px 25px;font-size:13px;">💾 Register & Generate Bill</button>
+          </form>
+        </div>
+
+        <!-- OPD & Appointments Panel -->
+        <div class="panel" id="opd-panel" style="display:none;">
+          <div class="panel-head"><h3>Book OPD Appointment / Token</h3></div>
+          <form id="opd-book-form" class="form-grid">
+            <div class="field"><label>Patient UHID / Name *</label><input type="text" id="opd-search-uhid" placeholder="Enter UHID or Name" required></div>
+            <div class="field"><label>Select Doctor *</label><select id="opd-doctor" required></select></div>
+            <div class="field"><label>Time Slot</label><select id="opd-slot"><option>Morning Session (10 AM - 1 PM)</option><option>Evening Session (5 PM - 8 PM)</option></select></div>
+            <div style="grid-column: span 3;"><button type="submit" class="btn primary">🎫 Book OPD Appointment & Generate Token</button></div>
+          </form>
+        </div>
+
+        <!-- IPD Admissions Panel -->
+        <div class="panel" id="ipd-panel" style="display:none;">
+          <div class="panel-head"><h3>IPD Patient Admission</h3></div>
+          <form id="ipd-admit-form" class="form-grid">
+            <div class="field"><label>Patient UHID *</label><input type="text" id="ipd-uhid" placeholder="Enter UHID..." required></div>
+            <div class="field"><label>Patient Name *</label><input type="text" id="ipd-name" placeholder="Patient Name..." required></div>
+            <div class="field"><label>Select Ward / Bed *</label><select id="ipd-ward" required><option value="General Ward - Bed 01">General Ward - Bed 01</option><option value="Private Room - Bed 01">Private Room - Bed 01</option><option value="ICU - Bed 01">ICU - Bed 01</option></select></div>
+            <div class="field"><label>Consulting Doctor *</label><select id="ipd-doctor" required></select></div>
+            <div style="grid-column: span 3;"><button type="submit" class="btn primary">🛏 Admit Patient to IPD</button></div>
+          </form>
+        </div>
+
+        <!-- Wards & Beds Panel -->
+        <div class="panel" id="wards-panel" style="display:none;">
+          <div class="panel-head"><h3>Manage Wards & Beds Setup</h3></div>
+          <form id="ward-add-form" class="form-grid">
+            <div class="field"><label>Ward Name *</label><input type="text" id="w-name" placeholder="e.g. Deluxe Ward" required></div>
+            <div class="field"><label>Total Beds *</label><input type="number" id="w-beds" placeholder="10" required></div>
+            <div class="field"><label>Daily Charge (₹) *</label><input type="number" id="w-charge" placeholder="1000" required></div>
+            <div style="grid-column: span 3;"><button type="submit" class="btn primary">+ Add New Ward</button></div>
           </form>
         </div>
 
@@ -554,14 +624,14 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
       <p><strong>Consulting Doctor:</strong> <span id="pb-doctor"></span></p>
     </div>
     <table style="width:100%;margin:15px 0;">
-      <thead><tr><th>Description</th><th>Mode</th><th>Gross (₹)</th><th>Discount (₹)</th><th>Net (₹)</th></tr></thead>
+      <thead><tr><th>Description</th><th>Payment Mode</th><th>Gross (₹)</th><th>Discount (₹)</th><th>Net Paid / Credit (₹)</th></tr></thead>
       <tbody>
         <tr>
           <td>OPD Doctor Consultation Fee</td>
-          <td id="pb-paymode">Cash</td>
+          <td id="pb-paymode" style="font-weight:900;color:var(--blue);">Cash</td>
           <td id="pb-gross">₹0.00</td>
           <td id="pb-disc">₹0.00</td>
-          <td id="pb-amount" style="font-weight:900;">₹0.00</td>
+          <td id="pb-amount" style="font-weight:900;color:var(--green);">₹0.00</td>
         </tr>
       </tbody>
     </table>
@@ -592,29 +662,29 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700
       <div><strong>Address:</strong> <span id="pr-address"></span></div>
     </div>
     
-    <!-- Vitals Top Bar -->
+    <!-- Vitals Blank Top Bar -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;background:#f8fafd;padding:10px;border-radius:8px;font-size:12px;">
-      <div><label>BP:</label> <input type="text" id="vital-bp" placeholder="e.g. 120/80" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Pulse:</label> <input type="text" id="vital-pulse" placeholder="e.g. 72/min" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Temp:</label> <input type="text" id="vital-temp" placeholder="e.g. 98.6°F" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
-      <div><label>Weight:</label> <input type="text" id="vital-wt" placeholder="e.g. 70 kg" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>BP:</label> <input type="text" id="vital-bp" value="" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Pulse:</label> <input type="text" id="vital-pulse" value="" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Temp:</label> <input type="text" id="vital-temp" value="" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
+      <div><label>Weight:</label> <input type="text" id="vital-wt" value="" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div>
     </div>
 
     <!-- Main Layout: Left 1 inch (Investigation/Advice) & Right Rx Treatment Area -->
     <div style="display:grid;grid-template-columns:220px 1fr;gap:15px;margin-bottom:15px;">
       <div style="border-right:1px solid var(--line);padding-right:12px;">
         <label style="font-size:12px;font-weight:900;color:var(--navy);display:block;margin-bottom:6px;">Investigation / Advice:</label>
-        <textarea id="pr-investigation" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Tests, Lab, X-Ray, Diet instructions..."></textarea>
+        <textarea id="pr-investigation" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder=""></textarea>
       </div>
       <div>
         <div style="margin-bottom:8px;font-size:18px;font-weight:900;color:var(--blue);">Rx</div>
-        <textarea id="pr-treatment" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:700;" placeholder="Write clinical diagnosis and medicines here..."></textarea>
+        <textarea id="pr-treatment" style="width:100%;height:220px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:700;" placeholder=""></textarea>
       </div>
     </div>
 
     <!-- Footer: Next Visit & Doctor Signature & Medico Legal Disclaimer -->
     <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:10px;font-size:12px;font-weight:800;">
-      <div><span>Next Visit: </span><input type="text" id="pr-nextvisit" placeholder="e.g. After 5 Days" style="padding:4px;border:1px solid var(--line);border-radius:4px;width:140px;"></div>
+      <div><span>Next Visit: </span><input type="text" id="pr-nextvisit" value="" style="padding:4px;border:1px solid var(--line);border-radius:4px;width:140px;"></div>
       <div style="text-align:right;">
         <div style="margin-bottom:25px;">___________________________</div>
         <div>Doctor Signature</div>
@@ -669,6 +739,9 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
   document.getElementById('dash-quick-find').addEventListener('input', (e) => handleDashQuickFind(e.target.value));
   document.getElementById('patient-reg-form').addEventListener('submit', handlePatientRegistration);
+  document.getElementById('opd-book-form').addEventListener('submit', handleOpdAppointment);
+  document.getElementById('ipd-admit-form').addEventListener('submit', handleIpdAdmission);
+  document.getElementById('ward-add-form').addEventListener('submit', handleAddWard);
   document.getElementById('doctor-form').addEventListener('submit', handleAddNewDoctor);
   document.getElementById('user-create-form').addEventListener('submit', handleCreateUser);
   document.getElementById('password-change-form').addEventListener('submit', handleChangePassword);
@@ -806,6 +879,10 @@ async function loadDoctors() {
   });
   const docSelect = document.getElementById('reg-doctor');
   if (docSelect) docSelect.innerHTML = opt;
+  const opdDoc = document.getElementById('opd-doctor');
+  if (opdDoc) opdDoc.innerHTML = opt;
+  const ipdDoc = document.getElementById('ipd-doctor');
+  if (ipdDoc) ipdDoc.innerHTML = opt;
 }
 
 function autoFetchDoctorFee() {
@@ -848,6 +925,9 @@ function switchView(targetKey) {
     document.getElementById('view-module-container').classList.add('active');
     
     document.getElementById('patient-reg-panel').style.display = (targetKey === 'patients' || targetKey === 'patient-search') ? 'block' : 'none';
+    document.getElementById('opd-panel').style.display = (targetKey === 'opd') ? 'block' : 'none';
+    document.getElementById('ipd-panel').style.display = (targetKey === 'ipd') ? 'block' : 'none';
+    document.getElementById('wards-panel').style.display = (targetKey === 'wards') ? 'block' : 'none';
     document.getElementById('doctor-panel').style.display = (targetKey === 'doctors') ? 'block' : 'none';
     document.getElementById('user-mgmt-panel').style.display = (targetKey === 'users' && (currentUser.role === 'Super Admin' || currentUser.role === 'Admin')) ? 'block' : 'none';
     document.getElementById('backup-panel').style.display = (targetKey === 'backup') ? 'block' : 'none';
@@ -870,6 +950,7 @@ async function loadDashboardMetrics() {
     document.getElementById('m-rev').innerText = '₹' + data.totalRevenue.toFixed(2);
     document.getElementById('m-credit').innerText = '₹' + data.creditTotal.toFixed(2);
     document.getElementById('m-pat').innerText = data.registeredPatients;
+    document.getElementById('m-ipd').innerText = data.activeIpdBeds + ' / 20';
   }
 
   const pRes = await fetch('/api/module/patients');
@@ -1093,6 +1174,64 @@ async function handlePatientRegistration(e) {
     fetchNextUHID();
   } else {
     alert(data.message);
+  }
+}
+
+async function handleOpdAppointment(e) {
+  e.preventDefault();
+  const uhid = document.getElementById('opd-search-uhid').value;
+  const doctor = document.getElementById('opd-doctor').value;
+  const slot = document.getElementById('opd-slot').value;
+
+  const res = await fetch('/api/opd/book', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ uhid, patientName: uhid, doctor, slot })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if(data.success) {
+    document.getElementById('opd-book-form').reset();
+    switchView('opd');
+  }
+}
+
+async function handleIpdAdmission(e) {
+  e.preventDefault();
+  const uhid = document.getElementById('ipd-uhid').value;
+  const patientName = document.getElementById('ipd-name').value;
+  const ward = document.getElementById('ipd-ward').value;
+  const doctor = document.getElementById('ipd-doctor').value;
+
+  const res = await fetch('/api/ipd/admit', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ uhid, patientName, ward, doctor })
+  });
+  const data = await res.json();
+  alert(data.message + ' (IPD No: ' + data.admission.ipdNo + ')');
+  if(data.success) {
+    document.getElementById('ipd-admit-form').reset();
+    switchView('ipd');
+  }
+}
+
+async function handleAddWard(e) {
+  e.preventDefault();
+  const wardName = document.getElementById('w-name').value;
+  const totalBeds = document.getElementById('w-beds').value;
+  const dailyCharge = document.getElementById('w-charge').value;
+
+  const res = await fetch('/api/wards/add', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ wardName, totalBeds, dailyCharge })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if(data.success) {
+    document.getElementById('ward-add-form').reset();
+    switchView('wards');
   }
 }
 
