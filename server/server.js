@@ -38,8 +38,9 @@ function getNextUHID() {
 
 let erpData = {
     users: [
-        { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active' },
-        { id: 'USR-102', name: 'Staff Reception', username: 'staff', password: '123', role: 'Cashier / Receptionist', permissions: ['patients', 'search', 'billing'], status: 'Active' }
+        { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active', isProtected: true },
+        { id: 'USR-102', name: 'Staff Reception', username: 'staff', password: '123', role: 'Cashier / Receptionist', permissions: ['patients', 'patient-search', 'opd', 'hospital-billing'], status: 'Active', isProtected: false },
+        { id: 'USR-103', name: 'Demo User', username: 'demo', password: '1234', role: 'Demo Viewer', permissions: ['all'], status: 'Active', isProtected: false, isDemo: true }
     ],
     patients: [
         { uhid: 'AR011126-01', title: 'Mr.', name: 'Aarif Rabbani', relation: 'S/O', guardian: 'Md Rabbani', age: 27, gender: 'Male', contact: '9876543210', adhaar: '123456789012', abha: 'ABHA12345678', address: 'Maharajganj, UP', doctor: 'Dr. A. Khan', fee: 500, discount: 50, netFee: 450, payType: 'Cash', date: '2026-11-01 14:00', workflowStatus: 'Registered & Visited' }
@@ -64,7 +65,7 @@ app.post('/api/login', (req, res) => {
         const user = erpData.users.find(u => u.username.toLowerCase() === cleanUser && u.password === password);
         if (!user) return res.status(401).json({ success: false, message: 'Invalid User ID or Password. (Admin: Aarif / 7860)' });
         if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account is deactivated by Admin.' });
-        res.json({ success: true, user: { id: user.id, name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status } });
+        res.json({ success: true, user: { id: user.id, name: user.name, username: user.username, role: user.role, permissions: user.permissions, status: user.status, isProtected: user.isProtected, isDemo: user.isDemo } });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -79,8 +80,9 @@ app.post('/api/users/create', (req, res) => {
         const newUser = {
             id: 'USR-' + Date.now().toString().slice(-4),
             name, username: username.trim(), password, role,
-            permissions: permissions || ['patients', 'search'],
-            status: 'Active'
+            permissions: permissions || ['patients', 'patient-search'],
+            status: 'Active',
+            isProtected: false
         };
         erpData.users.push(newUser);
         erpData.auditLogs.unshift({ time: new Date().toLocaleString('en-GB'), user: 'Admin', action: 'Created user ' + name + ' (' + role + ')' });
@@ -90,10 +92,23 @@ app.post('/api/users/create', (req, res) => {
     }
 });
 
+app.post('/api/users/permissions', (req, res) => {
+    const { userId, permissions } = req.body;
+    const user = erpData.users.find(u => u.id === userId);
+    if (user) {
+        if (user.isProtected) return res.status(403).json({ success: false, message: 'Super Admin permissions cannot be modified!' });
+        user.permissions = permissions;
+        res.json({ success: true, message: 'Permissions updated successfully!', users: erpData.users });
+    } else {
+        res.status(404).json({ success: false, message: 'User not found' });
+    }
+});
+
 app.post('/api/users/status', (req, res) => {
     const { userId, status } = req.body;
     const user = erpData.users.find(u => u.id === userId);
     if (user) {
+        if (user.isProtected) return res.status(403).json({ success: false, message: 'Super Admin account cannot be deactivated!' });
         user.status = status;
         res.json({ success: true, users: erpData.users });
     } else {
@@ -205,7 +220,7 @@ app.post('/api/ai/query', (req, res) => {
 
 app.get('/api/module/:key', (req, res) => {
     const key = req.params.key;
-    if (['patients', 'patient-search', 'patients-reg'].includes(key)) return res.json({ success: true, data: erpData.patients });
+    if (['patients', 'patient-search', 'patients-reg', 'opd'].includes(key)) return res.json({ success: true, data: erpData.patients });
     if (['bills', 'hospital-billing'].includes(key)) return res.json({ success: true, data: erpData.bills });
     if (['doctors'].includes(key)) return res.json({ success: true, data: erpData.doctors });
     if (['users'].includes(key)) return res.json({ success: true, data: erpData.users });
@@ -225,38 +240,33 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR ERP Complete Billing Software</title>
+<title>AR Healthcare ERP - Hospital Management</title>
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
-
 .login-card-wrapper{background:rgba(15, 23, 42, 0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.35);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6);width:min(900px,94vw);height:520px;display:flex;overflow:hidden;position:relative;z-index:1}
 .login-card-wrapper::after{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.5;filter:blur(10px)}
-
 .login-left{flex:1.2;padding:40px 45px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(15,23,42,0.75);color:#fff}
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:15px;color:#fff;width:100%}
 .login-left form{width:100%;max-width:320px}
-
 .login-right{flex:1;background:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop') no-repeat center center/cover;color:#fff;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;position:relative}
 .login-right-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,0.55),rgba(38,116,232,0.7));z-index:1}
 .login-right-content{position:relative;z-index:2;background:rgba(15,23,42,0.7);padding:22px;border-radius:14px;backdrop-filter:blur(8px);width:100%;border:1px solid rgba(255,255,255,0.2)}
-
 .login-field{margin-bottom:16px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
 .login-input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
 .login-input::placeholder{color:#94a3b8}
-
 .login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4);text-align:center}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
-.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;transition:all 0.3s ease}
-.brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18}
+.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;transition:all 0.3s ease;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18;position:sticky;top:0;background:var(--navy);z-index:10}
 .logo{width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:white;font-weight:900;font-size:16px}
 .brand strong{display:block;font-size:14px;color:#fff}
 .brand small{display:block;color:#9db3ca;font-size:11px;margin-top:4px}
-.nav{padding:12px 10px 30px;overflow-y:auto;flex:1}
+.nav{padding:12px 10px 30px;flex:1}
 .nav-label{font-size:10px;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px;font-weight:800}
 .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer;transition:all 0.2s}
 .nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff;transform:translateX(4px)}
@@ -296,13 +306,16 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 .ai-body{padding:15px;max-height:250px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:10px}
 .ai-foot{padding:10px;border-top:1px solid var(--line);display:flex;gap:8px}
 .ai-foot input{flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;outline:none}
-#print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999}
-.print-card{background:#fff;padding:30px;border-radius:16px;width:min(650px,95vw);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
-@media print{
-  body *{visibility:hidden}
-  #print-card-area, #print-card-area *{visibility:visible}
-  #print-card-area{position:absolute;left:0;top:0;width:100%}
-  .no-print{display:none!important}
+
+#print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999}
+.print-card{background:#fff;padding:30px;border-radius:16px;width:min(700px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.3)}
+
+@media print {
+  body * { visibility: hidden !important; }
+  #print-card-area, #print-card-area *, #prescription-card-area, #prescription-card-area * { visibility: visible !important; }
+  #print-modal, #prescription-modal { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; background: white !important; display: flex !important; align-items: flex-start !important; justify-content: center !important; }
+  .print-card { box-shadow: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  .no-print { display: none !important; }
 }
 </style>
 </head>
@@ -322,7 +335,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           <input type="password" id="login-p" class="login-input" required autocomplete="current-password">
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
-          <a href="#" onclick="alert('Please contact your Administrator or Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
+          <a href="#" onclick="alert('Please contact your Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
         </div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
@@ -340,7 +353,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
 <div id="app">
   <aside class="sidebar" id="sidebar-panel">
-    <div class="brand"><div class="logo">AR</div><div><strong>AR ERP BILLING</strong><small>Complete Billing & ERP</small></div></div>
+    <div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>Hospital • Pharmacy • Biomedical</small></div></div>
     <nav class="nav" id="nav-menu"></nav>
   </aside>
 
@@ -417,14 +430,27 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         </div>
 
         <div class="panel" id="user-mgmt-panel" style="display:none;">
-          <div class="panel-head"><h3>Create User & Set Permissions</h3></div>
-          <form onsubmit="handleCreateUser(event)" class="form-grid">
+          <div class="panel-head"><h3>Create User & Dynamic Permissions</h3></div>
+          <form onsubmit="handleCreateUser(event)" class="form-grid" style="grid-template-columns:1fr 1fr;">
             <div class="field"><label>Full Name *</label><input type="text" id="new-u-name" required></div>
             <div class="field"><label>User ID / Username *</label><input type="text" id="new-u-username" required></div>
             <div class="field"><label>Password *</label><input type="password" id="new-u-password" required></div>
-            <div class="field"><label>Role *</label><select id="new-u-role"><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Admin</option></select></div>
-            <div class="field" style="grid-column:span 2;"><label>Permissions</label><input type="text" id="new-u-perms" value="patients, search, billing" required></div>
-            <div style="grid-column: span 3;"><button type="submit" class="btn primary">👤 Create User Account</button></div>
+            <div class="field"><label>Role *</label><select id="new-u-role"><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option></select></div>
+            <div class="field" style="grid-column:span 2;">
+              <label>Select Module Permissions:</label>
+              <div id="permission-checkboxes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;font-size:12px;background:#f8fafd;padding:12px;border:1px solid var(--line);border-radius:8px;">
+                <label><input type="checkbox" value="patients" checked> Patient Registration</label>
+                <label><input type="checkbox" value="patient-search" checked> Patient Search Master</label>
+                <label><input type="checkbox" value="opd"> OPD & Appointments</label>
+                <label><input type="checkbox" value="ipd"> IPD Admissions</label>
+                <label><input type="checkbox" value="doctors"> Doctors & Departments</label>
+                <label><input type="checkbox" value="hospital-billing" checked> Hospital Billing</label>
+                <label><input type="checkbox" value="pharmacy"> Pharmacy Dashboard</label>
+                <label><input type="checkbox" value="medicines"> Medicine Master</label>
+                <label><input type="checkbox" value="accounts"> Accounts Dashboard</label>
+              </div>
+            </div>
+            <div style="grid-column: span 2;"><button type="submit" class="btn primary">👤 Create User Account</button></div>
           </form>
         </div>
 
@@ -468,8 +494,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);">AR ERP COMPLETE BILLING SOFTWARE</h2>
-      <p style="margin:4px 0;font-size:12px;color:var(--muted);">Hospital Management & OPD Consultation Invoice</p>
+      <h2 style="margin:0;color:var(--navy);">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:12px;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;">
       <div><strong>Bill No:</strong> <span id="pb-billno"></span></div>
@@ -505,8 +531,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   </div>
 </div>
 
-<div id="prescription-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:99999">
-  <div class="print-card" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
+<div id="prescription-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999">
+  <div class="print-card" id="prescription-card-area" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
       <h2 style="margin:0;color:var(--navy);">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
       <p style="margin:4px 0;font-size:11px;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
@@ -545,9 +571,12 @@ let currentActiveBillNo = '';
 
 const navGroups = [
   { label: "OVERVIEW", items: [["Dashboard", "dashboard", "▦"], ["Notifications", "notifications", "♧"], ["Tasks & Approvals", "approvals", "✓"]] },
-  { label: "BILLING & HOSPITAL", items: [["Patient Registration & Billing", "patients", "＋"], ["Patient Search Master", "patient-search", "⌕"], ["Doctors & Departments", "doctors", "✚"], ["Hospital Billing & Edit Req", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
-  { label: "PHARMACY & INVENTORY", items: [["Pharmacy Dashboard", "pharmacy", "✚"], ["Medicine Master", "medicines", "▤"], ["Stock & Expiry", "stock-alerts", "⚠"]] },
-  { label: "ADMINISTRATION & USERS", items: [["User & Role Management", "users", "♙"], ["Change Password", "password", "⚙"], ["Audit Logs", "audit-logs", "☷"]] }
+  { label: "HOSPITAL MANAGEMENT", items: [["Patient Registration", "patients", "＋"], ["Patient Search", "patient-search", "⌕"], ["OPD & Appointments", "opd", "🩺"], ["IPD Admissions", "ipd", "🛏"], ["Wards & Beds", "wards", "🏢"], ["Doctors & Departments", "doctors", "✚"], ["Nursing Station", "nursing", "👩‍⚕️"], ["Laboratory", "lab", "🧪"], ["Radiology", "radiology", "🩻"], ["OT & ICU", "ot-icu", "⚡"], ["Discharge Management", "discharge", "📋"], ["Hospital Billing", "hospital-billing", "₹"], ["Medical Records", "medical-records", "▧"]] },
+  { label: "PHARMACY", items: [["Pharmacy Dashboard", "pharmacy", "✚"], ["Medicine Master", "medicines", "▤"], ["Batch & Strip Stock", "batch-stock", "📦"], ["Purchase Entry", "purchase-entry", "🛒"], ["Sales Billing", "sales-billing", "💵"], ["Sales Return", "sales-return", "↩"], ["Customers", "customers", "👥"], ["Suppliers", "suppliers", "🤝"], ["Barcode & Labels", "barcode", "🏷"], ["Stock Transfer", "stock-transfer", "🔄"], ["Expiry & Low Stock", "stock-alerts", "⚠"], ["Pharmacy Reports", "pharmacy-reports", "📊"]] },
+  { label: "CENTRAL STORE & PURCHASE", items: [["Inventory Dashboard", "inv-dash", "📊"], ["Item Master", "item-master", "📦"], ["Warehouses & Stores", "warehouses", "🏭"], ["Requisitions", "requisitions", "📑"], ["Goods Receipt (GRN)", "grn", "📥"], ["Stock Issue / Return", "stock-issue", "⇄"], ["Stock Ledger", "stock-ledger", "📖"], ["Purchase Orders", "po", "📝"], ["Vendor Quotations", "quotations", "📄"], ["Supplier Payments", "payments", "💳"]] },
+  { label: "BIOMEDICAL ENGINEERING", items: [["Biomedical Dashboard", "biomed-dash", "⚡"], ["Equipment Assets", "equipment", "💻"], ["Equipment Complaints", "complaints", "🔧"], ["Work Orders & Repairs", "repairs", "🛠"], ["Preventive Maintenance", "pm", "🛡"], ["Calibration Register", "calibration", "📐"], ["AMC / CMC Contracts", "amc", "📜"], ["Service Vendors", "vendors", "🏢"], ["Equipment Handover", "handover", "🤝"], ["Equipment Reports", "biomed-reports", "📈"]] },
+  { label: "FINANCE & HRMS", items: [["Accounts Dashboard", "accounts", "🏦"], ["Income & Expenses", "income-expenses", "📈"], ["Cash & Bank", "cash-bank", "💰"], ["Receivables / Payables", "rec-pay", "📑"], ["Employee Directory", "emp-dir", "👔"], ["Attendance & Shifts", "attendance", "⏱"], ["Leave & Duty Roster", "roster", "📅"], ["Payroll", "payroll", "💳"]] },
+  { label: "REPORTS & ADMINISTRATION", items: [["Reports & Analytics", "reports", "📊"], ["Quality & Compliance", "quality", "✓"], ["Document Register", "documents", "📁"], ["User & Role Management", "users", "♙"], ["Change Password", "password", "⚙"], ["Audit Logs", "audit-logs", "☷"], ["Branch & Department Setup", "branch", "🏢"], ["Settings & Backup", "backup", "💾"]] }
 ];
 
 window.onload = function() {
@@ -618,7 +647,8 @@ function renderNav() {
   navGroups.forEach(function(g) {
     let groupItemsHtml = '';
     g.items.forEach(function(i) {
-      if (currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
+      // Super admin or Demo user gets all options visible; others check permissions
+      if (currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || currentUser.isDemo || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
         groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" onclick="switchView(\\'' + i[1] + '\\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
       }
     });
@@ -664,6 +694,9 @@ async function fetchNextUHID() {
 }
 
 function switchView(targetKey) {
+  if (currentUser.isDemo) {
+    // Demo user can view any module, but actions can be simulated
+  }
   activeModuleKey = targetKey;
   localStorage.setItem('ar_erp_active_page', targetKey);
 
@@ -760,18 +793,39 @@ async function loadUniqueModuleData(key) {
   }
 
   const columns = Object.keys(list[0]);
-  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(function(c) { return '<th>' + c.toUpperCase() + '</th>'; }).join('') + (key === 'users' ? '<th>ACTION</th>' : '') + '</tr>';
+  document.getElementById('module-thead').innerHTML = '<tr>' + columns.map(function(c) { return '<th>' + c.toUpperCase() + '</th>'; }).join('') + (key === 'users' ? '<th>ACTIONS & PERMISSIONS</th>' : '') + '</tr>';
 
   let rows = '';
   list.forEach(function(row) {
     rows += '<tr>' + columns.map(function(c) { return '<td>' + (row[c] !== undefined ? row[c] : '—') + '</td>'; }).join('');
     if (key === 'users') {
       let isAct = row.status === 'Active';
-      rows += '<td><button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="toggleUserStatus(\\'' + row.id + '\\', \\'' + (isAct ? 'Deactivated' : 'Active') + '\\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button></td>';
+      if (row.isProtected) {
+        rows += '<td><span style="color:var(--green);font-weight:700;">🔒 Locked (Super Admin)</span></td>';
+      } else {
+        rows += '<td>' +
+          '<button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="toggleUserStatus(\\'' + row.id + '\\', \\'' + (isAct ? 'Deactivated' : 'Active') + '\\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button> ' +
+          '<button class="btn btn-sm primary" onclick="editUserPermissions(\'' + row.id + '\', \'' + row.name + '\')">⚙ Edit Perms</button>' +
+        '</td>';
+      }
     }
     rows += '</tr>';
   });
   document.getElementById('module-tbody').innerHTML = rows;
+}
+
+async function editUserPermissions(userId, userName) {
+  const newPerms = prompt("Enter comma-separated permissions for " + userName + " (e.g. patients, patient-search, hospital-billing):", "patients, patient-search, hospital-billing");
+  if (!newPerms) return;
+  const permsArr = newPerms.split(',').map(s => s.trim());
+  const res = await fetch('/api/users/permissions', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ userId, permissions: permsArr })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) loadUniqueModuleData('users');
 }
 
 async function handleLiveSearch(val) {
@@ -818,6 +872,10 @@ async function autoFillPatient(uhid) {
 
 async function handlePatientRegistration(e) {
   e.preventDefault();
+  if (currentUser.isDemo) {
+    alert('Demo mode: Action simulated successfully!');
+    return;
+  }
   const body = {
     existingUhid: document.getElementById('reg-uhid').value,
     title: document.getElementById('reg-title').value,
@@ -924,6 +982,7 @@ async function requestBillEdit() {
 
 async function handleAddNewDoctor(e) {
   e.preventDefault();
+  if (currentUser.isDemo) { alert('Demo mode active'); return; }
   const name = document.getElementById('doc-name').value;
   const fee = document.getElementById('doc-fee').value;
   const department = document.getElementById('doc-dept').value;
@@ -944,12 +1003,16 @@ async function handleAddNewDoctor(e) {
 
 async function handleCreateUser(e) {
   e.preventDefault();
+  if (currentUser.isDemo) { alert('Demo mode active'); return; }
+  const checkboxes = document.querySelectorAll('#permission-checkboxes input[type="checkbox"]:checked');
+  const perms = Array.from(checkboxes).map(cb => cb.value);
+
   const body = {
     name: document.getElementById('new-u-name').value,
     username: document.getElementById('new-u-username').value,
     password: document.getElementById('new-u-password').value,
     role: document.getElementById('new-u-role').value,
-    permissions: document.getElementById('new-u-perms').value.split(',').map(function(s) { return s.trim(); })
+    permissions: perms
   };
   const res = await fetch('/api/users/create', {
     method: 'POST',
@@ -958,7 +1021,7 @@ async function handleCreateUser(e) {
   });
   const data = await res.json();
   if (data.success) {
-    alert('User created successfully!');
+    alert('User created successfully with selected permissions!');
     loadUniqueModuleData('users');
   } else {
     alert(data.message);
@@ -973,6 +1036,7 @@ async function toggleUserStatus(userId, status) {
   });
   const data = await res.json();
   if (data.success) loadUniqueModuleData('users');
+  else alert(data.message);
 }
 
 async function handleChangePassword(e) {
