@@ -45,8 +45,8 @@ let erpData = {
         { uhid: 'AR011126-01', title: 'Mr.', name: 'Aarif Rabbani', relation: 'S/O', guardian: 'Md Rabbani', age: 27, gender: 'Male', contact: '9876543210', adhaar: '123456789012', abha: 'ABHA12345678', address: 'Maharajganj, UP', doctor: 'Dr. A. Khan', fee: 500, discount: 50, netFee: 450, payType: 'Cash', date: '2026-11-01 14:00', workflowStatus: 'Registered & Visited' }
     ],
     doctors: [
-        { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 500, department: 'General Medicine' },
-        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 700, department: 'Gynecology' }
+        { id: 'DOC1', name: 'Dr. A. Khan (General Physician)', fee: 200, department: 'General Medicine' },
+        { id: 'DOC2', name: 'Dr. Priya Singh (Gynecologist)', fee: 200, department: 'Gynecology' }
     ],
     bills: [
         { billNo: 'BILL-011126-01', uhid: 'AR011126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan', totalFee: 500, discount: 50, netFee: 450, payType: 'Cash', createdBy: 'Aarif (Super Admin)', dateTime: '2026-11-01 14:00', edited: false }
@@ -239,16 +239,15 @@ app.get('/', (req, res) => {
 .login-left h2{font-size:26px;font-weight:800;margin-bottom:15px;color:#fff;width:100%}
 .login-left form{width:100%;max-width:320px}
 
-.login-right{flex:1;background:linear-gradient(rgba(15,23,42,0.4),rgba(15,23,42,0.4)),url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=1000&auto=format&fit=crop') no-repeat center center/cover;color:#fff;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;position:relative}
-.login-right-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,0.5),rgba(59,130,246,0.6));z-index:1}
-.login-right-content{position:relative;z-index:2;background:rgba(15,23,42,0.6);padding:20px;border-radius:14px;backdrop-filter:blur(6px);width:100%}
+.login-right{flex:1;background:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop') no-repeat center center/cover;color:#fff;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;position:relative}
+.login-right-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,0.55),rgba(38,116,232,0.7));z-index:1}
+.login-right-content{position:relative;z-index:2;background:rgba(15,23,42,0.7);padding:22px;border-radius:14px;backdrop-filter:blur(8px);width:100%;border:1px solid rgba(255,255,255,0.2)}
 
 .login-field{margin-bottom:16px;text-align:left;position:relative}
 .login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
-.login-input{width:100%;padding:12px 40px 12px 14px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
+.login-input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
 .login-input::placeholder{color:#94a3b8}
 
-.eye-btn{position:absolute;right:12px;top:32px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:16px;padding:4px;z-index:20}
 .login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4);text-align:center}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
@@ -321,7 +320,6 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="login-field">
           <label>Password</label>
           <input type="password" id="login-p" class="login-input" required autocomplete="current-password">
-          <button type="button" class="eye-btn" id="eye-toggle-btn" onclick="window.togglePasswordVisibility()">👁</button>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
           <a href="#" onclick="alert('Please contact your Administrator or Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
@@ -332,9 +330,9 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <div class="login-right">
       <div class="login-right-overlay"></div>
       <div class="login-right-content">
-        <h2>AR ERP COMPLETE BILLING SOFTWARE</h2>
-        <p style="font-size:13px;line-height:1.5;margin-top:8px;opacity:0.9;">Advanced Hospital & Pharmacy Billing System</p>
-        <div style="margin-top:12px;font-size:11px;background:rgba(0,0,0,0.3);padding:6px 12px;border-radius:20px;display:inline-block;">⚡ Multi-Mode Billing & Clinical AI</div>
+        <h2 style="font-size:20px;font-weight:800;margin:0 0 6px 0;">🏥 AR ERP SYSTEM</h2>
+        <p style="font-size:12px;line-height:1.4;margin:0;opacity:0.9;">Professional Hospital & Pharmacy Billing Software</p>
+        <div style="margin-top:10px;font-size:10px;background:rgba(16,185,129,0.3);padding:4px 10px;border-radius:20px;display:inline-block;">⚡ Live Billing & Clinical Workflows</div>
       </div>
     </div>
   </div>
@@ -564,18 +562,6 @@ window.onload = function() {
     window.renderNav();
     window.loadDoctors();
     window.switchView(savedPage || 'dashboard');
-  }
-};
-
-window.togglePasswordVisibility = function() {
-  const pInput = document.getElementById('login-p');
-  const btn = document.getElementById('eye-toggle-btn');
-  if (pInput.type === 'password') {
-    pInput.type = 'text';
-    btn.innerText = '🙈';
-  } else {
-    pInput.type = 'password';
-    btn.innerText = '👁';
   }
 };
 
