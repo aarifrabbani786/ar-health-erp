@@ -143,6 +143,7 @@ app.post('/api/patients/register', (req, res) => {
         const p = req.body;
         if (!/^\d{10}$/.test(p.contact)) return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
 
+        // Prevent duplicate billing for same mobile & doctor within short window if needed, or rely on fresh form reset
         const uhid = p.existingUhid || getNextUHID();
         const nowStr = new Date().toLocaleString('en-GB');
         const fee = Number(p.fee || 0);
@@ -243,69 +244,62 @@ app.get('/', (req, res) => {
 <title>AR Healthcare ERP - Hospital Management</title>
 <style>
 :root{--navy:#10243a;--navy2:#173650;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:600;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
 #login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;position:fixed;z-index:9999}
 .login-card-wrapper{background:rgba(15, 23, 42, 0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.35);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6);width:min(900px,94vw);height:520px;display:flex;overflow:hidden;position:relative;z-index:1}
 .login-card-wrapper::after{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(45deg,#22c55e,#3b82f6,#06b6d4,#10b981);z-index:-1;opacity:0.5;filter:blur(10px)}
 .login-left{flex:1.2;padding:40px 45px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(15,23,42,0.75);color:#fff}
-.login-left h2{font-size:26px;font-weight:800;margin-bottom:15px;color:#fff;width:100%}
+.login-left h2{font-size:26px;font-weight:900;margin-bottom:15px;color:#fff;width:100%}
 .login-left form{width:100%;max-width:320px}
 .login-right{flex:1;background:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop') no-repeat center center/cover;color:#fff;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;position:relative}
 .login-right-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,0.55),rgba(38,116,232,0.7));z-index:1}
 .login-right-content{position:relative;z-index:2;background:rgba(15,23,42,0.7);padding:22px;border-radius:14px;backdrop-filter:blur(8px);width:100%;border:1px solid rgba(255,255,255,0.2)}
 .login-field{margin-bottom:16px;text-align:left;position:relative}
-.login-field label{display:block;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px}
-.login-input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
+.login-field label{display:block;font-size:12px;font-weight:800;color:#e2e8f0;margin-bottom:6px}
+.login-input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;font-weight:700;background:rgba(15,23,42,0.85);color:#ffffff !important;outline:none}
 .login-input::placeholder{color:#94a3b8}
-.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4);text-align:center}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(16,185,129,0.4);text-align:center}
 
 #app{display:none;height:100vh;width:100vw;flex-direction:row}
 .sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0d1c2c);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;transition:all 0.3s ease;overflow-y:auto}
 .brand{display:flex;align-items:center;gap:12px;padding:22px 18px;border-bottom:1px solid #ffffff18;position:sticky;top:0;background:var(--navy);z-index:10}
 .logo{width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:white;font-weight:900;font-size:16px}
-.brand strong{display:block;font-size:14px;color:#fff}
-.brand small{display:block;color:#9db3ca;font-size:11px;margin-top:4px}
+.brand strong{display:block;font-size:14px;font-weight:900;color:#fff}
+.brand small{display:block;color:#9db3ca;font-size:11px;font-weight:700;margin-top:4px}
 .nav{padding:12px 10px 30px;flex:1}
-.nav-label{font-size:10px;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px;font-weight:800}
-.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:12.5px;border:0;background:transparent;width:100%;text-align:left;cursor:pointer;transition:all 0.2s}
+.nav-label{font-size:11px;font-weight:900;letter-spacing:1.5px;color:#7893ae;padding:16px 11px 7px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;margin:2px 0;color:#c6d4e4;font-size:13px;font-weight:700;border:0;background:transparent;width:100%;text-align:left;cursor:pointer;transition:all 0.2s}
 .nav-item:hover,.nav-item.active{background:#ffffff15;color:#fff;transform:translateX(4px)}
-.nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:700}
+.nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:900}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
 .profile{display:flex;align-items:center;gap:12px}
-.avatar{width:38px;height:38px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:800;font-size:13px}
+.avatar{width:38px;height:38px;border-radius:12px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:900;font-size:13px}
 .content{padding:27px 28px;overflow-y:auto;flex:1}
 .view-section{display:none}
 .view-section.active{display:block}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
-.stat-label{font-size:11px;color:var(--muted);font-weight:700}
-.stat-value{font-size:24px;font-weight:800;margin:12px 0 4px;color:var(--navy)}
+.stat-label{font-size:11px;font-weight:800;color:var(--muted)}
+.stat-value{font-size:24px;font-weight:900;margin:12px 0 4px;color:var(--navy)}
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:22px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.panel-head h3{font-size:15px;margin:0;color:var(--navy);font-weight:700}
+.panel-head h3{font-size:16px;font-weight:900;margin:0;color:var(--navy)}
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:15px}
 .field{display:flex;flex-direction:column;gap:6px;position:relative}
-.field label{font-size:11px;font-weight:700;color:var(--navy)}
-.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;outline:none}
+.field label{font-size:12px;font-weight:800;color:var(--navy)}
+.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:700;outline:none}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;background:#f8fafd;color:#7a8a9e;font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px;font-weight:800}
-td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
-.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer}
+th{text-align:left;background:#f8fafd;color:#5a6a8e;font-size:11px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;padding:12px 16px}
+td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:13px;font-weight:700}
+.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:800;cursor:pointer}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
 .suggestions-box{position:absolute;top:65px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-height:200px;overflow-y:auto;z-index:100;display:none}
-.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}
+.suggestion-item{padding:10px 12px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px;font-weight:700}
 .suggestion-item:hover{background:#f0f6ff}
-#ar-ai-widget{position:fixed;bottom:25px;right:25px;z-index:99999}
-#ar-ai-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border:none;border-radius:50px;padding:12px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(38,116,232,0.3);display:flex;align-items:center;gap:8px}
-#ar-ai-box{position:absolute;bottom:60px;right:0;width:350px;background:#fff;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;overflow:hidden;border:1px solid var(--line)}
-.ai-head{background:var(--navy);color:#fff;padding:14px;font-weight:700;font-size:13px;display:flex;justify-content:space-between}
-.ai-body{padding:15px;max-height:250px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:10px}
-.ai-foot{padding:10px;border-top:1px solid var(--line);display:flex;gap:8px}
-.ai-foot input{flex:1;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;outline:none}
 
 #print-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999}
 .print-card{background:#fff;padding:30px;border-radius:16px;width:min(700px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.3)}
@@ -325,7 +319,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <div class="login-card-wrapper">
     <div class="login-left">
       <h2>Sign In</h2>
-      <form id="login-form-element" onsubmit="handleLogin(event)">
+      <form id="login-form-element">
         <div class="login-field">
           <label>User ID / Username</label>
           <input type="text" id="login-u" class="login-input" required autocomplete="username">
@@ -334,8 +328,8 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           <label>Password</label>
           <input type="password" id="login-p" class="login-input" required autocomplete="current-password">
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:11px;">
-          <a href="#" onclick="alert('Please contact your Super Admin to recover your User ID & Password.');return false;" style="color:#38bdf8;text-decoration:none;">Forgot User ID?</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:12px;">
+          <a href="#" id="forgot-link" style="color:#38bdf8;text-decoration:none;font-weight:800;">Forgot User ID?</a>
         </div>
         <button type="submit" class="login-btn">Sign In ➔</button>
       </form>
@@ -343,9 +337,9 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
     <div class="login-right">
       <div class="login-right-overlay"></div>
       <div class="login-right-content">
-        <h2 style="font-size:20px;font-weight:800;margin:0 0 6px 0;">🏥 A.R. ONLINE ZONE</h2>
-        <p style="font-size:12px;line-height:1.4;margin:0;opacity:0.9;">Professional Healthcare ERP & Billing System</p>
-        <div style="margin-top:10px;font-size:10px;background:rgba(16,185,129,0.3);padding:4px 10px;border-radius:20px;display:inline-block;">⚡ Live Billing & Clinical Workflows</div>
+        <h2 style="font-size:20px;font-weight:900;margin:0 0 6px 0;">🏥 A.R. ONLINE ZONE</h2>
+        <p style="font-size:13px;font-weight:700;line-height:1.4;margin:0;opacity:0.9;">Professional Healthcare ERP & Billing System</p>
+        <div style="margin-top:10px;font-size:11px;font-weight:800;background:rgba(16,185,129,0.3);padding:4px 10px;border-radius:20px;display:inline-block;">⚡ Live Billing & Clinical Workflows</div>
       </div>
     </div>
   </div>
@@ -360,13 +354,13 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
   <main class="main">
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:15px;">
-        <button class="btn btn-sm" onclick="toggleSidebarSlide()" style="padding:6px 10px;font-size:14px;">☰</button>
-        <h3 id="topbar-title" style="font-size:17px;font-weight:700;color:var(--navy);">Dashboard</h3>
+        <button class="btn btn-sm" id="sidebar-toggle-btn" style="padding:6px 10px;font-size:14px;">☰</button>
+        <h3 id="topbar-title" style="font-size:18px;font-weight:900;color:var(--navy);">Dashboard</h3>
       </div>
       <div class="profile">
         <div class="avatar" id="user-avatar">AR</div>
-        <div><strong id="user-display-name" style="font-size:13px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div>
-        <button class="btn btn-sm danger" onclick="handleLogout()" style="margin-left:15px;">Logout</button>
+        <div><strong id="user-display-name" style="font-size:13px;font-weight:900;display:block;">-</strong><small id="user-display-role" style="font-size:11px;font-weight:800;color:var(--muted);">-</small></div>
+        <button class="btn btn-sm danger" id="logout-btn" style="margin-left:15px;">Logout</button>
       </div>
     </header>
 
@@ -382,7 +376,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
         <div class="panel">
           <div class="panel-head"><h3>Quick Find & Patient Workflow Hub</h3><small style="color:var(--muted)">Search patient instantly & perform any action</small></div>
           <div style="position:relative;margin-bottom:15px;">
-            <input type="text" id="dash-quick-find" placeholder="🔍 Type Patient Name, Mobile or UHID..." oninput="handleDashQuickFind(this.value)" style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;outline:none;">
+            <input type="text" id="dash-quick-find" placeholder="🔍 Type Patient Name, Mobile or UHID..." style="width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-weight:700;outline:none;">
             <div class="suggestions-box" id="dash-quick-suggestions"></div>
           </div>
           <table>
@@ -395,10 +389,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <div id="view-module-container" class="view-section">
         <div class="panel" id="patient-reg-panel" style="display:none;">
           <div class="panel-head"><h3>New Patient Registration & Quick Billing</h3></div>
-          <form onsubmit="handlePatientRegistration(event)">
+          <form id="patient-reg-form">
             <div class="form-grid">
-              <div class="field"><label>Auto UHID (Date-Wise)</label><input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:700;color:var(--blue);"></div>
-              <div class="field"><label>Live Patient Search</label><input type="text" id="live-search-input" placeholder="Type Name, Mobile..." oninput="handleLiveSearch(this.value)" autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>
+              <div class="field"><label>Auto UHID (Date-Wise)</label><input type="text" id="reg-uhid" readonly style="background:#edf2f7;font-weight:900;color:var(--blue);"></div>
+              <div class="field"><label>Live Patient Search</label><input type="text" id="live-search-input" placeholder="Type Name, Mobile..." autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>
               <div class="field"><label>Title</label><select id="reg-title"><option>Mr.</option><option>Mrs.</option><option>Miss</option><option>Master</option><option>Baby of</option></select></div>
               <div class="field"><label>Patient Name *</label><input type="text" id="reg-name" required></div>
               <div class="field"><label>Relation</label><select id="reg-relation"><option>S/O</option><option>D/O</option><option>W/O</option><option>C/O</option></select></div>
@@ -409,10 +403,10 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
               <div class="field"><label>Aadhaar No</label><input type="text" id="reg-adhaar" maxlength="12" placeholder="12 digits"></div>
               <div class="field"><label>ABHA ID</label><input type="text" id="reg-abha" placeholder="ABHA Number"></div>
               <div class="field"><label>Address</label><input type="text" id="reg-address" placeholder="Address..."></div>
-              <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" onchange="autoFetchDoctorFee()" required></select></div>
-              <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" oninput="calculateNetFee()" required></div>
-              <div class="field"><label>Discount (₹)</label><input type="number" id="reg-discount" value="0" oninput="calculateNetFee()"></div>
-              <div class="field"><label>Net Payable Fee (₹)</label><input type="number" id="reg-netfee" readonly style="background:#edf2f7;font-weight:700;color:var(--green);"></div>
+              <div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" required></select></div>
+              <div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" required></div>
+              <div class="field"><label>Discount (₹)</label><input type="number" id="reg-discount" value="0"></div>
+              <div class="field"><label>Net Payable Fee (₹)</label><input type="number" id="reg-netfee" readonly style="background:#edf2f7;font-weight:900;color:var(--green);"></div>
               <div class="field"><label>Payment Type *</label><select id="reg-paytype"><option>Cash</option><option>Credit / Udhar</option><option>UPI / Online</option><option>Card</option></select></div>
             </div>
             <button type="submit" class="btn primary" style="padding:12px 25px;font-size:13px;">💾 Register & Generate Bill</button>
@@ -421,7 +415,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="doctor-panel" style="display:none;">
           <div class="panel-head"><h3>Manage Doctors (Add New Doctor ID/Name)</h3></div>
-          <form onsubmit="handleAddNewDoctor(event)" class="form-grid">
+          <form id="doctor-form" class="form-grid">
             <div class="field"><label>Doctor Name & Qualification *</label><input type="text" id="doc-name" placeholder="Dr. Name (Specialization)" required></div>
             <div class="field"><label>Default Consultation Fee (₹) *</label><input type="number" id="doc-fee" required></div>
             <div class="field"><label>Department</label><input type="text" id="doc-dept" placeholder="General / Ortho / Gynae"></div>
@@ -431,14 +425,14 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="user-mgmt-panel" style="display:none;">
           <div class="panel-head"><h3>Create User & Dynamic Permissions</h3></div>
-          <form onsubmit="handleCreateUser(event)" class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <form id="user-create-form" class="form-grid" style="grid-template-columns:1fr 1fr;">
             <div class="field"><label>Full Name *</label><input type="text" id="new-u-name" required></div>
             <div class="field"><label>User ID / Username *</label><input type="text" id="new-u-username" required></div>
             <div class="field"><label>Password *</label><input type="password" id="new-u-password" required></div>
             <div class="field"><label>Role *</label><select id="new-u-role"><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option></select></div>
             <div class="field" style="grid-column:span 2;">
               <label>Select Module Permissions:</label>
-              <div id="permission-checkboxes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;font-size:12px;background:#f8fafd;padding:12px;border:1px solid var(--line);border-radius:8px;">
+              <div id="permission-checkboxes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;font-size:12px;font-weight:700;background:#f8fafd;padding:12px;border:1px solid var(--line);border-radius:8px;">
                 <label><input type="checkbox" value="patients" checked> Patient Registration</label>
                 <label><input type="checkbox" value="patient-search" checked> Patient Search Master</label>
                 <label><input type="checkbox" value="opd"> OPD & Appointments</label>
@@ -456,7 +450,7 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
         <div class="panel" id="password-panel" style="display:none;">
           <div class="panel-head"><h3>Change Your Account Password</h3></div>
-          <form onsubmit="handleChangePassword(event)" style="max-width:400px;display:flex;flex-direction:column;gap:15px;">
+          <form id="password-change-form" style="max-width:400px;display:flex;flex-direction:column;gap:15px;">
             <div class="field"><label>Old Password *</label><input type="password" id="pass-old" required></div>
             <div class="field"><label>New Password *</label><input type="password" id="pass-new" required></div>
             <button type="submit" class="btn primary">Update Password</button>
@@ -479,32 +473,32 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 
 <div id="ar-ai-widget">
   <div id="ar-ai-box">
-    <div class="ai-head"><span>🤖 AR AI Assistant</span><span style="cursor:pointer;" onclick="toggleAiBox()">✕</span></div>
+    <div class="ai-head"><span>🤖 AR AI Assistant</span><span style="cursor:pointer;" id="ai-close-btn">✕</span></div>
     <div class="ai-body" id="ai-chat-body">
       <div><b>AR AI:</b> Hello Aarif! Ask me anything about patients, revenue, or credit bills.</div>
     </div>
     <div class="ai-foot">
-      <input type="text" id="ai-input" placeholder="Ask AR AI..." onkeypress="if(event.key==='Enter')sendAiQuery()">
-      <button class="btn primary" onclick="sendAiQuery()">Send</button>
+      <input type="text" id="ai-input" placeholder="Ask AR AI...">
+      <button class="btn primary" id="ai-send-btn">Send</button>
     </div>
   </div>
-  <button id="ar-ai-btn" onclick="toggleAiBox()">✨ AR AI</button>
+  <button id="ar-ai-btn">✨ AR AI</button>
 </div>
 
 <div id="print-modal">
   <div class="print-card" id="print-card-area">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
-      <p style="margin:4px 0;font-size:12px;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:12px;font-weight:800;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;">
       <div><strong>Bill No:</strong> <span id="pb-billno"></span></div>
       <div><strong>Date & Time:</strong> <span id="pb-datetime"></span></div>
       <div><strong>UHID:</strong> <span id="pb-uhid"></span></div>
       <div><strong>User / Staff:</strong> <span id="pb-user"></span></div>
     </div>
     <hr style="border:0;border-top:1px solid #ddd;">
-    <div style="font-size:12px;margin:15px 0;">
+    <div style="font-size:12px;font-weight:700;margin:15px 0;">
       <p><strong>Patient Name:</strong> <span id="pb-name"></span></p>
       <p><strong>Age / Gender:</strong> <span id="pb-agegender"></span></p>
       <p><strong>Contact:</strong> <span id="pb-contact"></span> | <strong>Aadhaar:</strong> <span id="pb-adhaar"></span></p>
@@ -518,15 +512,15 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
           <td id="pb-paymode">Cash</td>
           <td id="pb-gross">₹0.00</td>
           <td id="pb-disc">₹0.00</td>
-          <td id="pb-amount" style="font-weight:700;">₹0.00</td>
+          <td id="pb-amount" style="font-weight:900;">₹0.00</td>
         </tr>
       </tbody>
     </table>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-      <button class="btn" onclick="document.getElementById('print-modal').style.display='none'">Close</button>
-      <button class="btn success" onclick="openPrescriptionSheet(document.getElementById('pb-uhid').innerText)">📝 Print Prescription</button>
-      <button class="btn" onclick="requestBillEdit()">✏️ Request Edit</button>
-      <button class="btn primary" onclick="window.print()">🖨 Print Duplicate Bill</button>
+      <button class="btn" id="print-modal-close-btn">Close</button>
+      <button class="btn success" id="print-modal-presc-btn">📝 Print Prescription</button>
+      <button class="btn" id="print-modal-edit-btn">✏️ Request Edit</button>
+      <button class="btn primary" id="print-modal-print-btn">🖨 Print Duplicate Bill</button>
     </div>
   </div>
 </div>
@@ -534,11 +528,11 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
 <div id="prescription-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:99999">
   <div class="print-card" id="prescription-card-area" style="width:min(750px,95vw);max-height:90vh;overflow-y:auto;">
     <div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:15px;">
-      <h2 style="margin:0;color:var(--navy);">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
-      <p style="margin:4px 0;font-size:11px;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
-      <h3 style="margin:8px 0;color:var(--blue);">OPD Prescription Sheet</h3>
+      <h2 style="margin:0;color:var(--navy);font-weight:900;">A.R. ONLINE ZONE & HEALTHCARE ERP</h2>
+      <p style="margin:4px 0;font-size:11px;font-weight:800;color:var(--muted);">Village Badahara Rani, Maharajganj, Uttar Pradesh</p>
+      <h3 style="margin:8px 0;color:var(--blue);font-weight:900;">OPD Prescription Sheet</h3>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:15px;border:1px solid var(--line);padding:10px;border-radius:8px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;font-weight:700;margin-bottom:15px;border:1px solid var(--line);padding:10px;border-radius:8px;">
       <div><strong>UHID:</strong> <span id="pr-uhid"></span></div>
       <div><strong>Date:</strong> <span id="pr-date"></span></div>
       <div><strong>Patient Name:</strong> <span id="pr-name"></span></div>
@@ -549,16 +543,16 @@ td{padding:13px 16px;border-top:1px solid #edf1f6;font-size:12px}
       <div><strong>Address:</strong> <span id="pr-address"></span></div>
     </div>
     <div style="margin-bottom:20px;">
-      <label style="font-size:12px;font-weight:700;color:var(--navy);">Clinical Assessment & Symptoms / Diagnosis:</label>
-      <textarea id="pr-assessment" style="width:100%;height:80px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;" placeholder="Write symptoms, clinical findings..."></textarea>
+      <label style="font-size:12px;font-weight:900;color:var(--navy);">Clinical Assessment & Symptoms / Diagnosis:</label>
+      <textarea id="pr-assessment" style="width:100%;height:80px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Write symptoms, clinical findings..."></textarea>
     </div>
     <div style="margin-bottom:20px;">
-      <label style="font-size:12px;font-weight:700;color:var(--navy);">Advice & Plan of Treatment (Rx):</label>
-      <textarea id="pr-treatment" style="width:100%;height:120px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;" placeholder="Write medicines, dosage and advice..."></textarea>
+      <label style="font-size:12px;font-weight:900;color:var(--navy);">Advice & Plan of Treatment (Rx):</label>
+      <textarea id="pr-treatment" style="width:100%;height:120px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;" placeholder="Write medicines, dosage and advice..."></textarea>
     </div>
     <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-      <button class="btn" onclick="document.getElementById('prescription-modal').style.display='none'">Close</button>
-      <button class="btn primary" onclick="window.print()">🖨 Print Official Prescription</button>
+      <button class="btn" id="presc-close-btn">Close</button>
+      <button class="btn primary" id="presc-print-btn">🖨 Print Official Prescription</button>
     </div>
   </div>
 </div>
@@ -579,7 +573,7 @@ const navGroups = [
   { label: "REPORTS & ADMINISTRATION", items: [["Reports & Analytics", "reports", "📊"], ["Quality & Compliance", "quality", "✓"], ["Document Register", "documents", "📁"], ["User & Role Management", "users", "♙"], ["Change Password", "password", "⚙"], ["Audit Logs", "audit-logs", "☷"], ["Branch & Department Setup", "branch", "🏢"], ["Settings & Backup", "backup", "💾"]] }
 ];
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', () => {
   const savedUser = localStorage.getItem('ar_erp_active_user');
   const savedPage = localStorage.getItem('ar_erp_active_page');
   if (savedUser) {
@@ -593,15 +587,36 @@ window.onload = function() {
     loadDoctors();
     switchView(savedPage || 'dashboard');
   }
-};
+
+  document.getElementById('login-form-element').addEventListener('submit', handleLogin);
+  document.getElementById('sidebar-toggle-btn').addEventListener('click', toggleSidebarSlide);
+  document.getElementById('logout-btn').addEventListener('click', handleLogout);
+  document.getElementById('dash-quick-find').addEventListener('input', (e) => handleDashQuickFind(e.target.value));
+  document.getElementById('patient-reg-form').addEventListener('submit', handlePatientRegistration);
+  document.getElementById('doctor-form').addEventListener('submit', handleAddNewDoctor);
+  document.getElementById('user-create-form').addEventListener('submit', handleCreateUser);
+  document.getElementById('password-change-form').addEventListener('submit', handleChangePassword);
+  document.getElementById('ai-close-btn').addEventListener('click', toggleAiBox);
+  document.getElementById('ai-send-btn').addEventListener('click', sendAiQuery);
+  document.getElementById('ai-input').addEventListener('keypress', (e) => { if(e.key==='Enter') sendAiQuery(); });
+  document.getElementById('ar-ai-btn').addEventListener('click', toggleAiBox);
+  
+  document.getElementById('print-modal-close-btn').addEventListener('click', () => { document.getElementById('print-modal').style.display = 'none'; });
+  document.getElementById('print-modal-presc-btn').addEventListener('click', () => { openPrescriptionSheet(document.getElementById('pb-uhid').innerText); });
+  document.getElementById('print-modal-edit-btn').addEventListener('click', requestBillEdit);
+  document.getElementById('print-modal-print-btn').addEventListener('click', () => { window.print(); });
+  document.getElementById('presc-close-btn').addEventListener('click', () => { document.getElementById('prescription-modal').style.display = 'none'; });
+  document.getElementById('presc-print-btn').addEventListener('click', () => { window.print(); });
+  document.getElementById('live-search-input').addEventListener('input', (e) => handleLiveSearch(e.target.value));
+  document.getElementById('reg-doctor').addEventListener('change', autoFetchDoctorFee);
+  document.getElementById('reg-fee').addEventListener('input', calculateNetFee);
+  document.getElementById('reg-discount').addEventListener('input', calculateNetFee);
+  document.getElementById('forgot-link').addEventListener('click', (e) => { e.preventDefault(); alert('Please contact your Super Admin to recover your User ID & Password.'); });
+});
 
 function toggleSidebarSlide() {
   const sb = document.getElementById('sidebar-panel');
-  if (sb.style.marginLeft === '-272px') {
-    sb.style.marginLeft = '0';
-  } else {
-    sb.style.marginLeft = '-272px';
-  }
+  sb.style.marginLeft = sb.style.marginLeft === '-272px' ? '0' : '-272px';
 }
 
 async function handleLogin(e) {
@@ -647,16 +662,19 @@ function renderNav() {
   navGroups.forEach(function(g) {
     let groupItemsHtml = '';
     g.items.forEach(function(i) {
-      // Super admin or Demo user gets all options visible; others check permissions
       if (currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || currentUser.isDemo || currentUser.permissions.includes('all') || currentUser.permissions.includes(i[1])) {
-        groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" onclick="switchView(\\'' + i[1] + '\\')"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
+        groupItemsHtml += '<button class="nav-item ' + (i[1] === activeModuleKey ? 'active' : '') + '" id="nav-btn-' + i[1] + '" data-key="' + i[1] + '"><span class="nav-icon">' + i[2] + '</span><span>' + i[0] + '</span></button>';
       }
     });
     if (groupItemsHtml !== '') {
       html += '<div class="nav-label">' + g.label + '</div>' + groupItemsHtml;
     }
   });
-  document.getElementById('nav-menu').innerHTML = html;
+  const navMenu = document.getElementById('nav-menu');
+  navMenu.innerHTML = html;
+  navMenu.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => switchView(btn.getAttribute('data-key')));
+  });
 }
 
 async function loadDoctors() {
@@ -694,9 +712,6 @@ async function fetchNextUHID() {
 }
 
 function switchView(targetKey) {
-  if (currentUser.isDemo) {
-    // Demo user can view any module, but actions can be simulated
-  }
   activeModuleKey = targetKey;
   localStorage.setItem('ar_erp_active_page', targetKey);
 
@@ -745,15 +760,23 @@ async function loadDashboardMetrics() {
       '<td>' + p.title + ' ' + p.name + '</td>' +
       '<td>' + p.contact + '</td>' +
       '<td>' + p.doctor + '</td>' +
-      '<td style="font-weight:700;">₹' + p.netFee + ' (' + p.payType + ')</td>' +
-      '<td><span style="background:#eef6ff;color:var(--blue);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;">' + (p.workflowStatus || 'Active') + '</span></td>' +
+      '<td style="font-weight:900;">₹' + p.netFee + ' (' + p.payType + ')</td>' +
+      '<td><span style="background:#eef6ff;color:var(--blue);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;">' + (p.workflowStatus || 'Active') + '</span></td>' +
       '<td>' +
-        '<button class="btn btn-sm primary" onclick="openPrescriptionSheet(\\'' + p.uhid + '\\')">📝 Prescription</button> ' +
-        '<button class="btn btn-sm success" onclick="openBillingModalByUHID(\\'' + p.uhid + '\\')">🖨 Bill</button>' +
+        '<button class="btn btn-sm primary action-presc-btn" data-uhid="' + p.uhid + '">📝 Prescription</button> ' +
+        '<button class="btn btn-sm success action-bill-btn" data-uhid="' + p.uhid + '">🖨 Bill</button>' +
       '</td>' +
     '</tr>';
   });
-  document.getElementById('dash-patients').innerHTML = html;
+  const tbody = document.getElementById('dash-patients');
+  tbody.innerHTML = html;
+
+  tbody.querySelectorAll('.action-presc-btn').forEach(btn => {
+    btn.addEventListener('click', () => openPrescriptionSheet(btn.getAttribute('data-uhid')));
+  });
+  tbody.querySelectorAll('.action-bill-btn').forEach(btn => {
+    btn.addEventListener('click', () => openBillingModalByUHID(btn.getAttribute('data-uhid')));
+  });
 }
 
 async function handleDashQuickFind(val) {
@@ -770,12 +793,19 @@ async function handleDashQuickFind(val) {
   }
   let html = '';
   data.forEach(function(p) {
-    html += '<div class="suggestion-item" onclick="openPrescriptionSheet(\\'' + p.uhid + '\\')">' +
+    html += '<div class="suggestion-item quick-sugg-item" data-uhid="' + p.uhid + '">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (UHID: ' + p.uhid + ') | Mob: ' + p.contact + ' | Dr: ' + p.doctor +
     '</div>';
   });
   box.innerHTML = html;
   box.style.display = 'block';
+
+  box.querySelectorAll('.quick-sugg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      openPrescriptionSheet(item.getAttribute('data-uhid'));
+      box.style.display = 'none';
+    });
+  });
 }
 
 async function loadUniqueModuleData(key) {
@@ -801,17 +831,25 @@ async function loadUniqueModuleData(key) {
     if (key === 'users') {
       let isAct = row.status === 'Active';
       if (row.isProtected) {
-        rows += '<td><span style="color:var(--green);font-weight:700;">🔒 Locked (Super Admin)</span></td>';
+        rows += '<td><span style="color:var(--green);font-weight:900;">🔒 Locked (Super Admin)</span></td>';
       } else {
         rows += '<td>' +
-          '<button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + '" onclick="toggleUserStatus(\\'' + row.id + '\\', \\'' + (isAct ? 'Deactivated' : 'Active') + '\\')">' + (isAct ? 'Deactivate' : 'Activate') + '</button> ' +
-          '<button class="btn btn-sm primary" onclick="editUserPermissions(\'' + row.id + '\', \'' + row.name + '\')">⚙ Edit Perms</button>' +
+          '<button class="btn btn-sm ' + (isAct ? 'danger' : 'success') + ' toggle-status-btn" data-id="' + row.id + '" data-status="' + (isAct ? 'Deactivated' : 'Active') + '">' + (isAct ? 'Deactivate' : 'Activate') + '</button> ' +
+          '<button class="btn btn-sm primary edit-perm-btn" data-id="' + row.id + '" data-name="' + row.name + '">⚙ Edit Perms</button>' +
         '</td>';
       }
     }
     rows += '</tr>';
   });
-  document.getElementById('module-tbody').innerHTML = rows;
+  const tbody = document.getElementById('module-tbody');
+  tbody.innerHTML = rows;
+
+  tbody.querySelectorAll('.toggle-status-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleUserStatus(btn.getAttribute('data-id'), btn.getAttribute('data-status')));
+  });
+  tbody.querySelectorAll('.edit-perm-btn').forEach(btn => {
+    btn.addEventListener('click', () => editUserPermissions(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
+  });
 }
 
 async function editUserPermissions(userId, userName) {
@@ -842,12 +880,19 @@ async function handleLiveSearch(val) {
   }
   let html = '';
   data.forEach(function(p) {
-    html += '<div class="suggestion-item" onclick="autoFillPatient(\\'' + p.uhid + '\\')">' +
+    html += '<div class="suggestion-item live-sugg-item" data-uhid="' + p.uhid + '">' +
       '<strong>' + p.title + ' ' + p.name + '</strong> (' + p.uhid + ') - Mob: ' + p.contact +
     '</div>';
   });
   box.innerHTML = html;
   box.style.display = 'block';
+
+  box.querySelectorAll('.live-sugg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      autoFillPatient(item.getAttribute('data-uhid'));
+      box.style.display = 'none';
+    });
+  });
 }
 
 async function autoFillPatient(uhid) {
@@ -920,6 +965,10 @@ async function handlePatientRegistration(e) {
     document.getElementById('pb-amount').innerText = '₹' + Number(data.bill.netFee).toFixed(2);
 
     document.getElementById('print-modal').style.display = 'flex';
+    
+    // Auto fresh form to prevent duplicate entry
+    document.getElementById('patient-reg-form').reset();
+    document.getElementById('reg-discount').value = '0';
     fetchNextUHID();
   } else {
     alert(data.message);
