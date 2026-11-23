@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const cors = require('cors');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
 const connectionString = process.env.DATABASE_URL || '';
@@ -35,7 +35,9 @@ let instituteInfo = {
     branch: 'Maharajganj Branch',
     accountNo: '301234567890',
     ifsc: 'SBIN0001234',
-    upiId: 'arhealthcare@upi'
+    upiId: 'arhealthcare@upi',
+    emergencyFee: 250,
+    logoDataUrl: ''
 };
 
 let printConfig = {
@@ -53,7 +55,7 @@ function todayISO() {
 }
 
 function nowDisplay() {
-    return new Date().toLocaleString('en-GB');
+    return new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' });
 }
 
 let dailySequence = { date: '', count: 1 };
@@ -80,7 +82,7 @@ function incrementUHID() {
 
 function addAudit(user, moduleName, action) {
     erpData.auditLogs.unshift({
-        time: nowDisplay(),
+        time: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata' }),
         date: todayISO(),
         user: user || 'System',
         module: moduleName || 'HIMS',
@@ -158,6 +160,7 @@ function buildBillObject(b) {
     return {
         billNo: b.billNo,
         billType: b.billType || 'Hospital',
+        patientType: b.patientType || 'Normal',
         date: b.date || todayISO(),
         dateTime: b.dateTime || nowDisplay(),
         uhid: b.uhid || '-',
@@ -184,13 +187,14 @@ let erpData = {
         { id: 'USR-101', name: 'Aarif Rabbani', username: 'Aarif', password: '7860', role: 'Super Admin', permissions: ['all'], status: 'Active', isProtected: true },
         { id: 'USR-102', name: 'Admin User', username: 'admin', password: '123', role: 'Admin', permissions: ['all'], status: 'Active', isProtected: false },
         { id: 'USR-103', name: 'Staff Reception', username: 'staff', password: '123', role: 'Cashier / Receptionist', permissions: ['patients', 'patient-search', 'opd', 'hospital-billing', 'abdm-hims'], status: 'Active', isProtected: false },
-        { id: 'USR-104', name: 'Demo User', username: 'demo', password: '1234', role: 'Demo Viewer', permissions: ['all'], status: 'Active', isProtected: false, isDemo: true }
+        { id: 'USR-104', name: 'Demo User', username: 'demo', password: '1234', role: 'Demo Viewer', permissions: ['dashboard', 'reports'], status: 'Active', isProtected: false, isDemo: true }
     ],
     patients: [
         {
             uhid: 'AR231126-01',
             title: 'Mr.',
             name: 'Aarif Rabbani',
+            patientType: 'Normal',
             relation: 'S/O',
             guardian: 'Md Rabbani',
             age: 27,
@@ -202,6 +206,7 @@ let erpData = {
             address: 'Maharajganj, UP',
             doctor: 'Dr. A. Khan (General Physician)',
             fee: 500,
+            emergencyCharge: 0,
             discount: 50,
             netFee: 450,
             payType: 'Cash',
@@ -219,6 +224,7 @@ let erpData = {
         buildBillObject({
             billNo: 'HSP-231126-01',
             billType: 'Hospital',
+            patientType: 'Normal',
             date: todayISO(),
             dateTime: nowDisplay(),
             uhid: 'AR231126-01',
@@ -251,10 +257,10 @@ let erpData = {
         })
     ],
     opdAppointments: [
-        { appId: 'APT-101', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', doctor: 'Dr. A. Khan (General Physician)', tokenNo: 1, slot: 'Morning Session (10 AM - 1 PM)', status: 'Booked' }
+        { appId: 'APT-101', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', patientType: 'Normal', doctor: 'Dr. A. Khan (General Physician)', tokenNo: 1, slot: 'Morning Session (10 AM - 1 PM)', status: 'Booked' }
     ],
     ipdAdmissions: [
-        { ipdNo: 'IPD-01', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', ward: 'General Ward - Bed 01', doctor: 'Dr. A. Khan (General Physician)', admitDate: todayISO(), status: 'Admitted' }
+        { ipdNo: 'IPD-01', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', patientType: 'Normal', ward: 'General Ward - Bed 01', doctor: 'Dr. A. Khan (General Physician)', admitDate: todayISO(), status: 'Admitted' }
     ],
     wards: [
         { wardCode: 'WRD-01', wardName: 'General Ward', totalBeds: 10, occupiedBeds: 1, dailyCharge: 500 },
@@ -268,15 +274,33 @@ let erpData = {
         { radId: 'RAD-101', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', modality: 'Digital X-Ray Chest PA', status: 'Reported', finding: 'Lung fields clear, CP angles sharp' }
     ],
     pharmacyStock: [
-        { itemCode: 'MED-501', itemName: 'Paracetamol 500 mg Tab', manufacturer: 'Apex Pharma', batch: 'A1', mfgDate: 'Dec 2024', expDate: 'Dec 2026', hsn: '30045031', qty: 450, unit: 'TBS', mrp: 50, rate: 40, gstPct: 12, reorderLevel: 50 },
-        { itemCode: 'MED-502', itemName: 'Cough Syrup (200ml)', manufacturer: 'MediCare Labs', batch: '30045031', mfgDate: 'Jul 2023', expDate: 'Dec 2025', hsn: '30045031', qty: 180, unit: 'BTL', mrp: 90, rate: 80, gstPct: 12, reorderLevel: 30 },
-        { itemCode: 'MED-503', itemName: 'Antibiotic Cream (30g)', manufacturer: 'DermaCare', batch: 'C23456', mfgDate: 'Jan 2022', expDate: 'Dec 2024', hsn: '30042019', qty: 18, unit: 'PKG', mrp: 55, rate: 45, gstPct: 12, reorderLevel: 25 }
+        { itemCode: 'MED-501', itemName: 'Paracetamol 500 mg Tab', manufacturer: 'Apex Pharma', batch: 'A1', mfgDate: 'Dec 2024', expDate: 'Dec 2026', hsn: '30045031', qty: 450, physicalQty: 450, unit: 'TBS', mrp: 50, rate: 40, gstPct: 12, reorderLevel: 50 },
+        { itemCode: 'MED-502', itemName: 'Cough Syrup (200ml)', manufacturer: 'MediCare Labs', batch: '30045031', mfgDate: 'Jul 2023', expDate: 'Dec 2025', hsn: '30045031', qty: 180, physicalQty: 180, unit: 'BTL', mrp: 90, rate: 80, gstPct: 12, reorderLevel: 30 },
+        { itemCode: 'MED-503', itemName: 'Antibiotic Cream (30g)', manufacturer: 'DermaCare', batch: 'C23456', mfgDate: 'Jan 2022', expDate: 'Dec 2024', hsn: '30042019', qty: 18, physicalQty: 18, unit: 'PKG', mrp: 55, rate: 45, gstPct: 12, reorderLevel: 25 }
     ],
     pharmacyPurchases: [
-        { purId: 'PUR-201', date: todayISO(), vendor: 'MediCare Wholesale Pharmacy', invoiceNo: 'WH-8891', itemName: 'Paracetamol 500 mg Tab', batch: 'A1', hsn: '30045031', qty: 500, rate: 32, gstPct: 12, totalAmount: 17920 }
+        {
+            purId: 'PUR-201',
+            date: todayISO(),
+            vendor: 'MediCare Wholesale Pharmacy',
+            invoiceNo: 'WH-8891',
+            payType: 'Credit / Udhar',
+            paymentStatus: 'Credit Due',
+            chequeNo: '',
+            paidDate: '',
+            itemsCount: 1,
+            itemsSummary: 'Paracetamol 500 mg Tab (Batch A1 x 500)',
+            items: [
+                { itemName: 'Paracetamol 500 mg Tab', batch: 'A1', mfgExp: 'Dec 2024 / Dec 2026', hsn: '30045031', qty: 500, mrp: 50, rate: 32, gstPct: 12, totalAmount: 17920 }
+            ],
+            totalAmount: 17920
+        }
     ],
     pharmacyReturns: [
         { retId: 'RET-301', date: todayISO(), refBillNo: 'PHM-231126-01', itemName: 'Paracetamol 500 mg Tab', batch: 'A1', qty: 2, refundAmount: 89.60, reason: 'Excess strip returned' }
+    ],
+    pharmacyAudits: [
+        { auditId: 'AUD-101', date: todayISO(), itemCode: 'MED-501', itemName: 'Paracetamol 500 mg Tab', batch: 'A1', systemQty: 450, physicalQty: 450, diffQty: 0, status: 'Matched', valueDiff: 0 }
     ],
     abdmRecords: [
         { abdmId: 'ABDM-M1-01', date: todayISO(), uhid: 'AR231126-01', patientName: 'Mr. Aarif Rabbani', abhaAddress: 'aarif@abdm', abhaNumber: '12-3456-7890-1234', m1Status: 'ABHA Verified (M1)', m2CareContext: 'OPD-01 & Lab-101 Linked (M2)', m3ClaimId: 'CLM-NHCX-01', nhcxStatus: 'Pre-Auth Approved (M3)' }
@@ -311,16 +335,16 @@ let erpData = {
     financeEntries: [
         { voucherNo: 'VCH-801', date: todayISO(), sourceModule: 'Hospital', type: 'Receipt', head: 'OPD Consultation', mode: 'Cash', amount: 450, refNo: 'HSP-231126-01' },
         { voucherNo: 'VCH-802', date: todayISO(), sourceModule: 'Pharmacy', type: 'Receipt', head: 'Pharmacy Counter Sale', mode: 'Cash', amount: 2688, refNo: 'PHM-231126-01' },
-        { voucherNo: 'VCH-803', date: todayISO(), sourceModule: 'Pharmacy', type: 'Expense / Purchase', head: 'Wholesale Medicine Purchase', mode: 'Bank / UPI', amount: 17920, refNo: 'PUR-201' },
-        { voucherNo: 'VCH-804', date: todayISO(), sourceModule: 'Inventory', type: 'Expense / Purchase', head: 'Central Store GRN', mode: 'Bank / UPI', amount: 30000, refNo: 'GRN-401' },
-        { voucherNo: 'VCH-805', date: todayISO(), sourceModule: 'BME', type: 'Expense', head: 'Biomedical AMC / PM', mode: 'Bank / UPI', amount: 45000, refNo: 'AMC-701' }
+        { voucherNo: 'VCH-803', date: todayISO(), sourceModule: 'Pharmacy', type: 'Credit / Purchase', head: 'Wholesale Medicine Purchase (Credit)', mode: 'Credit / Udhar', amount: 17920, refNo: 'PUR-201' },
+        { voucherNo: 'VCH-804', date: todayISO(), sourceModule: 'Inventory', type: 'Expense / Purchase', head: 'Central Store GRN', mode: 'Cheque', amount: 30000, refNo: 'GRN-401' },
+        { voucherNo: 'VCH-805', date: todayISO(), sourceModule: 'BME', type: 'Expense', head: 'Biomedical AMC / PM', mode: 'Cheque', amount: 45000, refNo: 'AMC-701' }
     ],
     payrollRecords: [
         { payId: 'SAL-901', month: 'Nov 2026', date: todayISO(), empName: 'Dr. A. Khan', role: 'Senior Physician', department: 'Hospital', basic: 85000, allowance: 15000, netPay: 100000, status: 'Processed' },
         { payId: 'SAL-902', month: 'Nov 2026', date: todayISO(), empName: 'Ramesh Kumar', role: 'Chief Pharmacist', department: 'Pharmacy', basic: 28000, allowance: 4000, netPay: 32000, status: 'Processed' }
     ],
     auditLogs: [
-        { time: nowDisplay(), date: todayISO(), user: 'Aarif Rabbani', module: 'HIMS', action: 'Initialized Modular HIMS, Pharmacy, BME, Inventory, Reports & ABDM M1/M2/M3 + NHCX' }
+        { time: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata' }), date: todayISO(), user: 'Aarif Rabbani', module: 'HIMS', action: 'Initialized Modular HIMS, Pharmacy, BME, Inventory, Reports & ABDM M1/M2/M3 + NHCX' }
     ]
 };
 
@@ -344,21 +368,28 @@ app.get('/api/institute', function (req, res) {
 
 app.post('/api/institute', function (req, res) {
     const body = req.body || {};
-    ['name', 'tagline', 'address', 'gstin', 'phone', 'placeOfSupply', 'bankName', 'branch', 'accountNo', 'ifsc', 'upiId'].forEach(function (k) {
+    ['name', 'tagline', 'address', 'gstin', 'phone', 'placeOfSupply', 'bankName', 'branch', 'accountNo', 'ifsc', 'upiId', 'emergencyFee', 'logoDataUrl'].forEach(function (k) {
         if (body[k] !== undefined) instituteInfo[k] = body[k];
     });
-    addAudit('Admin', 'Settings', 'Updated Institute & Invoice Settings');
+    if (body.emergencyFee !== undefined) instituteInfo.emergencyFee = Number(body.emergencyFee || 0);
+    addAudit('Admin', 'Settings', 'Updated Institute, Logo, Emergency Fee & Invoice Settings');
     res.json({ success: true, message: 'Institute & Invoice details updated successfully!', institute: instituteInfo });
 });
 
-app.post('/api/print-config', function (req, res) {
-    printConfig = Object.assign({}, printConfig, req.body || {});
-    res.json({ success: true, printConfig: printConfig });
+app.get('/api/backup/export', function (req, res) {
+    addAudit('Admin', 'Backup', 'Exported full ERP backup snapshot');
+    res.json({
+        success: true,
+        exportedAt: nowDisplay(),
+        institute: instituteInfo,
+        erpData: erpData
+    });
 });
 
 app.get('/api/users', function (req, res) { res.json(erpData.users); });
 app.get('/api/doctors', function (req, res) { res.json(erpData.doctors); });
 app.get('/api/pharmacy/stock', function (req, res) { res.json(erpData.pharmacyStock); });
+app.get('/api/pharmacy/purchases', function (req, res) { res.json(erpData.pharmacyPurchases); });
 app.get('/api/bills', function (req, res) { res.json(erpData.bills); });
 app.get('/api/next-uhid', function (req, res) { res.json({ uhid: getNextUHID() }); });
 
@@ -374,25 +405,35 @@ app.post('/api/users/create', function (req, res) {
             username: (body.username || '').trim(),
             password: body.password,
             role: body.role,
-            permissions: body.permissions || ['all'],
+            permissions: Array.isArray(body.permissions) && body.permissions.length ? body.permissions : ['dashboard'],
             status: 'Active',
             isProtected: false
         };
         erpData.users.push(newUser);
-        addAudit('Admin', 'Users', 'Created user ' + newUser.name + ' (' + newUser.role + ')');
+        addAudit('Admin', 'Users', 'Created user ' + newUser.name + ' (' + newUser.role + ') with permissions: ' + newUser.permissions.join(', '));
         res.json({ success: true, message: 'User created successfully', users: erpData.users });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-app.post('/api/users/permissions', function (req, res) {
-    const user = erpData.users.find(function (u) { return u.id === req.body.userId; });
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-    if (user.isProtected) return res.status(403).json({ success: false, message: 'Super Admin permissions cannot be modified!' });
-    user.permissions = req.body.permissions;
-    addAudit('Admin', 'Users', 'Updated permissions for ' + user.name);
-    res.json({ success: true, message: 'Permissions updated successfully!', users: erpData.users });
+app.post('/api/users/update', function (req, res) {
+    try {
+        const body = req.body || {};
+        const user = erpData.users.find(function (u) { return u.id === body.userId; });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+        if (body.name) user.name = body.name;
+        if (body.username) user.username = body.username.trim();
+        if (body.password) user.password = body.password;
+        if (body.role) user.role = body.role;
+        if (!user.isProtected && Array.isArray(body.permissions)) {
+            user.permissions = body.permissions.length ? body.permissions : ['dashboard'];
+        }
+        addAudit('Admin', 'Users', 'Updated user ' + user.name + ' (' + user.role + ')');
+        res.json({ success: true, message: 'User & permissions updated successfully!', users: erpData.users });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.post('/api/users/status', function (req, res) {
@@ -435,10 +476,11 @@ app.post('/api/patients/register', function (req, res) {
         const uhid = p.existingUhid || getNextUHID();
         incrementUHID();
 
+        const patientType = p.patientType || 'Normal';
         const fee = Number(p.fee || 0);
+        const emergencyCharge = patientType === 'Emergency' ? Number(p.emergencyCharge !== undefined ? p.emergencyCharge : instituteInfo.emergencyFee) : 0;
         const discount = Number(p.discount || 0);
-        const netFee = Math.max(0, fee - discount);
-        const discPct = fee > 0 ? Number(((discount / fee) * 100).toFixed(2)) : 0;
+        const netFee = Math.max(0, fee + emergencyCharge - discount);
         const dStr = todayISO();
         const tStr = nowDisplay();
 
@@ -446,6 +488,7 @@ app.post('/api/patients/register', function (req, res) {
             uhid: uhid,
             title: p.title || 'Mr.',
             name: p.name,
+            patientType: patientType,
             relation: p.relation || 'C/O',
             guardian: p.guardian || '',
             age: Number(p.age || 0),
@@ -457,19 +500,52 @@ app.post('/api/patients/register', function (req, res) {
             address: p.address || '',
             doctor: p.doctor,
             fee: fee,
+            emergencyCharge: emergencyCharge,
             discount: discount,
             netFee: netFee,
             payType: p.payType || 'Cash',
             date: dStr,
             dateTime: tStr,
-            workflowStatus: 'Registered & Visited'
+            workflowStatus: patientType === 'Emergency' ? 'Emergency Priority' : 'Registered & Visited'
         };
         erpData.patients.unshift(newPatient);
+
+        const billItems = [
+            {
+                name: 'OPD Consultation (' + patientType + ') - ' + (p.doctor || 'General'),
+                batch: patientType === 'Emergency' ? 'EMG' : 'OPD',
+                mfg: '-',
+                exp: '-',
+                hsn: '999311',
+                qty: 1,
+                unit: 'VISIT',
+                mrp: fee,
+                rate: fee,
+                discPct: 0,
+                gstPct: 0
+            }
+        ];
+        if (emergencyCharge > 0) {
+            billItems.push({
+                name: 'Emergency Care & Casualty Charge',
+                batch: 'EMG-CHG',
+                mfg: '-',
+                exp: '-',
+                hsn: '999311',
+                qty: 1,
+                unit: 'SVC',
+                mrp: emergencyCharge,
+                rate: emergencyCharge,
+                discPct: 0,
+                gstPct: 0
+            });
+        }
 
         const billNo = 'HSP-' + Date.now().toString().slice(-6);
         const newBill = buildBillObject({
             billNo: billNo,
             billType: 'Hospital',
+            patientType: patientType,
             date: dStr,
             dateTime: tStr,
             uhid: uhid,
@@ -479,74 +555,68 @@ app.post('/api/patients/register', function (req, res) {
             doctor: p.doctor,
             payType: p.payType || 'Cash',
             createdBy: p.createdBy || 'Staff',
-            items: [
-                {
-                    name: 'OPD Consultation - ' + (p.doctor || 'General'),
-                    batch: 'OPD',
-                    mfg: '-',
-                    exp: '-',
-                    hsn: '999311',
-                    qty: 1,
-                    unit: 'VISIT',
-                    mrp: fee,
-                    rate: fee,
-                    discPct: discPct,
-                    gstPct: 0
-                }
-            ]
+            items: billItems
         });
+        if (discount > 0) {
+            newBill.totalDisc = Number(discount.toFixed(2));
+            newBill.netFee = Number(Math.max(0, newBill.totalGross - discount).toFixed(2));
+        }
         erpData.bills.unshift(newBill);
 
         addFinanceEntry({
             date: dStr,
             sourceModule: 'Hospital',
             type: (p.payType || '').includes('Credit') ? 'Credit' : 'Receipt',
-            head: 'OPD Consultation',
+            head: patientType + ' OPD / Registration',
             mode: p.payType || 'Cash',
             amount: newBill.netFee,
             refNo: billNo
         });
 
-        addAudit(p.createdBy || 'Staff', 'Hospital', 'Registered patient ' + p.name + ' (' + uhid + ') | Bill ' + billNo + ' | ₹' + newBill.netFee);
-        res.json({ success: true, message: 'Patient Registered & Hospital Bill Generated', patient: newPatient, bill: newBill });
+        addAudit(p.createdBy || 'Staff', 'Hospital', 'Registered ' + patientType + ' patient ' + p.name + ' (' + uhid + ') | Bill ' + billNo + ' | ₹' + newBill.netFee);
+        res.json({ success: true, message: patientType + ' Patient Registered & Hospital Bill Generated', patient: newPatient, bill: newBill });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
 app.post('/api/opd/book', function (req, res) {
+    const pType = req.body.patientType || 'Normal';
     const apt = {
         appId: 'APT-' + Date.now().toString().slice(-4),
         date: todayISO(),
         uhid: req.body.uhid,
         patientName: req.body.patientName || req.body.uhid,
+        patientType: pType,
         doctor: req.body.doctor,
         tokenNo: erpData.opdAppointments.length + 1,
-        slot: req.body.slot || 'Morning Session (10 AM - 1 PM)',
-        status: 'Booked'
+        slot: pType === 'Emergency' ? 'Immediate Emergency Slot' : (req.body.slot || 'Morning Session (10 AM - 1 PM)'),
+        status: pType === 'Emergency' ? 'Emergency Priority' : 'Booked'
     };
     erpData.opdAppointments.unshift(apt);
-    addAudit('Staff', 'OPD', 'Booked token #' + apt.tokenNo + ' for ' + apt.patientName + ' (' + apt.doctor + ')');
-    res.json({ success: true, message: 'OPD Appointment Booked (Token #' + apt.tokenNo + ')', appointment: apt });
+    addAudit('Staff', 'OPD', 'Booked ' + pType + ' token #' + apt.tokenNo + ' for ' + apt.patientName);
+    res.json({ success: true, message: pType + ' OPD Token #' + apt.tokenNo + ' Booked', appointment: apt });
 });
 
 app.post('/api/ipd/admit', function (req, res) {
+    const pType = req.body.patientType || 'Normal';
     const admit = {
         ipdNo: 'IPD-' + Date.now().toString().slice(-4),
         date: todayISO(),
         uhid: req.body.uhid,
         patientName: req.body.patientName,
+        patientType: pType,
         ward: req.body.ward,
         doctor: req.body.doctor,
         admitDate: todayISO(),
-        status: 'Admitted'
+        status: pType === 'Emergency' ? 'Admitted (Emergency)' : 'Admitted'
     };
     erpData.ipdAdmissions.unshift(admit);
     const wardNameOnly = (req.body.ward || '').split(' - ')[0];
     const w = erpData.wards.find(function (x) { return x.wardName === wardNameOnly; });
     if (w) w.occupiedBeds = Math.min(w.totalBeds, Number(w.occupiedBeds || 0) + 1);
-    addAudit('Staff', 'IPD', 'Admitted ' + admit.patientName + ' to ' + admit.ward);
-    res.json({ success: true, message: 'Patient Admitted (' + admit.ipdNo + ')', admission: admit });
+    addAudit('Staff', 'IPD', 'Admitted ' + pType + ' patient ' + admit.patientName + ' to ' + admit.ward);
+    res.json({ success: true, message: pType + ' Patient Admitted (' + admit.ipdNo + ')', admission: admit });
 });
 
 app.post('/api/wards/add', function (req, res) {
@@ -604,6 +674,7 @@ app.post('/api/pharmacy/medicine/add', function (req, res) {
         expDate: b.expDate || '-',
         hsn: b.hsn || '30049099',
         qty: qty,
+        physicalQty: qty,
         unit: b.unit || 'TBS',
         mrp: Number(b.mrp || b.rate || 0),
         rate: Number(b.rate || 0),
@@ -616,61 +687,200 @@ app.post('/api/pharmacy/medicine/add', function (req, res) {
     res.json({ success: true, message: 'Medicine added to stock', med: med });
 });
 
-app.post('/api/pharmacy/purchase/add', function (req, res) {
-    const b = req.body;
-    const qty = Math.max(1, Number(b.qty || 1));
-    const rate = Number(b.rate || 0);
-    const gstPct = Number(b.gstPct || 12);
-    const totalAmount = Number((qty * rate * (1 + gstPct / 100)).toFixed(2));
-    const purId = 'PUR-' + Date.now().toString().slice(-5);
+// Multi-Item Purchase Invoice Creation
+app.post('/api/pharmacy/purchase/invoice', function (req, res) {
+    try {
+        const b = req.body || {};
+        const items = Array.isArray(b.items) ? b.items : [];
+        if (!items.length) return res.status(400).json({ success: false, message: 'Add at least 1 medicine item to the purchase invoice.' });
 
-    const pur = {
-        purId: purId,
-        date: todayISO(),
-        vendor: b.vendor || 'Wholesale Distributor',
-        invoiceNo: b.invoiceNo || ('INV-' + Date.now().toString().slice(-4)),
-        itemName: b.itemName,
-        batch: b.batch || 'B01',
-        hsn: b.hsn || '30049099',
-        qty: qty,
-        rate: rate,
-        gstPct: gstPct,
-        totalAmount: totalAmount
-    };
-    erpData.pharmacyPurchases.unshift(pur);
+        const purId = 'PUR-' + Date.now().toString().slice(-5);
+        const invoiceNo = (b.invoiceNo || ('INV-' + Date.now().toString().slice(-4))).trim();
+        const vendor = (b.vendor || 'Wholesale Distributor').trim();
+        const payType = b.payType || 'Cash';
+        const chequeNo = b.chequeNo || '';
+        const isCredit = payType.toLowerCase().includes('credit');
 
-    let stockItem = erpData.pharmacyStock.find(function (m) {
-        return m.itemName.toLowerCase() === (b.itemName || '').toLowerCase() && m.batch.toLowerCase() === (b.batch || '').toLowerCase();
-    });
-    if (stockItem) {
-        stockItem.qty = Number(stockItem.qty || 0) + qty;
-        stockItem.rate = rate;
-        if (b.mrp) stockItem.mrp = Number(b.mrp);
-        if (b.mfgDate) stockItem.mfgDate = b.mfgDate;
-        if (b.expDate) stockItem.expDate = b.expDate;
-    } else {
-        stockItem = {
-            itemCode: 'MED-' + Date.now().toString().slice(-4),
-            itemName: b.itemName,
-            manufacturer: b.vendor || 'Wholesale',
-            batch: b.batch || 'B01',
-            mfgDate: b.mfgDate || '-',
-            expDate: b.expDate || '-',
-            hsn: b.hsn || '30049099',
-            qty: qty,
-            unit: b.unit || 'TBS',
-            mrp: Number(b.mrp || rate),
-            rate: rate,
-            gstPct: gstPct,
-            reorderLevel: 20
+        let invoiceTotal = 0;
+        const processedItems = items.map(function (it) {
+            const qty = Math.max(1, Number(it.qty || 1));
+            const rate = Number(it.rate || 0);
+            const mrp = Number(it.mrp !== undefined && it.mrp !== '' ? it.mrp : rate);
+            const gstPct = Number(it.gstPct || 12);
+            const lineTotal = Number((qty * rate * (1 + gstPct / 100)).toFixed(2));
+            invoiceTotal += lineTotal;
+
+            const mfgExpStr = it.mfgExp || '';
+            const mfgDate = it.mfgDate || (mfgExpStr.includes('/') ? mfgExpStr.split('/')[0].trim() : '-');
+            const expDate = it.expDate || (mfgExpStr.includes('/') ? mfgExpStr.split('/')[1].trim() : '-');
+
+            let stockItem = erpData.pharmacyStock.find(function (m) {
+                return m.itemName.toLowerCase() === (it.itemName || '').toLowerCase() && m.batch.toLowerCase() === (it.batch || 'B01').toLowerCase();
+            });
+
+            if (stockItem) {
+                stockItem.qty = Number(stockItem.qty || 0) + qty;
+                stockItem.physicalQty = stockItem.qty;
+                stockItem.rate = rate;
+                if (mrp) stockItem.mrp = mrp;
+                if (mfgDate !== '-') stockItem.mfgDate = mfgDate;
+                if (expDate !== '-') stockItem.expDate = expDate;
+            } else {
+                stockItem = {
+                    itemCode: 'MED-' + Date.now().toString().slice(-4) + '-' + Math.floor(Math.random() * 90 + 10),
+                    itemName: it.itemName,
+                    manufacturer: vendor,
+                    batch: it.batch || 'B01',
+                    mfgDate: mfgDate,
+                    expDate: expDate,
+                    hsn: it.hsn || '30045031',
+                    qty: qty,
+                    physicalQty: qty,
+                    unit: it.unit || 'TBS',
+                    mrp: mrp,
+                    rate: rate,
+                    gstPct: gstPct,
+                    reorderLevel: 20
+                };
+                erpData.pharmacyStock.unshift(stockItem);
+            }
+
+            addStockLedgerEntry({
+                module: 'Pharmacy',
+                itemCode: stockItem.itemCode,
+                itemName: stockItem.itemName,
+                batch: stockItem.batch,
+                txnType: 'PURCHASE IN',
+                qtyChange: qty,
+                balanceAfter: stockItem.qty,
+                refDoc: invoiceNo
+            });
+
+            return {
+                itemName: it.itemName,
+                batch: it.batch || 'B01',
+                mfgExp: mfgDate + ' / ' + expDate,
+                hsn: it.hsn || '30045031',
+                qty: qty,
+                mrp: mrp,
+                rate: rate,
+                gstPct: gstPct,
+                totalAmount: lineTotal
+            };
+        });
+
+        const purchaseRecord = {
+            purId: purId,
+            date: todayISO(),
+            vendor: vendor,
+            invoiceNo: invoiceNo,
+            payType: payType,
+            paymentStatus: isCredit ? 'Credit Due' : 'Paid',
+            chequeNo: chequeNo,
+            paidDate: isCredit ? '' : todayISO(),
+            itemsCount: processedItems.length,
+            itemsSummary: processedItems.map(function (x) { return x.itemName + ' (' + x.qty + ')'; }).join(', '),
+            items: processedItems,
+            totalAmount: Number(invoiceTotal.toFixed(2))
         };
-        erpData.pharmacyStock.unshift(stockItem);
-    }
 
-    addStockLedgerEntry({ module: 'Pharmacy', itemCode: stockItem.itemCode, itemName: stockItem.itemName, batch: stockItem.batch, txnType: 'PURCHASE IN', qtyChange: qty, balanceAfter: stockItem.qty, refDoc: purId });
-    addFinanceEntry({ date: todayISO(), sourceModule: 'Pharmacy', type: 'Expense / Purchase', head: 'Pharmacy Purchase', mode: b.payType || 'Cash', amount: totalAmount, refNo: purId });
-    addAudit('Pharmacist', 'Pharmacy', 'Recorded purchase ' + purId + ' for ' + pur.itemName + ' (Qty ' + qty + ', ₹' + totalAmount + ')');
-    res.json({ success: true, message: 'Pharmacy Purchase recorded & stock updated (' + purId + ')', purchase: pur });
+        erpData.pharmacyPurchases.unshift(purchaseRecord);
+
+        addFinanceEntry({
+            date: todayISO(),
+            sourceModule: 'Pharmacy',
+            type: isCredit ? 'Credit Purchase' : 'Purchase Payment',
+            head: 'Purchase Inv ' + invoiceNo + ' - ' + vendor,
+            mode: chequeNo ? (payType + ' #' + chequeNo) : payType,
+            amount: purchaseRecord.totalAmount,
+            refNo: invoiceNo
+        });
+
+        addAudit('Pharmacist', 'Pharmacy', 'Saved Purchase Invoice ' + invoiceNo + ' (' + vendor + ') with ' + processedItems.length + ' items | ' + payType + ' | ₹' + purchaseRecord.totalAmount);
+        res.json({ success: true, message: 'Purchase Invoice ' + invoiceNo + ' saved with ' + processedItems.length + ' item(s)!', purchase: purchaseRecord });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Settle / Update Credit Purchase Payment
+app.post('/api/pharmacy/purchase/settle', function (req, res) {
+    try {
+        const b = req.body || {};
+        const pur = erpData.pharmacyPurchases.find(function (p) { return p.purId === b.purId || p.invoiceNo === b.invoiceNo; });
+        if (!pur) return res.status(404).json({ success: false, message: 'Purchase invoice not found.' });
+
+        const settleMode = b.settleMode || 'Cash';
+        const chequeNo = b.chequeNo || '';
+        pur.payType = settleMode;
+        pur.paymentStatus = 'Paid';
+        pur.chequeNo = chequeNo;
+        pur.paidDate = todayISO();
+
+        addFinanceEntry({
+            date: todayISO(),
+            sourceModule: 'Pharmacy',
+            type: 'Credit Settlement',
+            head: 'Cleared Credit Inv ' + pur.invoiceNo + ' - ' + pur.vendor,
+            mode: chequeNo ? (settleMode + ' #' + chequeNo) : settleMode,
+            amount: pur.totalAmount,
+            refNo: pur.invoiceNo
+        });
+
+        addAudit('Pharmacist', 'Pharmacy', 'Settled credit purchase ' + pur.invoiceNo + ' (' + pur.vendor + ') via ' + settleMode + ' | ₹' + pur.totalAmount);
+        res.json({ success: true, message: 'Credit payment updated to ' + settleMode + ' for Invoice ' + pur.invoiceNo, purchase: pur });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Save Pharmacy Stock Audit Record
+app.post('/api/pharmacy/audit/save', function (req, res) {
+    try {
+        const b = req.body || {};
+        const med = erpData.pharmacyStock.find(function (m) { return m.itemCode === b.itemCode; });
+        if (!med) return res.status(404).json({ success: false, message: 'Medicine item not found.' });
+
+        const systemQty = Number(med.qty || 0);
+        const physicalQty = Math.max(0, Number(b.physicalQty || 0));
+        const diffQty = Number((physicalQty - systemQty).toFixed(2));
+        const status = diffQty > 0 ? 'Extra Stock' : (diffQty < 0 ? 'Short Stock' : 'Matched');
+        const valueDiff = Number((diffQty * Number(med.rate || 0)).toFixed(2));
+
+        med.physicalQty = physicalQty;
+        if (b.syncStock) {
+            med.qty = physicalQty;
+            addStockLedgerEntry({
+                module: 'Pharmacy',
+                itemCode: med.itemCode,
+                itemName: med.itemName,
+                batch: med.batch,
+                txnType: 'AUDIT ADJUST (' + status + ')',
+                qtyChange: diffQty,
+                balanceAfter: physicalQty,
+                refDoc: 'AUDIT'
+            });
+        }
+
+        const auditRec = {
+            auditId: 'AUD-' + Date.now().toString().slice(-4),
+            date: todayISO(),
+            itemCode: med.itemCode,
+            itemName: med.itemName,
+            batch: med.batch,
+            systemQty: systemQty,
+            physicalQty: physicalQty,
+            diffQty: diffQty,
+            status: status,
+            rate: Number(med.rate || 0),
+            valueDiff: valueDiff
+        };
+        erpData.pharmacyAudits.unshift(auditRec);
+        addAudit('Pharmacist', 'Pharmacy Audit', 'Audited ' + med.itemName + ' (' + med.batch + '): Sys ' + systemQty + ', Phy ' + physicalQty + ' [' + status + ']');
+        res.json({ success: true, message: 'Audit saved (' + status + ': ' + diffQty + ')', audit: auditRec });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.post('/api/pharmacy/sale/create', function (req, res) {
@@ -686,6 +896,7 @@ app.post('/api/pharmacy/sale/create', function (req, res) {
             const qty = Math.max(1, Number(it.qty || 1));
             if (stockMatch) {
                 stockMatch.qty = Math.max(0, Number(stockMatch.qty || 0) - qty);
+                stockMatch.physicalQty = stockMatch.qty;
                 addStockLedgerEntry({
                     module: 'Pharmacy',
                     itemCode: stockMatch.itemCode,
@@ -770,6 +981,7 @@ app.post('/api/pharmacy/return/create', function (req, res) {
     });
     if (stockMatch) {
         stockMatch.qty = Number(stockMatch.qty || 0) + qty;
+        stockMatch.physicalQty = stockMatch.qty;
         addStockLedgerEntry({ module: 'Pharmacy', itemCode: stockMatch.itemCode, itemName: stockMatch.itemName, batch: stockMatch.batch, txnType: 'SALE RETURN IN', qtyChange: qty, balanceAfter: stockMatch.qty, refDoc: retId });
     }
 
@@ -874,7 +1086,7 @@ app.post('/api/inventory/grn/add', function (req, res) {
     } else {
         addStockLedgerEntry({ module: 'Inventory', itemCode: '-', itemName: b.itemName, batch: '-', txnType: 'GRN IN', qtyChange: qty, balanceAfter: qty, refDoc: grnId });
     }
-    addFinanceEntry({ date: todayISO(), sourceModule: 'Inventory', type: 'Expense / Purchase', head: 'Store GRN', mode: 'Cash / Bank', amount: totalAmount, refNo: grnId });
+    addFinanceEntry({ date: todayISO(), sourceModule: 'Inventory', type: 'Expense / Purchase', head: 'Store GRN', mode: b.payType || 'Cash', amount: totalAmount, refNo: grnId });
     addAudit('Store Staff', 'Inventory', 'Recorded GRN ' + grnId + ' for ' + grn.itemName + ' (₹' + totalAmount + ')');
     res.json({ success: true, message: 'GRN recorded & stock updated (' + grnId + ')', grn: grn });
 });
@@ -979,16 +1191,11 @@ app.get('/api/reports/custom', function (req, res) {
     const pharmacyReturns = erpData.pharmacyReturns.filter(function (r) { return inRange(r.date); });
     const grnRows = erpData.grnEntries.filter(function (g) { return inRange(g.date); });
     const biomedRows = erpData.biomedWorkOrders.filter(function (w) { return inRange(w.date); });
-    const financeRows = erpData.financeEntries.filter(function (f) {
-        if (!inRange(f.date)) return false;
-        if (scope === 'all') return true;
-        return (f.sourceModule || '').toLowerCase() === scope;
-    });
 
     const rows = [];
     if (scope === 'all' || scope === 'hospital') {
         hospitalBills.forEach(function (b) {
-            rows.push({ date: b.date, module: 'Hospital', docNo: b.billNo, party: b.patientName, category: 'OPD / Hospital Bill', mode: b.payType, amount: b.netFee });
+            rows.push({ date: b.date, module: 'Hospital', docNo: b.billNo, party: b.patientName, category: (b.patientType || 'Normal') + ' Bill', mode: b.payType, amount: b.netFee });
         });
     }
     if (scope === 'all' || scope === 'pharmacy') {
@@ -996,7 +1203,7 @@ app.get('/api/reports/custom', function (req, res) {
             rows.push({ date: b.date, module: 'Pharmacy', docNo: b.billNo, party: b.patientName, category: 'Pharmacy Sale', mode: b.payType, amount: b.netFee });
         });
         pharmacyPurchases.forEach(function (p) {
-            rows.push({ date: p.date, module: 'Pharmacy', docNo: p.purId, party: p.vendor, category: 'Pharmacy Purchase', mode: 'Purchase', amount: p.totalAmount });
+            rows.push({ date: p.date, module: 'Pharmacy', docNo: p.invoiceNo, party: p.vendor, category: 'Purchase (' + p.paymentStatus + ')', mode: p.payType, amount: p.totalAmount });
         });
         pharmacyReturns.forEach(function (r) {
             rows.push({ date: r.date, module: 'Pharmacy', docNo: r.retId, party: r.itemName, category: 'Sale Return', mode: 'Refund', amount: -Math.abs(r.refundAmount) });
@@ -1021,7 +1228,6 @@ app.get('/api/reports/custom', function (req, res) {
         toDate: toDate,
         count: rows.length,
         totalAmount: Number(totalAmount.toFixed(2)),
-        financeCount: financeRows.length,
         rows: rows
     });
 });
@@ -1038,9 +1244,27 @@ app.get('/api/module/:key', function (req, res) {
     if (['sales-billing', 'pharmacy-reports'].includes(key)) {
         return res.json({ success: true, data: erpData.bills.filter(function (b) { return b.billType === 'Pharmacy'; }) });
     }
-    if (['purchase-entry'].includes(key)) return res.json({ success: true, data: erpData.pharmacyPurchases });
+    if (['purchase-entry'].includes(key)) {
+        return res.json({
+            success: true,
+            data: erpData.pharmacyPurchases.map(function (p) {
+                return {
+                    purId: p.purId,
+                    date: p.date,
+                    invoiceNo: p.invoiceNo,
+                    vendor: p.vendor,
+                    itemsCount: p.itemsCount,
+                    items: p.itemsSummary,
+                    payMode: p.payType,
+                    chequeNo: p.chequeNo || '-',
+                    status: p.paymentStatus,
+                    totalAmount: p.totalAmount
+                };
+            })
+        });
+    }
     if (['sales-return'].includes(key)) return res.json({ success: true, data: erpData.pharmacyReturns });
-    if (['pharmacy', 'medicines', 'batch-stock', 'stock-alerts'].includes(key)) return res.json({ success: true, data: erpData.pharmacyStock });
+    if (['pharmacy', 'medicines', 'batch-stock', 'stock-alerts', 'stock-audit'].includes(key)) return res.json({ success: true, data: erpData.pharmacyStock });
     if (['doctors'].includes(key)) return res.json({ success: true, data: erpData.doctors });
     if (['users'].includes(key)) return res.json({ success: true, data: erpData.users });
     if (['lab', 'laboratory'].includes(key)) return res.json({ success: true, data: erpData.laboratory });
@@ -1065,9 +1289,10 @@ app.get('/api/dashboard/metrics', function (req, res) {
     const hospRev = erpData.bills.filter(function (b) { return b.billType === 'Hospital'; }).reduce(function (a, b) { return a + Number(b.netFee || 0); }, 0);
     const phmSales = erpData.bills.filter(function (b) { return b.billType === 'Pharmacy'; }).reduce(function (a, b) { return a + Number(b.netFee || 0); }, 0);
     const phmPurch = erpData.pharmacyPurchases.reduce(function (a, p) { return a + Number(p.totalAmount || 0); }, 0);
+    const phmCreditDue = erpData.pharmacyPurchases.filter(function (p) { return p.paymentStatus === 'Credit Due'; }).reduce(function (a, p) { return a + Number(p.totalAmount || 0); }, 0);
     const invVal = erpData.inventoryItems.reduce(function (a, i) { return a + (Number(i.stock || 0) * Number(i.rate || 0)); }, 0);
     const biomedExp = erpData.biomedPmAmc.reduce(function (a, c) { return a + Number(c.cost || 0); }, 0);
-    const creditTotal = erpData.bills.filter(function (b) { return (b.payType || '').includes('Credit'); }).reduce(function (a, b) { return a + Number(b.netFee || 0); }, 0);
+    const creditTotal = erpData.bills.filter(function (b) { return (b.payType || '').includes('Credit'); }).reduce(function (a, b) { return a + Number(b.netFee || 0); }, 0) + phmCreditDue;
     const totalBeds = erpData.wards.reduce(function (a, w) { return a + Number(w.totalBeds || 0); }, 0);
     const occBeds = erpData.wards.reduce(function (a, w) { return a + Number(w.occupiedBeds || 0); }, 0);
 
@@ -1076,6 +1301,7 @@ app.get('/api/dashboard/metrics', function (req, res) {
         hospitalRevenue: Number(hospRev.toFixed(2)),
         pharmacySales: Number(phmSales.toFixed(2)),
         pharmacyPurchase: Number(phmPurch.toFixed(2)),
+        pharmacyCreditDue: Number(phmCreditDue.toFixed(2)),
         pharmacyStockCount: erpData.pharmacyStock.length,
         inventoryValue: Number(invVal.toFixed(2)),
         inventoryItemsCount: erpData.inventoryItems.length,
@@ -1109,7 +1335,7 @@ const htmlPage = [
 ':root{--navy:#10243a;--blue:#2674e8;--cyan:#16b8b0;--bg:#f3f6fb;--card:#fff;--text:#18283d;--muted:#718096;--line:#e4eaf2;--green:#16875d;--red:#c93c48;--shadow:0 8px 28px rgba(23,44,75,.07)}',
 '*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:600;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}',
 '#login-screen{display:flex;justify-content:center;align-items:center;height:100vh;width:100vw;background:linear-gradient(135deg,#0f172a,#1e3a8a);position:fixed;z-index:9999}',
-'.login-card-wrapper{background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.2);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,0.5);width:min(860px,94vw);height:480px;display:flex;overflow:hidden}',
+'.login-card-wrapper{background:rgba(15,23,42,0.88);border:1px solid rgba(255,255,255,0.2);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,0.5);width:min(860px,94vw);height:480px;display:flex;overflow:hidden}',
 '.login-left{flex:1.15;padding:36px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#fff}',
 '.login-left form{width:100%;max-width:320px}',
 '.login-right{flex:1;background:linear-gradient(135deg,#0d9488,#2563eb);color:#fff;padding:36px;display:flex;flex-direction:column;justify-content:center;text-align:left}',
@@ -1117,32 +1343,38 @@ const htmlPage = [
 '.login-input{width:100%;padding:11px 13px;border:1px solid #475569;border-radius:10px;font-size:14px;font-weight:700;background:#0f172a;color:#fff;outline:none}',
 '.login-btn{width:100%;padding:12px;background:#10b981;color:#fff;border:none;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}',
 '#app{display:none;height:100vh;width:100vw;flex-direction:row}',
-'.sidebar{width:272px;background:linear-gradient(180deg,var(--navy),#0b1927);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}',
-'.brand{display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid #ffffff18;position:sticky;top:0;background:var(--navy);z-index:10}',
-'.logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:#fff;font-weight:900;font-size:15px}',
-'.brand strong{display:block;font-size:13px;font-weight:900;color:#fff}.brand small{display:block;color:#9db3ca;font-size:10px;margin-top:3px}',
-'.nav{padding:10px 10px 28px;flex:1}.nav-label{font-size:10px;font-weight:900;letter-spacing:1.1px;color:#7893ae;padding:14px 10px 6px}',
-'.nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;margin:2px 0;color:#c6d4e4;font-size:12px;font-weight:700;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}',
-'.nav-item:hover,.nav-item.active{background:#ffffff16;color:#fff}.nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:900}',
+'.sidebar{width:274px;background:linear-gradient(180deg,var(--navy),#0b1927);color:#d9e6f5;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}',
+'.brand{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #ffffff18;position:sticky;top:0;background:var(--navy);z-index:10}',
+'.logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#23c6b8,#3478f6);display:grid;place-items:center;color:#fff;font-weight:900;font-size:15px;overflow:hidden}',
+'.brand strong{display:block;font-size:13px;font-weight:900;color:#fff}.brand small{display:block;color:#9db3ca;font-size:10px;margin-top:2px}',
+'.nav{padding:10px 10px 28px;flex:1}',
+'.nav-group-btn{width:100%;display:flex;justify-content:space-between;align-items:center;background:#ffffff0d;color:#93c5fd;border:1px solid #ffffff14;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:10px;font-weight:900;letter-spacing:0.8px;cursor:pointer;text-align:left}',
+'.nav-group-btn:hover{background:#ffffff19;color:#fff}',
+'.nav-group-items{display:none;padding:3px 0 4px 4px}.nav-group-items.open{display:block}',
+'.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin:2px 0;color:#c6d4e4;font-size:12px;font-weight:700;border:0;background:transparent;width:100%;text-align:left;cursor:pointer}',
+'.nav-item:hover,.nav-item.active{background:#ffffff1a;color:#fff}.nav-item.active{box-shadow:inset 3px 0 #29c7be;font-weight:900}',
 '.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}',
-'.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px}',
+'.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:10px}',
+'.live-clock-box{background:#f0f6ff;border:1px solid #bfdbfe;color:#1e3a8a;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:900;white-space:nowrap}',
 '.profile{display:flex;align-items:center;gap:10px}.avatar{width:36px;height:36px;border-radius:10px;background:#e4efff;color:#2464c4;display:grid;place-items:center;font-weight:900;font-size:12px}',
-'.content{padding:20px 24px;overflow-y:auto;flex:1}.view-section{display:none}.view-section.active{display:block}',
-'.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}',
-'.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}',
-'.stat-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase}.stat-value{font-size:21px;font-weight:900;margin:8px 0 2px;color:var(--navy)}',
-'.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px;margin-bottom:18px}',
-'.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}',
+'.content{padding:18px 22px;overflow-y:auto;flex:1}.view-section{display:none}.view-section.active{display:block}',
+'.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}',
+'.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:var(--shadow)}',
+'.stat-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase}.stat-value{font-size:20px;font-weight:900;margin:7px 0 2px;color:var(--navy)}',
+'.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px}',
+'.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}',
 '.panel-head h3{font-size:15px;font-weight:900;margin:0;color:var(--navy)}',
 '.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}',
 '.field{display:flex;flex-direction:column;gap:5px;position:relative}.field label{font-size:11px;font-weight:800;color:var(--navy)}',
 '.field input,.field select{padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;outline:none;background:#fff}',
-'table{width:100%;border-collapse:collapse}th{text-align:left;background:#f8fafd;color:#5a6a8e;font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--line)}',
-'td{padding:10px 12px;border-top:1px solid #edf1f6;font-size:12px;font-weight:700}',
-'.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:8px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer}',
-'.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}.btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}',
+'table{width:100%;border-collapse:collapse}th{text-align:left;background:#f8fafd;color:#5a6a8e;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--line)}',
+'td{padding:9px 10px;border-top:1px solid #edf1f6;font-size:12px;font-weight:700}',
+'.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}',
+'.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.success{background:var(--cyan);border-color:var(--cyan);color:#fff}.btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}.btn.warn{background:#d97706;border-color:#d97706;color:#fff}',
 '.suggestions-box{position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.12);max-height:190px;overflow-y:auto;z-index:100;display:none}',
 '.suggestion-item{padding:8px 11px;border-bottom:1px solid #f0f4f9;cursor:pointer;font-size:12px}.suggestion-item:hover{background:#f0f6ff}',
+'.perm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#f8fafc;border:1px solid var(--line);padding:10px;border-radius:8px;margin-bottom:10px}',
+'.perm-grid label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;cursor:pointer}',
 '.hide-col{display:none}',
 '#ar-ai-widget{position:fixed;bottom:20px;right:20px;z-index:9999}',
 '#ar-ai-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border:none;border-radius:50px;padding:11px 18px;font-weight:800;font-size:12px;cursor:pointer}',
@@ -1155,7 +1387,7 @@ const htmlPage = [
 '.inv-box{border:1px solid #94a3b8;border-radius:8px;padding:10px 12px;font-size:11px;margin-bottom:10px}',
 '.print-opts{display:flex;flex-wrap:wrap;gap:10px;background:#f8fafc;border:1px solid var(--line);padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:11px;font-weight:800}',
 '.print-opts label{display:flex;align-items:center;gap:4px;cursor:pointer}',
-'@media print{body *{visibility:hidden}#print-card-area,#print-card-area *,#prescription-card-area,#prescription-card-area *{visibility:visible}#print-modal,#prescription-modal{position:absolute;left:0;top:0;width:100%;background:#fff;display:flex;align-items:flex-start;justify-content:center;padding:0}.print-card{box-shadow:none;width:100%;padding:0;margin:0;max-width:100%;max-height:none;overflow:visible}.no-print{display:none}@page{size:A4;margin:8mm}}',
+'@media print{body *{visibility:hidden}#print-card-area,#print-card-area *,#prescription-card-area,#prescription-card-area *,.audit-print-area,.audit-print-area *{visibility:visible}#print-modal,#prescription-modal{position:absolute;left:0;top:0;width:100%;background:#fff;display:flex;align-items:flex-start;justify-content:center;padding:0}.print-card{box-shadow:none;width:100%;padding:0;margin:0;max-width:100%;max-height:none;overflow:visible}.no-print{display:none}@page{size:A4;margin:8mm}}',
 '</style></head><body>',
 
 '<div id="login-screen"><div class="login-card-wrapper"><div class="login-left"><h2 style="margin:0 0 14px 0;">AR ERP Sign In</h2><form id="login-form-element">',
@@ -1163,11 +1395,11 @@ const htmlPage = [
 '<div class="login-field"><label>Password</label><input type="password" id="login-p" class="login-input" required autocomplete="current-password"></div>',
 '<div style="text-align:right;margin-bottom:10px;font-size:11px;"><a href="#" id="forgot-link" style="color:#38bdf8;text-decoration:none;">Forgot Password?</a></div>',
 '<button type="submit" class="login-btn">Sign In</button></form></div>',
-'<div class="login-right"><h2 style="margin:0 0 8px 0;font-size:22px;">AR HEALTHCARE MASTER ERP</h2><p style="margin:0 0 12px 0;font-size:12px;line-height:1.5;opacity:0.95;">Separate Hospital, Pharmacy, BME, Central Store Inventory, Date-Wise Reports, and ABDM M1/M2/M3 + NHCX Workflows.</p><div style="font-size:11px;background:rgba(255,255,255,0.18);padding:6px 10px;border-radius:8px;">Customizable A4 GST Invoice • Multi-Item Sale • Purchase • Return</div></div></div></div>',
+'<div class="login-right"><h2 style="margin:0 0 8px 0;font-size:22px;">AR HEALTHCARE MASTER ERP</h2><p style="margin:0 0 12px 0;font-size:12px;line-height:1.5;opacity:0.95;">Multi-Item Purchase Invoice & Credit Ledger, Normal/Emergency Patient Billing, Stock Audit, Backup/Export & ABDM/NHCX.</p><div style="font-size:11px;background:rgba(255,255,255,0.18);padding:6px 10px;border-radius:8px;">Live IST Clock • Custom Permissions • A4 GST Bill</div></div></div></div>',
 
-'<div id="app"><aside class="sidebar" id="sidebar-panel"><div class="brand"><div class="logo">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>HIMS • Pharmacy • BME • NHCX</small></div></div><nav class="nav" id="nav-menu"></nav></aside>',
-'<main class="main"><header class="topbar"><div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="sidebar-toggle-btn">Menu</button><h3 id="topbar-title" style="font-size:16px;font-weight:900;margin:0;color:var(--navy);">HOSPITAL DASHBOARD</h3></div>',
-'<div class="profile"><div class="avatar" id="user-avatar">AR</div><div><strong id="user-display-name" style="font-size:12px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div><button class="btn danger" id="logout-btn" style="margin-left:8px;">Logout</button></div></header>',
+'<div id="app"><aside class="sidebar" id="sidebar-panel"><div class="brand"><div class="logo" id="sidebar-logo-box">AR</div><div><strong>AR HEALTHCARE ERP</strong><small>HIMS • Pharmacy • BME • NHCX</small></div></div><nav class="nav" id="nav-menu"></nav></aside>',
+'<main class="main"><header class="topbar"><div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="sidebar-toggle-btn">Menu</button><h3 id="topbar-title" style="font-size:15px;font-weight:900;margin:0;color:var(--navy);">HOSPITAL DASHBOARD</h3></div>',
+'<div class="profile"><div class="live-clock-box" id="live-datetime-badge">Loading Time...</div><div class="avatar" id="user-avatar">AR</div><div><strong id="user-display-name" style="font-size:12px;display:block;">-</strong><small id="user-display-role" style="font-size:10px;color:var(--muted);">-</small></div><button class="btn danger" id="logout-btn">Logout</button></div></header>',
 
 '<section class="content">',
 
@@ -1176,18 +1408,18 @@ const htmlPage = [
 '<div class="stat"><div class="stat-label">HOSPITAL BILLING</div><div class="stat-value" id="m-hosp-rev">₹0.00</div></div>',
 '<div class="stat"><div class="stat-label">REGISTERED PATIENTS</div><div class="stat-value" id="m-pat">0</div></div>',
 '<div class="stat"><div class="stat-label">ACTIVE IPD BEDS</div><div class="stat-value" id="m-ipd">0 / 0</div></div>',
-'<div class="stat"><div class="stat-label">CREDIT / UDHAR DUE</div><div class="stat-value" id="m-credit" style="color:var(--red);">₹0.00</div></div></div>',
+'<div class="stat"><div class="stat-label">TOTAL CREDIT DUE</div><div class="stat-value" id="m-credit" style="color:var(--red);">₹0.00</div></div></div>',
 '<div class="panel"><div class="panel-head"><h3>Hospital Patient & Quick Workflow Hub</h3><small style="color:var(--muted)">Search by Name, UHID, Mobile or ABHA</small></div>',
 '<div style="position:relative;margin-bottom:12px;"><input type="text" id="dash-quick-find" placeholder="Search Patient Name, UHID, Mobile or ABHA..." style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;"><div class="suggestions-box" id="dash-quick-suggestions"></div></div>',
-'<div style="overflow-x:auto;"><table><thead><tr><th>UHID</th><th>Patient Name</th><th>Mobile</th><th>ABHA</th><th>Doctor</th><th>Net Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="dash-patients"></tbody></table></div></div></div>',
+'<div style="overflow-x:auto;"><table><thead><tr><th>UHID</th><th>Patient Name</th><th>Type</th><th>Mobile</th><th>ABHA</th><th>Doctor</th><th>Net Fee</th><th>Action</th></tr></thead><tbody id="dash-patients"></tbody></table></div></div></div>',
 
 '<div id="view-module-container" class="view-section">',
-
 '<div class="stats" id="sub-dashboard-stats" style="display:none;"></div>',
 
-'<div class="panel" id="patient-reg-panel" style="display:none;"><div class="panel-head"><h3>New Patient Registration & Hospital OPD Bill</h3></div><form id="patient-reg-form"><div class="form-grid">',
+'<div class="panel" id="patient-reg-panel" style="display:none;"><div class="panel-head"><h3>Patient Registration & Hospital Bill (Normal / Emergency)</h3></div><form id="patient-reg-form"><div class="form-grid">',
 '<div class="field"><label>Auto UHID</label><input type="text" id="reg-uhid" readonly style="background:#f1f5f9;font-weight:900;color:var(--blue);"></div>',
 '<div class="field"><label>Live Patient Search</label><input type="text" id="live-search-input" placeholder="Search existing patient..." autocomplete="off"><div class="suggestions-box" id="search-suggestions"></div></div>',
+'<div class="field"><label>Patient Type *</label><select id="reg-ptype"><option value="Normal">Normal</option><option value="Emergency">Emergency</option></select></div>',
 '<div class="field"><label>Title</label><select id="reg-title"><option>Mr.</option><option>Mrs.</option><option>Miss</option><option>Master</option><option>Baby of</option></select></div>',
 '<div class="field"><label>Patient Name *</label><input type="text" id="reg-name" required></div>',
 '<div class="field"><label>Relation</label><select id="reg-relation"><option>S/O</option><option>D/O</option><option>W/O</option><option>C/O</option></select></div>',
@@ -1200,16 +1432,17 @@ const htmlPage = [
 '<div class="field"><label>Address</label><input type="text" id="reg-address"></div>',
 '<div class="field"><label>Consulting Doctor *</label><select id="reg-doctor" required></select></div>',
 '<div class="field"><label>Doctor Fee (₹) *</label><input type="number" id="reg-fee" required></div>',
+'<div class="field"><label>Emergency Charge (₹)</label><input type="number" id="reg-emg-fee" value="0"></div>',
 '<div class="field"><label>Discount (₹)</label><input type="number" id="reg-discount" value="0"></div>',
 '<div class="field"><label>Net Fee (₹)</label><input type="number" id="reg-netfee" readonly style="background:#f1f5f9;font-weight:900;color:var(--green);"></div>',
-'<div class="field"><label>Payment Mode</label><select id="reg-paytype"><option>Cash</option><option>Credit / Udhar</option><option>UPI / Online</option><option>Card</option></select></div>',
+'<div class="field"><label>Payment Mode</label><select id="reg-paytype"><option>Cash</option><option>Cheque</option><option>Credit / Udhar</option><option>UPI / Online</option><option>Card</option></select></div>',
 '</div><button type="submit" class="btn primary">Register & Print Hospital Bill</button></form></div>',
 
 '<div class="panel" id="pharmacy-sale-panel" style="display:none;"><div class="panel-head"><h3>Pharmacy Multi-Item Sale Billing (GST Invoice)</h3></div>',
 '<div class="form-grid">',
 '<div class="field"><label>Customer / Patient Name *</label><input type="text" id="ps-name" placeholder="Customer Name"></div>',
 '<div class="field"><label>Phone</label><input type="text" id="ps-phone" placeholder="Mobile"></div>',
-'<div class="field"><label>Payment Mode</label><select id="ps-paytype"><option>Cash</option><option>UPI / Online</option><option>Card</option><option>Credit / Udhar</option></select></div>',
+'<div class="field"><label>Payment Mode</label><select id="ps-paytype"><option>Cash</option><option>Cheque</option><option>UPI / Online</option><option>Card</option><option>Credit / Udhar</option></select></div>',
 '<div class="field"><label>Select Medicine from Stock</label><select id="ps-med-select"></select></div>',
 '<div class="field"><label>Qty *</label><input type="number" id="ps-qty" value="1" min="1"></div>',
 '<div class="field"><label>Discount (%)</label><input type="number" id="ps-disc" value="0" min="0" max="100"></div>',
@@ -1217,21 +1450,34 @@ const htmlPage = [
 '<div style="margin-bottom:10px;"><button type="button" class="btn success" id="ps-add-item-btn">+ Add Item to Bill</button> <button type="button" class="btn primary" id="ps-submit-bill-btn">Generate & Print Pharmacy Bill</button></div>',
 '<table><thead><tr><th>Medicine</th><th>Batch</th><th>MFG/EXP</th><th>HSN</th><th>Qty</th><th>MRP</th><th>Rate</th><th>Disc%</th><th>GST%</th><th>Total</th><th>Remove</th></tr></thead><tbody id="ps-cart-tbody"></tbody></table></div>',
 
-'<div class="panel" id="pharmacy-purchase-panel" style="display:none;"><div class="panel-head"><h3>Pharmacy Purchase Entry (Adds Stock & Updates Batch)</h3></div>',
-'<form id="pharmacy-purchase-form" class="form-grid">',
-'<div class="field"><label>Supplier / Wholesaler *</label><input type="text" id="pp-vendor" required placeholder="Wholesale Pharmacy"></div>',
-'<div class="field"><label>Supplier Invoice No</label><input type="text" id="pp-inv" placeholder="INV-101"></div>',
-'<div class="field"><label>Medicine Name *</label><input type="text" id="pp-name" required placeholder="Paracetamol 500 mg Tab"></div>',
-'<div class="field"><label>Batch No *</label><input type="text" id="pp-batch" required placeholder="B2611"></div>',
+'<div class="panel" id="pharmacy-purchase-panel" style="display:none;"><div class="panel-head"><h3>Multi-Item Pharmacy Purchase Invoice & Party / Invoice Ledger</h3></div>',
+'<form id="pharmacy-purchase-form"><div class="form-grid">',
+'<div class="field"><label>Supplier / Party Name *</label><input type="text" id="pp-vendor" required placeholder="Wholesale Pharmacy"></div>',
+'<div class="field"><label>Supplier Invoice No *</label><input type="text" id="pp-inv" required placeholder="INV-101"></div>',
+'<div class="field"><label>Payment Mode *</label><select id="pp-paytype"><option value="Cash">Cash</option><option value="Credit / Udhar">Credit / Udhar</option><option value="Cheque">Cheque</option></select></div>',
+'<div class="field"><label>Cheque No (If Cheque)</label><input type="text" id="pp-cheque" placeholder="Cheque No"></div>',
+'<div class="field"><label>Medicine Name *</label><input type="text" id="pp-name" placeholder="Paracetamol 500 mg Tab"></div>',
+'<div class="field"><label>Batch No *</label><input type="text" id="pp-batch" placeholder="B2611"></div>',
 '<div class="field"><label>MFG / EXP</label><input type="text" id="pp-mfgexp" placeholder="Nov 2026 / Nov 2028"></div>',
 '<div class="field"><label>HSN Code</label><input type="text" id="pp-hsn" value="30045031"></div>',
-'<div class="field"><label>Purchase Qty *</label><input type="number" id="pp-qty" required min="1" value="50"></div>',
+'<div class="field"><label>Purchase Qty *</label><input type="number" id="pp-qty" min="1" value="50"></div>',
 '<div class="field"><label>MRP (₹)</label><input type="number" id="pp-mrp" step="0.01" placeholder="50"></div>',
-'<div class="field"><label>Purchase Rate (₹) *</label><input type="number" id="pp-rate" step="0.01" required placeholder="35"></div>',
+'<div class="field"><label>Purchase Rate (₹) *</label><input type="number" id="pp-rate" step="0.01" placeholder="35"></div>',
 '<div class="field"><label>GST (%)</label><input type="number" id="pp-gst" value="12"></div>',
-'<div class="field"><label>Payment Mode</label><select id="pp-paytype"><option>Cash</option><option>Bank / UPI</option><option>Credit / Udhar</option></select></div>',
-'<div style="display:flex;align-items:flex-end;"><button type="submit" class="btn primary" style="width:100%;">Save Purchase & Update Stock</button></div>',
-'</form></div>',
+'</div>',
+'<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">',
+'<button type="button" class="btn success" id="pp-add-item-btn">+ Add Item to Invoice</button>',
+'<button type="submit" class="btn primary">Save Full Purchase Invoice</button></div>',
+'<table style="margin-bottom:14px;"><thead><tr><th>Medicine</th><th>Batch</th><th>MFG/EXP</th><th>HSN</th><th>Qty</th><th>MRP</th><th>Rate</th><th>GST%</th><th>Line Total</th><th>Remove</th></tr></thead><tbody id="pp-items-tbody"></tbody></table></form>',
+'<hr style="border:0;border-top:1px solid var(--line);margin:12px 0;">',
+'<div class="panel-head"><h3>Search Purchase Ledger (By Invoice No or Party Name)</h3><input type="text" id="pp-ledger-search" placeholder="Search Invoice No or Party Name..." style="padding:7px 11px;border:1px solid var(--line);border-radius:8px;font-size:12px;width:260px;"></div>',
+'<div style="overflow-x:auto;"><table><thead><tr><th>Pur ID</th><th>Date</th><th>Invoice No</th><th>Party / Vendor</th><th>Items</th><th>Pay Mode</th><th>Cheque</th><th>Status</th><th>Amount (₹)</th><th>Action</th></tr></thead><tbody id="pp-ledger-tbody"></tbody></table></div></div>',
+
+'<div class="panel" id="pharmacy-audit-panel" style="display:none;"><div class="panel-head"><h3>Pharmacy Stock Audit (Item Search • System vs Physical • Extra/Short • Excel & Print)</h3>',
+'<div style="display:flex;gap:8px;flex-wrap:wrap;"><input type="text" id="audit-search-input" placeholder="Search Medicine Name or Batch..." style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:12px;width:230px;">',
+'<button type="button" class="btn success" id="audit-export-csv-btn">Export Excel / CSV</button>',
+'<button type="button" class="btn primary" id="audit-print-btn">Print Audit Report</button></div></div>',
+'<div class="audit-print-area" style="overflow-x:auto;"><table><thead><tr><th>Code</th><th>Medicine Name</th><th>Batch</th><th>System Stock</th><th>Physical Stock</th><th>Diff Qty</th><th>Status</th><th>Rate (₹)</th><th>Value Diff (₹)</th><th>Save Audit</th></tr></thead><tbody id="audit-stock-tbody"></tbody></table></div></div>',
 
 '<div class="panel" id="pharmacy-return-panel" style="display:none;"><div class="panel-head"><h3>Pharmacy Sale Return (Restores Stock & Logs Refund)</h3></div>',
 '<form id="pharmacy-return-form" class="form-grid">',
@@ -1276,18 +1522,20 @@ const htmlPage = [
 '<div style="display:flex;align-items:flex-end;"><button type="submit" class="btn success" style="width:100%;">Submit to NHCX (M3)</button></div>',
 '</form></div>',
 
-'<div class="panel" id="opd-panel" style="display:none;"><div class="panel-head"><h3>Book OPD Appointment / Token</h3></div><form id="opd-book-form" class="form-grid">',
+'<div class="panel" id="opd-panel" style="display:none;"><div class="panel-head"><h3>Book OPD Appointment / Token (Normal / Emergency)</h3></div><form id="opd-book-form" class="form-grid">',
 '<div class="field"><label>Patient UHID / Name *</label><input type="text" id="opd-uhid" required></div>',
+'<div class="field"><label>Patient Type</label><select id="opd-ptype"><option>Normal</option><option>Emergency</option></select></div>',
 '<div class="field"><label>Doctor *</label><select id="opd-doctor" required></select></div>',
 '<div class="field"><label>Time Slot</label><select id="opd-slot"><option>Morning Session (10 AM - 1 PM)</option><option>Evening Session (5 PM - 8 PM)</option></select></div>',
-'<div style="grid-column:span 3;"><button type="submit" class="btn primary">Book OPD Token</button></div></form></div>',
+'<div style="grid-column:span 2;display:flex;align-items:flex-end;"><button type="submit" class="btn primary" style="width:100%;">Book OPD Token</button></div></form></div>',
 
-'<div class="panel" id="ipd-panel" style="display:none;"><div class="panel-head"><h3>IPD Patient Admission</h3></div><form id="ipd-admit-form" class="form-grid">',
+'<div class="panel" id="ipd-panel" style="display:none;"><div class="panel-head"><h3>IPD Patient Admission (Normal / Emergency)</h3></div><form id="ipd-admit-form" class="form-grid">',
 '<div class="field"><label>UHID *</label><input type="text" id="ipd-uhid" required></div>',
 '<div class="field"><label>Patient Name *</label><input type="text" id="ipd-name" required></div>',
+'<div class="field"><label>Patient Type</label><select id="ipd-ptype"><option>Normal</option><option>Emergency</option></select></div>',
 '<div class="field"><label>Ward / Bed *</label><select id="ipd-ward"><option>General Ward - Bed 02</option><option>Private Room - Bed 01</option><option>ICU - Bed 02</option></select></div>',
 '<div class="field"><label>Doctor *</label><select id="ipd-doctor" required></select></div>',
-'<div style="grid-column:span 3;"><button type="submit" class="btn primary">Admit Patient</button></div></form></div>',
+'<div style="display:flex;align-items:flex-end;"><button type="submit" class="btn primary" style="width:100%;">Admit Patient</button></div></form></div>',
 
 '<div class="panel" id="wards-panel" style="display:none;"><div class="panel-head"><h3>Add Ward / Bed Setup</h3></div><form id="ward-add-form" class="form-grid">',
 '<div class="field"><label>Ward Name *</label><input type="text" id="w-name" required></div>',
@@ -1348,7 +1596,7 @@ const htmlPage = [
 '<div class="field"><label>Module</label><select id="fin-mod"><option>Hospital</option><option>Pharmacy</option><option>BME</option><option>Inventory</option></select></div>',
 '<div class="field"><label>Entry Type</label><select id="fin-type"><option>Receipt</option><option>Expense</option><option>Payment</option></select></div>',
 '<div class="field"><label>Account Head *</label><input type="text" id="fin-head" required placeholder="Head / Description"></div>',
-'<div class="field"><label>Mode</label><select id="fin-mode"><option>Cash</option><option>Bank / UPI</option><option>Card</option></select></div>',
+'<div class="field"><label>Mode</label><select id="fin-mode"><option>Cash</option><option>Cheque</option><option>Bank / UPI</option></select></div>',
 '<div class="field"><label>Amount (₹) *</label><input type="number" id="fin-amt" step="0.01" required value="0"></div>',
 '<div style="display:flex;align-items:flex-end;"><button type="submit" class="btn primary" style="width:100%;">Save Voucher</button></div></form></div>',
 
@@ -1369,32 +1617,40 @@ const htmlPage = [
 '<div class="field"><label>Department</label><input type="text" id="doc-dept" value="General Medicine"></div>',
 '<div style="grid-column:span 3;"><button type="submit" class="btn primary">+ Add Doctor</button></div></form></div>',
 
-'<div class="panel" id="user-mgmt-panel" style="display:none;"><div class="panel-head"><h3>Create User Account</h3></div><form id="user-create-form" class="form-grid">',
+'<div class="panel" id="user-mgmt-panel" style="display:none;"><div class="panel-head"><h3 id="user-form-title">Create / Edit User & Custom Permissions</h3><button type="button" class="btn" id="user-reset-form-btn">Reset Form</button></div>',
+'<form id="user-form"><div class="form-grid">',
 '<div class="field"><label>Full Name *</label><input type="text" id="new-u-name" required></div>',
 '<div class="field"><label>Username *</label><input type="text" id="new-u-username" required></div>',
-'<div class="field"><label>Password *</label><input type="password" id="new-u-password" required></div>',
-'<div class="field"><label>Role</label><select id="new-u-role"><option>Admin</option><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option></select></div>',
-'<div style="grid-column:span 2;display:flex;align-items:flex-end;"><button type="submit" class="btn primary">Create User</button></div></form></div>',
+'<div class="field"><label>Password *</label><input type="text" id="new-u-password" required></div>',
+'<div class="field"><label>Role</label><select id="new-u-role"><option>Admin</option><option>Cashier / Receptionist</option><option>Pharmacist</option><option>Doctor</option><option>Accountant</option><option>Demo Viewer</option></select></div>',
+'</div>',
+'<div style="margin-bottom:8px;font-size:11px;font-weight:900;color:var(--navy);">Select Allowed Modules for This User (Only Checked Modules Will Appear):</div>',
+'<div class="perm-grid" id="perm-checkboxes-box"></div>',
+'<button type="submit" class="btn primary" id="user-save-btn">Create User</button></form></div>',
 
-'<div class="panel" id="backup-panel" style="display:none;"><div class="panel-head"><h3>Institute, GST, Bank & UPI Settings</h3></div><form id="institute-form" class="form-grid">',
+'<div class="panel" id="backup-panel" style="display:none;"><div class="panel-head"><h3>Institute Logo, GST, Bank, Emergency Fee & Backup/Export</h3>',
+'<div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn success" id="download-backup-json-btn">Save / Download Backup (JSON)</button><button type="button" class="btn primary" id="export-backup-csv-btn">Export Data (CSV)</button></div></div>',
+'<form id="institute-form" class="form-grid">',
 '<div class="field"><label>Institute / Pharmacy Name *</label><input type="text" id="inst-name" required></div>',
 '<div class="field"><label>Tagline</label><input type="text" id="inst-tagline"></div>',
 '<div class="field"><label>Address *</label><input type="text" id="inst-address" required></div>',
 '<div class="field"><label>GSTIN</label><input type="text" id="inst-gstin"></div>',
 '<div class="field"><label>Phone</label><input type="text" id="inst-phone"></div>',
 '<div class="field"><label>Place of Supply</label><input type="text" id="inst-pos"></div>',
+'<div class="field"><label>Default Emergency Fee (₹)</label><input type="number" id="inst-emg-fee" value="250"></div>',
 '<div class="field"><label>Bank Name</label><input type="text" id="inst-bank"></div>',
 '<div class="field"><label>Account No</label><input type="text" id="inst-acc"></div>',
 '<div class="field"><label>IFSC</label><input type="text" id="inst-ifsc"></div>',
-'<div class="field" style="grid-column:span 2;"><label>UPI ID</label><input type="text" id="inst-upi"></div>',
-'<div style="display:flex;align-items:flex-end;"><button type="submit" class="btn primary" style="width:100%;">Save Settings</button></div></form></div>',
+'<div class="field"><label>UPI ID</label><input type="text" id="inst-upi"></div>',
+'<div class="field"><label>Institute Logo Image</label><input type="file" id="inst-logo-file" accept="image/*"></div>',
+'<div style="grid-column:span 3;display:flex;align-items:center;gap:14px;"><img id="inst-logo-preview" src="" alt="Logo Preview" style="height:44px;border-radius:6px;display:none;border:1px solid var(--line);"><button type="submit" class="btn primary">Save Institute Settings & Logo</button></div></form></div>',
 
 '<div class="panel" id="password-panel" style="display:none;"><div class="panel-head"><h3>Change Password</h3></div><form id="password-change-form" style="max-width:380px;display:flex;flex-direction:column;gap:12px;">',
 '<div class="field"><label>Old Password *</label><input type="password" id="pass-old" required></div>',
 '<div class="field"><label>New Password *</label><input type="password" id="pass-new" required></div>',
 '<button type="submit" class="btn primary">Update Password</button></form></div>',
 
-'<div class="panel"><div class="panel-head"><h3 id="module-title-heading">RECORDS</h3></div><div style="overflow-x:auto;"><table><thead id="module-thead"></thead><tbody id="module-tbody"></tbody></table></div></div>',
+'<div class="panel" id="generic-table-panel"><div class="panel-head"><h3 id="module-title-heading">RECORDS</h3></div><div style="overflow-x:auto;"><table><thead id="module-thead"></thead><tbody id="module-tbody"></tbody></table></div></div>',
 '</div></section></main></div>',
 
 '<div id="ar-ai-widget"><div id="ar-ai-box"><div class="ai-head"><span>AR AI Assistant</span><span style="cursor:pointer;" id="ai-close-btn">X</span></div><div class="ai-body" id="ai-chat-body"><div><b>AR AI:</b> Ask about Hospital, Pharmacy, BME, Inventory, ABHA or NHCX.</div></div><div class="ai-foot"><input type="text" id="ai-input" placeholder="Ask AR AI..."><button class="btn primary" id="ai-send-btn">Send</button></div></div><button id="ar-ai-btn">AR AI</button></div>',
@@ -1409,14 +1665,14 @@ const htmlPage = [
 '<label><input type="checkbox" id="opt-bank" checked> Bank & UPI</label>',
 '<label><input type="checkbox" id="opt-terms" checked> Terms & Sign</label></div>',
 
-'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:10px;"><div>',
+'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:10px;"><div style="display:flex;gap:12px;align-items:center;"><img id="print-inst-logo" src="" style="height:48px;display:none;border-radius:6px;"><div>',
 '<h2 style="margin:0;color:var(--navy);font-weight:900;font-size:19px;" id="print-inst-name">A.R. MEDICAL COLLEGE & HEALTHCARE</h2>',
 '<div style="font-size:11px;color:var(--muted);" id="print-inst-address"></div>',
-'<div style="font-size:11px;font-weight:800;margin-top:2px;">GSTIN: <span id="print-inst-gstin"></span> | Ph: <span id="print-inst-phone"></span></div></div>',
+'<div style="font-size:11px;font-weight:800;margin-top:2px;">GSTIN: <span id="print-inst-gstin"></span> | Ph: <span id="print-inst-phone"></span></div></div></div>',
 '<div style="text-align:right;"><div style="font-size:14px;font-weight:900;color:var(--blue);" id="pb-doc-title">TAX INVOICE</div><div style="font-size:10px;font-weight:800;">ORIGINAL FOR RECIPIENT</div></div></div>',
 
 '<div class="inv-box" style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px;"><div>',
-'<div><strong>Patient / Customer:</strong> <span id="pb-name"></span></div>',
+'<div><strong>Patient / Customer:</strong> <span id="pb-name"></span> (<span id="pb-ptype">Normal</span>)</div>',
 '<div><strong>UHID:</strong> <span id="pb-uhid"></span> | <strong>Phone:</strong> <span id="pb-contact"></span></div>',
 '<div><strong>Address:</strong> <span id="pb-address"></span></div>',
 '<div><strong>Doctor / Ref:</strong> <span id="pb-doctor"></span></div></div><div>',
@@ -1449,7 +1705,7 @@ const htmlPage = [
 '<button class="btn primary" id="print-modal-print-btn">Print A4 Bill</button></div></div></div>',
 
 '<div id="prescription-modal"><div class="print-card" id="prescription-card-area" style="width:min(780px,96vw);">',
-'<div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:12px;"><h2 style="margin:0;color:var(--navy);" id="presc-inst-name"></h2><div style="font-size:11px;color:var(--muted);" id="presc-inst-address"></div><h3 style="margin:6px 0 0 0;color:var(--blue);">OPD Prescription</h3></div>',
+'<div style="text-align:center;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:12px;"><img id="presc-inst-logo" src="" style="height:44px;display:none;margin:0 auto 4px auto;"><h2 style="margin:0;color:var(--navy);" id="presc-inst-name"></h2><div style="font-size:11px;color:var(--muted);" id="presc-inst-address"></div><h3 style="margin:6px 0 0 0;color:var(--blue);">OPD Prescription</h3></div>',
 '<div class="inv-box" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><strong>UHID:</strong> <span id="pr-uhid"></span></div><div><strong>Date:</strong> <span id="pr-date"></span></div><div><strong>Patient:</strong> <span id="pr-name"></span></div><div><strong>Age/Sex:</strong> <span id="pr-age"></span></div><div><strong>Guardian:</strong> <span id="pr-guardian"></span></div><div><strong>Phone:</strong> <span id="pr-contact"></span></div><div><strong>Doctor:</strong> <span id="pr-doctor"></span></div><div><strong>Address:</strong> <span id="pr-address"></span></div></div>',
 '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;background:#f8fafd;padding:8px;border-radius:8px;font-size:11px;"><div><label>BP:</label><input type="text" id="vital-bp" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div><div><label>Pulse:</label><input type="text" id="vital-pulse" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div><div><label>Temp:</label><input type="text" id="vital-temp" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div><div><label>Weight:</label><input type="text" id="vital-wt" style="width:100%;padding:4px;border:1px solid var(--line);border-radius:4px;"></div></div>',
 '<div style="display:grid;grid-template-columns:210px 1fr;gap:12px;margin-bottom:10px;"><div><label style="font-size:11px;font-weight:900;display:block;margin-bottom:4px;">Investigation / Advice:</label><textarea id="pr-investigation" style="width:100%;height:190px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;"></textarea></div><div><div style="font-size:16px;font-weight:900;color:var(--blue);margin-bottom:4px;">Rx</div><textarea id="pr-treatment" style="width:100%;height:190px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:12px;"></textarea></div></div>',
@@ -1457,36 +1713,52 @@ const htmlPage = [
 '<div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button class="btn" id="presc-close-btn">Close</button><button class="btn primary" id="presc-print-btn">Print Prescription</button></div></div></div>',
 
 '<script>',
-'let currentUser = null; let activeModuleKey = "dashboard"; let doctorsList = []; let pharmacyStockList = []; let saleCart = []; let currentActiveBillNo = "";',
-'let instituteDetails = {};',
+'let currentUser = null; let activeModuleKey = "dashboard"; let openGroupIdx = 0;',
+'let doctorsList = []; let pharmacyStockList = []; let pharmacyPurchasesList = []; let usersList = [];',
+'let saleCart = []; let purchaseInvoiceItems = []; let currentActiveBillNo = ""; let editingUserId = "";',
+'let instituteDetails = { emergencyFee: 250 };',
+
 'const navGroups = [',
 '{ label: "HOSPITAL (HIMS)", items: [["Hospital Dashboard", "dashboard", "HD"], ["Patient Registration", "patients", "PR"], ["Patient Search", "patient-search", "PS"], ["OPD & Appointments", "opd", "OP"], ["IPD Admissions", "ipd", "IP"], ["Wards & Beds", "wards", "WR"], ["Doctors", "doctors", "DR"], ["Laboratory", "lab", "LB"], ["Radiology", "radiology", "RD"], ["Hospital Billing", "hospital-billing", "HB"]] },',
-'{ label: "PHARMACY", items: [["Pharmacy Dashboard", "pharmacy", "PD"], ["Medicine Master", "medicines", "MM"], ["Purchase Entry", "purchase-entry", "PE"], ["Sales Billing", "sales-billing", "SB"], ["Sales Return", "sales-return", "SR"], ["Expiry & Low Stock", "stock-alerts", "AL"]] },',
+'{ label: "PHARMACY", items: [["Pharmacy Dashboard", "pharmacy", "PD"], ["Medicine Master", "medicines", "MM"], ["Purchase Entry & Ledger", "purchase-entry", "PE"], ["Sales Billing", "sales-billing", "SB"], ["Sales Return", "sales-return", "SR"], ["Stock Audit (Phy/Sys)", "stock-audit", "SA"], ["Expiry & Low Stock", "stock-alerts", "AL"]] },',
 '{ label: "ABDM M1/M2/M3 & NHCX", items: [["ABHA & M2 Hub", "abdm-hims", "M1"], ["NHCX Claims (M3)", "nhcx", "M3"]] },',
 '{ label: "CENTRAL STORE INVENTORY", items: [["Inventory Dashboard", "inv-dash", "ID"], ["Item Master", "item-master", "IM"], ["Warehouses", "warehouses", "WH"], ["Goods Receipt (GRN)", "grn", "GN"], ["Stock Ledger", "stock-ledger", "SL"], ["Purchase Orders", "po", "PO"]] },',
 '{ label: "BIOMEDICAL (BME)", items: [["BME Dashboard", "biomed-dash", "BD"], ["Equipment Assets", "equipment", "EQ"], ["Work Orders & Repairs", "repairs", "WO"], ["PM & AMC Contracts", "amc", "AM"]] },',
-'{ label: "ACCOUNTS, REPORTS & ADMIN", items: [["Accounts Dashboard", "accounts", "AC"], ["Payroll", "payroll", "PY"], ["Date-Wise Reports", "reports", "RP"], ["User Management", "users", "US"], ["Change Password", "password", "PW"], ["Audit Logs", "audit-logs", "LG"], ["Institute & Print Setup", "backup", "ST"]] }',
+'{ label: "ACCOUNTS, REPORTS & ADMIN", items: [["Accounts Dashboard", "accounts", "AC"], ["Payroll", "payroll", "PY"], ["Date-Wise Reports", "reports", "RP"], ["User Management", "users", "US"], ["Change Password", "password", "PW"], ["Audit Logs", "audit-logs", "LG"], ["Institute, Logo & Backup", "backup", "ST"]] }',
 '];',
 
+'function startLiveClock() {',
+'  function tick() {',
+'    const now = new Date();',
+'    document.getElementById("live-datetime-badge").innerText = now.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata" }) + " | " + now.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata" }) + " IST";',
+'  }',
+'  tick(); setInterval(tick, 1000);',
+'}',
+
 'window.addEventListener("DOMContentLoaded", function () {',
+'  startLiveClock(); renderPermissionCheckboxes();',
 '  const savedUser = localStorage.getItem("ar_erp_active_user");',
 '  const savedPage = localStorage.getItem("ar_erp_active_page");',
-'  if (savedUser) {',
-'    currentUser = JSON.parse(savedUser);',
-'    initSession(savedPage || "dashboard");',
-'  }',
+'  if (savedUser) { currentUser = JSON.parse(savedUser); initSession(savedPage || "dashboard"); }',
 '  document.getElementById("login-form-element").addEventListener("submit", handleLogin);',
 '  document.getElementById("logout-btn").addEventListener("click", handleLogout);',
-'  document.getElementById("sidebar-toggle-btn").addEventListener("click", function () { const sb = document.getElementById("sidebar-panel"); sb.style.marginLeft = sb.style.marginLeft === "-272px" ? "0" : "-272px"; });',
+'  document.getElementById("sidebar-toggle-btn").addEventListener("click", function () { const sb = document.getElementById("sidebar-panel"); sb.style.marginLeft = sb.style.marginLeft === "-274px" ? "0" : "-274px"; });',
 '  document.getElementById("dash-quick-find").addEventListener("input", function (e) { handleQuickSearch(e.target.value, "dash-quick-suggestions", true); });',
 '  document.getElementById("live-search-input").addEventListener("input", function (e) { handleQuickSearch(e.target.value, "search-suggestions", false); });',
-'  document.getElementById("reg-doctor").addEventListener("change", function () { const d = doctorsList.find(function (x) { return x.name === document.getElementById("reg-doctor").value; }); if (d) { document.getElementById("reg-fee").value = d.fee; calcRegNet(); } });',
+'  document.getElementById("reg-ptype").addEventListener("change", applyPatientTypeFee);',
+'  document.getElementById("reg-doctor").addEventListener("change", function () { const d = doctorsList.find(function (x) { return x.name === document.getElementById("reg-doctor").value; }); if (d) { document.getElementById("reg-fee").value = d.fee; applyPatientTypeFee(); } });',
 '  document.getElementById("reg-fee").addEventListener("input", calcRegNet);',
+'  document.getElementById("reg-emg-fee").addEventListener("input", calcRegNet);',
 '  document.getElementById("reg-discount").addEventListener("input", calcRegNet);',
 '  document.getElementById("patient-reg-form").addEventListener("submit", handlePatientReg);',
 '  document.getElementById("ps-add-item-btn").addEventListener("click", addItemToSaleCart);',
 '  document.getElementById("ps-submit-bill-btn").addEventListener("click", submitPharmacySaleBill);',
-'  document.getElementById("pharmacy-purchase-form").addEventListener("submit", handlePharmacyPurchase);',
+'  document.getElementById("pp-add-item-btn").addEventListener("click", addPurchaseInvoiceItem);',
+'  document.getElementById("pharmacy-purchase-form").addEventListener("submit", submitPurchaseInvoice);',
+'  document.getElementById("pp-ledger-search").addEventListener("input", renderPurchaseLedgerTable);',
+'  document.getElementById("audit-search-input").addEventListener("input", renderStockAuditTable);',
+'  document.getElementById("audit-export-csv-btn").addEventListener("click", exportStockAuditCsv);',
+'  document.getElementById("audit-print-btn").addEventListener("click", function () { window.print(); });',
 '  document.getElementById("pharmacy-return-form").addEventListener("submit", handlePharmacyReturn);',
 '  document.getElementById("pharmacy-med-form").addEventListener("submit", handleAddMedicine);',
 '  document.getElementById("abdm-create-form").addEventListener("submit", handleCreateAbha);',
@@ -1503,8 +1775,12 @@ const htmlPage = [
 '  document.getElementById("fin-add-form").addEventListener("submit", handleAddFinance);',
 '  document.getElementById("rep-run-btn").addEventListener("click", runCustomReport);',
 '  document.getElementById("doctor-form").addEventListener("submit", handleAddDoctor);',
-'  document.getElementById("user-create-form").addEventListener("submit", handleCreateUser);',
+'  document.getElementById("user-form").addEventListener("submit", handleSaveUser);',
+'  document.getElementById("user-reset-form-btn").addEventListener("click", resetUserForm);',
+'  document.getElementById("inst-logo-file").addEventListener("change", handleLogoFileSelect);',
 '  document.getElementById("institute-form").addEventListener("submit", handleSaveInstitute);',
+'  document.getElementById("download-backup-json-btn").addEventListener("click", downloadBackupJson);',
+'  document.getElementById("export-backup-csv-btn").addEventListener("click", exportBackupCsv);',
 '  document.getElementById("password-change-form").addEventListener("submit", handleChangePassword);',
 '  document.getElementById("ar-ai-btn").addEventListener("click", function () { const box = document.getElementById("ar-ai-box"); box.style.display = box.style.display === "flex" ? "none" : "flex"; });',
 '  document.getElementById("ai-close-btn").addEventListener("click", function () { document.getElementById("ar-ai-box").style.display = "none"; });',
@@ -1519,6 +1795,26 @@ const htmlPage = [
 '  document.getElementById("presc-print-btn").addEventListener("click", function () { window.print(); });',
 '  document.getElementById("forgot-link").addEventListener("click", function (e) { e.preventDefault(); alert("Contact Super Admin (Aarif) to reset credentials."); });',
 '});',
+
+'function renderPermissionCheckboxes() {',
+'  const box = document.getElementById("perm-checkboxes-box");',
+'  const allItems = navGroups.flatMap(function (g) { return g.items; });',
+'  box.innerHTML = allItems.map(function (it) {',
+'    return "<label><input type=\\"checkbox\\" class=\\"u-perm-cb\\" value=\\"" + it[1] + "\\"> " + it[0] + "</label>";',
+'  }).join("");',
+'}',
+
+'function getCheckedPermissions() {',
+'  return Array.from(document.querySelectorAll(".u-perm-cb:checked")).map(function (cb) { return cb.value; });',
+'}',
+
+'function resetUserForm() {',
+'  editingUserId = "";',
+'  document.getElementById("user-form-title").innerText = "Create New User & Custom Permissions";',
+'  document.getElementById("user-save-btn").innerText = "Create User";',
+'  document.getElementById("user-form").reset();',
+'  document.querySelectorAll(".u-perm-cb").forEach(function (cb) { cb.checked = false; });',
+'}',
 
 'function initSession(pageKey) {',
 '  document.getElementById("user-display-name").innerText = currentUser.name;',
@@ -1541,17 +1837,34 @@ const htmlPage = [
 
 'function renderNav() {',
 '  let html = "";',
-'  navGroups.forEach(function (g) {',
+'  navGroups.forEach(function (g, gIdx) {',
 '    let itemsHtml = "";',
 '    g.items.forEach(function (i) {',
-'      if (currentUser.role === "Super Admin" || currentUser.role === "Admin" || currentUser.isDemo || currentUser.permissions.includes("all") || currentUser.permissions.includes(i[1])) {',
-'        itemsHtml += "<button class=\\"nav-item " + (i[1] === activeModuleKey ? "active" : "") + "\\" id=\\"nav-btn-" + i[1] + "\\" data-key=\\"" + i[1] + "\\"><span>[" + i[2] + "]</span><span>" + i[0] + "</span></button>";',
+'      const allowed = currentUser.role === "Super Admin" || (Array.isArray(currentUser.permissions) && (currentUser.permissions.includes("all") || currentUser.permissions.includes(i[1])));',
+'      if (allowed) {',
+'        itemsHtml += "<button class=\\"nav-item " + (i[1] === activeModuleKey ? "active" : "") + "\\" id=\\"nav-btn-" + i[1] + "\\" data-key=\\"" + i[1] + "\\" data-gidx=\\"" + gIdx + "\\"><span>[" + i[2] + "]</span><span>" + i[0] + "</span></button>";',
 '      }',
 '    });',
-'    if (itemsHtml) html += "<div class=\\"nav-label\\">" + g.label + "</div>" + itemsHtml;',
+'    if (itemsHtml) {',
+'      const isOpen = (gIdx === openGroupIdx) || g.items.some(function (x) { return x[1] === activeModuleKey; });',
+'      html += "<button type=\\"button\\" class=\\"nav-group-btn\\" data-gidx=\\"" + gIdx + "\\"><span>" + g.label + "</span><span>" + (isOpen ? "[-]" : "[+]") + "</span></button>";',
+'      html += "<div class=\\"nav-group-items " + (isOpen ? "open" : "") + "\\" id=\\"nav-grp-" + gIdx + "\\">" + itemsHtml + "</div>";',
+'    }',
 '  });',
 '  const nav = document.getElementById("nav-menu"); nav.innerHTML = html;',
-'  nav.querySelectorAll(".nav-item").forEach(function (btn) { btn.addEventListener("click", function () { switchView(btn.getAttribute("data-key")); }); });',
+'  nav.querySelectorAll(".nav-group-btn").forEach(function (gb) {',
+'    gb.addEventListener("click", function () {',
+'      const idx = Number(gb.getAttribute("data-gidx"));',
+'      openGroupIdx = openGroupIdx === idx ? -1 : idx;',
+'      renderNav();',
+'    });',
+'  });',
+'  nav.querySelectorAll(".nav-item").forEach(function (btn) {',
+'    btn.addEventListener("click", function () {',
+'      openGroupIdx = Number(btn.getAttribute("data-gidx"));',
+'      switchView(btn.getAttribute("data-key"));',
+'    });',
+'  });',
 '}',
 
 'async function loadDoctors() {',
@@ -1569,22 +1882,32 @@ const htmlPage = [
 '      return "<option value=\\"" + idx + "\\">" + m.itemName + " | Batch: " + m.batch + " | Stock: " + m.qty + " | Rate: ₹" + m.rate + " | GST: " + m.gstPct + "%</option>";',
 '    }).join("");',
 '  }',
+'  renderStockAuditTable();',
 '}',
 
-'function calcRegNet() { const fee = Number(document.getElementById("reg-fee").value || 0); const disc = Number(document.getElementById("reg-discount").value || 0); document.getElementById("reg-netfee").value = Math.max(0, fee - disc); }',
+'function applyPatientTypeFee() {',
+'  const pType = document.getElementById("reg-ptype").value;',
+'  document.getElementById("reg-emg-fee").value = pType === "Emergency" ? (instituteDetails.emergencyFee || 250) : 0;',
+'  calcRegNet();',
+'}',
+
+'function calcRegNet() {',
+'  const fee = Number(document.getElementById("reg-fee").value || 0);',
+'  const emg = Number(document.getElementById("reg-emg-fee").value || 0);',
+'  const disc = Number(document.getElementById("reg-discount").value || 0);',
+'  document.getElementById("reg-netfee").value = Math.max(0, fee + emg - disc);',
+'}',
 
 'function hideAllPanels() {',
-'  ["sub-dashboard-stats","patient-reg-panel","pharmacy-sale-panel","pharmacy-purchase-panel","pharmacy-return-panel","pharmacy-med-panel","abdm-panel","opd-panel","ipd-panel","wards-panel","lab-panel","radiology-panel","inventory-panel","biomed-panel","finance-panel","custom-report-panel","doctor-panel","user-mgmt-panel","backup-panel","password-panel"].forEach(function (id) {',
+'  ["sub-dashboard-stats","patient-reg-panel","pharmacy-sale-panel","pharmacy-purchase-panel","pharmacy-audit-panel","pharmacy-return-panel","pharmacy-med-panel","abdm-panel","opd-panel","ipd-panel","wards-panel","lab-panel","radiology-panel","inventory-panel","biomed-panel","finance-panel","custom-report-panel","doctor-panel","user-mgmt-panel","backup-panel","password-panel","generic-table-panel"].forEach(function (id) {',
 '    const el = document.getElementById(id); if (el) el.style.display = "none";',
 '  });',
 '}',
 
 'async function switchView(key) {',
 '  activeModuleKey = key; localStorage.setItem("ar_erp_active_page", key);',
-'  document.querySelectorAll(".nav-item").forEach(function (n) { n.classList.remove("active"); });',
-'  const btn = document.getElementById("nav-btn-" + key); if (btn) btn.classList.add("active");',
+'  renderNav();',
 '  document.querySelectorAll(".view-section").forEach(function (v) { v.classList.remove("active"); });',
-
 '  const found = navGroups.flatMap(function (g) { return g.items; }).find(function (i) { return i[1] === key; });',
 '  document.getElementById("topbar-title").innerText = (found ? found[0] : key).toUpperCase();',
 
@@ -1593,40 +1916,42 @@ const htmlPage = [
 '  document.getElementById("view-module-container").classList.add("active");',
 '  hideAllPanels();',
 
-'  if (key === "patients" || key === "patient-search") { document.getElementById("patient-reg-panel").style.display = "block"; const r = await fetch("/api/next-uhid"); const d = await r.json(); document.getElementById("reg-uhid").value = d.uhid; }',
-'  if (key === "sales-billing") { document.getElementById("pharmacy-sale-panel").style.display = "block"; loadPharmacyStock(); renderSaleCart(); }',
-'  if (key === "purchase-entry") document.getElementById("pharmacy-purchase-panel").style.display = "block";',
-'  if (key === "sales-return") document.getElementById("pharmacy-return-panel").style.display = "block";',
-'  if (key === "pharmacy" || key === "medicines" || key === "stock-alerts") document.getElementById("pharmacy-med-panel").style.display = "block";',
-'  if (key === "abdm-hims" || key === "nhcx") document.getElementById("abdm-panel").style.display = "block";',
-'  if (key === "opd") document.getElementById("opd-panel").style.display = "block";',
-'  if (key === "ipd") document.getElementById("ipd-panel").style.display = "block";',
-'  if (key === "wards") document.getElementById("wards-panel").style.display = "block";',
-'  if (key === "lab") document.getElementById("lab-panel").style.display = "block";',
-'  if (key === "radiology") document.getElementById("radiology-panel").style.display = "block";',
-'  if (["inv-dash","item-master","warehouses","grn","stock-ledger","po"].includes(key)) document.getElementById("inventory-panel").style.display = "block";',
-'  if (["biomed-dash","equipment","repairs","amc"].includes(key)) document.getElementById("biomed-panel").style.display = "block";',
-'  if (["accounts","payroll"].includes(key)) document.getElementById("finance-panel").style.display = "block";',
+'  if (key === "patients" || key === "patient-search") { document.getElementById("patient-reg-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; const r = await fetch("/api/next-uhid"); const d = await r.json(); document.getElementById("reg-uhid").value = d.uhid; applyPatientTypeFee(); }',
+'  if (key === "sales-billing") { document.getElementById("pharmacy-sale-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; loadPharmacyStock(); renderSaleCart(); }',
+'  if (key === "purchase-entry") { document.getElementById("pharmacy-purchase-panel").style.display = "block"; renderPurchaseInvoiceItems(); await loadPurchaseLedger(); }',
+'  if (key === "stock-audit") { document.getElementById("pharmacy-audit-panel").style.display = "block"; await loadPharmacyStock(); }',
+'  if (key === "sales-return") { document.getElementById("pharmacy-return-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "pharmacy" || key === "medicines" || key === "stock-alerts") { document.getElementById("pharmacy-med-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "abdm-hims" || key === "nhcx") { document.getElementById("abdm-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "opd") { document.getElementById("opd-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "ipd") { document.getElementById("ipd-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "wards") { document.getElementById("wards-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "lab") { document.getElementById("lab-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "radiology") { document.getElementById("radiology-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (["inv-dash","item-master","warehouses","grn","stock-ledger","po"].includes(key)) { document.getElementById("inventory-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (["biomed-dash","equipment","repairs","amc"].includes(key)) { document.getElementById("biomed-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (["accounts","payroll"].includes(key)) { document.getElementById("finance-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
 '  if (key === "reports") { document.getElementById("custom-report-panel").style.display = "block"; const today = new Date().toISOString().slice(0,10); if (!document.getElementById("rep-from").value) document.getElementById("rep-from").value = today; if (!document.getElementById("rep-to").value) document.getElementById("rep-to").value = today; runCustomReport(); }',
-'  if (key === "doctors") document.getElementById("doctor-panel").style.display = "block";',
-'  if (key === "users" && (currentUser.role === "Super Admin" || currentUser.role === "Admin")) document.getElementById("user-mgmt-panel").style.display = "block";',
+'  if (key === "doctors") { document.getElementById("doctor-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
+'  if (key === "users") { document.getElementById("user-mgmt-panel").style.display = "block"; document.getElementById("generic-table-panel").style.display = "block"; }',
 '  if (key === "backup") { document.getElementById("backup-panel").style.display = "block"; loadInstituteDetails(); }',
-'  if (key === "password") document.getElementById("password-panel").style.display = "block";',
+'  if (key === "password") { document.getElementById("password-panel").style.display = "block"; }',
+'  if (["audit-logs","hospital-billing"].includes(key)) { document.getElementById("generic-table-panel").style.display = "block"; }',
 
 '  await renderSubDashboardStats(key);',
-'  await loadModuleTable(key);',
+'  if (document.getElementById("generic-table-panel").style.display !== "none") await loadModuleTable(key);',
 '}',
 
 'async function renderSubDashboardStats(key) {',
 '  const box = document.getElementById("sub-dashboard-stats");',
 '  const res = await fetch("/api/dashboard/metrics"); const m = await res.json();',
 '  if (!m.success) return;',
-'  if (["pharmacy","medicines","purchase-entry","sales-billing","sales-return","stock-alerts"].includes(key)) {',
+'  if (["pharmacy","medicines","purchase-entry","sales-billing","sales-return","stock-audit","stock-alerts"].includes(key)) {',
 '    box.style.display = "grid";',
 '    box.innerHTML = "<div class=\\"stat\\"><div class=\\"stat-label\\">PHARMACY SALES</div><div class=\\"stat-value\\" style=\\"color:var(--green);\\">₹" + m.pharmacySales.toFixed(2) + "</div></div>" +',
-'      "<div class=\\"stat\\"><div class=\\"stat-label\\">PHARMACY PURCHASE</div><div class=\\"stat-value\\" style=\\"color:var(--red);\\">₹" + m.pharmacyPurchase.toFixed(2) + "</div></div>" +',
-'      "<div class=\\"stat\\"><div class=\\"stat-label\\">MEDICINE BATCHES</div><div class=\\"stat-value\\">" + m.pharmacyStockCount + "</div></div>" +',
-'      "<div class=\\"stat\\"><div class=\\"stat-label\\">NET PHARMACY MARGIN</div><div class=\\"stat-value\\">₹" + (m.pharmacySales - m.pharmacyPurchase).toFixed(2) + "</div></div>";',
+'      "<div class=\\"stat\\"><div class=\\"stat-label\\">PHARMACY PURCHASE</div><div class=\\"stat-value\\" style=\\"color:var(--navy);\\">₹" + m.pharmacyPurchase.toFixed(2) + "</div></div>" +',
+'      "<div class=\\"stat\\"><div class=\\"stat-label\\">CREDIT PURCHASE DUE</div><div class=\\"stat-value\\" style=\\"color:var(--red);\\">₹" + m.pharmacyCreditDue.toFixed(2) + "</div></div>" +',
+'      "<div class=\\"stat\\"><div class=\\"stat-label\\">MEDICINE BATCHES</div><div class=\\"stat-value\\">" + m.pharmacyStockCount + "</div></div>";',
 '  } else if (["biomed-dash","equipment","repairs","amc"].includes(key)) {',
 '    box.style.display = "grid";',
 '    box.innerHTML = "<div class=\\"stat\\"><div class=\\"stat-label\\">BME ASSETS</div><div class=\\"stat-value\\">" + m.biomedAssetsCount + "</div></div>" +',
@@ -1659,7 +1984,8 @@ const htmlPage = [
 '  const pRes = await fetch("/api/module/patients"); const pJson = await pRes.json();',
 '  const tbody = document.getElementById("dash-patients");',
 '  tbody.innerHTML = (pJson.data || []).map(function (p) {',
-'    return "<tr><td><b>" + p.uhid + "</b></td><td>" + p.title + " " + p.name + "</td><td>" + p.contact + "</td><td>" + (p.abha || "-") + "</td><td>" + p.doctor + "</td><td>₹" + Number(p.netFee || 0).toFixed(2) + " (" + p.payType + ")</td><td>" + (p.workflowStatus || "Active") + "</td>" +',
+'    const badgeColor = (p.patientType === "Emergency") ? "color:var(--red);font-weight:900;" : "color:var(--green);font-weight:800;";',
+'    return "<tr><td><b>" + p.uhid + "</b></td><td>" + p.title + " " + p.name + "</td><td style=\\"" + badgeColor + "\\">" + (p.patientType || "Normal") + "</td><td>" + p.contact + "</td><td>" + (p.abha || "-") + "</td><td>" + p.doctor + "</td><td>₹" + Number(p.netFee || 0).toFixed(2) + " (" + p.payType + ")</td>" +',
 '      "<td><button class=\\"btn primary dash-rx\\" data-uhid=\\"" + p.uhid + "\\">Rx</button> <button class=\\"btn success dash-bill\\" data-uhid=\\"" + p.uhid + "\\">Bill</button></td></tr>";',
 '  }).join("");',
 '  tbody.querySelectorAll(".dash-rx").forEach(function (b) { b.addEventListener("click", function () { openPrescriptionSheet(b.getAttribute("data-uhid")); }); });',
@@ -1670,32 +1996,247 @@ const htmlPage = [
 '  document.getElementById("module-title-heading").innerText = key.toUpperCase().replace(/-/g, " ") + " TABLE";',
 '  const res = await fetch("/api/module/" + key); const json = await res.json();',
 '  let list = json.data || [];',
+'  if (key === "users") usersList = list;',
 '  if (key === "stock-alerts") {',
 '    list = list.filter(function (m) { return Number(m.qty || 0) <= Number(m.reorderLevel || 20); });',
 '  }',
-'  if (list.length && list[0].items) {',
-'    list = list.map(function (b) { return { billNo: b.billNo, type: b.billType, date: b.date, uhid: b.uhid, patient: b.patientName, payMode: b.payType, gross: b.totalGross, disc: b.totalDisc, gst: b.totalGst, netTotal: b.netFee }; });',
+'  if (list.length && list[0].items && !list[0].invoiceNo) {',
+'    list = list.map(function (b) { return { billNo: b.billNo, type: b.billType, patientType: b.patientType || "-", date: b.date, uhid: b.uhid, patient: b.patientName, payMode: b.payType, gross: b.totalGross, disc: b.totalDisc, gst: b.totalGst, netTotal: b.netFee }; });',
 '  }',
 '  if (!list.length) {',
 '    document.getElementById("module-thead").innerHTML = "<tr><th>Info</th></tr>";',
 '    document.getElementById("module-tbody").innerHTML = "<tr><td style=\\"text-align:center;color:var(--muted);\\">No records in this module.</td></tr>";',
 '    return;',
 '  }',
-'  const cols = Object.keys(list[0]);',
+'  const cols = Object.keys(list[0]).filter(function (k) { return k !== "password"; });',
 '  const hasBill = list[0].billNo !== undefined;',
-'  document.getElementById("module-thead").innerHTML = "<tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + (hasBill ? "<th>Print</th>" : "") + (key === "users" ? "<th>Status Action</th>" : "") + "</tr>";',
+'  document.getElementById("module-thead").innerHTML = "<tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + (hasBill ? "<th>Print</th>" : "") + (key === "users" ? "<th>Edit & Status</th>" : "") + "</tr>";',
 '  const tbody = document.getElementById("module-tbody");',
 '  tbody.innerHTML = list.map(function (row) {',
-'    let tr = "<tr>" + cols.map(function (c) { return "<td>" + (row[c] !== undefined ? row[c] : "-") + "</td>"; }).join("");',
+'    let tr = "<tr>" + cols.map(function (c) { const val = Array.isArray(row[c]) ? row[c].join(", ") : row[c]; return "<td>" + (val !== undefined && val !== null && val !== "" ? val : "-") + "</td>"; }).join("");',
 '    if (hasBill) tr += "<td><button class=\\"btn primary open-inv-btn\\" data-billno=\\"" + row.billNo + "\\">Print Bill</button></td>";',
 '    if (key === "users") {',
-'      if (row.isProtected) tr += "<td>Super Admin</td>";',
-'      else { const nextSt = row.status === "Active" ? "Deactivated" : "Active"; tr += "<td><button class=\\"btn " + (nextSt === "Active" ? "success" : "danger") + " usr-st-btn\\" data-id=\\"" + row.id + "\\" data-st=\\"" + nextSt + "\\">" + nextSt + "</button></td>"; }',
+'      tr += "<td><button class=\\"btn primary usr-edit-btn\\" data-id=\\"" + row.id + "\\">Edit / Perms</button>";',
+'      if (!row.isProtected) { const nextSt = row.status === "Active" ? "Deactivated" : "Active"; tr += " <button class=\\"btn " + (nextSt === "Active" ? "success" : "danger") + " usr-st-btn\\" data-id=\\"" + row.id + "\\" data-st=\\"" + nextSt + "\\">" + nextSt + "</button>"; }',
+'      tr += "</td>";',
 '    }',
 '    return tr + "</tr>";',
 '  }).join("");',
 '  tbody.querySelectorAll(".open-inv-btn").forEach(function (b) { b.addEventListener("click", function () { openBillingModalByBillNo(b.getAttribute("data-billno")); }); });',
+'  tbody.querySelectorAll(".usr-edit-btn").forEach(function (b) { b.addEventListener("click", function () { startEditUser(b.getAttribute("data-id")); }); });',
 '  tbody.querySelectorAll(".usr-st-btn").forEach(function (b) { b.addEventListener("click", async function () { await fetch("/api/users/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: b.getAttribute("data-id"), status: b.getAttribute("data-st") }) }); loadModuleTable("users"); }); });',
+'}',
+
+'function startEditUser(userId) {',
+'  const u = usersList.find(function (x) { return x.id === userId; });',
+'  if (!u) return;',
+'  editingUserId = u.id;',
+'  document.getElementById("user-form-title").innerText = "Edit User & Permissions: " + u.name;',
+'  document.getElementById("user-save-btn").innerText = "Update User & Permissions";',
+'  document.getElementById("new-u-name").value = u.name;',
+'  document.getElementById("new-u-username").value = u.username;',
+'  document.getElementById("new-u-password").value = u.password;',
+'  document.getElementById("new-u-role").value = u.role;',
+'  const hasAll = Array.isArray(u.permissions) && u.permissions.includes("all");',
+'  document.querySelectorAll(".u-perm-cb").forEach(function (cb) {',
+'    cb.checked = hasAll || (Array.isArray(u.permissions) && u.permissions.includes(cb.value));',
+'  });',
+'}',
+
+'async function handleSaveUser(e) {',
+'  e.preventDefault();',
+'  const perms = getCheckedPermissions();',
+'  const payload = {',
+'    userId: editingUserId,',
+'    name: document.getElementById("new-u-name").value,',
+'    username: document.getElementById("new-u-username").value,',
+'    password: document.getElementById("new-u-password").value,',
+'    role: document.getElementById("new-u-role").value,',
+'    permissions: perms.length ? perms : ["dashboard"]',
+'  };',
+'  const url = editingUserId ? "/api/users/update" : "/api/users/create";',
+'  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });',
+'  const d = await res.json(); alert(d.message);',
+'  if (d.success) { resetUserForm(); loadModuleTable("users"); }',
+'}',
+
+// Multi-Item Purchase Invoice Functions
+'function addPurchaseInvoiceItem() {',
+'  const name = document.getElementById("pp-name").value.trim();',
+'  const batch = document.getElementById("pp-batch").value.trim() || "B01";',
+'  const mfgExp = document.getElementById("pp-mfgexp").value.trim() || "- / -";',
+'  const hsn = document.getElementById("pp-hsn").value.trim() || "30045031";',
+'  const qty = Math.max(1, Number(document.getElementById("pp-qty").value || 1));',
+'  const mrp = Number(document.getElementById("pp-mrp").value || document.getElementById("pp-rate").value || 0);',
+'  const rate = Number(document.getElementById("pp-rate").value || 0);',
+'  const gstPct = Number(document.getElementById("pp-gst").value || 12);',
+'  if (!name || rate <= 0) { alert("Enter Medicine Name and valid Purchase Rate."); return; }',
+'  const lineTotal = Number((qty * rate * (1 + gstPct / 100)).toFixed(2));',
+'  purchaseInvoiceItems.push({ itemName: name, batch: batch, mfgExp: mfgExp, hsn: hsn, qty: qty, mrp: mrp, rate: rate, gstPct: gstPct, totalAmount: lineTotal });',
+'  document.getElementById("pp-name").value = "";',
+'  document.getElementById("pp-batch").value = "";',
+'  document.getElementById("pp-rate").value = "";',
+'  renderPurchaseInvoiceItems();',
+'}',
+
+'function renderPurchaseInvoiceItems() {',
+'  const tbody = document.getElementById("pp-items-tbody");',
+'  tbody.innerHTML = purchaseInvoiceItems.map(function (it, i) {',
+'    return "<tr><td>" + it.itemName + "</td><td>" + it.batch + "</td><td>" + it.mfgExp + "</td><td>" + it.hsn + "</td><td>" + it.qty + "</td><td>₹" + Number(it.mrp).toFixed(2) + "</td><td>₹" + Number(it.rate).toFixed(2) + "</td><td>" + it.gstPct + "%</td><td><b>₹" + Number(it.totalAmount).toFixed(2) + "</b></td><td><button type=\\"button\\" class=\\"btn danger rm-pur-it\\" data-i=\\"" + i + "\\">X</button></td></tr>";',
+'  }).join("") || "<tr><td colspan=\\"10\\" style=\\"text-align:center;color:var(--muted);\\">Add medicines above to build multi-item purchase invoice.</td></tr>";',
+'  tbody.querySelectorAll(".rm-pur-it").forEach(function (b) { b.addEventListener("click", function () { purchaseInvoiceItems.splice(Number(b.getAttribute("data-i")), 1); renderPurchaseInvoiceItems(); }); });',
+'}',
+
+'async function submitPurchaseInvoice(e) {',
+'  e.preventDefault();',
+'  if (!purchaseInvoiceItems.length) { addPurchaseInvoiceItem(); }',
+'  if (!purchaseInvoiceItems.length) return;',
+'  const res = await fetch("/api/pharmacy/purchase/invoice", {',
+'    method: "POST",',
+'    headers: { "Content-Type": "application/json" },',
+'    body: JSON.stringify({',
+'      vendor: document.getElementById("pp-vendor").value,',
+'      invoiceNo: document.getElementById("pp-inv").value,',
+'      payType: document.getElementById("pp-paytype").value,',
+'      chequeNo: document.getElementById("pp-cheque").value,',
+'      items: purchaseInvoiceItems',
+'    })',
+'  });',
+'  const data = await res.json(); alert(data.message);',
+'  if (data.success) {',
+'    purchaseInvoiceItems = [];',
+'    renderPurchaseInvoiceItems();',
+'    document.getElementById("pharmacy-purchase-form").reset();',
+'    loadPharmacyStock();',
+'    await loadPurchaseLedger();',
+'    renderSubDashboardStats("purchase-entry");',
+'  }',
+'}',
+
+'async function loadPurchaseLedger() {',
+'  const res = await fetch("/api/pharmacy/purchases");',
+'  pharmacyPurchasesList = await res.json();',
+'  renderPurchaseLedgerTable();',
+'}',
+
+'function renderPurchaseLedgerTable() {',
+'  const q = (document.getElementById("pp-ledger-search").value || "").trim().toLowerCase();',
+'  const filtered = pharmacyPurchasesList.filter(function (p) {',
+'    if (!q) return true;',
+'    return (p.invoiceNo || "").toLowerCase().includes(q) || (p.vendor || "").toLowerCase().includes(q) || (p.itemsSummary || "").toLowerCase().includes(q);',
+'  });',
+'  const tbody = document.getElementById("pp-ledger-tbody");',
+'  tbody.innerHTML = filtered.map(function (p) {',
+'    const isDue = p.paymentStatus === "Credit Due";',
+'    const stBadge = isDue ? "<span style=\\"color:var(--red);font-weight:900;\\">Credit Due</span>" : "<span style=\\"color:var(--green);font-weight:900;\\">Paid (" + p.payType + ")</span>";',
+'    const actBtn = isDue ? "<button type=\\"button\\" class=\\"btn warn settle-pur-btn\\" data-id=\\"" + p.purId + "\\">Mark Paid</button>" : "-";',
+'    return "<tr><td>" + p.purId + "</td><td>" + p.date + "</td><td><b>" + p.invoiceNo + "</b></td><td><b>" + p.vendor + "</b></td><td>" + p.itemsSummary + "</td><td>" + p.payType + "</td><td>" + (p.chequeNo || "-") + "</td><td>" + stBadge + "</td><td><b>₹" + Number(p.totalAmount).toFixed(2) + "</b></td><td>" + actBtn + "</td></tr>";',
+'  }).join("") || "<tr><td colspan=\\"10\\" style=\\"text-align:center;color:var(--muted);\\">No purchase records matching search.</td></tr>";',
+'  tbody.querySelectorAll(".settle-pur-btn").forEach(function (btn) {',
+'    btn.addEventListener("click", async function () {',
+'      const purId = btn.getAttribute("data-id");',
+'      const mode = prompt("Enter Payment Mode (Cash / Cheque):", "Cash");',
+'      if (!mode) return;',
+'      const chq = mode.toLowerCase().includes("cheque") ? (prompt("Enter Cheque No:", "") || "") : "";',
+'      const r = await fetch("/api/pharmacy/purchase/settle", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ purId: purId, settleMode: mode, chequeNo: chq }) });',
+'      const d = await r.json(); alert(d.message);',
+'      if (d.success) { await loadPurchaseLedger(); renderSubDashboardStats("purchase-entry"); }',
+'    });',
+'  });',
+'}',
+
+// Pharmacy Stock Audit Functions
+'function renderStockAuditTable() {',
+'  const tbody = document.getElementById("audit-stock-tbody");',
+'  if (!tbody) return;',
+'  const q = ((document.getElementById("audit-search-input") && document.getElementById("audit-search-input").value) || "").trim().toLowerCase();',
+'  const rows = pharmacyStockList.filter(function (m) {',
+'    if (!q) return true;',
+'    return (m.itemName || "").toLowerCase().includes(q) || (m.batch || "").toLowerCase().includes(q) || (m.itemCode || "").toLowerCase().includes(q);',
+'  });',
+'  tbody.innerHTML = rows.map(function (m, idx) {',
+'    const sysQty = Number(m.qty || 0);',
+'    const phyQty = Number(m.physicalQty !== undefined ? m.physicalQty : sysQty);',
+'    const diff = Number((phyQty - sysQty).toFixed(2));',
+'    const status = diff > 0 ? "Extra Stock" : (diff < 0 ? "Short Stock" : "Matched");',
+'    const color = diff > 0 ? "color:var(--blue);font-weight:900;" : (diff < 0 ? "color:var(--red);font-weight:900;" : "color:var(--green);font-weight:900;");',
+'    const valDiff = Number((diff * Number(m.rate || 0)).toFixed(2));',
+'    return "<tr><td>" + m.itemCode + "</td><td><b>" + m.itemName + "</b></td><td>" + m.batch + "</td><td>" + sysQty + "</td>" +',
+'      "<td><input type=\\"number\\" class=\\"aud-phy-inp\\" data-code=\\"" + m.itemCode + "\\" value=\\"" + phyQty + "\\" style=\\"width:80px;padding:5px;border:1px solid var(--line);border-radius:6px;font-weight:800;\\"></td>" +',
+'      "<td class=\\"aud-diff-cell\\" style=\\"" + color + "\\">" + diff + "</td>" +',
+'      "<td class=\\"aud-st-cell\\" style=\\"" + color + "\\">" + status + "</td>" +',
+'      "<td>₹" + Number(m.rate || 0).toFixed(2) + "</td>" +',
+'      "<td class=\\"aud-val-cell\\">₹" + valDiff.toFixed(2) + "</td>" +',
+'      "<td><button type=\\"button\\" class=\\"btn primary aud-save-btn\\" data-code=\\"" + m.itemCode + "\\">Save Audit</button></td></tr>";',
+'  }).join("");',
+
+'  tbody.querySelectorAll(".aud-phy-inp").forEach(function (inp) {',
+'    inp.addEventListener("input", function () {',
+'      const code = inp.getAttribute("data-code");',
+'      const m = pharmacyStockList.find(function (x) { return x.itemCode === code; });',
+'      if (!m) return;',
+'      const phy = Number(inp.value || 0);',
+'      const diff = Number((phy - Number(m.qty || 0)).toFixed(2));',
+'      const tr = inp.closest("tr");',
+'      tr.querySelector(".aud-diff-cell").innerText = diff;',
+'      tr.querySelector(".aud-st-cell").innerText = diff > 0 ? "Extra Stock" : (diff < 0 ? "Short Stock" : "Matched");',
+'      tr.querySelector(".aud-val-cell").innerText = "₹" + (diff * Number(m.rate || 0)).toFixed(2);',
+'    });',
+'  });',
+
+'  tbody.querySelectorAll(".aud-save-btn").forEach(function (btn) {',
+'    btn.addEventListener("click", async function () {',
+'      const code = btn.getAttribute("data-code");',
+'      const tr = btn.closest("tr");',
+'      const phyVal = Number(tr.querySelector(".aud-phy-inp").value || 0);',
+'      const sync = confirm("Update System Stock to Physical Stock (" + phyVal + ")?");',
+'      const r = await fetch("/api/pharmacy/audit/save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ itemCode: code, physicalQty: phyVal, syncStock: sync }) });',
+'      const d = await r.json(); alert(d.message);',
+'      if (d.success) loadPharmacyStock();',
+'    });',
+'  });',
+'}',
+
+'function exportStockAuditCsv() {',
+'  const lines = ["Item Code,Medicine Name,Batch,System Stock,Physical Stock,Diff Qty,Status,Rate,Value Diff"];',
+'  pharmacyStockList.forEach(function (m) {',
+'    const sys = Number(m.qty || 0);',
+'    const phy = Number(m.physicalQty !== undefined ? m.physicalQty : sys);',
+'    const diff = phy - sys;',
+'    const st = diff > 0 ? "Extra Stock" : (diff < 0 ? "Short Stock" : "Matched");',
+'    const vDiff = (diff * Number(m.rate || 0)).toFixed(2);',
+'    lines.push("\\"" + m.itemCode + "\\",\\"" + m.itemName + "\\",\\"" + m.batch + "\\"," + sys + "," + phy + "," + diff + ",\\"" + st + "\\"," + m.rate + "," + vDiff);',
+'  });',
+'  const blob = new Blob([lines.join("\\n")], { type: "text/csv;charset=utf-8;" });',
+'  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "Pharmacy_Stock_Audit_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();',
+'}',
+
+// Backup & Export Functions
+'async function downloadBackupJson() {',
+'  const res = await fetch("/api/backup/export"); const d = await res.json();',
+'  const blob = new Blob([JSON.stringify(d, null, 2)], { type: "application/json" });',
+'  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "AR_ERP_Backup_" + new Date().toISOString().slice(0,10) + ".json"; a.click();',
+'}',
+
+'async function exportBackupCsv() {',
+'  const res = await fetch("/api/backup/export"); const d = await res.json();',
+'  const lines = ["Module,Ref No,Date,Party/Patient,Amount"];',
+'  (d.erpData.bills || []).forEach(function (b) { lines.push("\\"" + b.billType + "\\",\\"" + b.billNo + "\\",\\"" + b.date + "\\",\\"" + b.patientName + "\\"," + b.netFee); });',
+'  (d.erpData.pharmacyPurchases || []).forEach(function (p) { lines.push("\\"Pharmacy Purchase\\",\\"" + p.invoiceNo + "\\",\\"" + p.date + "\\",\\"" + p.vendor + "\\"," + p.totalAmount); });',
+'  const blob = new Blob([lines.join("\\n")], { type: "text/csv;charset=utf-8;" });',
+'  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "AR_ERP_Report_Export_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();',
+'}',
+
+'function handleLogoFileSelect(e) {',
+'  const file = e.target.files && e.target.files[0];',
+'  if (!file) return;',
+'  const reader = new FileReader();',
+'  reader.onload = function (ev) {',
+'    instituteDetails.logoDataUrl = ev.target.result;',
+'    const prev = document.getElementById("inst-logo-preview");',
+'    prev.src = ev.target.result; prev.style.display = "inline-block";',
+'  };',
+'  reader.readAsDataURL(file);',
 '}',
 
 'function addItemToSaleCart() {',
@@ -1723,41 +2264,11 @@ const htmlPage = [
 '  const res = await fetch("/api/pharmacy/sale/create", {',
 '    method: "POST",',
 '    headers: { "Content-Type": "application/json" },',
-'    body: JSON.stringify({',
-'      patientName: document.getElementById("ps-name").value || "Counter Customer",',
-'      contact: document.getElementById("ps-phone").value || "",',
-'      payType: document.getElementById("ps-paytype").value,',
-'      createdBy: currentUser.name,',
-'      items: saleCart',
-'    })',
+'    body: JSON.stringify({ patientName: document.getElementById("ps-name").value || "Counter Customer", contact: document.getElementById("ps-phone").value || "", payType: document.getElementById("ps-paytype").value, createdBy: currentUser.name, items: saleCart })',
 '  });',
 '  const data = await res.json();',
 '  if (data.success) { saleCart = []; renderSaleCart(); loadPharmacyStock(); renderBillModal(data.bill); }',
 '  else alert(data.message);',
-'}',
-
-'async function handlePharmacyPurchase(e) {',
-'  e.preventDefault();',
-'  const res = await fetch("/api/pharmacy/purchase/add", {',
-'    method: "POST",',
-'    headers: { "Content-Type": "application/json" },',
-'    body: JSON.stringify({',
-'      vendor: document.getElementById("pp-vendor").value,',
-'      invoiceNo: document.getElementById("pp-inv").value,',
-'      itemName: document.getElementById("pp-name").value,',
-'      batch: document.getElementById("pp-batch").value,',
-'      mfgDate: (document.getElementById("pp-mfgexp").value.split("/")[0] || "-").trim(),',
-'      expDate: (document.getElementById("pp-mfgexp").value.split("/")[1] || "-").trim(),',
-'      hsn: document.getElementById("pp-hsn").value,',
-'      qty: document.getElementById("pp-qty").value,',
-'      mrp: document.getElementById("pp-mrp").value,',
-'      rate: document.getElementById("pp-rate").value,',
-'      gstPct: document.getElementById("pp-gst").value,',
-'      payType: document.getElementById("pp-paytype").value',
-'    }),',
-'  });',
-'  const data = await res.json(); alert(data.message);',
-'  if (data.success) { document.getElementById("pharmacy-purchase-form").reset(); loadPharmacyStock(); switchView(activeModuleKey); }',
 '}',
 
 'async function handlePharmacyReturn(e) {',
@@ -1765,14 +2276,7 @@ const htmlPage = [
 '  const res = await fetch("/api/pharmacy/return/create", {',
 '    method: "POST",',
 '    headers: { "Content-Type": "application/json" },',
-'    body: JSON.stringify({',
-'      refBillNo: document.getElementById("pr-billno").value,',
-'      itemName: document.getElementById("pr-medname").value,',
-'      batch: document.getElementById("pr-batch").value,',
-'      qty: document.getElementById("pr-qty").value,',
-'      refundAmount: document.getElementById("pr-refund").value,',
-'      reason: document.getElementById("pr-reason").value',
-'    }),',
+'    body: JSON.stringify({ refBillNo: document.getElementById("pr-billno").value, itemName: document.getElementById("pr-medname").value, batch: document.getElementById("pr-batch").value, qty: document.getElementById("pr-qty").value, refundAmount: document.getElementById("pr-refund").value, reason: document.getElementById("pr-reason").value })',
 '  });',
 '  const data = await res.json(); alert(data.message);',
 '  if (data.success) { document.getElementById("pharmacy-return-form").reset(); switchView(activeModuleKey); }',
@@ -1783,17 +2287,7 @@ const htmlPage = [
 '  const res = await fetch("/api/pharmacy/medicine/add", {',
 '    method: "POST",',
 '    headers: { "Content-Type": "application/json" },',
-'    body: JSON.stringify({',
-'      itemName: document.getElementById("pm-name").value,',
-'      batch: document.getElementById("pm-batch").value,',
-'      mfgDate: document.getElementById("pm-mfg").value,',
-'      expDate: document.getElementById("pm-exp").value,',
-'      hsn: document.getElementById("pm-hsn").value,',
-'      qty: document.getElementById("pm-qty").value,',
-'      mrp: document.getElementById("pm-mrp").value,',
-'      rate: document.getElementById("pm-rate").value,',
-'      gstPct: document.getElementById("pm-gst").value',
-'    }),',
+'    body: JSON.stringify({ itemName: document.getElementById("pm-name").value, batch: document.getElementById("pm-batch").value, mfgDate: document.getElementById("pm-mfg").value, expDate: document.getElementById("pm-exp").value, hsn: document.getElementById("pm-hsn").value, qty: document.getElementById("pm-qty").value, mrp: document.getElementById("pm-mrp").value, rate: document.getElementById("pm-rate").value, gstPct: document.getElementById("pm-gst").value })',
 '  });',
 '  const data = await res.json(); alert(data.message);',
 '  if (data.success) { document.getElementById("pharmacy-med-form").reset(); loadPharmacyStock(); switchView(activeModuleKey); }',
@@ -1804,25 +2298,7 @@ const htmlPage = [
 '  const res = await fetch("/api/patients/register", {',
 '    method: "POST",',
 '    headers: { "Content-Type": "application/json" },',
-'    body: JSON.stringify({',
-'      existingUhid: document.getElementById("reg-uhid").value,',
-'      title: document.getElementById("reg-title").value,',
-'      name: document.getElementById("reg-name").value,',
-'      relation: document.getElementById("reg-relation").value,',
-'      guardian: document.getElementById("reg-guardian").value,',
-'      age: document.getElementById("reg-age").value,',
-'      gender: document.getElementById("reg-gender").value,',
-'      contact: document.getElementById("reg-contact").value,',
-'      adhaar: document.getElementById("reg-adhaar").value,',
-'      abha: document.getElementById("reg-abha").value,',
-'      address: document.getElementById("reg-address").value,',
-'      doctor: document.getElementById("reg-doctor").value,',
-'      fee: document.getElementById("reg-fee").value,',
-'      discount: document.getElementById("reg-discount").value,',
-'      netFee: document.getElementById("reg-netfee").value,',
-'      payType: document.getElementById("reg-paytype").value,',
-'      createdBy: currentUser.name',
-'    }),',
+'    body: JSON.stringify({ existingUhid: document.getElementById("reg-uhid").value, title: document.getElementById("reg-title").value, name: document.getElementById("reg-name").value, patientType: document.getElementById("reg-ptype").value, relation: document.getElementById("reg-relation").value, guardian: document.getElementById("reg-guardian").value, age: document.getElementById("reg-age").value, gender: document.getElementById("reg-gender").value, contact: document.getElementById("reg-contact").value, adhaar: document.getElementById("reg-adhaar").value, abha: document.getElementById("reg-abha").value, address: document.getElementById("reg-address").value, doctor: document.getElementById("reg-doctor").value, fee: document.getElementById("reg-fee").value, emergencyCharge: document.getElementById("reg-emg-fee").value, discount: document.getElementById("reg-discount").value, netFee: document.getElementById("reg-netfee").value, payType: document.getElementById("reg-paytype").value, createdBy: currentUser.name })',
 '  });',
 '  const data = await res.json();',
 '  if (data.success) { document.getElementById("patient-reg-form").reset(); document.getElementById("reg-discount").value = "0"; renderBillModal(data.bill); }',
@@ -1843,8 +2319,8 @@ const htmlPage = [
 '  if (data.success) { document.getElementById("nhcx-claim-form").reset(); loadModuleTable(activeModuleKey); }',
 '}',
 
-'async function handleOpdBook(e) { e.preventDefault(); const u = document.getElementById("opd-uhid").value; const r = await fetch("/api/opd/book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: u, patientName: u, doctor: document.getElementById("opd-doctor").value, slot: document.getElementById("opd-slot").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("opd-book-form").reset(); loadModuleTable("opd"); } }',
-'async function handleIpdAdmit(e) { e.preventDefault(); const r = await fetch("/api/ipd/admit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: document.getElementById("ipd-uhid").value, patientName: document.getElementById("ipd-name").value, ward: document.getElementById("ipd-ward").value, doctor: document.getElementById("ipd-doctor").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("ipd-admit-form").reset(); loadModuleTable("ipd"); } }',
+'async function handleOpdBook(e) { e.preventDefault(); const u = document.getElementById("opd-uhid").value; const r = await fetch("/api/opd/book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: u, patientName: u, patientType: document.getElementById("opd-ptype").value, doctor: document.getElementById("opd-doctor").value, slot: document.getElementById("opd-slot").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("opd-book-form").reset(); loadModuleTable("opd"); } }',
+'async function handleIpdAdmit(e) { e.preventDefault(); const r = await fetch("/api/ipd/admit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: document.getElementById("ipd-uhid").value, patientName: document.getElementById("ipd-name").value, patientType: document.getElementById("ipd-ptype").value, ward: document.getElementById("ipd-ward").value, doctor: document.getElementById("ipd-doctor").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("ipd-admit-form").reset(); loadModuleTable("ipd"); } }',
 'async function handleAddWard(e) { e.preventDefault(); const r = await fetch("/api/wards/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ wardName: document.getElementById("w-name").value, totalBeds: document.getElementById("w-beds").value, dailyCharge: document.getElementById("w-charge").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("ward-add-form").reset(); loadModuleTable("wards"); } }',
 'async function handleAddLab(e) { e.preventDefault(); const r = await fetch("/api/lab/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: document.getElementById("lab-uhid").value, patientName: document.getElementById("lab-name").value, testName: document.getElementById("lab-test").value, result: document.getElementById("lab-result").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("lab-add-form").reset(); loadModuleTable("lab"); } }',
 'async function handleAddRad(e) { e.preventDefault(); const r = await fetch("/api/radiology/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uhid: document.getElementById("rad-uhid").value, patientName: document.getElementById("rad-name").value, modality: document.getElementById("rad-mod").value, finding: document.getElementById("rad-finding").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("rad-add-form").reset(); loadModuleTable("radiology"); } }',
@@ -1854,13 +2330,10 @@ const htmlPage = [
 'async function handleAddBioWo(e) { e.preventDefault(); const r = await fetch("/api/biomed/wo/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ equipment: document.getElementById("wo-eq").value, department: document.getElementById("wo-dept").value, issue: document.getElementById("wo-issue").value, status: document.getElementById("wo-status").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("bio-wo-form").reset(); switchView(activeModuleKey); } }',
 'async function handleAddFinance(e) { e.preventDefault(); const r = await fetch("/api/finance/entry/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sourceModule: document.getElementById("fin-mod").value, type: document.getElementById("fin-type").value, head: document.getElementById("fin-head").value, mode: document.getElementById("fin-mode").value, amount: document.getElementById("fin-amt").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("fin-add-form").reset(); switchView(activeModuleKey); } }',
 'async function handleAddDoctor(e) { e.preventDefault(); const r = await fetch("/api/doctors/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: document.getElementById("doc-name").value, fee: document.getElementById("doc-fee").value, department: document.getElementById("doc-dept").value }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("doctor-form").reset(); loadDoctors(); loadModuleTable("doctors"); } }',
-'async function handleCreateUser(e) { e.preventDefault(); const r = await fetch("/api/users/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: document.getElementById("new-u-name").value, username: document.getElementById("new-u-username").value, password: document.getElementById("new-u-password").value, role: document.getElementById("new-u-role").value, permissions: ["all"] }) }); const d = await r.json(); alert(d.message); if (d.success) { document.getElementById("user-create-form").reset(); loadModuleTable("users"); } }',
-'async function handleChangePassword(e) { e.preventDefault(); const r = await fetch("/api/users/change-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: currentUser.username, oldPassword: document.getElementById("pass-old").value, newPassword: document.getElementById("pass-new").value }) }); const d = await r.json(); alert(d.message); if (d.success) document.getElementById("password-change-form").reset(); }',
+'async function handleChangePassword(e) { e.preventDefault(); const r = await fetch("/api/users/change-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: currentUser.username, oldPassword: document.getElementById("pass-old").value, newPassword: document.getElementById("pass-new").value }) }); const d = await res.json(); alert(d.message); if (d.success) document.getElementById("password-change-form").reset(); }',
 
 'async function runCustomReport() {',
-'  const f = document.getElementById("rep-from").value;',
-'  const t = document.getElementById("rep-to").value;',
-'  const s = document.getElementById("rep-scope").value;',
+'  const f = document.getElementById("rep-from").value; const t = document.getElementById("rep-to").value; const s = document.getElementById("rep-scope").value;',
 '  const res = await fetch("/api/reports/custom?from=" + encodeURIComponent(f) + "&to=" + encodeURIComponent(t) + "&scope=" + encodeURIComponent(s));',
 '  const data = await res.json();',
 '  document.getElementById("rep-summary-badge").innerText = "Records: " + data.count + " | Total Amount: ₹" + Number(data.totalAmount || 0).toFixed(2);',
@@ -1884,6 +2357,15 @@ const htmlPage = [
 '  document.getElementById("pb-acc").innerText = instituteDetails.accountNo || "-";',
 '  document.getElementById("pb-ifsc").innerText = instituteDetails.ifsc || "-";',
 '  document.getElementById("pb-upi").innerText = instituteDetails.upiId || "-";',
+
+'  const logoUrl = instituteDetails.logoDataUrl || "";',
+'  ["print-inst-logo", "presc-inst-logo", "inst-logo-preview"].forEach(function (id) {',
+'    const el = document.getElementById(id);',
+'    if (el) { el.src = logoUrl; el.style.display = logoUrl ? (id === "inst-logo-preview" ? "inline-block" : "block") : "none"; }',
+'  });',
+'  const sbLogo = document.getElementById("sidebar-logo-box");',
+'  if (sbLogo) { sbLogo.innerHTML = logoUrl ? "<img src=\\"" + logoUrl + "\\" style=\\"width:100%;height:100%;object-fit:cover;\\">" : "AR"; }',
+
 '  if (document.getElementById("inst-name")) {',
 '    document.getElementById("inst-name").value = instituteDetails.name || "";',
 '    document.getElementById("inst-tagline").value = instituteDetails.tagline || "";',
@@ -1891,6 +2373,7 @@ const htmlPage = [
 '    document.getElementById("inst-gstin").value = instituteDetails.gstin || "";',
 '    document.getElementById("inst-phone").value = instituteDetails.phone || "";',
 '    document.getElementById("inst-pos").value = instituteDetails.placeOfSupply || "";',
+'    document.getElementById("inst-emg-fee").value = instituteDetails.emergencyFee !== undefined ? instituteDetails.emergencyFee : 250;',
 '    document.getElementById("inst-bank").value = instituteDetails.bankName || "";',
 '    document.getElementById("inst-acc").value = instituteDetails.accountNo || "";',
 '    document.getElementById("inst-ifsc").value = instituteDetails.ifsc || "";',
@@ -1900,24 +2383,17 @@ const htmlPage = [
 
 'async function handleSaveInstitute(e) {',
 '  e.preventDefault();',
-'  const res = await fetch("/api/institute", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: document.getElementById("inst-name").value, tagline: document.getElementById("inst-tagline").value, address: document.getElementById("inst-address").value, gstin: document.getElementById("inst-gstin").value, phone: document.getElementById("inst-phone").value, placeOfSupply: document.getElementById("inst-pos").value, bankName: document.getElementById("inst-bank").value, accountNo: document.getElementById("inst-acc").value, ifsc: document.getElementById("inst-ifsc").value, upiId: document.getElementById("inst-upi").value }) });',
+'  const res = await fetch("/api/institute", {',
+'    method: "POST",',
+'    headers: { "Content-Type": "application/json" },',
+'    body: JSON.stringify({ name: document.getElementById("inst-name").value, tagline: document.getElementById("inst-tagline").value, address: document.getElementById("inst-address").value, gstin: document.getElementById("inst-gstin").value, phone: document.getElementById("inst-phone").value, placeOfSupply: document.getElementById("inst-pos").value, emergencyFee: document.getElementById("inst-emg-fee").value, bankName: document.getElementById("inst-bank").value, accountNo: document.getElementById("inst-acc").value, ifsc: document.getElementById("inst-ifsc").value, upiId: document.getElementById("inst-upi").value, logoDataUrl: instituteDetails.logoDataUrl || "" })',
+'  });',
 '  const d = await res.json(); alert(d.message); if (d.success) loadInstituteDetails();',
 '}',
 
 'function applyPrintOptions() {',
-'  const pairs = [',
-'    ["opt-batch", ".col-batch"],',
-'    ["opt-mfgexp", ".col-mfgexp"],',
-'    ["opt-hsn", ".col-hsn"],',
-'    ["opt-mrp", ".col-mrp"],',
-'    ["opt-gst", ".sec-gst"],',
-'    ["opt-bank", ".sec-bank"],',
-'    ["opt-terms", ".sec-terms"]',
-'  ];',
-'  pairs.forEach(function (p) {',
-'    const checked = document.getElementById(p[0]).checked;',
-'    document.querySelectorAll(p[1]).forEach(function (el) { el.classList.toggle("hide-col", !checked); });',
-'  });',
+'  const pairs = [["opt-batch",".col-batch"],["opt-mfgexp",".col-mfgexp"],["opt-hsn",".col-hsn"],["opt-mrp",".col-mrp"],["opt-gst",".sec-gst"],["opt-bank",".sec-bank"],["opt-terms",".sec-terms"]];',
+'  pairs.forEach(function (p) { const checked = document.getElementById(p[0]).checked; document.querySelectorAll(p[1]).forEach(function (el) { el.classList.toggle("hide-col", !checked); }); });',
 '}',
 
 'function renderBillModal(bill) {',
@@ -1929,6 +2405,7 @@ const htmlPage = [
 '  document.getElementById("pb-uhid").innerText = bill.uhid || "-";',
 '  document.getElementById("pb-user").innerText = bill.createdBy || "-";',
 '  document.getElementById("pb-name").innerText = bill.patientName || "-";',
+'  document.getElementById("pb-ptype").innerText = bill.patientType || "Normal";',
 '  document.getElementById("pb-contact").innerText = bill.contact || "-";',
 '  document.getElementById("pb-address").innerText = bill.address || "-";',
 '  document.getElementById("pb-doctor").innerText = bill.doctor || "-";',
@@ -1965,23 +2442,18 @@ const htmlPage = [
 '  const res = await fetch("/api/patients/search?q=" + encodeURIComponent(uhid)); const data = await res.json();',
 '  if (!data.length) return;',
 '  const p = data[0];',
-'  document.getElementById("pr-uhid").innerText = p.uhid;',
-'  document.getElementById("pr-date").innerText = p.date;',
-'  document.getElementById("pr-name").innerText = p.title + " " + p.name;',
-'  document.getElementById("pr-age").innerText = p.age + " Yrs / " + p.gender;',
-'  document.getElementById("pr-guardian").innerText = (p.relation || "") + " " + (p.guardian || "");',
-'  document.getElementById("pr-contact").innerText = p.contact;',
-'  document.getElementById("pr-doctor").innerText = p.doctor;',
-'  document.getElementById("pr-address").innerText = p.address || "-";',
+'  document.getElementById("pr-uhid").innerText = p.uhid; document.getElementById("pr-date").innerText = p.date;',
+'  document.getElementById("pr-name").innerText = p.title + " " + p.name; document.getElementById("pr-age").innerText = p.age + " Yrs / " + p.gender;',
+'  document.getElementById("pr-guardian").innerText = (p.relation || "") + " " + (p.guardian || ""); document.getElementById("pr-contact").innerText = p.contact;',
+'  document.getElementById("pr-doctor").innerText = p.doctor; document.getElementById("pr-address").innerText = p.address || "-";',
 '  ["vital-bp","vital-pulse","vital-temp","vital-wt","pr-investigation","pr-treatment","pr-nextvisit"].forEach(function (id) { document.getElementById(id).value = ""; });',
-'  document.getElementById("prescription-modal").style.display = "flex";',
-'  document.getElementById("print-modal").style.display = "none";',
+'  document.getElementById("prescription-modal").style.display = "flex"; document.getElementById("print-modal").style.display = "none";',
 '}',
 
 'async function requestBillEdit() {',
 '  if (currentUser.role !== "Super Admin" && currentUser.role !== "Admin") { alert("Only Super Admin / Admin can edit bills."); return; }',
 '  const newNet = prompt("New Net Amount (₹) for " + currentActiveBillNo + ":"); if (newNet === null || newNet === "") return;',
-'  const newMode = prompt("Payment Mode (Cash / UPI / Card / Credit):", "Cash"); if (!newMode) return;',
+'  const newMode = prompt("Payment Mode (Cash / Cheque / UPI / Card / Credit):", "Cash"); if (!newMode) return;',
 '  const res = await fetch("/api/bills/edit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ billNo: currentActiveBillNo, netFee: newNet, payType: newMode, userRole: currentUser.role }) });',
 '  const d = await res.json(); alert(d.message); if (d.success) renderBillModal(d.bill);',
 '}',
