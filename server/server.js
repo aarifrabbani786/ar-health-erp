@@ -64,7 +64,7 @@ function nowInputDT() {
 
 let instituteInfo = {
     name: 'AR HIMS SOFTWARE',
-    tagline: 'Hospital • IPD/OPD • Lab & Radiology • Pharmacy • Audit & ABDM/NHCX',
+    tagline: 'Hospital • IPD/OPD • Lab & Radiology • Pharmacy • BME Portable • Financials & Audit',
     address: 'Village Badahara Rani, Maharajganj, Uttar Pradesh',
     gstin: '09AABCA1234F1Z5',
     phone: '+91 9005554424',
@@ -143,7 +143,7 @@ let erpData = {
     users: [
         { id: 'USR-1', name: 'Aarif Rabbani', username: 'Aarif', password: '786', role: 'Super Admin', permissions: ['all', 'edit'], status: 'Active' },
         { id: 'USR-2', name: 'Admin User', username: 'admin', password: '123', role: 'Admin', permissions: ['all', 'edit'], status: 'Active' },
-        { id: 'USR-3', name: 'Staff User', username: 'staff', password: '123', role: 'Staff', permissions: ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy'], status: 'Active' }
+        { id: 'USR-3', name: 'Staff User', username: 'staff', password: '123', role: 'Staff', permissions: ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy', 'bme', 'financials'], status: 'Active' }
     ],
     patients: [
         {
@@ -245,6 +245,58 @@ let erpData = {
             impression: 'Normal Chest X-Ray.'
         }
     ],
+    bmePortable: [
+        {
+            bmeId: 'BME-P-01',
+            name: 'Portable ECG Machine (3-Channel)',
+            serialNo: 'ECG-PORT-8821',
+            portableMode: 'Portable / Handheld',
+            location: 'Emergency & Wards',
+            status: 'Operational',
+            calDueDate: '2027-03-15',
+            batteryOk: 'Yes',
+            notes: 'Ready for bedside & ward rounds',
+            updatedAt: nowIST(),
+            updatedBy: 'Aarif'
+        },
+        {
+            bmeId: 'BME-P-02',
+            name: 'Portable Pulse Oximeter & Syringe Pump',
+            serialNo: 'SPO2-SYR-409',
+            portableMode: 'Portable / Handheld',
+            location: 'ICU / Ambulance',
+            status: 'Operational',
+            calDueDate: '2027-01-20',
+            batteryOk: 'Yes',
+            notes: 'Calibration verified',
+            updatedAt: nowIST(),
+            updatedBy: 'Aarif'
+        }
+    ],
+    financialEntries: [
+        {
+            finId: 'FIN-101',
+            date: todayISO(),
+            type: 'Income',
+            category: 'OPD / IPD Collection',
+            head: 'Daily Cash & UPI Settlement',
+            mode: 'Cash',
+            amount: 500,
+            remarks: 'Opening hospital receipt',
+            by: 'Aarif'
+        },
+        {
+            finId: 'FIN-102',
+            date: todayISO(),
+            type: 'Expense',
+            category: 'BME & Maintenance',
+            head: 'Portable ECG Thermal Paper & Battery Check',
+            mode: 'UPI / QR',
+            amount: 150,
+            remarks: 'Routine portable biomedical upkeep',
+            by: 'Aarif'
+        }
+    ],
     pharmacyStock: [
         { itemCode: 'MED-501', itemName: 'Paracetamol 500 mg Tab', batch: 'A1', qty: 450, mrp: 50, rate: 40, gstPct: 12 },
         { itemCode: 'MED-502', itemName: 'Cough Syrup (200ml)', batch: 'B2', qty: 180, mrp: 90, rate: 80, gstPct: 12 }
@@ -299,9 +351,11 @@ async function loadStore() {
                     erpData.users = [
                         { id: 'USR-1', name: 'Aarif Rabbani', username: 'Aarif', password: '786', role: 'Super Admin', permissions: ['all', 'edit'], status: 'Active' },
                         { id: 'USR-2', name: 'Admin User', username: 'admin', password: '123', role: 'Admin', permissions: ['all', 'edit'], status: 'Active' },
-                        { id: 'USR-3', name: 'Staff User', username: 'staff', password: '123', role: 'Staff', permissions: ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy'], status: 'Active' }
+                        { id: 'USR-3', name: 'Staff User', username: 'staff', password: '123', role: 'Staff', permissions: ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy', 'bme', 'financials'], status: 'Active' }
                     ];
                 }
+                if (!Array.isArray(erpData.bmePortable)) erpData.bmePortable = [];
+                if (!Array.isArray(erpData.financialEntries)) erpData.financialEntries = [];
             }
         } else {
             await saveStore();
@@ -364,7 +418,8 @@ app.get('/api/bootstrap', function (req, res) {
             admittedCount: admittedList.length,
             dischargedCount: dischargedList.length,
             labCount: (erpData.laboratory || []).length,
-            radCount: (erpData.radiology || []).length
+            radCount: (erpData.radiology || []).length,
+            bmeCount: (erpData.bmePortable || []).length
         },
         erpData: erpData
     });
@@ -377,7 +432,9 @@ app.post('/api/login', async function (req, res) {
         return String(x.username || '').trim().toLowerCase() === u && String(x.password || '') === p;
     });
     if (!user) return res.status(401).json({ success: false, message: 'Invalid User ID or Password.' });
-    if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account deactivated.' });
+    if (String(user.status || 'Active').toLowerCase() === 'deactivated') {
+        return res.status(403).json({ success: false, message: 'Account deactivated by Admin.' });
+    }
     logAction(user.username, 'Auth', 'Logged in');
     try { await saveStore(); } catch (e) { console.error('Save warning:', e.message); }
     res.json({ success: true, user: user });
@@ -385,22 +442,25 @@ app.post('/api/login', async function (req, res) {
 
 app.post('/api/users/create', async function (req, res) {
     if (!canEdit(req.body.actor)) {
-        return res.status(403).json({ success: false, message: 'Only Admin / Super Admin / Edit user can create users.' });
+        return res.status(403).json({ success: false, message: 'Only Admin / Super Admin / Edit user can manage users.' });
     }
     const body = req.body || {};
     if (!body.name || !body.username || !body.password) {
         return res.status(400).json({ success: false, message: 'Name, username and password required.' });
     }
-    if (erpData.users.some(function (x) { return x.username.toLowerCase() === String(body.username).trim().toLowerCase(); })) {
+    const cleanUser = String(body.username).trim();
+    if (erpData.users.some(function (x) { return x.username.toLowerCase() === cleanUser.toLowerCase(); })) {
         return res.status(400).json({ success: false, message: 'Username already exists.' });
     }
     const newUser = {
         id: 'USR-' + Date.now().toString().slice(-4),
         name: String(body.name).trim(),
-        username: String(body.username).trim(),
+        username: cleanUser,
         password: String(body.password),
         role: body.role || 'Staff',
-        permissions: Array.isArray(body.permissions) && body.permissions.length ? body.permissions : ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy'],
+        permissions: Array.isArray(body.permissions) && body.permissions.length
+            ? body.permissions
+            : ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy', 'bme', 'financials'],
         status: 'Active'
     };
     erpData.users.push(newUser);
@@ -409,19 +469,87 @@ app.post('/api/users/create', async function (req, res) {
     res.json({ success: true, user: newUser });
 });
 
-app.post('/api/users/toggle-edit', async function (req, res) {
+app.post('/api/users/update', async function (req, res) {
     if (!canEdit(req.body.actor)) {
         return res.status(403).json({ success: false, message: 'Permission denied.' });
     }
     const target = (erpData.users || []).find(function (x) { return x.id === req.body.userId; });
     if (!target) return res.status(404).json({ success: false, message: 'User not found.' });
-    const set = new Set(target.permissions || []);
-    if (set.has('edit')) set.delete('edit');
-    else set.add('edit');
-    target.permissions = Array.from(set);
-    logAction(req.body.actor, 'Users', 'Updated edit permission for ' + target.username);
+    if (req.body.name) target.name = String(req.body.name).trim();
+    if (req.body.role) target.role = String(req.body.role).trim();
+    if (req.body.password) target.password = String(req.body.password);
+    if (req.body.status) target.status = String(req.body.status);
+    if (req.body.toggleEdit) {
+        const set = new Set(target.permissions || []);
+        if (set.has('edit')) set.delete('edit');
+        else set.add('edit');
+        target.permissions = Array.from(set);
+    }
+    logAction(req.body.actor, 'Users', 'Updated user ' + target.username);
     await saveStore();
     res.json({ success: true, user: target });
+});
+
+app.post('/api/users/delete', async function (req, res) {
+    if (!canEdit(req.body.actor)) {
+        return res.status(403).json({ success: false, message: 'Permission denied.' });
+    }
+    const idx = (erpData.users || []).findIndex(function (x) { return x.id === req.body.userId; });
+    if (idx < 0) return res.status(404).json({ success: false, message: 'User not found.' });
+    if (String(erpData.users[idx].username).toLowerCase() === 'aarif') {
+        return res.status(400).json({ success: false, message: 'Primary Super Admin cannot be deleted.' });
+    }
+    const removed = erpData.users.splice(idx, 1)[0];
+    logAction(req.body.actor, 'Users', 'Deleted user ' + removed.username);
+    await saveStore();
+    res.json({ success: true, deleted: removed.username });
+});
+
+app.post('/api/bme/save', async function (req, res) {
+    const b = req.body || {};
+    if (!b.name) return res.status(400).json({ success: false, message: 'Equipment name required.' });
+    const rec = {
+        bmeId: b.bmeId || ('BME-P-' + Date.now().toString().slice(-4)),
+        name: String(b.name).trim(),
+        serialNo: String(b.serialNo || 'PORT-01').trim(),
+        portableMode: b.portableMode || 'Portable / Handheld',
+        location: String(b.location || 'General / Ward').trim(),
+        status: b.status || 'Operational',
+        calDueDate: b.calDueDate || '',
+        batteryOk: b.batteryOk || 'Yes',
+        notes: String(b.notes || '').trim(),
+        updatedAt: nowIST(),
+        updatedBy: b.actor || 'Staff'
+    };
+    const idx = (erpData.bmePortable || []).findIndex(function (x) { return x.bmeId === rec.bmeId; });
+    if (idx >= 0) erpData.bmePortable[idx] = rec;
+    else erpData.bmePortable.unshift(rec);
+    logAction(b.actor, 'BME Portable', 'Saved ' + rec.bmeId + ' (' + rec.name + ')');
+    await saveStore();
+    res.json({ success: true, bme: rec });
+});
+
+app.post('/api/financials/save', async function (req, res) {
+    const b = req.body || {};
+    const amt = r2(b.amount || 0);
+    if (!b.head || amt <= 0) {
+        return res.status(400).json({ success: false, message: 'Account head and positive amount required.' });
+    }
+    const entry = {
+        finId: 'FIN-' + Date.now().toString().slice(-5),
+        date: b.date || todayISO(),
+        type: b.type === 'Expense' ? 'Expense' : 'Income',
+        category: b.category || 'General Hospital',
+        head: String(b.head).trim(),
+        mode: b.mode || 'Cash',
+        amount: amt,
+        remarks: String(b.remarks || '').trim(),
+        by: b.actor || 'Staff'
+    };
+    erpData.financialEntries.unshift(entry);
+    logAction(b.actor, 'Financials', entry.type + ' ₹' + amt + ' - ' + entry.head);
+    await saveStore();
+    res.json({ success: true, entry: entry });
 });
 
 app.post('/api/patients/register', async function (req, res) {
@@ -772,7 +900,7 @@ app.post('/api/pharmacy/audit/save', async function (req, res) {
     res.json({ success: true, audit: rec });
 });
 
-// ==================== FRONTEND: MONEY PLANT THEME + EMBOSSED LOGIN + GLASSY DASHBOARD ====================
+// ==================== FRONTEND: BOLD LOGIN + MONEY PLANT + BME PORTABLE + FINANCIALS + USERS ====================
 
 const htmlPage = [
     '<!DOCTYPE html>',
@@ -780,58 +908,57 @@ const htmlPage = [
     '<title>AR HIMS SOFTWARE</title>',
     '<style>',
     '*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",system-ui,-apple-system,sans-serif}',
-    ':root{--clay-surface:#eef3ec;--clay-inset:inset 4px 4px 10px #c5d1c2,inset -4px -4px 10px #ffffff;--glass:rgba(248,252,248,0.82);--glass-border:rgba(255,255,255,0.92)}',
+    ':root{--clay-surface:#f2f7f0;--clay-inset:inset 5px 5px 12px #bfd0bb,inset -5px -5px 12px #ffffff;--glass:rgba(250,253,250,0.88);--glass-border:rgba(255,255,255,0.95)}',
 
-    /* Bold Natural Money Plant SVG Wallpaper */
-    '.money-plant-bg{background-color:#0b2619;background-image:',
-    'radial-gradient(circle at 15% 18%,rgba(34,197,94,.28),transparent 42%),',
-    'radial-gradient(circle at 85% 80%,rgba(16,185,129,.26),transparent 45%),',
-    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'280\' viewBox=\'0 0 280 280\'%3E%3Cg fill=\'none\' stroke=\'%2334d399\' stroke-opacity=\'0.22\' stroke-width=\'2.4\'%3E%3Cpath d=\'M20 260 Q 90 190 140 140 T 260 20\'/%3E%3Cpath d=\'M140 280 Q 110 180 65 90\'/%3E%3C/g%3E%3Cg stroke=\'%2310b981\' stroke-opacity=\'0.28\' stroke-width=\'1.5\'%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.24\' d=\'M75 185 C 40 165, 35 125, 75 105 C 115 125, 110 165, 75 185 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.26\' d=\'M140 140 C 105 118, 105 78, 145 62 C 182 82, 178 120, 140 140 Z\'/%3E%3Cpath fill=\'%2315803d\' fill-opacity=\'0.28\' d=\'M205 85 C 175 68, 175 34, 210 20 C 242 38, 238 68, 205 85 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.22\' d=\'M65 90 C 32 76, 30 42, 62 28 C 92 44, 90 74, 65 90 Z\'/%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.22\' d=\'M185 215 C 155 198, 155 166, 188 152 C 218 168, 216 198, 185 215 Z\'/%3E%3C/g%3E%3C/svg%3E")}',
+    /* Bold Natural Money Plant Background */
+    '.money-plant-bg{background-color:#071d13;background-image:',
+    'radial-gradient(circle at 14% 16%,rgba(34,197,94,.32),transparent 42%),',
+    'radial-gradient(circle at 86% 82%,rgba(16,185,129,.30),transparent 46%),',
+    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'280\' viewBox=\'0 0 280 280\'%3E%3Cg fill=\'none\' stroke=\'%234ade80\' stroke-opacity=\'0.26\' stroke-width=\'2.6\'%3E%3Cpath d=\'M20 260 Q 90 190 140 140 T 260 20\'/%3E%3Cpath d=\'M140 280 Q 110 180 65 90\'/%3E%3C/g%3E%3Cg stroke=\'%2322c55e\' stroke-opacity=\'0.32\' stroke-width=\'1.8\'%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.28\' d=\'M75 185 C 40 165, 35 125, 75 105 C 115 125, 110 165, 75 185 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.30\' d=\'M140 140 C 105 118, 105 78, 145 62 C 182 82, 178 120, 140 140 Z\'/%3E%3Cpath fill=\'%2315803d\' fill-opacity=\'0.32\' d=\'M205 85 C 175 68, 175 34, 210 20 C 242 38, 238 68, 205 85 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.26\' d=\'M65 90 C 32 76, 30 42, 62 28 C 92 44, 90 74, 65 90 Z\'/%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.26\' d=\'M185 215 C 155 198, 155 166, 188 152 C 218 168, 216 198, 185 215 Z\'/%3E%3C/g%3E%3C/svg%3E")}',
 
-    'body{color:#0f172a;font-size:12.5px;min-height:100vh}',
+    'body{color:#0f172a;font-size:13px;font-weight:500;min-height:100vh}',
 
-    /* Animated Embossed Login over Bold Money Plant Theme */
+    /* Larger & Bolder Embossed Login Card */
     '#loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}',
     '@keyframes floatCircle{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}',
-    '.embossed-circle{width:410px;max-width:94vw;aspect-ratio:1/1;border-radius:50%;background:var(--clay-surface);box-shadow:0 24px 60px rgba(0,0,0,.45),inset 6px 6px 14px #ffffff,inset -6px -6px 14px #c3d0c0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:42px;animation:floatCircle 4.5s ease-in-out infinite}',
-    '.embossed-brand{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#15803d;margin-bottom:4px}',
-    '.embossed-title{font-size:21px;font-weight:800;color:#0f172a;margin-bottom:16px;letter-spacing:.6px}',
-    '.embossed-form{width:100%;max-width:265px;display:flex;flex-direction:column;gap:12px}',
-    '.embossed-input{width:100%;padding:11px 15px;border:none;border-radius:16px;background:var(--clay-surface);box-shadow:var(--clay-inset);color:#0f172a;font-size:13px;outline:none;transition:box-shadow .25s ease}',
-    '.embossed-input:focus{box-shadow:inset 5px 5px 12px #b2c2ae,inset -5px -5px 12px #ffffff}',
-    '.embossed-btn{width:100%;padding:11px;border:none;border-radius:16px;background:linear-gradient(145deg,#16a34a,#065f46);color:#fff;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 8px 18px rgba(6,95,70,.35);transition:transform .18s ease}',
-    '.embossed-btn:hover{transform:translateY(-2px)}',
-    '.embossed-msg{min-height:18px;font-size:11.5px;font-weight:700;color:#dc2626;text-align:center;margin-top:6px}',
-    '.success-badge{display:none;flex-direction:column;align-items:center;text-align:center;gap:6px}',
-    '.check-ring{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#22c55e,#15803d);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center}',
+    '.embossed-circle{width:475px;max-width:95vw;aspect-ratio:1/1;border-radius:50%;background:var(--clay-surface);box-shadow:0 28px 68px rgba(0,0,0,.55),inset 7px 7px 16px #ffffff,inset -7px -7px 16px #b8c9b4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;animation:floatCircle 4.5s ease-in-out infinite}',
+    '.embossed-brand{font-size:12px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase;color:#14532d;margin-bottom:6px}',
+    '.embossed-title{font-size:26px;font-weight:900;color:#052e16;margin-bottom:20px;letter-spacing:.8px}',
+    '.embossed-form{width:100%;max-width:310px;display:flex;flex-direction:column;gap:14px}',
+    '.embossed-input{width:100%;padding:13px 18px;border:none;border-radius:18px;background:var(--clay-surface);box-shadow:var(--clay-inset);color:#052e16;font-size:14.5px;font-weight:700;outline:none}',
+    '.embossed-input::placeholder{color:#475569;font-weight:600}',
+    '.embossed-btn{width:100%;padding:13px;border:none;border-radius:18px;background:linear-gradient(145deg,#16a34a,#065f46);color:#ffffff;font-weight:900;font-size:15px;letter-spacing:.5px;cursor:pointer;box-shadow:0 10px 22px rgba(6,95,70,.42)}',
+    '.embossed-msg{min-height:20px;font-size:12.5px;font-weight:800;color:#b91c1c;text-align:center;margin-top:8px}',
+    '.success-badge{display:none;flex-direction:column;align-items:center;text-align:center;gap:8px}',
+    '.check-ring{width:62px;height:62px;border-radius:50%;background:linear-gradient(145deg,#22c55e,#15803d);color:#fff;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center}',
 
-    /* Glassy Dashboard Shell */
+    /* Glassy Dashboard */
     '#appWrap{display:none;min-height:100vh}',
-    '.sidebar{width:242px;background:linear-gradient(180deg,rgba(6,78,59,.94) 0%,rgba(20,83,45,.94) 60%,rgba(6,95,70,.95) 100%);backdrop-filter:blur(12px);color:#fff;flex-shrink:0;padding:12px 10px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(167,243,208,.28)}',
-    '.sbrand{padding:12px 10px 14px;border-bottom:1px solid rgba(255,255,255,.22);margin-bottom:6px}',
-    '.sbrand h2{font-size:15px;font-weight:800;letter-spacing:.4px;color:#bbf7d0}',
-    '.sbrand p{font-size:10.5px;color:#dcfce7;opacity:.9;margin-top:3px}',
-    '.mbtn{width:100%;background:transparent;border:none;color:rgba(240,253,244,.92);text-align:left;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:background .2s ease}',
-    '.mbtn:hover{background:rgba(255,255,255,.15)}',
-    '.mbtn.active{background:rgba(34,197,94,.32);color:#fff;font-weight:700;border:1px solid rgba(187,247,208,.35)}',
-    '.pill{background:#ef4444;color:#fff;font-size:10px;padding:1px 7px;border-radius:999px;font-weight:700}',
+    '.sidebar{width:248px;background:linear-gradient(180deg,rgba(5,46,22,.96) 0%,rgba(20,83,45,.96) 60%,rgba(6,95,70,.96) 100%);color:#fff;flex-shrink:0;padding:12px 10px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(187,247,208,.35)}',
+    '.sbrand{padding:12px 10px 14px;border-bottom:1px solid rgba(255,255,255,.24);margin-bottom:6px}',
+    '.sbrand h2{font-size:15.5px;font-weight:900;color:#bbf7d0}',
+    '.sbrand p{font-size:11px;font-weight:600;color:#dcfce7;margin-top:3px}',
+    '.mbtn{width:100%;background:transparent;border:none;color:#f0fdf4;text-align:left;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center}',
+    '.mbtn:hover{background:rgba(255,255,255,.16)}',
+    '.mbtn.active{background:rgba(34,197,94,.36);color:#fff;font-weight:800;border:1px solid rgba(187,247,208,.45)}',
+    '.pill{background:#ef4444;color:#fff;font-size:10.5px;padding:1px 7px;border-radius:999px;font-weight:800}',
 
     '.content{flex:1;display:flex;flex-direction:column;min-width:0}',
-    '.topbar{background:var(--glass);backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}',
+    '.topbar{background:var(--glass);backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700}',
     '.work{padding:14px;display:flex;flex-direction:column;gap:14px}',
 
     '.cards4{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:12px}',
-    '.kcard{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.14)}',
-    '.kcard.g{background:linear-gradient(135deg,rgba(220,252,231,.9),rgba(255,255,255,.82))}',
-    '.kcard.a{background:linear-gradient(135deg,rgba(254,243,199,.9),rgba(255,255,255,.82))}',
-    '.kcard.r{background:linear-gradient(135deg,rgba(255,228,230,.9),rgba(255,255,255,.82))}',
-    '.kcard.b{background:linear-gradient(135deg,rgba(209,250,229,.92),rgba(255,255,255,.82))}',
-    '.kcard small{font-size:10.5px;font-weight:700;color:#334155;text-transform:uppercase}',
-    '.kcard strong{display:block;font-size:19px;font-weight:800;color:#0f172a;margin-top:4px}',
+    '.kcard{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.18)}',
+    '.kcard.g{background:linear-gradient(135deg,rgba(220,252,231,.94),rgba(255,255,255,.88))}',
+    '.kcard.a{background:linear-gradient(135deg,rgba(254,243,199,.94),rgba(255,255,255,.88))}',
+    '.kcard.r{background:linear-gradient(135deg,rgba(255,228,230,.94),rgba(255,255,255,.88))}',
+    '.kcard.b{background:linear-gradient(135deg,rgba(209,250,229,.95),rgba(255,255,255,.88))}',
+    '.kcard small{font-size:11px;font-weight:800;color:#1e293b;text-transform:uppercase}',
+    '.kcard strong{display:block;font-size:20px;font-weight:900;color:#052e16;margin-top:4px}',
 
-    '.box{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.14)}',
-    '.box-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid rgba(15,23,42,.12)}',
-    '.box-hd h3{font-size:13.5px;font-weight:700;color:#0f172a}',
+    '.box{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.18)}',
+    '.box-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid rgba(15,23,42,.15)}',
+    '.box-hd h3{font-size:14px;font-weight:800;color:#052e16}',
 
     '.g4{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:9px}',
     '.g3{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:9px}',
@@ -840,32 +967,32 @@ const htmlPage = [
     '@media(max-width:600px){#appWrap{flex-direction:column}.sidebar{width:100%}.cards4,.g4,.g3,.g2{grid-template-columns:1fr}}',
 
     '.fld{display:flex;flex-direction:column;gap:3px}',
-    '.fld label{font-size:10.5px;font-weight:700;color:#1e293b}',
-    '.fld input,.fld select,.fld textarea{width:100%;padding:6.5px 9px;border:1px solid #cbd5e1;border-radius:10px;font-size:12px;background:#fff;outline:none}',
+    '.fld label{font-size:11px;font-weight:800;color:#0f172a}',
+    '.fld input,.fld select,.fld textarea{width:100%;padding:7px 9px;border:1px solid #94a3b8;border-radius:10px;font-size:12.5px;font-weight:600;color:#0f172a;background:#ffffff;outline:none}',
     '.fld textarea{min-height:66px}',
 
-    '.btn{padding:6.5px 12px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-size:11.5px;font-weight:700}',
+    '.btn{padding:7px 12px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-size:12px;font-weight:800}',
     '.bp{background:linear-gradient(135deg,#059669,#047857);color:#fff}',
     '.bs{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}',
     '.bw{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}',
     '.bd{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff}',
-    '.bo{background:#fff;color:#0f172a;border-color:#cbd5e1}',
-    '.bsm{padding:4.5px 8px;font-size:11px}',
+    '.bo{background:#fff;color:#0f172a;border-color:#94a3b8}',
+    '.bsm{padding:5px 9px;font-size:11.5px}',
 
-    '.tbl-wrap{overflow-x:auto;border:1px solid #cbd5e1;border-radius:12px;background:#ffffffeb}',
-    'table{width:100%;border-collapse:collapse;font-size:11.8px}',
-    'th{background:#dcfce7;color:#064e3b;padding:7px 8px;text-align:left;border-bottom:1px solid #bbf7d0;white-space:nowrap}',
+    '.tbl-wrap{overflow-x:auto;border:1px solid #cbd5e1;border-radius:12px;background:#ffffff}',
+    'table{width:100%;border-collapse:collapse;font-size:12px;font-weight:600;color:#0f172a}',
+    'th{background:#dcfce7;color:#052e16;font-weight:800;padding:7px 8px;text-align:left;border-bottom:1px solid #86efac;white-space:nowrap}',
     'td{padding:6px 8px;border-bottom:1px solid #e2e8f0}',
-    'td input{width:100%;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;background:#fff}',
+    'td input{width:100%;padding:4px 6px;border:1px solid #94a3b8;border-radius:6px;font-size:12px;font-weight:600;background:#fff}',
 
-    '.toast{position:fixed;right:16px;bottom:16px;background:#064e3b;color:#fff;padding:10px 15px;border-radius:12px;font-size:12px;display:none;z-index:9999}',
+    '.toast{position:fixed;right:16px;bottom:16px;background:#052e16;color:#fff;font-weight:700;padding:10px 16px;border-radius:12px;font-size:12.5px;display:none;z-index:9999}',
     '.print-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.82);z-index:5000;overflow-y:auto;padding:16px}',
     '.print-bar{max-width:210mm;margin:0 auto 8px;display:flex;justify-content:flex-end;gap:8px}',
     '.a4{width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#000;padding:12mm 14mm;display:flex;flex-direction:column;justify-content:space-between}',
     '@media print{body *{visibility:hidden}.print-bg,.print-bg *{visibility:visible}.print-bg{position:static;background:none;padding:0}.print-bar{display:none!important}.a4{width:100%;min-height:auto;padding:0}}',
     '</style></head><body class="money-plant-bg">',
 
-    /* EMBOSSED LOGIN (NO PREFILLED USER) */
+    /* BOLD EMBOSSED LOGIN */
     '<div id="loginWrap">',
     '<div class="embossed-circle">',
     '<div id="formContent" style="width:100%;display:flex;flex-direction:column;align-items:center;">',
@@ -880,8 +1007,8 @@ const htmlPage = [
     '</div>',
     '<div class="success-badge" id="successMsg">',
     '<div class="check-ring">✓</div>',
-    '<h3 style="font-size:17px;color:#0f172a;">Welcome Back!</h3>',
-    '<p style="font-size:12px;color:#334155;">Opening AR HIMS SOFTWARE...</p>',
+    '<h3 style="font-size:20px;font-weight:900;color:#052e16;">Welcome Back!</h3>',
+    '<p style="font-size:13px;font-weight:700;color:#1e293b;">Opening AR HIMS SOFTWARE...</p>',
     '</div>',
     '</div></div>',
 
@@ -893,13 +1020,16 @@ const htmlPage = [
     '<button class="mbtn" data-v="bill" onclick="showV(\'bill\')"><span>Billing, Edit &amp; Refund</span></button>',
     '<button class="mbtn" data-v="lab" onclick="showV(\'lab\')"><span>Laboratory</span></button>',
     '<button class="mbtn" data-v="rad" onclick="showV(\'rad\')"><span>Radiology</span></button>',
+    '<button class="mbtn" data-v="bme" onclick="showV(\'bme\')"><span>BME Portable</span></button>',
+    '<button class="mbtn" data-v="fin" onclick="showV(\'fin\')"><span>Financials</span></button>',
     '<button class="mbtn" data-v="audit" onclick="showV(\'audit\')"><span>Pharmacy Audit</span></button>',
-    '<button class="mbtn" data-v="usr" onclick="showV(\'usr\')"><span>Users &amp; Access</span></button></aside>',
+    '<button class="mbtn" data-v="usr" onclick="showV(\'usr\')"><span>User Management</span></button></aside>',
 
     '<div class="content"><header class="topbar"><div><strong id="who">User</strong> • <span id="clock"></span></div>',
     '<div style="display:flex;gap:7px;"><button class="btn bo bsm" onclick="syncAll()">Refresh</button><button class="btn bd bsm" onclick="logoutNow()">Logout</button></div></header>',
 
     '<div class="work">',
+    /* DASHBOARD & SALES */
     '<section id="v-dash" class="view"><div class="cards4">',
     '<div class="kcard b"><small>Total Sales</small><strong id="kSales">₹ 0.00</strong></div>',
     '<div class="kcard g"><small>Total Paid</small><strong id="kPaid">₹ 0.00</strong></div>',
@@ -910,6 +1040,7 @@ const htmlPage = [
     '<label>To:</label><input type="date" id="fTo" onchange="renderSales()" /><button class="btn bo bsm" onclick="clearDates()">All Dates</button></div></div>',
     '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Bill No</th><th>UHID</th><th>Patient</th><th>Mode</th><th>Gross</th><th>Refund</th><th>Net</th><th>Paid</th><th>Due</th></tr></thead><tbody id="salesTb"></tbody></table></div></div></section>',
 
+    /* PATIENTS & RX */
     '<section id="v-pat" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Patient Registration</h3></div>',
     '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Patient Name *</label><input id="pName" /></div>',
     '<div class="fld"><label>Mobile (10-digit) *</label><input id="pMob" maxlength="10" /></div>',
@@ -922,6 +1053,7 @@ const htmlPage = [
     '<div class="fld"><label>Diagnosis</label><input id="rxDiag" /></div></div>',
     '<div class="fld"><label>Rx Notes / Medicines</label><textarea id="rxTxt"></textarea></div></div></section>',
 
+    /* IPD */
     '<section id="v-ipd" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Admit Patient</h3></div>',
     '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="iUhid" /></div>',
     '<div class="fld"><label>Patient Name *</label><input id="iName" /></div>',
@@ -942,6 +1074,7 @@ const htmlPage = [
     '<div class="box"><div class="box-hd"><h3>Discharged Patients</h3></div>',
     '<div class="tbl-wrap"><table><thead><tr><th>IPD No</th><th>UHID</th><th>Patient</th><th>Ward</th><th>Discharge Date</th><th>Final Bill</th></tr></thead><tbody id="disTb"></tbody></table></div></div></section>',
 
+    /* BILLING */
     '<section id="v-bill" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>New Bill</h3></div>',
     '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="bUhid" /></div>',
     '<div class="fld"><label>Patient Name *</label><input id="bName" /></div>',
@@ -961,8 +1094,9 @@ const htmlPage = [
     '<div class="fld"><label>Edit / Refund Reason</label><input id="beReason" placeholder="Test cancelled / rate correction" /></div></div>',
     '<div class="tbl-wrap" style="margin-bottom:8px;"><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Cancel Item?</th></tr></thead><tbody id="beItemsTb"></tbody></table></div>',
     '<button class="btn bs bsm" onclick="commitBillEdit()">Save Bill Changes</button>',
-    '<div style="margin-top:10px;"><strong style="font-size:11.5px;">Bill Edit History:</strong><div id="beHist" style="margin-top:4px;font-size:11px;color:#334155;"></div></div></div></section>',
+    '<div style="margin-top:10px;"><strong style="font-size:12px;">Bill Edit History:</strong><div id="beHist" style="margin-top:4px;font-size:11.5px;color:#1e293b;"></div></div></div></section>',
 
+    /* LAB */
     '<section id="v-lab" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Laboratory — Parameters, Timestamps &amp; Doctor Verification</h3>',
     '<div style="display:flex;gap:6px;"><button class="btn bs bsm" onclick="saveLab(false)">Save Report</button><button class="btn bw bsm" onclick="saveLab(true)">Verify &amp; Save</button><button class="btn bp bsm" onclick="printLabCurrent()">Print Lab Report</button></div></div>',
     '<input type="hidden" id="lId" />',
@@ -978,6 +1112,7 @@ const htmlPage = [
     '<div class="box"><div class="box-hd"><h3>Saved Laboratory Reports</h3></div>',
     '<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>UHID</th><th>Patient</th><th>Test</th><th>Collected</th><th>Done</th><th>Verified</th><th>Actions</th></tr></thead><tbody id="lSavedTb"></tbody></table></div></div></section>',
 
+    /* RADIOLOGY */
     '<section id="v-rad" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Radiology — Findings, Impression, Timestamps &amp; Doctor Verification</h3>',
     '<div style="display:flex;gap:6px;"><button class="btn bs bsm" onclick="saveRad(false)">Save Report</button><button class="btn bw bsm" onclick="saveRad(true)">Verify &amp; Save</button><button class="btn bp bsm" onclick="printRadCurrent()">Print Radiology Report</button></div></div>',
     '<input type="hidden" id="rId" />',
@@ -992,6 +1127,44 @@ const htmlPage = [
     '<div class="box"><div class="box-hd"><h3>Saved Radiology Reports</h3></div>',
     '<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>UHID</th><th>Patient</th><th>Modality / Study</th><th>Done</th><th>Verified</th><th>Actions</th></tr></thead><tbody id="rSavedTb"></tbody></table></div></div></section>',
 
+    /* BME PORTABLE */
+    '<section id="v-bme" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>BME Portable — Handheld &amp; Bedside Equipment Tracker</h3>',
+    '<div style="display:flex;gap:6px;"><button class="btn bo bsm" onclick="clearBmeForm()">New Equipment</button><button class="btn bp bsm" onclick="exportBmeJson()">Export Portable JSON</button></div></div>',
+    '<div class="g4" style="margin-bottom:8px;">',
+    '<div class="fld"><label>BME ID (Blank = New)</label><input id="mId" placeholder="BME-P-01" /></div>',
+    '<div class="fld"><label>Equipment Name *</label><input id="mName" placeholder="Portable USG / ECG / Monitor" /></div>',
+    '<div class="fld"><label>Serial / Asset Code</label><input id="mSer" placeholder="PORT-101" /></div>',
+    '<div class="fld"><label>Portable Type</label><select id="mMode"><option>Portable / Handheld</option><option>Mobile Cart</option><option>Bedside / Ward</option></select></div>',
+    '<div class="fld"><label>Current Location / Ward</label><input id="mLoc" placeholder="Emergency / ICU / OT" /></div>',
+    '<div class="fld"><label>Status</label><select id="mStat"><option>Operational</option><option>In Calibration</option><option>Breakdown</option></select></div>',
+    '<div class="fld"><label>Calibration Due Date</label><input type="date" id="mCal" /></div>',
+    '<div class="fld"><label>Battery / Portability OK</label><select id="mBat"><option>Yes</option><option>Charging Needed</option><option>Replace Battery</option></select></div></div>',
+    '<div class="fld" style="margin-bottom:8px;"><label>Portable Check / Maintenance Notes</label><input id="mNote" placeholder="Probe ok, charger packed, ready for bedside" /></div>',
+    '<button class="btn bs" onclick="saveBme()">Save BME Portable Record</button></div>',
+    '<div class="box"><div class="box-hd"><h3>Portable BME Equipment Register</h3></div>',
+    '<div class="tbl-wrap"><table><thead><tr><th>BME ID</th><th>Equipment</th><th>Serial</th><th>Type</th><th>Location</th><th>Status</th><th>Cal Due</th><th>Battery</th><th>Action</th></tr></thead><tbody id="mTb"></tbody></table></div></div></section>',
+
+    /* FINANCIALS */
+    '<section id="v-fin" class="view" style="display:none;"><div class="cards4">',
+    '<div class="kcard g"><small>Total Income</small><strong id="fInc">₹ 0.00</strong></div>',
+    '<div class="kcard r"><small>Total Expense</small><strong id="fExp">₹ 0.00</strong></div>',
+    '<div class="kcard b"><small>Net Balance</small><strong id="fNet">₹ 0.00</strong></div>',
+    '<div class="kcard a"><small>Total Entries</small><strong id="fCnt">0</strong></div></div>',
+    '<div class="box"><div class="box-hd"><h3>Financials — Record Income / Expense</h3></div>',
+    '<div class="g4" style="margin-bottom:8px;">',
+    '<div class="fld"><label>Type</label><select id="fnType"><option>Income</option><option>Expense</option></select></div>',
+    '<div class="fld"><label>Category</label><select id="fnCat"><option>OPD / IPD Collection</option><option>Pharmacy &amp; Lab</option><option>BME &amp; Maintenance</option><option>Staff &amp; Utility</option><option>Other</option></select></div>',
+    '<div class="fld"><label>Account Head *</label><input id="fnHead" placeholder="Electricity / Equipment / Receipt" /></div>',
+    '<div class="fld"><label>Amount (₹) *</label><input type="number" id="fnAmt" min="0" /></div>',
+    '<div class="fld"><label>Mode</label><select id="fnMode"><option>Cash</option><option>UPI / QR</option><option>Card</option><option>Bank / Credit</option></select></div>',
+    '<div class="fld"><label>Date</label><input type="date" id="fnDate" /></div>',
+    '<div class="fld" style="grid-column:span 2;"><label>Remarks</label><input id="fnRem" /></div></div>',
+    '<button class="btn bs" onclick="saveFin()">Save Financial Entry</button></div>',
+    '<div class="box"><div class="box-hd"><h3>Financial Ledger</h3>',
+    '<div style="display:flex;gap:6px;align-items:center;"><select id="fnFilter" onchange="renderFin()"><option value="ALL">All Types</option><option value="Income">Income Only</option><option value="Expense">Expense Only</option></select></div></div>',
+    '<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Category</th><th>Account Head</th><th>Mode</th><th>Amount</th><th>By</th></tr></thead><tbody id="fnTb"></tbody></table></div></div></section>',
+
+    /* PHARMACY AUDIT */
     '<section id="v-audit" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Pharmacy Audit — Full Edit &amp; Stock Sync</h3></div>',
     '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Audit ID (Blank = New)</label><input id="aId" /></div>',
     '<div class="fld"><label>Medicine Name *</label><input id="aMed" /></div>',
@@ -1005,14 +1178,15 @@ const htmlPage = [
     '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><label><input type="checkbox" id="aSync" checked /> Sync Pharmacy Stock with Physical Qty</label><button class="btn bs" onclick="saveAudit()">Save Audit</button></div>',
     '<div class="tbl-wrap" style="margin-top:10px;"><table><thead><tr><th>Audit ID</th><th>Date</th><th>Medicine</th><th>Batch</th><th>Sys</th><th>Phys</th><th>Diff</th><th>Val Diff</th><th>By</th><th>Edit</th></tr></thead><tbody id="aTb"></tbody></table></div></div></section>',
 
-    '<section id="v-usr" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Users &amp; Edit Permission</h3></div>',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Full Name</label><input id="uName" /></div>',
-    '<div class="fld"><label>Username</label><input id="uUser" /></div>',
-    '<div class="fld"><label>Password</label><input id="uPass" /></div>',
-    '<div class="fld"><label>Role</label><select id="uRole"><option>Staff</option><option>Admin</option></select></div></div>',
-    '<label style="display:inline-block;margin-bottom:8px;"><input type="checkbox" id="uEdit" /> Grant Edit Permission</label><br/>',
+    /* USER MANAGEMENT */
+    '<section id="v-usr" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>User Management — Create, Edit Role/Password &amp; Access</h3></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Full Name *</label><input id="uName" /></div>',
+    '<div class="fld"><label>Username *</label><input id="uUser" /></div>',
+    '<div class="fld"><label>Password *</label><input id="uPass" /></div>',
+    '<div class="fld"><label>Role</label><select id="uRole"><option>Staff</option><option>Admin</option><option>Super Admin</option></select></div></div>',
+    '<label style="display:inline-block;margin-bottom:8px;font-weight:700;"><input type="checkbox" id="uEdit" /> Grant Edit Permission</label><br/>',
     '<button class="btn bs bsm" onclick="createUser()">Create User</button>',
-    '<div class="tbl-wrap" style="margin-top:9px;"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Permissions</th><th>Edit Access</th></tr></thead><tbody id="uTb"></tbody></table></div></div></section>',
+    '<div class="tbl-wrap" style="margin-top:10px;"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Permissions</th><th>Manage</th></tr></thead><tbody id="uTb"></tbody></table></div></div></section>',
 
     '</div></div></div>',
 
@@ -1021,6 +1195,12 @@ const htmlPage = [
 
     '<script>',
     'var STORE = null, ME = null, draftItems = [], labParams = [];',
+    'var DEFAULT_USERS = [',
+    '  {id:"USR-1",name:"Aarif Rabbani",username:"Aarif",password:"786",role:"Super Admin",permissions:["all","edit"],status:"Active"},',
+    '  {id:"USR-2",name:"Admin User",username:"admin",password:"123",role:"Admin",permissions:["all","edit"],status:"Active"},',
+    '  {id:"USR-3",name:"Staff User",username:"staff",password:"123",role:"Staff",permissions:["dashboard","patients","ipd","billing","lab","radiology","pharmacy","bme","financials"],status:"Active"}',
+    '];',
+
     'function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(window._tt);window._tt=setTimeout(function(){t.style.display="none";},2800);}',
     'function r2(n){return Math.round((Number(n)||0)*100)/100;}',
     'function esc(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",\'"\':"&quot;","\'":"&#39;"}[c];});}',
@@ -1031,8 +1211,9 @@ const htmlPage = [
     '  e.preventDefault();',
     '  var errEl=document.getElementById("loginErr");',
     '  errEl.textContent="";',
-    '  var uVal=document.getElementById("lUser").value;',
-    '  var pVal=document.getElementById("lPass").value;',
+    '  var uVal=String(document.getElementById("lUser").value||"").trim();',
+    '  var pVal=String(document.getElementById("lPass").value||"");',
+    '  if(!uVal||!pVal){errEl.textContent="Please enter Username and Password.";return;}',
     '  fetch("/api/login",{',
     '    method:"POST",',
     '    headers:{"Content-Type":"application/json"},',
@@ -1040,13 +1221,27 @@ const htmlPage = [
     '  })',
     '  .then(function(res){return res.json();})',
     '  .then(function(out){',
-    '    if(!out||!out.success){errEl.textContent=(out&&out.message)||"Invalid credentials";return;}',
-    '    sessionStorage.setItem("arhims_session",JSON.stringify(out.user));',
-    '    document.getElementById("formContent").style.display="none";',
-    '    document.getElementById("successMsg").style.display="flex";',
-    '    setTimeout(function(){startSession(out.user);},450);',
+    '    if(out&&out.success&&out.user){completeLoginSuccess(out.user);return;}',
+    '    var poolUsers=(STORE&&Array.isArray(STORE.users)&&STORE.users.length)?STORE.users:DEFAULT_USERS;',
+    '    var found=poolUsers.find(function(x){return String(x.username||"").trim().toLowerCase()===uVal.toLowerCase()&&String(x.password||"")===pVal;});',
+    '    if(found){',
+    '      if(String(found.status||"Active").toLowerCase()==="deactivated"){errEl.textContent="Account is deactivated.";return;}',
+    '      completeLoginSuccess(found);',
+    '      return;',
+    '    }',
+    '    errEl.textContent=(out&&out.message)||"Invalid Username or Password.";',
     '  })',
-    '  .catch(function(err){errEl.textContent="Login error: "+err.message;});',
+    '  .catch(function(){',
+    '    var found=DEFAULT_USERS.find(function(x){return x.username.toLowerCase()===uVal.toLowerCase()&&x.password===pVal;});',
+    '    if(found){completeLoginSuccess(found);}else{errEl.textContent="Unable to verify login right now.";}',
+    '  });',
+    '}',
+
+    'function completeLoginSuccess(userObj){',
+    '  sessionStorage.setItem("arhims_session",JSON.stringify(userObj));',
+    '  document.getElementById("formContent").style.display="none";',
+    '  document.getElementById("successMsg").style.display="flex";',
+    '  setTimeout(function(){startSession(userObj);},350);',
     '}',
 
     'function logoutNow(){',
@@ -1066,8 +1261,8 @@ const htmlPage = [
     '  document.getElementById("loginWrap").style.display="none";',
     '  document.getElementById("appWrap").style.display="flex";',
     '  document.getElementById("who").textContent=u.name+" ("+u.role+")"+(hasEditPerm()?" • Edit Access":"");',
-    '  var bDateEl=document.getElementById("bDate");',
-    '  if(bDateEl)bDateEl.value=todayIST();',
+    '  var bDateEl=document.getElementById("bDate");if(bDateEl&&!bDateEl.value)bDateEl.value=todayIST();',
+    '  var fnDateEl=document.getElementById("fnDate");if(fnDateEl&&!fnDateEl.value)fnDateEl.value=todayIST();',
     '  syncAll();',
     '}',
 
@@ -1083,74 +1278,74 @@ const htmlPage = [
     '    var disCount=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";}).length;',
     '    document.getElementById("admPill").textContent=admCount;',
     '    document.getElementById("kIpd").textContent=admCount+" / "+disCount;',
-    '    renderSales();renderIpd();renderBills();renderLab();renderRad();renderAudit();renderUsers();',
-    '  });',
+    '    renderSales();renderIpd();renderBills();renderLab();renderRad();renderBme();renderFin();renderAudit();renderUsers();',
+    '  })',
+    '  .catch(function(){});',
     '}',
 
     'function showV(v){document.querySelectorAll(".view").forEach(function(el){el.style.display="none";});document.getElementById("v-"+v).style.display="block";document.querySelectorAll(".mbtn").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});}',
 
+    /* SALES */
     'function clearDates(){document.getElementById("fFrom").value="";document.getElementById("fTo").value="";renderSales();}',
-    'function renderSales(){var fromD=document.getElementById("fFrom").value;var toD=document.getElementById("fTo").value;var rows=(STORE.bills||[]).filter(function(b){if(fromD&&b.date<fromD)return false;if(toD&&b.date>toD)return false;return true;});var salesSum=r2(rows.reduce(function(s,b){return s+Number(b.netFee||0);},0));var paidSum=r2(rows.reduce(function(s,b){return s+Number(b.paidAmount||0);},0));var refSum=r2(rows.reduce(function(s,b){return s+Number(b.refundAmount||0);},0));document.getElementById("kSales").textContent="₹ "+salesSum.toFixed(2);document.getElementById("kPaid").textContent="₹ "+paidSum.toFixed(2);document.getElementById("kRef").textContent="₹ "+refSum.toFixed(2);document.getElementById("salesTb").innerHTML=rows.map(function(b){return "<tr><td>"+esc(b.date)+"</td><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.uhid)+"</td><td>"+esc(b.patientName)+"</td><td>"+esc(b.payType)+"</td><td>₹"+r2(b.totalGross).toFixed(2)+"</td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>₹"+r2(b.dueAmount).toFixed(2)+"</td></tr>";}).join("")||"<tr><td colspan=\'10\'>No sales records for selected date.</td></tr>";}',
+    'function renderSales(){if(!STORE)return;var fromD=document.getElementById("fFrom").value;var toD=document.getElementById("fTo").value;var rows=(STORE.bills||[]).filter(function(b){if(fromD&&b.date<fromD)return false;if(toD&&b.date>toD)return false;return true;});var salesSum=r2(rows.reduce(function(s,b){return s+Number(b.netFee||0);},0));var paidSum=r2(rows.reduce(function(s,b){return s+Number(b.paidAmount||0);},0));var refSum=r2(rows.reduce(function(s,b){return s+Number(b.refundAmount||0);},0));document.getElementById("kSales").textContent="₹ "+salesSum.toFixed(2);document.getElementById("kPaid").textContent="₹ "+paidSum.toFixed(2);document.getElementById("kRef").textContent="₹ "+refSum.toFixed(2);document.getElementById("salesTb").innerHTML=rows.map(function(b){return "<tr><td>"+esc(b.date)+"</td><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.uhid)+"</td><td>"+esc(b.patientName)+"</td><td>"+esc(b.payType)+"</td><td>₹"+r2(b.totalGross).toFixed(2)+"</td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>₹"+r2(b.dueAmount).toFixed(2)+"</td></tr>";}).join("")||"<tr><td colspan=\'10\'>No sales records for selected date.</td></tr>";}',
 
+    /* PATIENTS & RX */
     'function savePatient(){fetch("/api/patients/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("pName").value,contact:document.getElementById("pMob").value,age:document.getElementById("pAge").value,gender:document.getElementById("pGen").value,doctor:document.getElementById("pDoc").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Patient Registered: "+out.patient.uhid);syncAll();});}',
-
     'function printRx(){var uhid=document.getElementById("rxUhid").value;var pat=document.getElementById("rxName").value;var diag=document.getElementById("rxDiag").value;var rx=document.getElementById("rxTxt").value;var doc=document.getElementById("pDoc").value;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><div style=\'border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;display:flex;justify-content:space-between;\'><div><h2>AR HIMS SOFTWARE</h2><div>PRESCRIPTION</div></div><div><b>Date:</b> "+esc(todayIST())+"</div></div><p><b>UHID:</b> "+esc(uhid)+" &nbsp; | &nbsp; <b>Patient:</b> "+esc(pat)+" &nbsp; | &nbsp; <b>Doctor:</b> "+esc(doc)+"</p><p style=\'margin-top:8px;\'><b>Diagnosis:</b> "+esc(diag)+"</p><hr style=\'margin:8px 0;\'/><pre style=\'white-space:pre-wrap;font-size:13px;line-height:1.6;\'>"+esc(rx)+"</pre></div><div style=\'border-top:1px solid #000;padding-top:8px;text-align:right;\'><b>"+esc(doc)+"</b></div></div>";document.getElementById("printBg").style.display="block";}',
 
+    /* IPD */
     'function admitNow(){fetch("/api/ipd/admit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("iUhid").value,patientName:document.getElementById("iName").value,ward:document.getElementById("iWard").value,doctor:document.getElementById("iDoc").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Admitted "+out.admission.ipdNo);syncAll();});}',
-
     'function renderIpd(){var admitted=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Admitted";});var discharged=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";});document.getElementById("admTb").innerHTML=admitted.map(function(a){var tot=r2((a.services||[]).reduce(function(s,x){return s+Number(x.amount||0);},0));return "<tr><td><b>"+esc(a.ipdNo)+"</b></td><td>"+esc(a.uhid)+"</td><td>"+esc(a.patientName)+"</td><td>"+esc(a.ward)+"</td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bp bsm\' onclick=\'openIpdPanel(\""+esc(a.ipdNo)+"\")\'>Services / Bill / Discharge</button></td></tr>";}).join("")||"<tr><td colspan=\'6\'>No currently admitted patients.</td></tr>";document.getElementById("disTb").innerHTML=discharged.map(function(d){return "<tr><td><b>"+esc(d.ipdNo)+"</b></td><td>"+esc(d.uhid)+"</td><td>"+esc(d.patientName)+"</td><td>"+esc(d.ward)+"</td><td>"+esc(d.dischargeDate||"-")+"</td><td>"+esc(d.finalBillNo||"-")+"</td></tr>";}).join("")||"<tr><td colspan=\'6\'>No discharged patients yet.</td></tr>";}',
-
     'function openIpdPanel(ipdNo){var a=(STORE.ipdAdmissions||[]).find(function(x){return x.ipdNo===ipdNo;});if(!a)return;document.getElementById("wIpd").value=a.ipdNo;document.getElementById("ipdPanelTitle").textContent=a.ipdNo+" — "+a.patientName+" ("+a.ward+")";document.getElementById("ipdPanel").style.display="block";document.getElementById("sTb").innerHTML=(a.services||[]).map(function(s){return "<tr><td>"+esc(s.name)+"</td><td>"+s.qty+"</td><td>₹"+r2(s.rate).toFixed(2)+"</td><td><b>₹"+r2(s.amount).toFixed(2)+"</b></td></tr>";}).join("");}',
-
     'function addIpdService(){fetch("/api/ipd/add-service",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:document.getElementById("wIpd").value,name:document.getElementById("sName").value,qty:document.getElementById("sQty").value,rate:document.getElementById("sRate").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Service Added");syncAll();setTimeout(function(){openIpdPanel(out.admission.ipdNo);},200);});}',
-
     'function ipdBill(mode){var ipdNo=document.getElementById("wIpd").value;fetch("/api/ipd/bill-or-discharge",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:ipdNo,mode:mode,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);if(mode==="PROVISIONAL"){document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — PROVISIONAL BILL</h2><p><b>IPD:</b> "+esc(ipdNo)+" | <b>Patient:</b> "+esc(out.bill.patientName)+"</p><hr style=\'margin:8px 0;\'/>"+(out.bill.items||[]).map(function(i){return "<p>"+esc(i.name)+" × "+i.qty+" = ₹"+r2(i.lineTotal).toFixed(2)+"</p>";}).join("")+"<h3 style=\'margin-top:12px;\'>Provisional Total: ₹ "+r2(out.bill.netFee).toFixed(2)+"</h3></div></div>";document.getElementById("printBg").style.display="block";}else{toast(mode+" complete. Patient moved to Discharged.");document.getElementById("ipdPanel").style.display="none";syncAll();}});}',
 
+    /* BILLING */
     'function addBillRow(module){draftItems.push({module:module,name:module==="LAB"?"CBC":(module==="RADIOLOGY"?"Chest X-Ray":"Consultation"),qty:1,rate:300,discPct:0,gstPct:0});drawDraft();}',
     'function drawDraft(){var net=0;document.getElementById("bDraftTb").innerHTML=draftItems.map(function(it,i){var g=r2(Number(it.qty||1)*Number(it.rate||0));var d=r2(g*Number(it.discPct||0)/100);var tx=r2(Math.max(0,g-d));var tot=r2(tx+(tx*Number(it.gstPct||0)/100));net=r2(net+tot);return "<tr><td>"+esc(it.module)+"</td><td><input value=\'"+esc(it.name)+"\' onchange=\'draftItems["+i+"].name=this.value\'/></td><td><input type=\'number\' min=\'1\' value=\'"+it.qty+"\' onchange=\'draftItems["+i+"].qty=Number(this.value||1);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.rate+"\' onchange=\'draftItems["+i+"].rate=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.discPct+"\' onchange=\'draftItems["+i+"].discPct=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.gstPct+"\' onchange=\'draftItems["+i+"].gstPct=Number(this.value||0);drawDraft()\'/></td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bd bsm\' onclick=\'draftItems.splice("+i+",1);drawDraft()\'>X</button></td></tr>";}).join("");document.getElementById("bDraftNet").textContent="Net: ₹ "+net.toFixed(2);}',
-
     'function saveNewBill(){fetch("/api/bills/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("bUhid").value,patientName:document.getElementById("bName").value,payType:document.getElementById("bPay").value,date:document.getElementById("bDate").value,items:draftItems,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);draftItems=[];drawDraft();toast("Saved "+out.bill.billNo);syncAll();});}',
-
     'function renderBills(){drawDraft();var canE=hasEditPerm();document.getElementById("bListTb").innerHTML=(STORE.bills||[]).map(function(b){var btns=canE?"<button class=\'btn bw bsm\' onclick=\'openBillEditor(\""+esc(b.billNo)+"\")\'>Edit / Refund</button> <button class=\'btn bd bsm\' onclick=\'delBill(\""+esc(b.billNo)+"\")\'>Delete</button>":"<small>No Edit Access</small>";return "<tr><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.date)+"</td><td>"+esc(b.patientName)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>"+(b.editHistory||[]).length+"</td><td>"+btns+"</td></tr>";}).join("");}',
-
     'function openBillEditor(billNo){var b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;document.getElementById("beNo").value=b.billNo;document.getElementById("beTitle").textContent="Edit / Refund Bill: "+b.billNo;document.getElementById("beAdj").value=b.adjustAmount||0;document.getElementById("beRef").value=b.refundAmount||0;document.getElementById("bePaid").value=b.paidAmount||0;document.getElementById("beReason").value="";document.getElementById("beItemsTb").innerHTML=(b.items||[]).map(function(it,i){return "<tr><td>"+esc(it.name)+"</td><td>"+it.qty+"</td><td>₹"+r2(it.rate).toFixed(2)+"</td><td><input type=\'checkbox\' class=\'beCancel\' data-idx=\'"+i+"\' "+(it.cancelled?"checked":"")+"/> Cancel</td></tr>";}).join("");document.getElementById("beHist").innerHTML=(b.editHistory||[]).map(function(h){return "<div>• ["+esc(h.editedAt)+"] by <b>"+esc(h.editedBy)+"</b>: "+esc(h.reason)+" | Net ₹"+h.prevNetFee+" → ₹"+h.newNetFee+" | Refund ₹"+h.newRefund+"</div>";}).join("")||"<div>No previous edits.</div>";document.getElementById("billEditBox").style.display="block";}',
-
     'function commitBillEdit(){var billNo=document.getElementById("beNo").value;var b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;var items=(b.items||[]).map(function(it,i){var chk=document.querySelector(".beCancel[data-idx=\'"+i+"\']");return Object.assign({},it,{cancelled:chk?chk.checked:Boolean(it.cancelled)});});fetch("/api/bills/edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,items:items,adjustAmount:document.getElementById("beAdj").value,refundAmount:document.getElementById("beRef").value,paidAmount:document.getElementById("bePaid").value,reason:document.getElementById("beReason").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Bill Updated & History Saved");syncAll();setTimeout(function(){openBillEditor(billNo);},200);});}',
-
     'function delBill(billNo){if(!confirm("Delete bill "+billNo+"?"))return;fetch("/api/bills/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Deleted "+billNo);syncAll();});}',
 
+    /* LAB */
     'function addLabParam(){labParams.push({name:"",value:"",unit:"",refRange:""});drawLabParams();}',
     'function drawLabParams(){document.getElementById("lParamTb").innerHTML=labParams.map(function(p,i){return "<tr><td><input value=\'"+esc(p.name)+"\' onchange=\'labParams["+i+"].name=this.value\'/></td><td><input value=\'"+esc(p.value)+"\' onchange=\'labParams["+i+"].value=this.value\'/></td><td><input value=\'"+esc(p.unit)+"\' onchange=\'labParams["+i+"].unit=this.value\'/></td><td><input value=\'"+esc(p.refRange)+"\' onchange=\'labParams["+i+"].refRange=this.value\'/></td><td><button class=\'btn bd bsm\' onclick=\'labParams.splice("+i+",1);drawLabParams()\'>X</button></td></tr>";}).join("");}',
-
     'function saveLab(verify){fetch("/api/lab/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({testId:document.getElementById("lId").value||undefined,uhid:document.getElementById("lUhid").value,patientName:document.getElementById("lPat").value,testName:document.getElementById("lTest").value,doctorName:document.getElementById("lDoc").value,sampleCollectedAt:document.getElementById("lCol").value,reportDoneAt:document.getElementById("lDone").value,remarks:document.getElementById("lRem").value,parameters:labParams,verify:verify,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("lId").value=out.report.testId;toast("Lab Report Saved");syncAll();});}',
-
     'function renderLab(){if(!document.getElementById("lCol").value)document.getElementById("lCol").value=new Date().toISOString().slice(0,16);if(!labParams.length)labParams=[{name:"Hemoglobin",value:"13.5",unit:"g/dL",refRange:"13.0 - 17.0"}];drawLabParams();document.getElementById("lSavedTb").innerHTML=(STORE.laboratory||[]).map(function(r){return "<tr><td><b>"+esc(r.testId)+"</b></td><td>"+esc(r.uhid)+"</td><td>"+esc(r.patientName)+"</td><td>"+esc(r.testName)+"</td><td>"+esc((r.sampleCollectedAt||"").replace("T"," "))+"</td><td>"+esc((r.reportDoneAt||"").replace("T"," "))+"</td><td>"+(r.verified?"✔ "+esc(r.verifiedBy):"Pending")+"</td><td><button class=\'btn bo bsm\' onclick=\'loadLab(\""+esc(r.testId)+"\")\'>Edit</button> <button class=\'btn bp bsm\' onclick=\'printLabById(\""+esc(r.testId)+"\")\'>Print</button></td></tr>";}).join("");}',
-
     'function loadLab(id){var r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;document.getElementById("lId").value=r.testId;document.getElementById("lUhid").value=r.uhid;document.getElementById("lPat").value=r.patientName;document.getElementById("lTest").value=r.testName;document.getElementById("lDoc").value=r.doctorName||"";document.getElementById("lCol").value=r.sampleCollectedAt||"";document.getElementById("lDone").value=r.reportDoneAt||"";document.getElementById("lRem").value=r.remarks||"";labParams=Array.isArray(r.parameters)&&r.parameters.length?r.parameters.slice():[];drawLabParams();}',
-
     'function printLabCurrent(){var id=document.getElementById("lId").value;if(id)return printLabById(id);toast("Save report first or click Print on a saved report.");}',
     'function printLabById(id){var r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;var pRows=(r.parameters||[]).map(function(p){return "<tr><td>"+esc(p.name)+"</td><td><b>"+esc(p.value)+"</b></td><td>"+esc(p.unit)+"</td><td>"+esc(p.refRange)+"</td></tr>";}).join("");document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — LABORATORY REPORT</h2><p><b>ID:</b> "+esc(r.testId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Test:</b> "+esc(r.testName)+" | <b>Collected:</b> "+esc((r.sampleCollectedAt||"").replace("T"," "))+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><table style=\'margin-top:10px;\'><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Ref Range</th></tr></thead><tbody>"+pRows+"</tbody></table><p style=\'margin-top:10px;\'><b>Remarks:</b> "+esc(r.remarks||"-")+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Doctor")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
 
+    /* RADIOLOGY */
     'function saveRad(verify){fetch("/api/radiology/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({radId:document.getElementById("rId").value||undefined,uhid:document.getElementById("rUhid").value,patientName:document.getElementById("rPat").value,modality:document.getElementById("rMod").value,testName:document.getElementById("rTest").value,doctorName:document.getElementById("rDoc").value,sampleCollectedAt:document.getElementById("rCol").value,reportDoneAt:document.getElementById("rDone").value,findings:document.getElementById("rFind").value,impression:document.getElementById("rImp").value,verify:verify,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("rId").value=out.report.radId;toast("Radiology Report Saved");syncAll();});}',
-
     'function renderRad(){if(!document.getElementById("rCol").value)document.getElementById("rCol").value=new Date().toISOString().slice(0,16);document.getElementById("rSavedTb").innerHTML=(STORE.radiology||[]).map(function(r){return "<tr><td><b>"+esc(r.radId)+"</b></td><td>"+esc(r.uhid)+"</td><td>"+esc(r.patientName)+"</td><td>"+esc(r.modality)+" - "+esc(r.testName)+"</td><td>"+esc((r.reportDoneAt||"").replace("T"," "))+"</td><td>"+(r.verified?"✔ "+esc(r.verifiedBy):"Pending")+"</td><td><button class=\'btn bo bsm\' onclick=\'loadRad(\""+esc(r.radId)+"\")\'>Edit</button> <button class=\'btn bp bsm\' onclick=\'printRadById(\""+esc(r.radId)+"\")\'>Print</button></td></tr>";}).join("");}',
-
     'function loadRad(id){var r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("rId").value=r.radId;document.getElementById("rUhid").value=r.uhid;document.getElementById("rPat").value=r.patientName;document.getElementById("rMod").value=r.modality||"X-Ray";document.getElementById("rTest").value=r.testName;document.getElementById("rDoc").value=r.doctorName||"";document.getElementById("rCol").value=r.sampleCollectedAt||"";document.getElementById("rDone").value=r.reportDoneAt||"";document.getElementById("rFind").value=r.findings||"";document.getElementById("rImp").value=r.impression||"";}',
-
     'function printRadCurrent(){var id=document.getElementById("rId").value;if(id)return printRadById(id);toast("Save report first or click Print on a saved report.");}',
     'function printRadById(id){var r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — RADIOLOGY REPORT</h2><p><b>ID:</b> "+esc(r.radId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Study:</b> "+esc(r.modality)+" - "+esc(r.testName)+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><p style=\'margin-top:10px;\'><b>Findings:</b></p><pre style=\'white-space:pre-wrap;border:1px solid #000;padding:8px;min-height:120px;\'>"+esc(r.findings)+"</pre><p style=\'margin-top:10px;\'><b>Impression:</b> "+esc(r.impression)+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Radiologist")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
 
+    /* BME PORTABLE */
+    'function clearBmeForm(){document.getElementById("mId").value="";document.getElementById("mName").value="";document.getElementById("mSer").value="";document.getElementById("mLoc").value="";document.getElementById("mCal").value="";document.getElementById("mNote").value="";}',
+    'function loadBme(id){var m=(STORE.bmePortable||[]).find(function(x){return x.bmeId===id;});if(!m)return;document.getElementById("mId").value=m.bmeId;document.getElementById("mName").value=m.name;document.getElementById("mSer").value=m.serialNo||"";document.getElementById("mMode").value=m.portableMode||"Portable / Handheld";document.getElementById("mLoc").value=m.location||"";document.getElementById("mStat").value=m.status||"Operational";document.getElementById("mCal").value=m.calDueDate||"";document.getElementById("mBat").value=m.batteryOk||"Yes";document.getElementById("mNote").value=m.notes||"";}',
+    'function saveBme(){fetch("/api/bme/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bmeId:document.getElementById("mId").value||undefined,name:document.getElementById("mName").value,serialNo:document.getElementById("mSer").value,portableMode:document.getElementById("mMode").value,location:document.getElementById("mLoc").value,status:document.getElementById("mStat").value,calDueDate:document.getElementById("mCal").value,batteryOk:document.getElementById("mBat").value,notes:document.getElementById("mNote").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("BME Portable Saved: "+out.bme.bmeId);syncAll();});}',
+    'function renderBme(){document.getElementById("mTb").innerHTML=(STORE.bmePortable||[]).map(function(m){return "<tr><td><b>"+esc(m.bmeId)+"</b></td><td>"+esc(m.name)+"</td><td>"+esc(m.serialNo||"-")+"</td><td>"+esc(m.portableMode||"Portable")+"</td><td>"+esc(m.location||"-")+"</td><td><b>"+esc(m.status)+"</b></td><td>"+esc(m.calDueDate||"-")+"</td><td>"+esc(m.batteryOk||"Yes")+"</td><td><button class=\'btn bw bsm\' onclick=\'loadBme(\""+esc(m.bmeId)+"\")\'>Edit</button></td></tr>";}).join("")||"<tr><td colspan=\'9\'>No portable BME equipment added.</td></tr>";}',
+    'function exportBmeJson(){var blob=new Blob([JSON.stringify((STORE&&STORE.bmePortable)||[],null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="arhims-bme-portable.json";a.click();}',
+
+    /* FINANCIALS */
+    'function saveFin(){fetch("/api/financials/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:document.getElementById("fnType").value,category:document.getElementById("fnCat").value,head:document.getElementById("fnHead").value,amount:document.getElementById("fnAmt").value,mode:document.getElementById("fnMode").value,date:document.getElementById("fnDate").value,remarks:document.getElementById("fnRem").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("fnHead").value="";document.getElementById("fnAmt").value="";document.getElementById("fnRem").value="";toast("Financial Entry Saved");syncAll();});}',
+    'function renderFin(){var all=STORE.financialEntries||[];var flt=document.getElementById("fnFilter").value;var rows=all.filter(function(x){return flt==="ALL"||x.type===flt;});var inc=r2(all.filter(function(x){return x.type==="Income";}).reduce(function(s,x){return s+Number(x.amount||0);},0));var exp=r2(all.filter(function(x){return x.type==="Expense";}).reduce(function(s,x){return s+Number(x.amount||0);},0));document.getElementById("fInc").textContent="₹ "+inc.toFixed(2);document.getElementById("fExp").textContent="₹ "+exp.toFixed(2);document.getElementById("fNet").textContent="₹ "+r2(inc-exp).toFixed(2);document.getElementById("fCnt").textContent=all.length;document.getElementById("fnTb").innerHTML=rows.map(function(x){return "<tr><td><b>"+esc(x.finId)+"</b></td><td>"+esc(x.date)+"</td><td><b>"+esc(x.type)+"</b></td><td>"+esc(x.category)+"</td><td>"+esc(x.head)+"</td><td>"+esc(x.mode)+"</td><td><b>₹"+r2(x.amount).toFixed(2)+"</b></td><td>"+esc(x.by||"-")+"</td></tr>";}).join("")||"<tr><td colspan=\'8\'>No financial entries.</td></tr>";}',
+
+    /* PHARMACY AUDIT */
     'function renderAudit(){document.getElementById("aTb").innerHTML=(STORE.pharmacyAudits||[]).map(function(a){return "<tr><td><b>"+esc(a.auditId)+"</b></td><td>"+esc(a.date)+"</td><td>"+esc(a.itemName)+"</td><td>"+esc(a.batch)+"</td><td>"+a.systemQty+"</td><td>"+a.physicalQty+"</td><td><b>"+a.diffQty+"</b></td><td><b>₹"+r2(a.valueDiff).toFixed(2)+"</b></td><td>"+esc(a.updatedBy||"-")+"</td><td><button class=\'btn bw bsm\' onclick=\'loadAudit(\""+esc(a.auditId)+"\")\'>Edit</button></td></tr>";}).join("");}',
-
     'function loadAudit(id){var a=(STORE.pharmacyAudits||[]).find(function(x){return x.auditId===id;});if(!a)return;document.getElementById("aId").value=a.auditId;document.getElementById("aMed").value=a.itemName;document.getElementById("aBatch").value=a.batch;document.getElementById("aRate").value=a.rate||0;document.getElementById("aSys").value=a.systemQty;document.getElementById("aPhys").value=a.physicalQty;document.getElementById("aDiff").value=a.diffQty;document.getElementById("aVal").value=a.valueDiff;document.getElementById("aStat").value=a.status||"Adjusted";document.getElementById("aNote").value=a.notes||"";}',
-
     'function saveAudit(){fetch("/api/pharmacy/audit/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({auditId:document.getElementById("aId").value||undefined,itemName:document.getElementById("aMed").value,batch:document.getElementById("aBatch").value,rate:document.getElementById("aRate").value,systemQty:document.getElementById("aSys").value,physicalQty:document.getElementById("aPhys").value,diffQty:document.getElementById("aDiff").value,valueDiff:document.getElementById("aVal").value,status:document.getElementById("aStat").value,notes:document.getElementById("aNote").value,syncStock:document.getElementById("aSync").checked,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Audit Saved");syncAll();});}',
 
-    'function renderUsers(){document.getElementById("uTb").innerHTML=(STORE.users||[]).map(function(u){return "<tr><td>"+esc(u.name)+"</td><td><b>"+esc(u.username)+"</b></td><td>"+esc(u.role)+"</td><td>"+esc((u.permissions||[]).join(", "))+"</td><td><button class=\'btn bo bsm\' onclick=\'toggleEditPerm(\""+esc(u.id)+"\")\'>Toggle Edit</button></td></tr>";}).join("");}',
-
-    'function createUser(){var perms=["dashboard","patients","ipd","billing","lab","radiology","pharmacy"];if(document.getElementById("uEdit").checked)perms.push("edit");fetch("/api/users/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("uName").value,username:document.getElementById("uUser").value,password:document.getElementById("uPass").value,role:document.getElementById("uRole").value,permissions:perms,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("User Created");syncAll();});}',
-
-    'function toggleEditPerm(userId){fetch("/api/users/toggle-edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:userId,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Edit permission updated");syncAll();});}',
+    /* USER MANAGEMENT */
+    'function renderUsers(){var canE=hasEditPerm();document.getElementById("uTb").innerHTML=(STORE.users||[]).map(function(u){var st=u.status||"Active";var acts=canE?"<button class=\'btn bo bsm\' onclick=\'updUser(\""+esc(u.id)+"\",{toggleEdit:true})\'>Toggle Edit</button> <button class=\'btn bw bsm\' onclick=\'updUser(\""+esc(u.id)+"\",{status:\""+(st==="Active"?"Deactivated":"Active")+"\"})\'>"+(st==="Active"?"Deactivate":"Activate")+"</button> <button class=\'btn bd bsm\' onclick=\'delUser(\""+esc(u.id)+"\")\'>Delete</button>":"<small>View Only</small>";return "<tr><td>"+esc(u.name)+"</td><td><b>"+esc(u.username)+"</b></td><td>"+esc(u.role)+"</td><td><b>"+esc(st)+"</b></td><td>"+esc((u.permissions||[]).join(", "))+"</td><td>"+acts+"</td></tr>";}).join("");}',
+    'function createUser(){var perms=["dashboard","patients","ipd","billing","lab","radiology","pharmacy","bme","financials"];if(document.getElementById("uEdit").checked)perms.push("edit");fetch("/api/users/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("uName").value,username:document.getElementById("uUser").value,password:document.getElementById("uPass").value,role:document.getElementById("uRole").value,permissions:perms,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("uName").value="";document.getElementById("uUser").value="";document.getElementById("uPass").value="";toast("User Created");syncAll();});}',
+    'function updUser(userId,patch){fetch("/api/users/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({userId:userId,actor:ME.username},patch))}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("User Updated");syncAll();});}',
+    'function delUser(userId){if(!confirm("Delete this user?"))return;fetch("/api/users/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:userId,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("User Deleted");syncAll();});}',
 
     '(function(){var raw=sessionStorage.getItem("arhims_session");if(raw){try{startSession(JSON.parse(raw));}catch(e){sessionStorage.removeItem("arhims_session");}}})();',
     '</script></body></html>'
