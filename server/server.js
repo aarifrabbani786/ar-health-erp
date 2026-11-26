@@ -293,7 +293,16 @@ async function loadStore() {
             const p = r.rows[0].payload;
             if (p.instituteInfo) instituteInfo = Object.assign(instituteInfo, p.instituteInfo);
             if (p.dailySeq) dailySeq = Object.assign(dailySeq, p.dailySeq);
-            if (p.erpData) erpData = Object.assign(erpData, p.erpData);
+            if (p.erpData) {
+                erpData = Object.assign({}, erpData, p.erpData);
+                if (!Array.isArray(erpData.users) || !erpData.users.length) {
+                    erpData.users = [
+                        { id: 'USR-1', name: 'Aarif Rabbani', username: 'Aarif', password: '786', role: 'Super Admin', permissions: ['all', 'edit'], status: 'Active' },
+                        { id: 'USR-2', name: 'Admin User', username: 'admin', password: '123', role: 'Admin', permissions: ['all', 'edit'], status: 'Active' },
+                        { id: 'USR-3', name: 'Staff User', username: 'staff', password: '123', role: 'Staff', permissions: ['dashboard', 'patients', 'ipd', 'billing', 'lab', 'radiology', 'pharmacy'], status: 'Active' }
+                    ];
+                }
+            }
         } else {
             await saveStore();
         }
@@ -301,7 +310,7 @@ async function loadStore() {
         const p = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
         if (p.instituteInfo) instituteInfo = Object.assign(instituteInfo, p.instituteInfo);
         if (p.dailySeq) dailySeq = Object.assign(dailySeq, p.dailySeq);
-        if (p.erpData) erpData = Object.assign(erpData, p.erpData);
+        if (p.erpData) erpData = Object.assign({}, erpData, p.erpData);
     } else {
         await saveStore();
     }
@@ -309,7 +318,7 @@ async function loadStore() {
 
 function getUser(username) {
     const u = String(username || '').trim().toLowerCase();
-    return (erpData.users || []).find(function (x) { return String(x.username || '').toLowerCase() === u; });
+    return (erpData.users || []).find(function (x) { return String(x.username || '').trim().toLowerCase() === u; });
 }
 
 function canEdit(username) {
@@ -367,7 +376,7 @@ app.post('/api/login', async function (req, res) {
     const user = (erpData.users || []).find(function (x) {
         return String(x.username || '').trim().toLowerCase() === u && String(x.password || '') === p;
     });
-    if (!user) return res.status(401).json({ success: false, message: 'Invalid User ID or Password. (Aarif / 786)' });
+    if (!user) return res.status(401).json({ success: false, message: 'Invalid User ID or Password.' });
     if (user.status === 'Deactivated') return res.status(403).json({ success: false, message: 'Account deactivated.' });
     logAction(user.username, 'Auth', 'Logged in');
     try { await saveStore(); } catch (e) { console.error('Save warning:', e.message); }
@@ -763,7 +772,7 @@ app.post('/api/pharmacy/audit/save', async function (req, res) {
     res.json({ success: true, audit: rec });
 });
 
-// ==================== FRONTEND: ANIMATED EMBOSSED LOGIN + GLASSY DASHBOARD ====================
+// ==================== FRONTEND: MONEY PLANT THEME + EMBOSSED LOGIN + GLASSY DASHBOARD ====================
 
 const htmlPage = [
     '<!DOCTYPE html>',
@@ -771,53 +780,57 @@ const htmlPage = [
     '<title>AR HIMS SOFTWARE</title>',
     '<style>',
     '*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",system-ui,-apple-system,sans-serif}',
-    ':root{--clay-bg:#e8ecf5;--clay-surface:#eef2f9;--clay-shadow:10px 10px 22px #c7d0e0,-10px -10px 22px #ffffff;--clay-inset:inset 4px 4px 9px #c7d0e0,inset -4px -4px 9px #ffffff;--glass:rgba(255,255,255,0.72);--glass-border:rgba(255,255,255,0.9)}',
-    'body{background:linear-gradient(135deg,#e3e9f6 0%,#d7e2f4 50%,#e6eef8 100%);color:#1e293b;font-size:12.5px;min-height:100vh}',
+    ':root{--clay-surface:#eef3ec;--clay-inset:inset 4px 4px 10px #c5d1c2,inset -4px -4px 10px #ffffff;--glass:rgba(248,252,248,0.82);--glass-border:rgba(255,255,255,0.92)}',
 
-    /* Animated Embossed Login Screen */
-    '#loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 25% 20%,#f8fafc 0%,#dfe7f5 55%,#cdd9ee 100%)}',
+    /* Bold Natural Money Plant SVG Wallpaper */
+    '.money-plant-bg{background-color:#0b2619;background-image:',
+    'radial-gradient(circle at 15% 18%,rgba(34,197,94,.28),transparent 42%),',
+    'radial-gradient(circle at 85% 80%,rgba(16,185,129,.26),transparent 45%),',
+    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'280\' viewBox=\'0 0 280 280\'%3E%3Cg fill=\'none\' stroke=\'%2334d399\' stroke-opacity=\'0.22\' stroke-width=\'2.4\'%3E%3Cpath d=\'M20 260 Q 90 190 140 140 T 260 20\'/%3E%3Cpath d=\'M140 280 Q 110 180 65 90\'/%3E%3C/g%3E%3Cg stroke=\'%2310b981\' stroke-opacity=\'0.28\' stroke-width=\'1.5\'%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.24\' d=\'M75 185 C 40 165, 35 125, 75 105 C 115 125, 110 165, 75 185 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.26\' d=\'M140 140 C 105 118, 105 78, 145 62 C 182 82, 178 120, 140 140 Z\'/%3E%3Cpath fill=\'%2315803d\' fill-opacity=\'0.28\' d=\'M205 85 C 175 68, 175 34, 210 20 C 242 38, 238 68, 205 85 Z\'/%3E%3Cpath fill=\'%2322c55e\' fill-opacity=\'0.22\' d=\'M65 90 C 32 76, 30 42, 62 28 C 92 44, 90 74, 65 90 Z\'/%3E%3Cpath fill=\'%2316a34a\' fill-opacity=\'0.22\' d=\'M185 215 C 155 198, 155 166, 188 152 C 218 168, 216 198, 185 215 Z\'/%3E%3C/g%3E%3C/svg%3E")}',
+
+    'body{color:#0f172a;font-size:12.5px;min-height:100vh}',
+
+    /* Animated Embossed Login over Bold Money Plant Theme */
+    '#loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}',
     '@keyframes floatCircle{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}',
-    '.embossed-circle{width:410px;max-width:94vw;aspect-ratio:1/1;border-radius:50%;background:var(--clay-surface);box-shadow:18px 18px 36px #bcc7db,-18px -18px 36px #ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:42px;position:relative;animation:floatCircle 4.5s ease-in-out infinite;transition:transform .35s ease,box-shadow .35s ease}',
-    '.embossed-circle:hover{box-shadow:22px 22px 44px #b3bfd6,-22px -22px 44px #ffffff}',
-    '.embossed-brand{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#4f46e5;margin-bottom:4px}',
-    '.embossed-title{font-size:21px;font-weight:800;color:#1e293b;margin-bottom:16px;letter-spacing:.6px}',
+    '.embossed-circle{width:410px;max-width:94vw;aspect-ratio:1/1;border-radius:50%;background:var(--clay-surface);box-shadow:0 24px 60px rgba(0,0,0,.45),inset 6px 6px 14px #ffffff,inset -6px -6px 14px #c3d0c0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:42px;animation:floatCircle 4.5s ease-in-out infinite}',
+    '.embossed-brand{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#15803d;margin-bottom:4px}',
+    '.embossed-title{font-size:21px;font-weight:800;color:#0f172a;margin-bottom:16px;letter-spacing:.6px}',
     '.embossed-form{width:100%;max-width:265px;display:flex;flex-direction:column;gap:12px}',
-    '.embossed-input{width:100%;padding:11px 15px;border:none;border-radius:16px;background:var(--clay-surface);box-shadow:var(--clay-inset);color:#1e293b;font-size:13px;outline:none;transition:box-shadow .25s ease,transform .2s ease}',
-    '.embossed-input:focus{box-shadow:inset 5px 5px 11px #b5c1d6,inset -5px -5px 11px #ffffff;transform:scale(1.01)}',
-    '.embossed-btn{width:100%;padding:11px;border:none;border-radius:16px;background:linear-gradient(145deg,#6366f1,#4338ca);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:6px 6px 14px #b6c2d7,-4px -4px 10px #ffffff;transition:transform .18s ease,box-shadow .2s ease}',
-    '.embossed-btn:hover{transform:translateY(-2px);box-shadow:8px 8px 18px #aebad0,-6px -6px 12px #ffffff}',
-    '.embossed-btn:active{transform:translateY(1px);box-shadow:var(--clay-inset)}',
-    '.embossed-msg{min-height:18px;font-size:11.5px;font-weight:600;color:#dc2626;text-align:center;margin-top:6px}',
+    '.embossed-input{width:100%;padding:11px 15px;border:none;border-radius:16px;background:var(--clay-surface);box-shadow:var(--clay-inset);color:#0f172a;font-size:13px;outline:none;transition:box-shadow .25s ease}',
+    '.embossed-input:focus{box-shadow:inset 5px 5px 12px #b2c2ae,inset -5px -5px 12px #ffffff}',
+    '.embossed-btn{width:100%;padding:11px;border:none;border-radius:16px;background:linear-gradient(145deg,#16a34a,#065f46);color:#fff;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 8px 18px rgba(6,95,70,.35);transition:transform .18s ease}',
+    '.embossed-btn:hover{transform:translateY(-2px)}',
+    '.embossed-msg{min-height:18px;font-size:11.5px;font-weight:700;color:#dc2626;text-align:center;margin-top:6px}',
     '.success-badge{display:none;flex-direction:column;align-items:center;text-align:center;gap:6px}',
-    '.check-ring{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#22c55e,#15803d);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:6px 6px 14px #b8c4d9}',
+    '.check-ring{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#22c55e,#15803d);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center}',
 
     /* Glassy Dashboard Shell */
     '#appWrap{display:none;min-height:100vh}',
-    '.sidebar{width:242px;background:linear-gradient(180deg,#5b5ce6 0%,#7c5dfa 55%,#9b6bff 100%);color:#fff;flex-shrink:0;padding:12px 10px;display:flex;flex-direction:column;gap:4px;box-shadow:6px 0 24px rgba(91,92,230,.18)}',
+    '.sidebar{width:242px;background:linear-gradient(180deg,rgba(6,78,59,.94) 0%,rgba(20,83,45,.94) 60%,rgba(6,95,70,.95) 100%);backdrop-filter:blur(12px);color:#fff;flex-shrink:0;padding:12px 10px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(167,243,208,.28)}',
     '.sbrand{padding:12px 10px 14px;border-bottom:1px solid rgba(255,255,255,.22);margin-bottom:6px}',
-    '.sbrand h2{font-size:15px;font-weight:800;letter-spacing:.4px}',
-    '.sbrand p{font-size:10.5px;opacity:.88;margin-top:3px}',
-    '.mbtn{width:100%;background:transparent;border:none;color:rgba(255,255,255,.9);text-align:left;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:background .2s ease,transform .15s ease}',
-    '.mbtn:hover{background:rgba(255,255,255,.16);transform:translateX(2px)}',
-    '.mbtn.active{background:rgba(255,255,255,.28);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(15,23,42,.12)}',
-    '.pill{background:#f43f5e;color:#fff;font-size:10px;padding:1px 7px;border-radius:999px;font-weight:700}',
+    '.sbrand h2{font-size:15px;font-weight:800;letter-spacing:.4px;color:#bbf7d0}',
+    '.sbrand p{font-size:10.5px;color:#dcfce7;opacity:.9;margin-top:3px}',
+    '.mbtn{width:100%;background:transparent;border:none;color:rgba(240,253,244,.92);text-align:left;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:background .2s ease}',
+    '.mbtn:hover{background:rgba(255,255,255,.15)}',
+    '.mbtn.active{background:rgba(34,197,94,.32);color:#fff;font-weight:700;border:1px solid rgba(187,247,208,.35)}',
+    '.pill{background:#ef4444;color:#fff;font-size:10px;padding:1px 7px;border-radius:999px;font-weight:700}',
 
     '.content{flex:1;display:flex;flex-direction:column;min-width:0}',
     '.topbar{background:var(--glass);backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}',
     '.work{padding:14px;display:flex;flex-direction:column;gap:14px}',
 
     '.cards4{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:12px}',
-    '.kcard{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 10px 24px rgba(99,102,241,.08);transition:transform .22s ease}',
-    '.kcard:hover{transform:translateY(-3px)}',
-    '.kcard.g{background:linear-gradient(135deg,rgba(209,250,229,.82),rgba(255,255,255,.72))}',
-    '.kcard.a{background:linear-gradient(135deg,rgba(254,243,199,.82),rgba(255,255,255,.72))}',
-    '.kcard.r{background:linear-gradient(135deg,rgba(255,228,230,.82),rgba(255,255,255,.72))}',
-    '.kcard.b{background:linear-gradient(135deg,rgba(224,231,255,.85),rgba(255,255,255,.72))}',
-    '.kcard small{font-size:10.5px;font-weight:700;color:#475569;text-transform:uppercase}',
+    '.kcard{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.14)}',
+    '.kcard.g{background:linear-gradient(135deg,rgba(220,252,231,.9),rgba(255,255,255,.82))}',
+    '.kcard.a{background:linear-gradient(135deg,rgba(254,243,199,.9),rgba(255,255,255,.82))}',
+    '.kcard.r{background:linear-gradient(135deg,rgba(255,228,230,.9),rgba(255,255,255,.82))}',
+    '.kcard.b{background:linear-gradient(135deg,rgba(209,250,229,.92),rgba(255,255,255,.82))}',
+    '.kcard small{font-size:10.5px;font-weight:700;color:#334155;text-transform:uppercase}',
     '.kcard strong{display:block;font-size:19px;font-weight:800;color:#0f172a;margin-top:4px}',
 
-    '.box{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 10px 24px rgba(15,23,42,.06)}',
-    '.box-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid rgba(148,163,184,.25)}',
+    '.box{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--glass-border);border-radius:18px;padding:14px;box-shadow:0 12px 26px rgba(0,0,0,.14)}',
+    '.box-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid rgba(15,23,42,.12)}',
     '.box-hd h3{font-size:13.5px;font-weight:700;color:#0f172a}',
 
     '.g4{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:9px}',
@@ -827,41 +840,40 @@ const htmlPage = [
     '@media(max-width:600px){#appWrap{flex-direction:column}.sidebar{width:100%}.cards4,.g4,.g3,.g2{grid-template-columns:1fr}}',
 
     '.fld{display:flex;flex-direction:column;gap:3px}',
-    '.fld label{font-size:10.5px;font-weight:700;color:#334155}',
-    '.fld input,.fld select,.fld textarea{width:100%;padding:6.5px 9px;border:1px solid rgba(203,213,225,.9);border-radius:10px;font-size:12px;background:rgba(255,255,255,.88);outline:none}',
+    '.fld label{font-size:10.5px;font-weight:700;color:#1e293b}',
+    '.fld input,.fld select,.fld textarea{width:100%;padding:6.5px 9px;border:1px solid #cbd5e1;border-radius:10px;font-size:12px;background:#fff;outline:none}',
     '.fld textarea{min-height:66px}',
 
-    '.btn{padding:6.5px 12px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-size:11.5px;font-weight:700;transition:transform .15s ease,opacity .15s ease}',
-    '.btn:hover{transform:translateY(-1px);opacity:.95}',
-    '.bp{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff}',
-    '.bs{background:linear-gradient(135deg,#10b981,#059669);color:#fff}',
-    '.bw{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}',
-    '.bd{background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff}',
-    '.bo{background:rgba(255,255,255,.85);color:#0f172a;border-color:#cbd5e1}',
+    '.btn{padding:6.5px 12px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-size:11.5px;font-weight:700}',
+    '.bp{background:linear-gradient(135deg,#059669,#047857);color:#fff}',
+    '.bs{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}',
+    '.bw{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}',
+    '.bd{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff}',
+    '.bo{background:#fff;color:#0f172a;border-color:#cbd5e1}',
     '.bsm{padding:4.5px 8px;font-size:11px}',
 
-    '.tbl-wrap{overflow-x:auto;border:1px solid rgba(203,213,225,.8);border-radius:12px;background:rgba(255,255,255,.75)}',
+    '.tbl-wrap{overflow-x:auto;border:1px solid #cbd5e1;border-radius:12px;background:#ffffffeb}',
     'table{width:100%;border-collapse:collapse;font-size:11.8px}',
-    'th{background:rgba(226,232,240,.85);padding:7px 8px;text-align:left;border-bottom:1px solid #cbd5e1;white-space:nowrap}',
-    'td{padding:6px 8px;border-bottom:1px solid rgba(226,232,240,.8)}',
+    'th{background:#dcfce7;color:#064e3b;padding:7px 8px;text-align:left;border-bottom:1px solid #bbf7d0;white-space:nowrap}',
+    'td{padding:6px 8px;border-bottom:1px solid #e2e8f0}',
     'td input{width:100%;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;background:#fff}',
 
-    '.toast{position:fixed;right:16px;bottom:16px;background:#0f172a;color:#fff;padding:10px 15px;border-radius:12px;font-size:12px;display:none;z-index:9999;box-shadow:0 12px 24px rgba(15,23,42,.25)}',
-    '.print-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.78);z-index:5000;overflow-y:auto;padding:16px}',
+    '.toast{position:fixed;right:16px;bottom:16px;background:#064e3b;color:#fff;padding:10px 15px;border-radius:12px;font-size:12px;display:none;z-index:9999}',
+    '.print-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.82);z-index:5000;overflow-y:auto;padding:16px}',
     '.print-bar{max-width:210mm;margin:0 auto 8px;display:flex;justify-content:flex-end;gap:8px}',
     '.a4{width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#000;padding:12mm 14mm;display:flex;flex-direction:column;justify-content:space-between}',
     '@media print{body *{visibility:hidden}.print-bg,.print-bg *{visibility:visible}.print-bg{position:static;background:none;padding:0}.print-bar{display:none!important}.a4{width:100%;min-height:auto;padding:0}}',
-    '</style></head><body>',
+    '</style></head><body class="money-plant-bg">',
 
-    /* ANIMATED EMBOSSED LOGIN */
+    /* EMBOSSED LOGIN (NO PREFILLED USER) */
     '<div id="loginWrap">',
     '<div class="embossed-circle">',
     '<div id="formContent" style="width:100%;display:flex;flex-direction:column;align-items:center;">',
     '<div class="embossed-brand">AR HIMS SOFTWARE</div>',
     '<div class="embossed-title">SIGN IN</div>',
     '<form class="embossed-form" onsubmit="handleLogin(event)">',
-    '<input class="embossed-input" id="lUser" placeholder="Username" value="Aarif" required />',
-    '<input class="embossed-input" type="password" id="lPass" placeholder="Password" value="786" required />',
+    '<input class="embossed-input" id="lUser" placeholder="Username" autocomplete="off" required />',
+    '<input class="embossed-input" type="password" id="lPass" placeholder="Password" autocomplete="new-password" required />',
     '<button class="embossed-btn" type="submit">Login</button>',
     '</form>',
     '<div class="embossed-msg" id="loginErr"></div>',
@@ -869,7 +881,7 @@ const htmlPage = [
     '<div class="success-badge" id="successMsg">',
     '<div class="check-ring">✓</div>',
     '<h3 style="font-size:17px;color:#0f172a;">Welcome Back!</h3>',
-    '<p style="font-size:12px;color:#475569;">Opening AR HIMS Glassy Dashboard...</p>',
+    '<p style="font-size:12px;color:#334155;">Opening AR HIMS SOFTWARE...</p>',
     '</div>',
     '</div></div>',
 
@@ -905,13 +917,13 @@ const htmlPage = [
     '<div class="fld"><label>Doctor</label><input id="pDoc" value="Dr. A. Khan (General Physician)" /></div></div>',
     '<button class="btn bs" onclick="savePatient()">Register Patient</button></div>',
     '<div class="box"><div class="box-hd"><h3>Prescription Entry &amp; Print</h3><button class="btn bp bsm" onclick="printRx()">Print Rx</button></div>',
-    '<div class="g3" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="rxUhid" value="AR261126-01" /></div>',
-    '<div class="fld"><label>Patient Name</label><input id="rxName" value="Mr. Aarif Rabbani" /></div>',
-    '<div class="fld"><label>Diagnosis</label><input id="rxDiag" value="Fever" /></div></div>',
-    '<div class="fld"><label>Rx Notes / Medicines</label><textarea id="rxTxt">1. Tab Paracetamol 500mg SOS</textarea></div></div></section>',
+    '<div class="g3" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="rxUhid" /></div>',
+    '<div class="fld"><label>Patient Name</label><input id="rxName" /></div>',
+    '<div class="fld"><label>Diagnosis</label><input id="rxDiag" /></div></div>',
+    '<div class="fld"><label>Rx Notes / Medicines</label><textarea id="rxTxt"></textarea></div></div></section>',
 
     '<section id="v-ipd" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Admit Patient</h3></div>',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="iUhid" value="AR261126-01" /></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="iUhid" /></div>',
     '<div class="fld"><label>Patient Name *</label><input id="iName" /></div>',
     '<div class="fld"><label>Ward</label><select id="iWard"><option>General Ward - Bed 02</option><option>Private Room - Room 01</option><option>ICU - Bed 01</option></select></div>',
     '<div class="fld"><label>Doctor</label><input id="iDoc" value="Dr. A. Khan (General Physician)" /></div></div>',
@@ -931,8 +943,8 @@ const htmlPage = [
     '<div class="tbl-wrap"><table><thead><tr><th>IPD No</th><th>UHID</th><th>Patient</th><th>Ward</th><th>Discharge Date</th><th>Final Bill</th></tr></thead><tbody id="disTb"></tbody></table></div></div></section>',
 
     '<section id="v-bill" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>New Bill</h3></div>',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="bUhid" value="AR261126-01" /></div>',
-    '<div class="fld"><label>Patient Name *</label><input id="bName" value="Mr. Aarif Rabbani" /></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID</label><input id="bUhid" /></div>',
+    '<div class="fld"><label>Patient Name *</label><input id="bName" /></div>',
     '<div class="fld"><label>Payment Mode</label><select id="bPay"><option>Cash</option><option>UPI / QR</option><option>Card</option><option>Credit</option></select></div>',
     '<div class="fld"><label>Date</label><input type="date" id="bDate" /></div></div>',
     '<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;"><button class="btn bo bsm" onclick="addBillRow(\'HOSPITAL\')">+ Service</button>',
@@ -954,9 +966,9 @@ const htmlPage = [
     '<section id="v-lab" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Laboratory — Parameters, Timestamps &amp; Doctor Verification</h3>',
     '<div style="display:flex;gap:6px;"><button class="btn bs bsm" onclick="saveLab(false)">Save Report</button><button class="btn bw bsm" onclick="saveLab(true)">Verify &amp; Save</button><button class="btn bp bsm" onclick="printLabCurrent()">Print Lab Report</button></div></div>',
     '<input type="hidden" id="lId" />',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID *</label><input id="lUhid" value="AR261126-01" /></div>',
-    '<div class="fld"><label>Patient Name *</label><input id="lPat" value="Mr. Aarif Rabbani" /></div>',
-    '<div class="fld"><label>Test Name *</label><input id="lTest" value="CBC" /></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID *</label><input id="lUhid" /></div>',
+    '<div class="fld"><label>Patient Name *</label><input id="lPat" /></div>',
+    '<div class="fld"><label>Test Name *</label><input id="lTest" /></div>',
     '<div class="fld"><label>Verifying Doctor</label><input id="lDoc" value="Dr. R. K. Sharma (MD Pathology)" /></div>',
     '<div class="fld"><label>Sample Collection Date &amp; Time</label><input type="datetime-local" id="lCol" /></div>',
     '<div class="fld"><label>Report Done Date &amp; Time</label><input type="datetime-local" id="lDone" /></div>',
@@ -969,10 +981,10 @@ const htmlPage = [
     '<section id="v-rad" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Radiology — Findings, Impression, Timestamps &amp; Doctor Verification</h3>',
     '<div style="display:flex;gap:6px;"><button class="btn bs bsm" onclick="saveRad(false)">Save Report</button><button class="btn bw bsm" onclick="saveRad(true)">Verify &amp; Save</button><button class="btn bp bsm" onclick="printRadCurrent()">Print Radiology Report</button></div></div>',
     '<input type="hidden" id="rId" />',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID *</label><input id="rUhid" value="AR261126-01" /></div>',
-    '<div class="fld"><label>Patient Name *</label><input id="rPat" value="Mr. Aarif Rabbani" /></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>UHID *</label><input id="rUhid" /></div>',
+    '<div class="fld"><label>Patient Name *</label><input id="rPat" /></div>',
     '<div class="fld"><label>Modality</label><select id="rMod"><option>Digital X-Ray</option><option>USG</option><option>CT Scan</option><option>MRI</option></select></div>',
-    '<div class="fld"><label>Study / Test Name *</label><input id="rTest" value="Chest PA" /></div>',
+    '<div class="fld"><label>Study / Test Name *</label><input id="rTest" /></div>',
     '<div class="fld"><label>Sample / Scan Time</label><input type="datetime-local" id="rCol" /></div>',
     '<div class="fld"><label>Report Done Date &amp; Time</label><input type="datetime-local" id="rDone" /></div>',
     '<div class="fld" style="grid-column:span 2;"><label>Verifying Doctor</label><input id="rDoc" value="Dr. Meena Verma (MD Radiology)" /></div></div>',
@@ -981,22 +993,22 @@ const htmlPage = [
     '<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>UHID</th><th>Patient</th><th>Modality / Study</th><th>Done</th><th>Verified</th><th>Actions</th></tr></thead><tbody id="rSavedTb"></tbody></table></div></div></section>',
 
     '<section id="v-audit" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Pharmacy Audit — Full Edit &amp; Stock Sync</h3></div>',
-    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Audit ID (Blank = New)</label><input id="aId" placeholder="AUD-101" /></div>',
-    '<div class="fld"><label>Medicine Name *</label><input id="aMed" value="Paracetamol 500 mg Tab" /></div>',
-    '<div class="fld"><label>Batch</label><input id="aBatch" value="A1" /></div>',
-    '<div class="fld"><label>Rate (₹)</label><input type="number" id="aRate" value="40" /></div>',
-    '<div class="fld"><label>System Qty</label><input type="number" id="aSys" value="450" /></div>',
-    '<div class="fld"><label>Physical Qty</label><input type="number" id="aPhys" value="450" /></div>',
+    '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Audit ID (Blank = New)</label><input id="aId" /></div>',
+    '<div class="fld"><label>Medicine Name *</label><input id="aMed" /></div>',
+    '<div class="fld"><label>Batch</label><input id="aBatch" /></div>',
+    '<div class="fld"><label>Rate (₹)</label><input type="number" id="aRate" /></div>',
+    '<div class="fld"><label>System Qty</label><input type="number" id="aSys" /></div>',
+    '<div class="fld"><label>Physical Qty</label><input type="number" id="aPhys" /></div>',
     '<div class="fld"><label>Diff Qty</label><input type="number" id="aDiff" placeholder="Auto if blank" /></div>',
     '<div class="fld"><label>Value Diff ₹</label><input type="number" id="aVal" placeholder="Auto if blank" /></div></div>',
-    '<div class="g2" style="margin-bottom:8px;"><div class="fld"><label>Status</label><input id="aStat" value="Matched" /></div><div class="fld"><label>Audit Notes</label><input id="aNote" /></div></div>',
+    '<div class="g2" style="margin-bottom:8px;"><div class="fld"><label>Status</label><input id="aStat" /></div><div class="fld"><label>Audit Notes</label><input id="aNote" /></div></div>',
     '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><label><input type="checkbox" id="aSync" checked /> Sync Pharmacy Stock with Physical Qty</label><button class="btn bs" onclick="saveAudit()">Save Audit</button></div>',
     '<div class="tbl-wrap" style="margin-top:10px;"><table><thead><tr><th>Audit ID</th><th>Date</th><th>Medicine</th><th>Batch</th><th>Sys</th><th>Phys</th><th>Diff</th><th>Val Diff</th><th>By</th><th>Edit</th></tr></thead><tbody id="aTb"></tbody></table></div></div></section>',
 
     '<section id="v-usr" class="view" style="display:none;"><div class="box"><div class="box-hd"><h3>Users &amp; Edit Permission</h3></div>',
     '<div class="g4" style="margin-bottom:8px;"><div class="fld"><label>Full Name</label><input id="uName" /></div>',
     '<div class="fld"><label>Username</label><input id="uUser" /></div>',
-    '<div class="fld"><label>Password</label><input id="uPass" value="123" /></div>',
+    '<div class="fld"><label>Password</label><input id="uPass" /></div>',
     '<div class="fld"><label>Role</label><select id="uRole"><option>Staff</option><option>Admin</option></select></div></div>',
     '<label style="display:inline-block;margin-bottom:8px;"><input type="checkbox" id="uEdit" /> Grant Edit Permission</label><br/>',
     '<button class="btn bs bsm" onclick="createUser()">Create User</button>',
@@ -1008,129 +1020,139 @@ const htmlPage = [
     '<div class="toast" id="toast"></div>',
 
     '<script>',
-    'let STORE = null, ME = null, draftItems = [], labParams = [];',
-    'function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(window._tt);window._tt=setTimeout(function(){t.style.display="none";},2800);}',
+    'var STORE = null, ME = null, draftItems = [], labParams = [];',
+    'function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(window._tt);window._tt=setTimeout(function(){t.style.display="none";},2800);}',
     'function r2(n){return Math.round((Number(n)||0)*100)/100;}',
     'function esc(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",\'"\':"&quot;","\'":"&#39;"}[c];});}',
     'function todayIST(){return new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Kolkata"});}',
-    'function hasEditPerm(){if(!ME)return false;const r=String(ME.role||"").toLowerCase();const p=(ME.permissions||[]).map(function(x){return String(x).toLowerCase();});return r==="super admin"||r==="admin"||p.includes("all")||p.includes("edit");}',
+    'function hasEditPerm(){if(!ME)return false;var r=String(ME.role||"").toLowerCase();var p=(ME.permissions||[]).map(function(x){return String(x).toLowerCase();});return r==="super admin"||r==="admin"||p.includes("all")||p.includes("edit");}',
 
-    'async function handleLogin(e){',
+    'function handleLogin(e){',
     '  e.preventDefault();',
-    '  const errEl=document.getElementById("loginErr");',
+    '  var errEl=document.getElementById("loginErr");',
     '  errEl.textContent="";',
-    '  try {',
-    '    const res=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:document.getElementById("lUser").value,password:document.getElementById("lPass").value})});',
-    '    const out=await res.json();',
-    '    if(!out.success){errEl.textContent=out.message||"Login failed";return;}',
+    '  var uVal=document.getElementById("lUser").value;',
+    '  var pVal=document.getElementById("lPass").value;',
+    '  fetch("/api/login",{',
+    '    method:"POST",',
+    '    headers:{"Content-Type":"application/json"},',
+    '    body:JSON.stringify({username:uVal,password:pVal})',
+    '  })',
+    '  .then(function(res){return res.json();})',
+    '  .then(function(out){',
+    '    if(!out||!out.success){errEl.textContent=(out&&out.message)||"Invalid credentials";return;}',
     '    sessionStorage.setItem("arhims_session",JSON.stringify(out.user));',
     '    document.getElementById("formContent").style.display="none";',
     '    document.getElementById("successMsg").style.display="flex";',
-    '    setTimeout(function(){startSession(out.user);},550);',
-    '  } catch (err) {',
-    '    errEl.textContent="Server error: "+err.message;',
-    '  }',
+    '    setTimeout(function(){startSession(out.user);},450);',
+    '  })',
+    '  .catch(function(err){errEl.textContent="Login error: "+err.message;});',
     '}',
 
     'function logoutNow(){',
     '  sessionStorage.removeItem("arhims_session");',
     '  ME=null;',
+    '  document.getElementById("lUser").value="";',
+    '  document.getElementById("lPass").value="";',
+    '  document.getElementById("loginErr").textContent="";',
     '  document.getElementById("appWrap").style.display="none";',
     '  document.getElementById("successMsg").style.display="none";',
     '  document.getElementById("formContent").style.display="flex";',
     '  document.getElementById("loginWrap").style.display="flex";',
     '}',
 
-    'async function startSession(u){',
+    'function startSession(u){',
     '  ME=u;',
     '  document.getElementById("loginWrap").style.display="none";',
     '  document.getElementById("appWrap").style.display="flex";',
     '  document.getElementById("who").textContent=u.name+" ("+u.role+")"+(hasEditPerm()?" • Edit Access":"");',
-    '  const bDateEl=document.getElementById("bDate");',
+    '  var bDateEl=document.getElementById("bDate");',
     '  if(bDateEl)bDateEl.value=todayIST();',
-    '  await syncAll();',
+    '  syncAll();',
     '}',
 
-    'async function syncAll(){',
-    '  const res=await fetch("/api/bootstrap");',
-    '  const out=await res.json();',
-    '  if(!out.success)return;',
-    '  STORE=out.erpData;',
-    '  document.getElementById("dbBadge").textContent=out.dbMode;',
-    '  document.getElementById("clock").textContent=new Date().toLocaleString("en-GB",{timeZone:"Asia/Kolkata"});',
-    '  const admCount=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Admitted";}).length;',
-    '  const disCount=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";}).length;',
-    '  document.getElementById("admPill").textContent=admCount;',
-    '  document.getElementById("kIpd").textContent=admCount+" / "+disCount;',
-    '  renderSales();renderIpd();renderBills();renderLab();renderRad();renderAudit();renderUsers();',
+    'function syncAll(){',
+    '  fetch("/api/bootstrap")',
+    '  .then(function(res){return res.json();})',
+    '  .then(function(out){',
+    '    if(!out||!out.success)return;',
+    '    STORE=out.erpData;',
+    '    document.getElementById("dbBadge").textContent=out.dbMode;',
+    '    document.getElementById("clock").textContent=new Date().toLocaleString("en-GB",{timeZone:"Asia/Kolkata"});',
+    '    var admCount=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Admitted";}).length;',
+    '    var disCount=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";}).length;',
+    '    document.getElementById("admPill").textContent=admCount;',
+    '    document.getElementById("kIpd").textContent=admCount+" / "+disCount;',
+    '    renderSales();renderIpd();renderBills();renderLab();renderRad();renderAudit();renderUsers();',
+    '  });',
     '}',
 
     'function showV(v){document.querySelectorAll(".view").forEach(function(el){el.style.display="none";});document.getElementById("v-"+v).style.display="block";document.querySelectorAll(".mbtn").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});}',
 
     'function clearDates(){document.getElementById("fFrom").value="";document.getElementById("fTo").value="";renderSales();}',
-    'function renderSales(){const fromD=document.getElementById("fFrom").value;const toD=document.getElementById("fTo").value;const rows=(STORE.bills||[]).filter(function(b){if(fromD&&b.date<fromD)return false;if(toD&&b.date>toD)return false;return true;});const salesSum=r2(rows.reduce(function(s,b){return s+Number(b.netFee||0);},0));const paidSum=r2(rows.reduce(function(s,b){return s+Number(b.paidAmount||0);},0));const refSum=r2(rows.reduce(function(s,b){return s+Number(b.refundAmount||0);},0));document.getElementById("kSales").textContent="₹ "+salesSum.toFixed(2);document.getElementById("kPaid").textContent="₹ "+paidSum.toFixed(2);document.getElementById("kRef").textContent="₹ "+refSum.toFixed(2);document.getElementById("salesTb").innerHTML=rows.map(function(b){return "<tr><td>"+esc(b.date)+"</td><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.uhid)+"</td><td>"+esc(b.patientName)+"</td><td>"+esc(b.payType)+"</td><td>₹"+r2(b.totalGross).toFixed(2)+"</td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>₹"+r2(b.dueAmount).toFixed(2)+"</td></tr>";}).join("")||"<tr><td colspan=\'10\'>No sales records for selected date.</td></tr>";}',
+    'function renderSales(){var fromD=document.getElementById("fFrom").value;var toD=document.getElementById("fTo").value;var rows=(STORE.bills||[]).filter(function(b){if(fromD&&b.date<fromD)return false;if(toD&&b.date>toD)return false;return true;});var salesSum=r2(rows.reduce(function(s,b){return s+Number(b.netFee||0);},0));var paidSum=r2(rows.reduce(function(s,b){return s+Number(b.paidAmount||0);},0));var refSum=r2(rows.reduce(function(s,b){return s+Number(b.refundAmount||0);},0));document.getElementById("kSales").textContent="₹ "+salesSum.toFixed(2);document.getElementById("kPaid").textContent="₹ "+paidSum.toFixed(2);document.getElementById("kRef").textContent="₹ "+refSum.toFixed(2);document.getElementById("salesTb").innerHTML=rows.map(function(b){return "<tr><td>"+esc(b.date)+"</td><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.uhid)+"</td><td>"+esc(b.patientName)+"</td><td>"+esc(b.payType)+"</td><td>₹"+r2(b.totalGross).toFixed(2)+"</td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>₹"+r2(b.dueAmount).toFixed(2)+"</td></tr>";}).join("")||"<tr><td colspan=\'10\'>No sales records for selected date.</td></tr>";}',
 
-    'async function savePatient(){const res=await fetch("/api/patients/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("pName").value,contact:document.getElementById("pMob").value,age:document.getElementById("pAge").value,gender:document.getElementById("pGen").value,doctor:document.getElementById("pDoc").value,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Patient Registered: "+out.patient.uhid);await syncAll();}',
+    'function savePatient(){fetch("/api/patients/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("pName").value,contact:document.getElementById("pMob").value,age:document.getElementById("pAge").value,gender:document.getElementById("pGen").value,doctor:document.getElementById("pDoc").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Patient Registered: "+out.patient.uhid);syncAll();});}',
 
-    'function printRx(){const uhid=document.getElementById("rxUhid").value;const pat=document.getElementById("rxName").value;const diag=document.getElementById("rxDiag").value;const rx=document.getElementById("rxTxt").value;const doc=document.getElementById("pDoc").value;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><div style=\'border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;display:flex;justify-content:space-between;\'><div><h2>AR HIMS SOFTWARE</h2><div>PRESCRIPTION</div></div><div><b>Date:</b> "+esc(todayIST())+"</div></div><p><b>UHID:</b> "+esc(uhid)+" &nbsp; | &nbsp; <b>Patient:</b> "+esc(pat)+" &nbsp; | &nbsp; <b>Doctor:</b> "+esc(doc)+"</p><p style=\'margin-top:8px;\'><b>Diagnosis:</b> "+esc(diag)+"</p><hr style=\'margin:8px 0;\'/><pre style=\'white-space:pre-wrap;font-size:13px;line-height:1.6;\'>"+esc(rx)+"</pre></div><div style=\'border-top:1px solid #000;padding-top:8px;text-align:right;\'><b>"+esc(doc)+"</b></div></div>";document.getElementById("printBg").style.display="block";}',
+    'function printRx(){var uhid=document.getElementById("rxUhid").value;var pat=document.getElementById("rxName").value;var diag=document.getElementById("rxDiag").value;var rx=document.getElementById("rxTxt").value;var doc=document.getElementById("pDoc").value;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><div style=\'border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;display:flex;justify-content:space-between;\'><div><h2>AR HIMS SOFTWARE</h2><div>PRESCRIPTION</div></div><div><b>Date:</b> "+esc(todayIST())+"</div></div><p><b>UHID:</b> "+esc(uhid)+" &nbsp; | &nbsp; <b>Patient:</b> "+esc(pat)+" &nbsp; | &nbsp; <b>Doctor:</b> "+esc(doc)+"</p><p style=\'margin-top:8px;\'><b>Diagnosis:</b> "+esc(diag)+"</p><hr style=\'margin:8px 0;\'/><pre style=\'white-space:pre-wrap;font-size:13px;line-height:1.6;\'>"+esc(rx)+"</pre></div><div style=\'border-top:1px solid #000;padding-top:8px;text-align:right;\'><b>"+esc(doc)+"</b></div></div>";document.getElementById("printBg").style.display="block";}',
 
-    'async function admitNow(){const res=await fetch("/api/ipd/admit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("iUhid").value,patientName:document.getElementById("iName").value,ward:document.getElementById("iWard").value,doctor:document.getElementById("iDoc").value,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Admitted "+out.admission.ipdNo);await syncAll();}',
+    'function admitNow(){fetch("/api/ipd/admit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("iUhid").value,patientName:document.getElementById("iName").value,ward:document.getElementById("iWard").value,doctor:document.getElementById("iDoc").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Admitted "+out.admission.ipdNo);syncAll();});}',
 
-    'function renderIpd(){const admitted=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Admitted";});const discharged=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";});document.getElementById("admTb").innerHTML=admitted.map(function(a){const tot=r2((a.services||[]).reduce(function(s,x){return s+Number(x.amount||0);},0));return "<tr><td><b>"+esc(a.ipdNo)+"</b></td><td>"+esc(a.uhid)+"</td><td>"+esc(a.patientName)+"</td><td>"+esc(a.ward)+"</td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bp bsm\' onclick=\'openIpdPanel(\""+esc(a.ipdNo)+"\")\'>Services / Bill / Discharge</button></td></tr>";}).join("")||"<tr><td colspan=\'6\'>No currently admitted patients.</td></tr>";document.getElementById("disTb").innerHTML=discharged.map(function(d){return "<tr><td><b>"+esc(d.ipdNo)+"</b></td><td>"+esc(d.uhid)+"</td><td>"+esc(d.patientName)+"</td><td>"+esc(d.ward)+"</td><td>"+esc(d.dischargeDate||"-")+"</td><td>"+esc(d.finalBillNo||"-")+"</td></tr>";}).join("")||"<tr><td colspan=\'6\'>No discharged patients yet.</td></tr>";}',
+    'function renderIpd(){var admitted=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Admitted";});var discharged=(STORE.ipdAdmissions||[]).filter(function(x){return x.status==="Discharged";});document.getElementById("admTb").innerHTML=admitted.map(function(a){var tot=r2((a.services||[]).reduce(function(s,x){return s+Number(x.amount||0);},0));return "<tr><td><b>"+esc(a.ipdNo)+"</b></td><td>"+esc(a.uhid)+"</td><td>"+esc(a.patientName)+"</td><td>"+esc(a.ward)+"</td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bp bsm\' onclick=\'openIpdPanel(\""+esc(a.ipdNo)+"\")\'>Services / Bill / Discharge</button></td></tr>";}).join("")||"<tr><td colspan=\'6\'>No currently admitted patients.</td></tr>";document.getElementById("disTb").innerHTML=discharged.map(function(d){return "<tr><td><b>"+esc(d.ipdNo)+"</b></td><td>"+esc(d.uhid)+"</td><td>"+esc(d.patientName)+"</td><td>"+esc(d.ward)+"</td><td>"+esc(d.dischargeDate||"-")+"</td><td>"+esc(d.finalBillNo||"-")+"</td></tr>";}).join("")||"<tr><td colspan=\'6\'>No discharged patients yet.</td></tr>";}',
 
-    'function openIpdPanel(ipdNo){const a=(STORE.ipdAdmissions||[]).find(function(x){return x.ipdNo===ipdNo;});if(!a)return;document.getElementById("wIpd").value=a.ipdNo;document.getElementById("ipdPanelTitle").textContent=a.ipdNo+" — "+a.patientName+" ("+a.ward+")";document.getElementById("ipdPanel").style.display="block";document.getElementById("sTb").innerHTML=(a.services||[]).map(function(s){return "<tr><td>"+esc(s.name)+"</td><td>"+s.qty+"</td><td>₹"+r2(s.rate).toFixed(2)+"</td><td><b>₹"+r2(s.amount).toFixed(2)+"</b></td></tr>";}).join("");}',
+    'function openIpdPanel(ipdNo){var a=(STORE.ipdAdmissions||[]).find(function(x){return x.ipdNo===ipdNo;});if(!a)return;document.getElementById("wIpd").value=a.ipdNo;document.getElementById("ipdPanelTitle").textContent=a.ipdNo+" — "+a.patientName+" ("+a.ward+")";document.getElementById("ipdPanel").style.display="block";document.getElementById("sTb").innerHTML=(a.services||[]).map(function(s){return "<tr><td>"+esc(s.name)+"</td><td>"+s.qty+"</td><td>₹"+r2(s.rate).toFixed(2)+"</td><td><b>₹"+r2(s.amount).toFixed(2)+"</b></td></tr>";}).join("");}',
 
-    'async function addIpdService(){const res=await fetch("/api/ipd/add-service",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:document.getElementById("wIpd").value,name:document.getElementById("sName").value,qty:document.getElementById("sQty").value,rate:document.getElementById("sRate").value,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Service Added");await syncAll();openIpdPanel(out.admission.ipdNo);}',
+    'function addIpdService(){fetch("/api/ipd/add-service",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:document.getElementById("wIpd").value,name:document.getElementById("sName").value,qty:document.getElementById("sQty").value,rate:document.getElementById("sRate").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Service Added");syncAll();setTimeout(function(){openIpdPanel(out.admission.ipdNo);},200);});}',
 
-    'async function ipdBill(mode){const ipdNo=document.getElementById("wIpd").value;const res=await fetch("/api/ipd/bill-or-discharge",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:ipdNo,mode:mode,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);if(mode==="PROVISIONAL"){document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — PROVISIONAL BILL</h2><p><b>IPD:</b> "+esc(ipdNo)+" | <b>Patient:</b> "+esc(out.bill.patientName)+"</p><hr style=\'margin:8px 0;\'/>"+(out.bill.items||[]).map(function(i){return "<p>"+esc(i.name)+" × "+i.qty+" = ₹"+r2(i.lineTotal).toFixed(2)+"</p>";}).join("")+"<h3 style=\'margin-top:12px;\'>Provisional Total: ₹ "+r2(out.bill.netFee).toFixed(2)+"</h3></div></div>";document.getElementById("printBg").style.display="block";}else{toast(mode+" complete. Patient moved to Discharged.");document.getElementById("ipdPanel").style.display="none";await syncAll();}}',
+    'function ipdBill(mode){var ipdNo=document.getElementById("wIpd").value;fetch("/api/ipd/bill-or-discharge",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ipdNo:ipdNo,mode:mode,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);if(mode==="PROVISIONAL"){document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — PROVISIONAL BILL</h2><p><b>IPD:</b> "+esc(ipdNo)+" | <b>Patient:</b> "+esc(out.bill.patientName)+"</p><hr style=\'margin:8px 0;\'/>"+(out.bill.items||[]).map(function(i){return "<p>"+esc(i.name)+" × "+i.qty+" = ₹"+r2(i.lineTotal).toFixed(2)+"</p>";}).join("")+"<h3 style=\'margin-top:12px;\'>Provisional Total: ₹ "+r2(out.bill.netFee).toFixed(2)+"</h3></div></div>";document.getElementById("printBg").style.display="block";}else{toast(mode+" complete. Patient moved to Discharged.");document.getElementById("ipdPanel").style.display="none";syncAll();}});}',
 
     'function addBillRow(module){draftItems.push({module:module,name:module==="LAB"?"CBC":(module==="RADIOLOGY"?"Chest X-Ray":"Consultation"),qty:1,rate:300,discPct:0,gstPct:0});drawDraft();}',
-    'function drawDraft(){let net=0;document.getElementById("bDraftTb").innerHTML=draftItems.map(function(it,i){const g=r2(Number(it.qty||1)*Number(it.rate||0));const d=r2(g*Number(it.discPct||0)/100);const tx=r2(Math.max(0,g-d));const tot=r2(tx+(tx*Number(it.gstPct||0)/100));net=r2(net+tot);return "<tr><td>"+esc(it.module)+"</td><td><input value=\'"+esc(it.name)+"\' onchange=\'draftItems["+i+"].name=this.value\'/></td><td><input type=\'number\' min=\'1\' value=\'"+it.qty+"\' onchange=\'draftItems["+i+"].qty=Number(this.value||1);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.rate+"\' onchange=\'draftItems["+i+"].rate=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.discPct+"\' onchange=\'draftItems["+i+"].discPct=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.gstPct+"\' onchange=\'draftItems["+i+"].gstPct=Number(this.value||0);drawDraft()\'/></td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bd bsm\' onclick=\'draftItems.splice("+i+",1);drawDraft()\'>X</button></td></tr>";}).join("");document.getElementById("bDraftNet").textContent="Net: ₹ "+net.toFixed(2);}',
+    'function drawDraft(){var net=0;document.getElementById("bDraftTb").innerHTML=draftItems.map(function(it,i){var g=r2(Number(it.qty||1)*Number(it.rate||0));var d=r2(g*Number(it.discPct||0)/100);var tx=r2(Math.max(0,g-d));var tot=r2(tx+(tx*Number(it.gstPct||0)/100));net=r2(net+tot);return "<tr><td>"+esc(it.module)+"</td><td><input value=\'"+esc(it.name)+"\' onchange=\'draftItems["+i+"].name=this.value\'/></td><td><input type=\'number\' min=\'1\' value=\'"+it.qty+"\' onchange=\'draftItems["+i+"].qty=Number(this.value||1);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.rate+"\' onchange=\'draftItems["+i+"].rate=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.discPct+"\' onchange=\'draftItems["+i+"].discPct=Number(this.value||0);drawDraft()\'/></td><td><input type=\'number\' min=\'0\' value=\'"+it.gstPct+"\' onchange=\'draftItems["+i+"].gstPct=Number(this.value||0);drawDraft()\'/></td><td><b>₹"+tot.toFixed(2)+"</b></td><td><button class=\'btn bd bsm\' onclick=\'draftItems.splice("+i+",1);drawDraft()\'>X</button></td></tr>";}).join("");document.getElementById("bDraftNet").textContent="Net: ₹ "+net.toFixed(2);}',
 
-    'async function saveNewBill(){const res=await fetch("/api/bills/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("bUhid").value,patientName:document.getElementById("bName").value,payType:document.getElementById("bPay").value,date:document.getElementById("bDate").value,items:draftItems,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);draftItems=[];drawDraft();toast("Saved "+out.bill.billNo);await syncAll();}',
+    'function saveNewBill(){fetch("/api/bills/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uhid:document.getElementById("bUhid").value,patientName:document.getElementById("bName").value,payType:document.getElementById("bPay").value,date:document.getElementById("bDate").value,items:draftItems,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);draftItems=[];drawDraft();toast("Saved "+out.bill.billNo);syncAll();});}',
 
-    'function renderBills(){drawDraft();const canE=hasEditPerm();document.getElementById("bListTb").innerHTML=(STORE.bills||[]).map(function(b){const btns=canE?"<button class=\'btn bw bsm\' onclick=\'openBillEditor(\""+esc(b.billNo)+"\")\'>Edit / Refund</button> <button class=\'btn bd bsm\' onclick=\'delBill(\""+esc(b.billNo)+"\")\'>Delete</button>":"<small>No Edit Access</small>";return "<tr><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.date)+"</td><td>"+esc(b.patientName)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>"+(b.editHistory||[]).length+"</td><td>"+btns+"</td></tr>";}).join("");}',
+    'function renderBills(){drawDraft();var canE=hasEditPerm();document.getElementById("bListTb").innerHTML=(STORE.bills||[]).map(function(b){var btns=canE?"<button class=\'btn bw bsm\' onclick=\'openBillEditor(\""+esc(b.billNo)+"\")\'>Edit / Refund</button> <button class=\'btn bd bsm\' onclick=\'delBill(\""+esc(b.billNo)+"\")\'>Delete</button>":"<small>No Edit Access</small>";return "<tr><td><b>"+esc(b.billNo)+"</b></td><td>"+esc(b.date)+"</td><td>"+esc(b.patientName)+"</td><td><b>₹"+r2(b.netFee).toFixed(2)+"</b></td><td>₹"+r2(b.refundAmount).toFixed(2)+"</td><td>₹"+r2(b.paidAmount).toFixed(2)+"</td><td>"+(b.editHistory||[]).length+"</td><td>"+btns+"</td></tr>";}).join("");}',
 
-    'function openBillEditor(billNo){const b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;document.getElementById("beNo").value=b.billNo;document.getElementById("beTitle").textContent="Edit / Refund Bill: "+b.billNo;document.getElementById("beAdj").value=b.adjustAmount||0;document.getElementById("beRef").value=b.refundAmount||0;document.getElementById("bePaid").value=b.paidAmount||0;document.getElementById("beReason").value="";document.getElementById("beItemsTb").innerHTML=(b.items||[]).map(function(it,i){return "<tr><td>"+esc(it.name)+"</td><td>"+it.qty+"</td><td>₹"+r2(it.rate).toFixed(2)+"</td><td><input type=\'checkbox\' class=\'beCancel\' data-idx=\'"+i+"\' "+(it.cancelled?"checked":"")+"/> Cancel</td></tr>";}).join("");document.getElementById("beHist").innerHTML=(b.editHistory||[]).map(function(h){return "<div>• ["+esc(h.editedAt)+"] by <b>"+esc(h.editedBy)+"</b>: "+esc(h.reason)+" | Net ₹"+h.prevNetFee+" → ₹"+h.newNetFee+" | Refund ₹"+h.newRefund+"</div>";}).join("")||"<div>No previous edits.</div>";document.getElementById("billEditBox").style.display="block";}',
+    'function openBillEditor(billNo){var b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;document.getElementById("beNo").value=b.billNo;document.getElementById("beTitle").textContent="Edit / Refund Bill: "+b.billNo;document.getElementById("beAdj").value=b.adjustAmount||0;document.getElementById("beRef").value=b.refundAmount||0;document.getElementById("bePaid").value=b.paidAmount||0;document.getElementById("beReason").value="";document.getElementById("beItemsTb").innerHTML=(b.items||[]).map(function(it,i){return "<tr><td>"+esc(it.name)+"</td><td>"+it.qty+"</td><td>₹"+r2(it.rate).toFixed(2)+"</td><td><input type=\'checkbox\' class=\'beCancel\' data-idx=\'"+i+"\' "+(it.cancelled?"checked":"")+"/> Cancel</td></tr>";}).join("");document.getElementById("beHist").innerHTML=(b.editHistory||[]).map(function(h){return "<div>• ["+esc(h.editedAt)+"] by <b>"+esc(h.editedBy)+"</b>: "+esc(h.reason)+" | Net ₹"+h.prevNetFee+" → ₹"+h.newNetFee+" | Refund ₹"+h.newRefund+"</div>";}).join("")||"<div>No previous edits.</div>";document.getElementById("billEditBox").style.display="block";}',
 
-    'async function commitBillEdit(){const billNo=document.getElementById("beNo").value;const b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;const items=(b.items||[]).map(function(it,i){const chk=document.querySelector(".beCancel[data-idx=\'"+i+"\']");return Object.assign({},it,{cancelled:chk?chk.checked:Boolean(it.cancelled)});});const res=await fetch("/api/bills/edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,items:items,adjustAmount:document.getElementById("beAdj").value,refundAmount:document.getElementById("beRef").value,paidAmount:document.getElementById("bePaid").value,reason:document.getElementById("beReason").value,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Bill Updated & History Saved");await syncAll();openBillEditor(billNo);}',
+    'function commitBillEdit(){var billNo=document.getElementById("beNo").value;var b=(STORE.bills||[]).find(function(x){return x.billNo===billNo;});if(!b)return;var items=(b.items||[]).map(function(it,i){var chk=document.querySelector(".beCancel[data-idx=\'"+i+"\']");return Object.assign({},it,{cancelled:chk?chk.checked:Boolean(it.cancelled)});});fetch("/api/bills/edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,items:items,adjustAmount:document.getElementById("beAdj").value,refundAmount:document.getElementById("beRef").value,paidAmount:document.getElementById("bePaid").value,reason:document.getElementById("beReason").value,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Bill Updated & History Saved");syncAll();setTimeout(function(){openBillEditor(billNo);},200);});}',
 
-    'async function delBill(billNo){if(!confirm("Delete bill "+billNo+"?"))return;const res=await fetch("/api/bills/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Deleted "+billNo);await syncAll();}',
+    'function delBill(billNo){if(!confirm("Delete bill "+billNo+"?"))return;fetch("/api/bills/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({billNo:billNo,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Deleted "+billNo);syncAll();});}',
 
     'function addLabParam(){labParams.push({name:"",value:"",unit:"",refRange:""});drawLabParams();}',
     'function drawLabParams(){document.getElementById("lParamTb").innerHTML=labParams.map(function(p,i){return "<tr><td><input value=\'"+esc(p.name)+"\' onchange=\'labParams["+i+"].name=this.value\'/></td><td><input value=\'"+esc(p.value)+"\' onchange=\'labParams["+i+"].value=this.value\'/></td><td><input value=\'"+esc(p.unit)+"\' onchange=\'labParams["+i+"].unit=this.value\'/></td><td><input value=\'"+esc(p.refRange)+"\' onchange=\'labParams["+i+"].refRange=this.value\'/></td><td><button class=\'btn bd bsm\' onclick=\'labParams.splice("+i+",1);drawLabParams()\'>X</button></td></tr>";}).join("");}',
 
-    'async function saveLab(verify){const res=await fetch("/api/lab/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({testId:document.getElementById("lId").value||undefined,uhid:document.getElementById("lUhid").value,patientName:document.getElementById("lPat").value,testName:document.getElementById("lTest").value,doctorName:document.getElementById("lDoc").value,sampleCollectedAt:document.getElementById("lCol").value,reportDoneAt:document.getElementById("lDone").value,remarks:document.getElementById("lRem").value,parameters:labParams,verify:verify,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);document.getElementById("lId").value=out.report.testId;toast("Lab Report Saved");await syncAll();}',
+    'function saveLab(verify){fetch("/api/lab/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({testId:document.getElementById("lId").value||undefined,uhid:document.getElementById("lUhid").value,patientName:document.getElementById("lPat").value,testName:document.getElementById("lTest").value,doctorName:document.getElementById("lDoc").value,sampleCollectedAt:document.getElementById("lCol").value,reportDoneAt:document.getElementById("lDone").value,remarks:document.getElementById("lRem").value,parameters:labParams,verify:verify,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("lId").value=out.report.testId;toast("Lab Report Saved");syncAll();});}',
 
     'function renderLab(){if(!document.getElementById("lCol").value)document.getElementById("lCol").value=new Date().toISOString().slice(0,16);if(!labParams.length)labParams=[{name:"Hemoglobin",value:"13.5",unit:"g/dL",refRange:"13.0 - 17.0"}];drawLabParams();document.getElementById("lSavedTb").innerHTML=(STORE.laboratory||[]).map(function(r){return "<tr><td><b>"+esc(r.testId)+"</b></td><td>"+esc(r.uhid)+"</td><td>"+esc(r.patientName)+"</td><td>"+esc(r.testName)+"</td><td>"+esc((r.sampleCollectedAt||"").replace("T"," "))+"</td><td>"+esc((r.reportDoneAt||"").replace("T"," "))+"</td><td>"+(r.verified?"✔ "+esc(r.verifiedBy):"Pending")+"</td><td><button class=\'btn bo bsm\' onclick=\'loadLab(\""+esc(r.testId)+"\")\'>Edit</button> <button class=\'btn bp bsm\' onclick=\'printLabById(\""+esc(r.testId)+"\")\'>Print</button></td></tr>";}).join("");}',
 
-    'function loadLab(id){const r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;document.getElementById("lId").value=r.testId;document.getElementById("lUhid").value=r.uhid;document.getElementById("lPat").value=r.patientName;document.getElementById("lTest").value=r.testName;document.getElementById("lDoc").value=r.doctorName||"";document.getElementById("lCol").value=r.sampleCollectedAt||"";document.getElementById("lDone").value=r.reportDoneAt||"";document.getElementById("lRem").value=r.remarks||"";labParams=Array.isArray(r.parameters)&&r.parameters.length?r.parameters.slice():[];drawLabParams();}',
+    'function loadLab(id){var r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;document.getElementById("lId").value=r.testId;document.getElementById("lUhid").value=r.uhid;document.getElementById("lPat").value=r.patientName;document.getElementById("lTest").value=r.testName;document.getElementById("lDoc").value=r.doctorName||"";document.getElementById("lCol").value=r.sampleCollectedAt||"";document.getElementById("lDone").value=r.reportDoneAt||"";document.getElementById("lRem").value=r.remarks||"";labParams=Array.isArray(r.parameters)&&r.parameters.length?r.parameters.slice():[];drawLabParams();}',
 
-    'function printLabCurrent(){const id=document.getElementById("lId").value;if(id)return printLabById(id);toast("Save report first or click Print on a saved report.");}',
-    'function printLabById(id){const r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;const pRows=(r.parameters||[]).map(function(p){return "<tr><td>"+esc(p.name)+"</td><td><b>"+esc(p.value)+"</b></td><td>"+esc(p.unit)+"</td><td>"+esc(p.refRange)+"</td></tr>";}).join("");document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — LABORATORY REPORT</h2><p><b>ID:</b> "+esc(r.testId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Test:</b> "+esc(r.testName)+" | <b>Collected:</b> "+esc((r.sampleCollectedAt||"").replace("T"," "))+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><table style=\'margin-top:10px;\'><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Ref Range</th></tr></thead><tbody>"+pRows+"</tbody></table><p style=\'margin-top:10px;\'><b>Remarks:</b> "+esc(r.remarks||"-")+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Doctor")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
+    'function printLabCurrent(){var id=document.getElementById("lId").value;if(id)return printLabById(id);toast("Save report first or click Print on a saved report.");}',
+    'function printLabById(id){var r=(STORE.laboratory||[]).find(function(x){return x.testId===id;});if(!r)return;var pRows=(r.parameters||[]).map(function(p){return "<tr><td>"+esc(p.name)+"</td><td><b>"+esc(p.value)+"</b></td><td>"+esc(p.unit)+"</td><td>"+esc(p.refRange)+"</td></tr>";}).join("");document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — LABORATORY REPORT</h2><p><b>ID:</b> "+esc(r.testId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Test:</b> "+esc(r.testName)+" | <b>Collected:</b> "+esc((r.sampleCollectedAt||"").replace("T"," "))+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><table style=\'margin-top:10px;\'><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Ref Range</th></tr></thead><tbody>"+pRows+"</tbody></table><p style=\'margin-top:10px;\'><b>Remarks:</b> "+esc(r.remarks||"-")+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Doctor")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
 
-    'async function saveRad(verify){const res=await fetch("/api/radiology/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({radId:document.getElementById("rId").value||undefined,uhid:document.getElementById("rUhid").value,patientName:document.getElementById("rPat").value,modality:document.getElementById("rMod").value,testName:document.getElementById("rTest").value,doctorName:document.getElementById("rDoc").value,sampleCollectedAt:document.getElementById("rCol").value,reportDoneAt:document.getElementById("rDone").value,findings:document.getElementById("rFind").value,impression:document.getElementById("rImp").value,verify:verify,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);document.getElementById("rId").value=out.report.radId;toast("Radiology Report Saved");await syncAll();}',
+    'function saveRad(verify){fetch("/api/radiology/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({radId:document.getElementById("rId").value||undefined,uhid:document.getElementById("rUhid").value,patientName:document.getElementById("rPat").value,modality:document.getElementById("rMod").value,testName:document.getElementById("rTest").value,doctorName:document.getElementById("rDoc").value,sampleCollectedAt:document.getElementById("rCol").value,reportDoneAt:document.getElementById("rDone").value,findings:document.getElementById("rFind").value,impression:document.getElementById("rImp").value,verify:verify,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);document.getElementById("rId").value=out.report.radId;toast("Radiology Report Saved");syncAll();});}',
 
     'function renderRad(){if(!document.getElementById("rCol").value)document.getElementById("rCol").value=new Date().toISOString().slice(0,16);document.getElementById("rSavedTb").innerHTML=(STORE.radiology||[]).map(function(r){return "<tr><td><b>"+esc(r.radId)+"</b></td><td>"+esc(r.uhid)+"</td><td>"+esc(r.patientName)+"</td><td>"+esc(r.modality)+" - "+esc(r.testName)+"</td><td>"+esc((r.reportDoneAt||"").replace("T"," "))+"</td><td>"+(r.verified?"✔ "+esc(r.verifiedBy):"Pending")+"</td><td><button class=\'btn bo bsm\' onclick=\'loadRad(\""+esc(r.radId)+"\")\'>Edit</button> <button class=\'btn bp bsm\' onclick=\'printRadById(\""+esc(r.radId)+"\")\'>Print</button></td></tr>";}).join("");}',
 
-    'function loadRad(id){const r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("rId").value=r.radId;document.getElementById("rUhid").value=r.uhid;document.getElementById("rPat").value=r.patientName;document.getElementById("rMod").value=r.modality||"X-Ray";document.getElementById("rTest").value=r.testName;document.getElementById("rDoc").value=r.doctorName||"";document.getElementById("rCol").value=r.sampleCollectedAt||"";document.getElementById("rDone").value=r.reportDoneAt||"";document.getElementById("rFind").value=r.findings||"";document.getElementById("rImp").value=r.impression||"";}',
+    'function loadRad(id){var r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("rId").value=r.radId;document.getElementById("rUhid").value=r.uhid;document.getElementById("rPat").value=r.patientName;document.getElementById("rMod").value=r.modality||"X-Ray";document.getElementById("rTest").value=r.testName;document.getElementById("rDoc").value=r.doctorName||"";document.getElementById("rCol").value=r.sampleCollectedAt||"";document.getElementById("rDone").value=r.reportDoneAt||"";document.getElementById("rFind").value=r.findings||"";document.getElementById("rImp").value=r.impression||"";}',
 
-    'function printRadCurrent(){const id=document.getElementById("rId").value;if(id)return printRadById(id);toast("Save report first or click Print on a saved report.");}',
-    'function printRadById(id){const r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — RADIOLOGY REPORT</h2><p><b>ID:</b> "+esc(r.radId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Study:</b> "+esc(r.modality)+" - "+esc(r.testName)+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><p style=\'margin-top:10px;\'><b>Findings:</b></p><pre style=\'white-space:pre-wrap;border:1px solid #000;padding:8px;min-height:120px;\'>"+esc(r.findings)+"</pre><p style=\'margin-top:10px;\'><b>Impression:</b> "+esc(r.impression)+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Radiologist")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
+    'function printRadCurrent(){var id=document.getElementById("rId").value;if(id)return printRadById(id);toast("Save report first or click Print on a saved report.");}',
+    'function printRadById(id){var r=(STORE.radiology||[]).find(function(x){return x.radId===id;});if(!r)return;document.getElementById("printContent").innerHTML="<div class=\'a4\'><div><h2>AR HIMS SOFTWARE — RADIOLOGY REPORT</h2><p><b>ID:</b> "+esc(r.radId)+" | <b>UHID:</b> "+esc(r.uhid)+" | <b>Patient:</b> "+esc(r.patientName)+"</p><p><b>Study:</b> "+esc(r.modality)+" - "+esc(r.testName)+" | <b>Done:</b> "+esc((r.reportDoneAt||"").replace("T"," "))+"</p><p style=\'margin-top:10px;\'><b>Findings:</b></p><pre style=\'white-space:pre-wrap;border:1px solid #000;padding:8px;min-height:120px;\'>"+esc(r.findings)+"</pre><p style=\'margin-top:10px;\'><b>Impression:</b> "+esc(r.impression)+"</p></div><div style=\'border-top:1px solid #000;padding-top:8px;display:flex;justify-content:space-between;\'><div>Status: <b>"+esc(r.status)+"</b></div><div><b>"+esc(r.verifiedBy||r.doctorName||"Radiologist")+"</b></div></div></div>";document.getElementById("printBg").style.display="block";}',
 
     'function renderAudit(){document.getElementById("aTb").innerHTML=(STORE.pharmacyAudits||[]).map(function(a){return "<tr><td><b>"+esc(a.auditId)+"</b></td><td>"+esc(a.date)+"</td><td>"+esc(a.itemName)+"</td><td>"+esc(a.batch)+"</td><td>"+a.systemQty+"</td><td>"+a.physicalQty+"</td><td><b>"+a.diffQty+"</b></td><td><b>₹"+r2(a.valueDiff).toFixed(2)+"</b></td><td>"+esc(a.updatedBy||"-")+"</td><td><button class=\'btn bw bsm\' onclick=\'loadAudit(\""+esc(a.auditId)+"\")\'>Edit</button></td></tr>";}).join("");}',
 
-    'function loadAudit(id){const a=(STORE.pharmacyAudits||[]).find(function(x){return x.auditId===id;});if(!a)return;document.getElementById("aId").value=a.auditId;document.getElementById("aMed").value=a.itemName;document.getElementById("aBatch").value=a.batch;document.getElementById("aRate").value=a.rate||0;document.getElementById("aSys").value=a.systemQty;document.getElementById("aPhys").value=a.physicalQty;document.getElementById("aDiff").value=a.diffQty;document.getElementById("aVal").value=a.valueDiff;document.getElementById("aStat").value=a.status||"Adjusted";document.getElementById("aNote").value=a.notes||"";}',
+    'function loadAudit(id){var a=(STORE.pharmacyAudits||[]).find(function(x){return x.auditId===id;});if(!a)return;document.getElementById("aId").value=a.auditId;document.getElementById("aMed").value=a.itemName;document.getElementById("aBatch").value=a.batch;document.getElementById("aRate").value=a.rate||0;document.getElementById("aSys").value=a.systemQty;document.getElementById("aPhys").value=a.physicalQty;document.getElementById("aDiff").value=a.diffQty;document.getElementById("aVal").value=a.valueDiff;document.getElementById("aStat").value=a.status||"Adjusted";document.getElementById("aNote").value=a.notes||"";}',
 
-    'async function saveAudit(){const res=await fetch("/api/pharmacy/audit/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({auditId:document.getElementById("aId").value||undefined,itemName:document.getElementById("aMed").value,batch:document.getElementById("aBatch").value,rate:document.getElementById("aRate").value,systemQty:document.getElementById("aSys").value,physicalQty:document.getElementById("aPhys").value,diffQty:document.getElementById("aDiff").value,valueDiff:document.getElementById("aVal").value,status:document.getElementById("aStat").value,notes:document.getElementById("aNote").value,syncStock:document.getElementById("aSync").checked,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Audit Saved");await syncAll();}',
+    'function saveAudit(){fetch("/api/pharmacy/audit/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({auditId:document.getElementById("aId").value||undefined,itemName:document.getElementById("aMed").value,batch:document.getElementById("aBatch").value,rate:document.getElementById("aRate").value,systemQty:document.getElementById("aSys").value,physicalQty:document.getElementById("aPhys").value,diffQty:document.getElementById("aDiff").value,valueDiff:document.getElementById("aVal").value,status:document.getElementById("aStat").value,notes:document.getElementById("aNote").value,syncStock:document.getElementById("aSync").checked,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Audit Saved");syncAll();});}',
 
     'function renderUsers(){document.getElementById("uTb").innerHTML=(STORE.users||[]).map(function(u){return "<tr><td>"+esc(u.name)+"</td><td><b>"+esc(u.username)+"</b></td><td>"+esc(u.role)+"</td><td>"+esc((u.permissions||[]).join(", "))+"</td><td><button class=\'btn bo bsm\' onclick=\'toggleEditPerm(\""+esc(u.id)+"\")\'>Toggle Edit</button></td></tr>";}).join("");}',
 
-    'async function createUser(){const perms=["dashboard","patients","ipd","billing","lab","radiology","pharmacy"];if(document.getElementById("uEdit").checked)perms.push("edit");const res=await fetch("/api/users/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("uName").value,username:document.getElementById("uUser").value,password:document.getElementById("uPass").value,role:document.getElementById("uRole").value,permissions:perms,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("User Created");await syncAll();}',
+    'function createUser(){var perms=["dashboard","patients","ipd","billing","lab","radiology","pharmacy"];if(document.getElementById("uEdit").checked)perms.push("edit");fetch("/api/users/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:document.getElementById("uName").value,username:document.getElementById("uUser").value,password:document.getElementById("uPass").value,role:document.getElementById("uRole").value,permissions:perms,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("User Created");syncAll();});}',
 
-    'async function toggleEditPerm(userId){const res=await fetch("/api/users/toggle-edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:userId,actor:ME.username})});const out=await res.json();if(!out.success)return toast(out.message);toast("Edit permission updated");await syncAll();}',
+    'function toggleEditPerm(userId){fetch("/api/users/toggle-edit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:userId,actor:ME.username})}).then(function(r){return r.json();}).then(function(out){if(!out.success)return toast(out.message);toast("Edit permission updated");syncAll();});}',
 
-    '(function(){const raw=sessionStorage.getItem("arhims_session");if(raw){try{startSession(JSON.parse(raw));}catch(e){sessionStorage.removeItem("arhims_session");}}})();',
+    '(function(){var raw=sessionStorage.getItem("arhims_session");if(raw){try{startSession(JSON.parse(raw));}catch(e){sessionStorage.removeItem("arhims_session");}}})();',
     '</script></body></html>'
 ].join('\n');
 
