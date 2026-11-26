@@ -2218,3 +2218,6 @@ loadStore()
             console.log(`AR HIMS running on port ${PORT}`);
         });
     });
+    app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
